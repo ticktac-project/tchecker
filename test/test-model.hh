@@ -1,0 +1,274 @@
+/*
+ * This file is a part of the TChecker project.
+ *
+ * See files AUTHORS and LICENSE for copyright details.
+ *
+ */
+
+#include <cstdio>
+#include <string>
+#include <tuple>
+
+#include "tchecker/fsm/fsm.hh"
+#include "tchecker/parsing/declaration.hh"
+#include "tchecker/parsing/parsing.hh"
+#include "tchecker/ta/ta.hh"
+#include "tchecker/utils/log.hh"
+
+/*!
+ \brief Parse a model
+ \param model : tchecker model
+ \param log : logging facility
+ \return the system declaration corresponding to model if model is syntactically correct, nullptr otherwise or if
+ a temporary file cannot be created
+ \post errors and warnings in model have been reported to log
+ */
+tchecker::parsing::system_declaration_t const * parse(std::string const & model, tchecker::log_t & log)
+{
+  // Create the temporary file from model
+  std::FILE * f = tmpfile();
+  if (f == nullptr)
+    return nullptr;
+
+  std::fputs(model.c_str(), f);
+  std::fseek(f, 0, SEEK_SET);
+  
+  // Parse the model from the temporary file
+  tchecker::parsing::system_declaration_t const * sysdecl = nullptr;
+  
+  try {
+    sysdecl = tchecker::parsing::parse_system_declaration(f, "", log);
+  }
+  catch (...)
+  {
+    delete sysdecl;
+    std::fclose(f);
+    return nullptr;
+  }
+
+  std::fclose(f);
+  return sysdecl;
+}
+
+
+
+TEST_CASE( "no throw if no weakly synchronized events", "[model]" ) {
+  std::string model =
+  "system:no_weakly_sync \n\
+  event:a1 \n\
+  event:a2 \n\
+  event:a3 \n\
+  \n\
+  process:P1 \n\
+  int:1:1:1:1:i1 \n\
+  location:P1:l0{initial:} \n\
+  location:P1:l1 \n\
+  edge:P1:l0:l1:a1{provided: i1>0} \n\
+  \n\
+  process:P2 \n\
+  location:P2:l0{initial:} \n\
+  location:P2:l1 \n\
+  edge:P2:l0:l1:a2 \n\
+  \n\
+  process:P3 \n\
+  int:1:1:1:1:i3 \n\
+  location:P3:l0{initial:} \n\
+  location:P3:l1 \n\
+  edge:P3:l0:l1:a3{provided: i3<3} \n\
+  \n\
+  sync:P1@a1:P2@a2\n";
+  
+  tchecker::log_t log(std::cerr);
+  tchecker::parsing::system_declaration_t const * sysdecl = parse(model, log);
+  
+  REQUIRE(sysdecl != nullptr);
+  REQUIRE_NOTHROW(tchecker::fsm::model_t(*sysdecl, log));
+  REQUIRE_NOTHROW(tchecker::ta::model_t(*sysdecl, log));
+  
+  delete sysdecl;
+}
+
+
+TEST_CASE( "no throw if weakly synchronized events have no guard", "[model]" ) {
+  std::string model =
+  "system:weakly_sync_no_guard \n\
+  event:a1 \n\
+  event:a2 \n\
+  event:a3 \n\
+  \n\
+  process:P1 \n\
+  int:1:1:1:1:i1 \n\
+  location:P1:l0{initial:} \n\
+  location:P1:l1 \n\
+  edge:P1:l0:l1:a1{provided: i1>0} \n\
+  \n\
+  process:P2 \n\
+  location:P2:l0{initial:} \n\
+  location:P2:l1 \n\
+  edge:P2:l0:l1:a2 \n\
+  \n\
+  process:P3 \n\
+  location:P3:l0{initial:} \n\
+  location:P3:l1 \n\
+  edge:P3:l0:l1:a3 \n\
+  \n\
+  sync:P1@a1:P2@a2?:P3@a3?\n";
+  
+  tchecker::log_t log(std::cerr);
+  tchecker::parsing::system_declaration_t const * sysdecl = parse(model, log);
+  
+  REQUIRE(sysdecl != nullptr);
+  REQUIRE_NOTHROW(tchecker::fsm::model_t(*sysdecl, log));
+  REQUIRE_NOTHROW(tchecker::ta::model_t(*sysdecl, log));
+  
+  delete sysdecl;
+}
+
+
+TEST_CASE( "throw if first weakly synchronized event has a guard", "[model]" ) {
+  std::string model =
+  "system:first_weakly_sync_with_guard \n\
+  event:a1 \n\
+  event:a2 \n\
+  event:a3 \n\
+  \n\
+  process:P1 \n\
+  int:1:1:1:1:i1 \n\
+  location:P1:l0{initial:} \n\
+  location:P1:l1 \n\
+  edge:P1:l0:l1:a1{provided: i1>0} \n\
+  \n\
+  process:P2 \n\
+  location:P2:l0{initial:} \n\
+  location:P2:l1 \n\
+  edge:P2:l0:l1:a2 \n\
+  \n\
+  process:P3 \n\
+  location:P3:l0{initial:} \n\
+  location:P3:l1 \n\
+  edge:P3:l0:l1:a3 \n\
+  \n\
+  sync:P1@a1?:P2@a2:P3@a3\n";
+  
+  tchecker::log_t log(std::cerr);
+  tchecker::parsing::system_declaration_t const * sysdecl = parse(model, log);
+  
+  REQUIRE(sysdecl != nullptr);
+  REQUIRE_THROWS_AS(tchecker::fsm::model_t(*sysdecl, log), std::runtime_error);
+  REQUIRE_THROWS_AS(tchecker::ta::model_t(*sysdecl, log), std::runtime_error);
+  
+  delete sysdecl;
+}
+
+
+TEST_CASE( "throw if last weakly synchronized event has a guard", "[model]" ) {
+  std::string model =
+  "system:last_weakly_sync_with_guard \n\
+  event:a1 \n\
+  event:a2 \n\
+  event:a3 \n\
+  \n\
+  process:P1 \n\
+  location:P1:l0{initial:} \n\
+  location:P1:l1 \n\
+  edge:P1:l0:l1:a1 \n\
+  \n\
+  process:P2 \n\
+  location:P2:l0{initial:} \n\
+  location:P2:l1 \n\
+  edge:P2:l0:l1:a2 \n\
+  \n\
+  process:P3 \n\
+  int:1:1:1:1:i3 \n\
+  location:P3:l0{initial:} \n\
+  location:P3:l1 \n\
+  edge:P3:l0:l1:a3{provided: i3 < 3} \n\
+  \n\
+  sync:P1@a1:P2@a2:P3@a3?\n";
+  
+  tchecker::log_t log(std::cerr);
+  tchecker::parsing::system_declaration_t const * sysdecl = parse(model, log);
+  
+  REQUIRE(sysdecl != nullptr);
+  REQUIRE_THROWS_AS(tchecker::fsm::model_t(*sysdecl, log), std::runtime_error);
+  REQUIRE_THROWS_AS(tchecker::ta::model_t(*sysdecl, log), std::runtime_error);
+  
+  delete sysdecl;
+}
+
+
+TEST_CASE( "throw if middle weakly synchronized event has a guard", "[model]" ) {
+  std::string model =
+  "system:middle_weakly_sync_with_guard \n\
+  event:a1 \n\
+  event:a2 \n\
+  event:a3 \n\
+  \n\
+  process:P1 \n\
+  location:P1:l0{initial:} \n\
+  location:P1:l1 \n\
+  edge:P1:l0:l1:a1 \n\
+  \n\
+  process:P2 \n\
+  int:1:1:1:1:i2 \n\
+  location:P2:l0{initial:} \n\
+  location:P2:l1 \n\
+  edge:P2:l0:l1:a2{provided: i2==4} \n\
+  \n\
+  process:P3 \n\
+  location:P3:l0{initial:} \n\
+  location:P3:l1 \n\
+  edge:P3:l0:l1:a3 \n\
+  \n\
+  sync:P1@a1:P2@a2?:P3@a3\n";
+  
+  tchecker::log_t log(std::cerr);
+  tchecker::parsing::system_declaration_t const * sysdecl = parse(model, log);
+  
+  REQUIRE(sysdecl != nullptr);
+  REQUIRE_THROWS_AS(tchecker::fsm::model_t(*sysdecl, log), std::runtime_error);
+  REQUIRE_THROWS_AS(tchecker::ta::model_t(*sysdecl, log), std::runtime_error);
+  
+  delete sysdecl;
+}
+
+
+TEST_CASE( "throw if some weakly synchronized event has a guard, several transitions", "[model]" ) {
+  std::string model =
+  "system:middle_weakly_sync_with_guard \n\
+  event:a1 \n\
+  event:a2 \n\
+  event:a3 \n\
+  \n\
+  process:P1 \n\
+  int:1:1:1:1:i1 \n\
+  location:P1:l0{initial:} \n\
+  location:P1:l1 \n\
+  location:P1:l2 \n\
+  edge:P1:l0:l1:a1 \n\
+  edge:P1:l1:l2:a1{provided: i1 == 5} \n\
+  \n\
+  process:P2 \n\
+  int:1:1:1:1:i2 \n\
+  location:P2:l0{initial:} \n\
+  location:P2:l1 \n\
+  edge:P2:l0:l1:a2{provided: i2==4} \n\
+  \n\
+  process:P3 \n\
+  location:P3:l0{initial:} \n\
+  location:P3:l1 \n\
+  location:P3:l2 \n\
+  edge:P3:l0:l1:a3 \n\
+  edge:P3:l0:l2:a3 \n\
+  \n\
+  sync:P1@a1?:P2@a2:P3@a3?\n";
+  
+  tchecker::log_t log(std::cerr);
+  tchecker::parsing::system_declaration_t const * sysdecl = parse(model, log);
+  
+  REQUIRE(sysdecl != nullptr);
+  REQUIRE_THROWS_AS(tchecker::fsm::model_t(*sysdecl, log), std::runtime_error);
+  REQUIRE_THROWS_AS(tchecker::ta::model_t(*sysdecl, log), std::runtime_error);
+  
+  delete sysdecl;
+}
