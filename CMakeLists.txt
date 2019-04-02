@@ -5,6 +5,8 @@
 cmake_minimum_required(VERSION 2.8)
 project(tchecker)
 
+include("${CMAKE_SOURCE_DIR}/cmake/CheckCompilerFlags.cmake")
+
 # The project version number.
 set(VERSION_MAJOR   0   CACHE STRING "Project major version number.")
 set(VERSION_MINOR   1   CACHE STRING "Project minor version number.")
