@@ -92,7 +92,8 @@ namespace tchecker {
         bool is_new_node;
         
         std::tie(node, edge, status, is_new_node)
-        = tchecker::graph::ts_find_builder_t<TS, GRAPH>::initial_node(v, std::make_tuple(_node_id), std::tuple());
+        = tchecker::graph::ts_find_builder_t<TS, GRAPH>::initial_node(v,
+            std::make_tuple(_node_id), std::tuple<>());
         
         _node_id += (is_new_node ? 1 : 0);
         
@@ -117,7 +118,8 @@ namespace tchecker {
         bool is_new_node;
         
         std::tie(next_node, edge, status, is_new_node)
-        = tchecker::graph::ts_find_builder_t<TS, GRAPH>::next_node(node, v, std::make_tuple(_node_id), std::tuple());
+        = tchecker::graph::ts_find_builder_t<TS, GRAPH>::next_node(node, v,
+            std::make_tuple(_node_id), std::tuple<>());
         
         _node_id += (is_new_node ? 1 : 0);
         
