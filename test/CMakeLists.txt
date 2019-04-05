@@ -10,16 +10,20 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -g ${ERROR_LIMIT}")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -DNDEBUG -O2 -flto -fstrict-vtable-pointers")
 
 set(TCHECKER_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+set(TCHECKER_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 include_directories(${TCHECKER_INCLUDE_DIR})
+include_directories(${TCHECKER_TEST_DIR})
 include_directories(${Boost_INCLUDE_DIRS})
 
 set(TEST_SRC
 ${CMAKE_CURRENT_SOURCE_DIR}/test-db.hh
 ${CMAKE_CURRENT_SOURCE_DIR}/test-dbm.hh
-${CMAKE_CURRENT_SOURCE_DIR}/test-model.hh
+${CMAKE_CURRENT_SOURCE_DIR}/test-guard_weak_sync.hh
 ${CMAKE_CURRENT_SOURCE_DIR}/test-offset_dbm.hh
-${CMAKE_CURRENT_SOURCE_DIR}/unittest.cc)
+${CMAKE_CURRENT_SOURCE_DIR}/utils.hh
+${CMAKE_CURRENT_SOURCE_DIR}/unittest.cc
+${CMAKE_CURRENT_SOURCE_DIR}/utils.cc)
 
 add_executable(unittest ${TEST_SRC})
 target_link_libraries(unittest libtchecker)

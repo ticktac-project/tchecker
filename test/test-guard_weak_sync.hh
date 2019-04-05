@@ -5,54 +5,16 @@
  *
  */
 
-#include <cstdio>
 #include <string>
-#include <tuple>
 
 #include "tchecker/fsm/fsm.hh"
 #include "tchecker/parsing/declaration.hh"
-#include "tchecker/parsing/parsing.hh"
 #include "tchecker/ta/ta.hh"
 #include "tchecker/utils/log.hh"
 
-/*!
- \brief Parse a model
- \param model : tchecker model
- \param log : logging facility
- \return the system declaration corresponding to model if model is syntactically correct, nullptr otherwise or if
- a temporary file cannot be created
- \post errors and warnings in model have been reported to log
- */
-tchecker::parsing::system_declaration_t const * parse(std::string const & model, tchecker::log_t & log)
-{
-  // Create the temporary file from model
-  std::FILE * f = tmpfile();
-  if (f == nullptr)
-    return nullptr;
+#include "utils.hh"
 
-  std::fputs(model.c_str(), f);
-  std::fseek(f, 0, SEEK_SET);
-  
-  // Parse the model from the temporary file
-  tchecker::parsing::system_declaration_t const * sysdecl = nullptr;
-  
-  try {
-    sysdecl = tchecker::parsing::parse_system_declaration(f, "", log);
-  }
-  catch (...)
-  {
-    delete sysdecl;
-    std::fclose(f);
-    return nullptr;
-  }
-
-  std::fclose(f);
-  return sysdecl;
-}
-
-
-
-TEST_CASE( "no throw if no weakly synchronized events", "[model]" ) {
+TEST_CASE( "no throw if no weakly synchronized events", "[guard_weak_sync]" ) {
   std::string model =
   "system:no_weakly_sync \n\
   event:a1 \n\
@@ -79,7 +41,7 @@ TEST_CASE( "no throw if no weakly synchronized events", "[model]" ) {
   sync:P1@a1:P2@a2\n";
   
   tchecker::log_t log(std::cerr);
-  tchecker::parsing::system_declaration_t const * sysdecl = parse(model, log);
+  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(model, log);
   
   REQUIRE(sysdecl != nullptr);
   REQUIRE_NOTHROW(tchecker::fsm::model_t(*sysdecl, log));
@@ -89,7 +51,7 @@ TEST_CASE( "no throw if no weakly synchronized events", "[model]" ) {
 }
 
 
-TEST_CASE( "no throw if weakly synchronized events have no guard", "[model]" ) {
+TEST_CASE( "no throw if weakly synchronized events have no guard", "[guard_weak_sync]" ) {
   std::string model =
   "system:weakly_sync_no_guard \n\
   event:a1 \n\
@@ -115,7 +77,7 @@ TEST_CASE( "no throw if weakly synchronized events have no guard", "[model]" ) {
   sync:P1@a1:P2@a2?:P3@a3?\n";
   
   tchecker::log_t log(std::cerr);
-  tchecker::parsing::system_declaration_t const * sysdecl = parse(model, log);
+  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(model, log);
   
   REQUIRE(sysdecl != nullptr);
   REQUIRE_NOTHROW(tchecker::fsm::model_t(*sysdecl, log));
@@ -125,7 +87,7 @@ TEST_CASE( "no throw if weakly synchronized events have no guard", "[model]" ) {
 }
 
 
-TEST_CASE( "throw if first weakly synchronized event has a guard", "[model]" ) {
+TEST_CASE( "throw if first weakly synchronized event has a guard", "[guard_weak_sync]" ) {
   std::string model =
   "system:first_weakly_sync_with_guard \n\
   event:a1 \n\
@@ -151,7 +113,7 @@ TEST_CASE( "throw if first weakly synchronized event has a guard", "[model]" ) {
   sync:P1@a1?:P2@a2:P3@a3\n";
   
   tchecker::log_t log(std::cerr);
-  tchecker::parsing::system_declaration_t const * sysdecl = parse(model, log);
+  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(model, log);
   
   REQUIRE(sysdecl != nullptr);
   REQUIRE_THROWS_AS(tchecker::fsm::model_t(*sysdecl, log), std::runtime_error);
@@ -161,7 +123,7 @@ TEST_CASE( "throw if first weakly synchronized event has a guard", "[model]" ) {
 }
 
 
-TEST_CASE( "throw if last weakly synchronized event has a guard", "[model]" ) {
+TEST_CASE( "throw if last weakly synchronized event has a guard", "[guard_weak_sync]" ) {
   std::string model =
   "system:last_weakly_sync_with_guard \n\
   event:a1 \n\
@@ -187,7 +149,7 @@ TEST_CASE( "throw if last weakly synchronized event has a guard", "[model]" ) {
   sync:P1@a1:P2@a2:P3@a3?\n";
   
   tchecker::log_t log(std::cerr);
-  tchecker::parsing::system_declaration_t const * sysdecl = parse(model, log);
+  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(model, log);
   
   REQUIRE(sysdecl != nullptr);
   REQUIRE_THROWS_AS(tchecker::fsm::model_t(*sysdecl, log), std::runtime_error);
@@ -197,7 +159,7 @@ TEST_CASE( "throw if last weakly synchronized event has a guard", "[model]" ) {
 }
 
 
-TEST_CASE( "throw if middle weakly synchronized event has a guard", "[model]" ) {
+TEST_CASE( "throw if middle weakly synchronized event has a guard", "[guard_weak_sync]" ) {
   std::string model =
   "system:middle_weakly_sync_with_guard \n\
   event:a1 \n\
@@ -223,7 +185,7 @@ TEST_CASE( "throw if middle weakly synchronized event has a guard", "[model]" ) 
   sync:P1@a1:P2@a2?:P3@a3\n";
   
   tchecker::log_t log(std::cerr);
-  tchecker::parsing::system_declaration_t const * sysdecl = parse(model, log);
+  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(model, log);
   
   REQUIRE(sysdecl != nullptr);
   REQUIRE_THROWS_AS(tchecker::fsm::model_t(*sysdecl, log), std::runtime_error);
@@ -233,7 +195,7 @@ TEST_CASE( "throw if middle weakly synchronized event has a guard", "[model]" ) 
 }
 
 
-TEST_CASE( "throw if some weakly synchronized event has a guard, several transitions", "[model]" ) {
+TEST_CASE( "throw if some weakly synchronized event has a guard, several transitions", "[guard_weak_sync]" ) {
   std::string model =
   "system:middle_weakly_sync_with_guard \n\
   event:a1 \n\
@@ -264,7 +226,7 @@ TEST_CASE( "throw if some weakly synchronized event has a guard, several transit
   sync:P1@a1?:P2@a2:P3@a3?\n";
   
   tchecker::log_t log(std::cerr);
-  tchecker::parsing::system_declaration_t const * sysdecl = parse(model, log);
+  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(model, log);
   
   REQUIRE(sysdecl != nullptr);
   REQUIRE_THROWS_AS(tchecker::fsm::model_t(*sysdecl, log), std::runtime_error);
