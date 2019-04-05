@@ -551,11 +551,6 @@ namespace tchecker {
     template <class VLOC>
     using location_to_asynchronous_edges_map_t = tchecker::details::location_to_asynchronous_edges_map_t<SYSTEM, VLOC>;
     
-    /*!
-     \brief Type of iterator over asynchronous edges
-     */
-    template <class VLOC>
-    using asynchronous_edges_iterator_t = tchecker::details::asynchronous_edges_iterator_t<SYSTEM, VLOC>;
   public:
     /*!
      \brief Type of iterator

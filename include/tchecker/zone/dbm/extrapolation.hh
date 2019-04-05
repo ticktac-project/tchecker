@@ -421,7 +421,7 @@ namespace tchecker {
       local_LU_extrapolation_t(tchecker::dbm::local_LU_extrapolation_t<EXTRAPOLATION> const & e)
       : _local_lu_map(e._local_lu_map)
       {
-        tchecker::clock_id_t clock_number = _local_lu_map().clock_number();
+        tchecker::clock_id_t clock_number = _local_lu_map.get().clock_number();
         _L = tchecker::clockbounds::allocate_map(clock_number);
         _U = tchecker::clockbounds::allocate_map(clock_number);
         for (tchecker::clock_id_t i = 0; i < clock_number; ++i) {
@@ -466,7 +466,7 @@ namespace tchecker {
           _local_lu_map = e._local_lu_map;
           tchecker::clockbounds::deallocate_map(_U);
           tchecker::clockbounds::deallocate_map(_L);
-          tchecker::clock_id_t clock_number = _local_lu_map().clock_number();
+          tchecker::clock_id_t clock_number = _local_lu_map.get().clock_number();
           _L = tchecker::clockbounds::allocate_map(clock_number);
           _U = tchecker::clockbounds::allocate_map(clock_number);
           for (tchecker::clock_id_t i = 0; i < clock_number; ++i) {

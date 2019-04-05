@@ -35,6 +35,7 @@ should work. Apple LLVM >= 10.0.0 works)
 * flex (>= 2.5.35)
 * bison (>= 3.0.4)
 * The Boost library (>= 1.65.0 -- probably works with earlier versions)
+* Catch2 (>= 2.7.0)
 * Doxygen (>= 1.8.15 -- probably works with earlier versions)
 
 ### Building and installing TChecker

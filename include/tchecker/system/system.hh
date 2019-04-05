@@ -629,7 +629,7 @@ namespace tchecker {
         _locs_map.insert( std::make_pair(loc_key, loc) );
         
         if (loc->initial())
-          _initial_locs.insert( std::make_tuple(loc->pid(), loc) );
+          _initial_locs.insert( std::make_pair(loc->pid(), loc) );
       }
       catch (...) {
         throw;
