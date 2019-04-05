@@ -2,7 +2,7 @@
 #
 # See files AUTHORS and LICENSE for copyright details.
 
-find_package(BOOST REQUIRED)
+find_package(Boost REQUIRED)
 find_package(Catch2 REQUIRED)
 
 tck_check_cxx_flags("-ferror-limit=150" ERROR_LIMIT)
