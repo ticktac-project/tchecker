@@ -11,6 +11,7 @@
 #include <iterator>
 #include <tuple>
 #include <vector>
+#include <cassert>
 
 #include <boost/iterator/transform_iterator.hpp>
 

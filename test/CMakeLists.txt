@@ -5,7 +5,8 @@
 find_package(BOOST REQUIRED)
 find_package(Catch2 REQUIRED)
 
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -g -ferror-limit=150")
+tck_check_cxx_flags("-ferror-limit=150" ERROR_LIMIT)
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -g ${ERROR_LIMIT}")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -DNDEBUG -O2 -flto -fstrict-vtable-pointers")
 
 set(TCHECKER_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../include)

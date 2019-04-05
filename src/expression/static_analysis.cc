@@ -320,7 +320,7 @@ namespace tchecker {
         // adjust the range of IDs if the offset of expr can be statically computed
         try {
           tchecker::integer_t offset = tchecker::const_evaluate(expr.offset());
-          if ((0 <= offset) && (offset < _size)) {
+          if ((0 <= offset) && (offset < (tchecker::integer_t) _size)) {
             _first += offset;
             _size = 1;
           }
@@ -455,7 +455,7 @@ namespace tchecker {
           extract_variable_with_type(expr.variable().id() + offset, expr.variable().type());
         }
         catch (...) {
-          for (tchecker::integer_t offset = 0; offset < expr.variable().size(); ++offset)
+          for (tchecker::integer_t offset = 0; offset < (tchecker::integer_t) expr.variable().size (); ++offset)
             extract_variable_with_type(expr.variable().id() + offset, expr.variable().type());
         }
       }
