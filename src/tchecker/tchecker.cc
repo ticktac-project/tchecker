@@ -125,10 +125,10 @@ int main(int argc, char * argv[])
 {
   tchecker::log_t log(std::cerr);
   
+  // no command: list all available commands
   if (argc < 2) {
-    log.error("Missing command");
     usage(argv[0]);
-    return -1;
+    return 0;
   }
   
   // parse command
