@@ -181,16 +181,13 @@ namespace tchecker {
     /*!
      \brief Accessor
      \param event_id : event ID
-     \pre this location has at least one outgoing edge with event_id
      \return range of outgoing edges with event_id
-     \throw std::invalid_argument : if this location does not have any outgoing
-     edge with event_id
      \note the range follows the order of addition of edges
      */
     inline tchecker::range_t<const_edge_iterator_t> outgoing_edges(tchecker::event_id_t event_id) const
     {
       if ( ! outgoing_event(event_id) )
-        throw std::invalid_argument("no outgoing edge with that event ID");
+        return tchecker::make_range(_no_edge.begin(), _no_edge.end());
       auto const & edges = _outgoing_edges_map.at(event_id);
       return tchecker::make_range(edges.begin(), edges.end());
     }
@@ -208,16 +205,13 @@ namespace tchecker {
     /*!
      \brief Accessor
      \param event_id : event ID
-     \pre this location has at least one incoming edge with event_id
      \return range of incoming edges with event_id
-     \throw std::invalid_argument : if this location does not have any incoming
-     edge with event_id
      \note the range follows the order of addition of edges
      */
     inline tchecker::range_t<const_edge_iterator_t> incoming_edges(tchecker::event_id_t event_id) const
     {
       if ( ! incoming_event(event_id) )
-        throw std::invalid_argument("no incoming edge with that event ID");
+        return tchecker::make_range(_no_edge.begin(), _no_edge.end());
       auto const & edges = _incoming_edges_map.at(event_id);
       return tchecker::make_range(edges.begin(), edges.end());
     }
@@ -266,16 +260,21 @@ namespace tchecker {
      */
     using event_edge_map_t = boost::container::flat_map<tchecker::event_id_t, std::vector<EDGE const *>>;
     
-    tchecker::process_id_t _pid;                 /*!< Process ID */
-    tchecker::loc_id_t _id;                      /*!< Identifier */
-    std::string _name;                           /*!< Name */
-    std::vector<EDGE const *> _incoming_edges;   /*!< Incoming edges */
-    std::vector<EDGE const *> _outgoing_edges;   /*!< Outgoing edges */
-    boost::dynamic_bitset<> _incoming_events;    /*!< Incoming events */
-    boost::dynamic_bitset<> _outgoing_events;    /*!< Outgoing events */
-    event_edge_map_t _incoming_edges_map;        /*!< Map: event ID -> incoming edges */
-    event_edge_map_t _outgoing_edges_map;        /*!< Map: event ID -> outgoing edges */
+    tchecker::process_id_t _pid;                       /*!< Process ID */
+    tchecker::loc_id_t _id;                            /*!< Identifier */
+    std::string _name;                                 /*!< Name */
+    std::vector<EDGE const *> _incoming_edges;         /*!< Incoming edges */
+    std::vector<EDGE const *> _outgoing_edges;         /*!< Outgoing edges */
+    boost::dynamic_bitset<> _incoming_events;          /*!< Incoming events */
+    boost::dynamic_bitset<> _outgoing_events;          /*!< Outgoing events */
+    event_edge_map_t _incoming_edges_map;              /*!< Map: event ID -> incoming edges */
+    event_edge_map_t _outgoing_edges_map;              /*!< Map: event ID -> outgoing edges */
+    static std::vector<EDGE const *> const _no_edge;   /*!< Empty set of edges (see outgoing_edges and incoming_edges) */
   };
+  
+  
+  template <class EDGE>
+  std::vector<EDGE const *> const loc_t<EDGE>::_no_edge(0, nullptr);   /*! Instantiation of static variable */
   
 } // end of namespace tchecker
 

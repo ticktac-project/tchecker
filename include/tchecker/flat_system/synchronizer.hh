@@ -325,7 +325,7 @@ namespace tchecker {
       
       VLOC const & _vloc;                                                        /*!< Tuple of locations */
       loc_edge_range_t<VLOC> (*_loc_event_edges) (typename VLOC::loc_t const *,
-                                                  tchecker::event_id_t);         /*! Map location and event to edges */
+                                                  tchecker::event_id_t);         /*!< Map: (location, event) to edges */
       SYNC_ITERATOR _sync_it;                                                    /*!< Iterator on first synchronization */
       SYNC_ITERATOR _sync_end;                                                   /*!< Past-the-end iterator on synchronizations */
       tchecker::cartesian_iterator_t<loc_edge_iterator_t<VLOC>> _cartesian_it;   /*!< Cartesian iterator */
