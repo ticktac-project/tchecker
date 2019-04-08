@@ -61,7 +61,7 @@ namespace tchecker {
          \param loc_number : number of locations
          \param clock_number : number of clocks, including the zero clock
          \param loc_pid : map from location IDs to process IDs
-         \pre clock_number >= 1 (checked by assertion), and loc_id associates to every location ID, the ID of the process
+         \pre clock_number >= 1 (checked by assertion), and loc_pid associates to every location ID, the ID of the process
          that owns the location
          \post this is a clear()-ed clock bounds solver for a timed automaton with loc_number locations and clock_number clocks
          \throw std::invalid_argument : if loc_number * clock_number is too big (overflow)

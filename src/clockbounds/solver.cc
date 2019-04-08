@@ -5,6 +5,7 @@
  *
  */
 
+#include <cassert>
 #include <cstring>
 #include <unordered_set>
 
@@ -28,7 +29,9 @@ namespace tchecker {
       _U(nullptr),
       _has_solution(true)
       {
-        if ((_dim < _loc_number) || (_dim < _clock_number))
+        assert(_clock_number >= 1);
+        
+        if ((_loc_number > 0) && (_clock_number > 1) && ((_dim < _loc_number) || (_dim < _clock_number)))
           throw std::invalid_argument("invalid number of clocks or locations (overflow)");
         
         _L = new tchecker::dbm::db_t[_dim * _dim];
