@@ -49,3 +49,6 @@ foreach(FILE ${TEST_SRC})
     # Put into group
     source_group("${GROUP}" FILES "${FILE}")
 endforeach()
+
+include(Catch)
+catch_discover_tests(unittest)
