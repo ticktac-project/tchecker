@@ -9,7 +9,7 @@
 %require "3.0.4"
 
 %defines
-%define api.parser.class {parser_t}
+%define parser_class_name {parser_t}
 %define api.namespace {tchecker::parsing::system}
 %define api.prefix {sp}
 %define api.token.constructor

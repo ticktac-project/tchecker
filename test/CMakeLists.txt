@@ -6,8 +6,10 @@ find_package(Boost REQUIRED)
 find_package(Catch2 REQUIRED)
 
 tck_check_cxx_flags("-ferror-limit=150" ERROR_LIMIT)
+tck_check_cxx_flags("-fstrict-vtable-pointers" STRICT_VTABLE_POINTERS)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -g ${ERROR_LIMIT}")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -DNDEBUG -O2 -flto -fstrict-vtable-pointers")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -DNDEBUG
+-O2 -flto ${STRICT_VTABLE_POINTERS}")
 
 set(TCHECKER_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 set(TCHECKER_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})

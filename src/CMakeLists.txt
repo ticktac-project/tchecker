@@ -5,8 +5,10 @@
 find_package(Boost REQUIRED)
 
 tck_check_cxx_flags("-ferror-limit=150" ERROR_LIMIT)
+tck_check_cxx_flags("-fstrict-vtable-pointers" STRICT_VTABLE_POINTERS)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -g ${ERROR_LIMIT}")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -DNDEBUG -O2 -flto -fstrict-vtable-pointers")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -DNDEBUG
+-O2 -flto ${STRICT_VTABLE_POINTERS}")
 
 set(TCHECKER_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 
@@ -94,13 +96,10 @@ install(DIRECTORY ../include/ DESTINATION include)
 
 # Doxygen documentation + install rule
 find_package(Doxygen)
-option(BUILD_DOCUMENTATION "Create and install the HTML based API documentation (requires Doxygen)" ${DOXYGEN_FOUND})
 
-if(BUILD_DOCUMENTATION)
-    if(NOT DOXYGEN_FOUND)
-        message(FATAL_ERROR "Doxygen is needed to build the documentation.")
-    endif()
-
+if(NOT DOXYGEN_FOUND)
+    message(WARNING "Doxygen not found: API documentation not installed.")
+else()
     set(doxyfile_in ${CMAKE_CURRENT_SOURCE_DIR}/../doc/Doxyfile.in)
     set(doxyfile ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
 
