@@ -1,4 +1,4 @@
-Please, notice that TChecker has only been tested on Linux and Mac OS X. The installation instructions below may not work for other operating systems. Please contact us in case of problem.
+Binary distributions can be found from the [Releases page](https://github.com/fredher/tchecker/releases). The instructions below are for installation from the sources. Please, notice that these instructions have only been tested on Linux (Ubuntu and Debian) and Mac OS X. The installation instructions below may not work for other operating systems. Please contact us in case of problem.
 
 # Requirements
 
