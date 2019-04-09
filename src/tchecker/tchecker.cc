@@ -192,7 +192,7 @@ int main(int argc, char * argv[])
   try {
     sysdecl = tchecker::parsing::parse_system_declaration(filename, log);
     if (sysdecl == nullptr)
-      throw "nullptr system declaration";
+      throw std::runtime_error("nullptr system declaration");
     
     switch (command) {
       case COMMAND_EXPLORE:
