@@ -42,7 +42,7 @@ Then, the configuration depends on your system.
 Run the following command to configure the build:
 
 ```
-cmake ../tchecker -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/path/to/install -DCMAKE_CXX_FLAGS=-pthread
+cmake ../tchecker -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/path/to/install
 ```
 
 In the command above, `/path/to/install` shall be replaced by the desired installation path. Please, refer to [Configuration options](https://github.com/fredher/tchecker/wiki/Installation-of-TChecker/_edit#configuration-options) for details.
@@ -55,7 +55,7 @@ The version of `bison` that is shipped with Apple development tools is quite old
 cmake ../tchecker -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/path/to/install -DCMAKE_PREFIX_PATH=/path/to/bison
 ```
 
-In the command above, `/path/to/bison` shall be replaced by the actual path to the newer `bison` executable. Please, refer to [Configuration options](https://github.com/fredher/tchecker/wiki/Installation-of-TChecker/_edit#configuration-options) for details.
+In the command above, `/path/to/bison` shall be replaced by the actual path to the newer `bison` executable. And `/path/to/install` shall be replaced by the desired installation path. Please, refer to [Configuration options](https://github.com/fredher/tchecker/wiki/Installation-of-TChecker/_edit#configuration-options) for details.
 
 ### Configuration options
 
