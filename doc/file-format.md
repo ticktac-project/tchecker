@@ -15,7 +15,7 @@ e.g. `P1_x` instead of `x` for clock `x` of process `P1`.
 
 A comment starts with symbol `#` and runs till the end of the line.
 
-Symbols `:`, `@` and `#` have a sepcial meaning in TChecker files,
+Symbols `:`, `@` and `#` have a special meaning in TChecker files,
 and are thus reserved. Keywords: `clock`, `edge`, `event`, `int`,
 `location`, `process`, `sync` and `system` are reserved.
 
@@ -48,7 +48,7 @@ system:id
 
 where `id` is the identifier of the system.
 
-The shall be only one `system` declaration in a TChecker file. And it shall appear as the first declaration in the file.
+There shall be only one `system` declaration in a TChecker file. And it shall appear as the first declaration in the file.
 
 # The `process` declaration
 
@@ -188,7 +188,7 @@ declared.
 
 The `{attributes}` part of the declaration can be omitted if no
 attribute is associated to the location (or it can be empty:
-`{}`). See section (Attributes)[#attributes] for details.
+`{}`). See section [Attributes](#attributes) for details.
 
 
 # The `sync` declaration
@@ -224,11 +224,11 @@ For instance, the following declarations (assuming processes and events have
 been declared):
 
 ```
-sync:P1@a:P3@a
+sync:P1@a:P2@a
 sync:P1@a:P2@b:P3@c?:P4@d?
 ```
 
-entails that event `a` is synchronous in processes `P1` and `P3`,
+entails that event `a` is synchronous in processes `P1` and `P2`,
 event `b` is synchronous in process `P2`, event `c` is synchronous in
 process `P3`, and event `d` is synchronous in process `P4`. All other
 events are asynchronous.
@@ -289,7 +289,7 @@ instantiated. Hence there is no global edge when `P1` has no `e` labelled edge, 
 Attributes allow to define properties of declarations. Currently, only
 `edge` and `location` declarations support attributes.
 
-A list of attributes `{attributes}` is a column-separated list of
+A list of attributes `{attributes}` is a colon-separated list of
 pairs `key:value`. Keys are identifier and values are any string not
 containing reserved symbols `:`, `@` and spaces. The value may be
 empty.
