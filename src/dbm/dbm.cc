@@ -397,9 +397,13 @@ namespace tchecker {
       // i=0 (first row), only the second case applies
       for (tchecker::clock_id_t j = 1; j < dim; ++j) {
         assert(m[j] < tchecker::dbm::INF_VALUE);
+        if (DBM(0,j) == tchecker::dbm::LE_ZERO)
+          continue;
         int32_t c0j = tchecker::dbm::value(DBM(0,j));
-        if (-c0j > m[j])
+        if (-c0j > m[j]) {
           DBM(0,j) = (m[j] == -tchecker::dbm::INF_VALUE ? tchecker::dbm::LE_ZERO : tchecker::dbm::db(tchecker::dbm::LT, -m[j]));
+          modified = true;
+        }
       }
       
       // i>0, both cases apply
@@ -535,9 +539,13 @@ namespace tchecker {
       // i=0 (first row), only second case applies
       for (tchecker::clock_id_t j = 1; j < dim; ++j) {
         assert(u[j] < tchecker::dbm::INF_VALUE);
+        if (DBM(0,j) == tchecker::dbm::LE_ZERO)
+          continue;
         int32_t c0j = tchecker::dbm::value(DBM(0,j));
-        if (-c0j > u[j])
+        if (-c0j > u[j]) {
           DBM(0,j) = (u[j] == -tchecker::dbm::INF_VALUE ? tchecker::dbm::LE_ZERO : tchecker::dbm::db(tchecker::dbm::LT, -u[j]));
+          modified = true;
+        }
       }
       
       // i>0, both cases apply

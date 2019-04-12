@@ -1039,6 +1039,76 @@ TEST_CASE( "DBM open_up (delay)", "[dbm]" ) {
 
 
 
+TEST_CASE( "Checking tightness when the 0-row is modified", "[dbm]" ) {
+  // inspired from AD94 amd a bug report submitted by Philipp Schlehuber
+  
+  tchecker::clock_id_t const dim = 3;
+  
+  // <=0  <-2  <=-1
+  // <inf  <=0  <inf
+  // <inf  <-1  <=0
+  tchecker::dbm::db_t dbm[dim * dim];
+  DBM(0,0) = tchecker::dbm::LE_ZERO;
+  DBM(0,1) = tchecker::dbm::db(tchecker::dbm::LT, -2);
+  DBM(0,2) = tchecker::dbm::db(tchecker::dbm::LE, -1);
+  DBM(1,0) = tchecker::dbm::LT_INFINITY;
+  DBM(1,1) = tchecker::dbm::LE_ZERO;
+  DBM(1,2) = tchecker::dbm::LT_INFINITY;
+  DBM(2,0) = tchecker::dbm::LT_INFINITY;
+  DBM(2,1) = tchecker::dbm::db(tchecker::dbm::LT, -1);
+  DBM(2,2) = tchecker::dbm::LE_ZERO;
+  
+  // clock bounds
+  int32_t M[dim] = {0, 1, 1};
+  
+  SECTION( "ExtraM" ) {
+    tchecker::dbm::db_t dbm2[dim * dim];
+    memcpy(dbm2, dbm, dim * dim * sizeof(tchecker::dbm::db_t));
+    DBM2(0,1) = tchecker::dbm::db(tchecker::dbm::LT, -M[1]);
+    tchecker::dbm::tighten(dbm2, dim);
+    
+    tchecker::dbm::extra_m(dbm, dim, M);
+    
+    REQUIRE(tchecker::dbm::is_equal(dbm, dbm2, dim));
+  }
+  
+  SECTION( "ExtraM+" ) {
+    tchecker::dbm::db_t dbm2[dim * dim];
+    memcpy(dbm2, dbm, dim * dim * sizeof(tchecker::dbm::db_t));
+    DBM2(0,1) = tchecker::dbm::db(tchecker::dbm::LT, -M[1]);
+    DBM2(2,1) = tchecker::dbm::LT_INFINITY;
+    tchecker::dbm::tighten(dbm2, dim);
+    
+    tchecker::dbm::extra_m_plus(dbm, dim, M);
+    
+    REQUIRE(tchecker::dbm::is_equal(dbm, dbm2, dim));
+  }
+  
+  SECTION( "ExtraLUl" ) {
+    tchecker::dbm::db_t dbm2[dim * dim];
+    memcpy(dbm2, dbm, dim * dim * sizeof(tchecker::dbm::db_t));
+    DBM2(0,1) = tchecker::dbm::db(tchecker::dbm::LT, -M[1]);
+    tchecker::dbm::tighten(dbm2, dim);
+    
+    tchecker::dbm::extra_lu(dbm, dim, M, M);
+    
+    REQUIRE(tchecker::dbm::is_equal(dbm, dbm2, dim));
+  }
+  
+  SECTION( "ExtraLU+l" ) {
+    tchecker::dbm::db_t dbm2[dim * dim];
+    memcpy(dbm2, dbm, dim * dim * sizeof(tchecker::dbm::db_t));
+    DBM2(0,1) = tchecker::dbm::db(tchecker::dbm::LT, -M[1]);
+    DBM2(2,1) = tchecker::dbm::LT_INFINITY;
+    tchecker::dbm::tighten(dbm2, dim);
+    
+    tchecker::dbm::extra_lu_plus(dbm, dim, M, M);
+    
+    REQUIRE(tchecker::dbm::is_equal(dbm, dbm2, dim));
+  }
+}
+
+
 
 TEST_CASE( "Extrapolations from STTT06", "[dbm]" ) {
   // inspired from "Lower and upper bounds in zone-based abstractions of timed automata",
