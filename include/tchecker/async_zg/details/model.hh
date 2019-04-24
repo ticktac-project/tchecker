@@ -214,6 +214,8 @@ namespace tchecker {
          \post _refmap maps every reference clock to itself, every offset clock to the
          reference clock of its process, and every process ID to its reference clock
          \throw std::invalid_argument : if system has a shared clock
+         \throw std::invalid_argument : if the reference clock cannot be determined for some clock in system (ex: clock that
+         does not appear in any guard/statement/invairnat)
          */
         void compute_refmap(SYSTEM * system)
         {
@@ -232,6 +234,11 @@ namespace tchecker {
             compute_refmap_from_expression(this->typed_guard(edge->id()), edge->pid(), NOREF);
             compute_refmap_from_statement(this->typed_statement(edge->id()), edge->pid(), NOREF);
           }
+          
+          // Check that every clock has a reference
+          for (tchecker::clock_id_t i = _refcount; i < _offset_dimension; ++i)
+            if (_refmap[i] == NOREF)
+              throw std::invalid_argument("Reference clocks cannot be computed");
         }
         
         /*!
