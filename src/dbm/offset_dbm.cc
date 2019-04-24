@@ -313,7 +313,46 @@ namespace tchecker {
     std::ostream & output(std::ostream & os, tchecker::dbm::db_t const * offset_dbm, tchecker::clock_id_t offset_dim,
                           std::function<std::string(tchecker::clock_id_t)> clock_name)
     {
-      return tchecker::dbm::output(os, offset_dbm, offset_dim, clock_name);
+      bool first = true;
+      
+      os << "(";
+
+      for (tchecker::clock_id_t i = 0; i < offset_dim; ++i) {
+        for (tchecker::clock_id_t j = i+1; j < offset_dim; ++j) {
+          tchecker::dbm::db_t cij = OFFSET_DBM(i,j), cji = OFFSET_DBM(j,i);
+          // vi == vj + k
+          if (tchecker::dbm::sum(cij, cji) == tchecker::dbm::LE_ZERO) {
+            if (! first)
+              os << " & ";
+            first = false;
+            
+            os << clock_name(i) << "=" << clock_name(j);
+            int32_t vij = tchecker::dbm::value(cij);
+            if (vij > 0)
+              os << "+" << tchecker::dbm::value(cij);
+            else if (vij < 0)
+              os << "-" << - tchecker::dbm::value(cij);
+          }
+          // k1 <= xi - xj <= k2
+          else if ((cij != tchecker::dbm::LT_INFINITY) || (cji != tchecker::dbm::LT_INFINITY)) {
+            if (! first)
+              os << " & ";
+            first = false;
+            
+            if (cji != tchecker::dbm::LT_INFINITY)
+              os << - tchecker::dbm::value(cji) << tchecker::dbm::comparator_str(cji);
+            
+            os << clock_name(i) << "-" << clock_name(j);
+            
+            if (cij != tchecker::dbm::LT_INFINITY)
+              os << tchecker::dbm::comparator_str(cij) << tchecker::dbm::value(cij);
+          }
+        }
+      }
+      
+      os << ")";
+      
+      return os;
     }
     
   } // end of namespace offset_dbm
