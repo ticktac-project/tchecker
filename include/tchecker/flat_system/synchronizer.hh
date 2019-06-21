@@ -383,7 +383,8 @@ namespace tchecker {
        \brief Type of iterator over synchronous edges
        */
       using sync_edges_iterator_t
-      = tchecker::details::synchronous_edges_iterator_t<VLOC, typename SYSTEM::edge_t, enabled_syncs_iterator_t<SYSTEM>>;
+      = tchecker::details::synchronous_edges_iterator_t
+      <VLOC, typename SYSTEM::edge_t, tchecker::details::enabled_syncs_iterator_t<SYSTEM>>;
       
       /*!
        \brief Type of iterator over asynchonous edges
