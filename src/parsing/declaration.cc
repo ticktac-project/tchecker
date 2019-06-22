@@ -320,11 +320,13 @@ namespace tchecker {
     
     std::ostream & operator<< (std::ostream & os, tchecker::parsing::attributes_t const & attr)
     {
+      os << "{";
       for (auto it = attr.begin(); it != attr.end(); ++it) {
         if (it != attr.begin())
-          os << ", ";
+          os << " : ";
         os << *it;
       }
+      os << "}";
       return os;
     }
     
@@ -363,8 +365,7 @@ namespace tchecker {
     
     std::ostream & location_declaration_t::do_output(std::ostream & os) const
     {
-      os << "location:" << _process.name() << ":" << _name;
-      os << "{" << _attr << "}";
+      os << "location:" << _process.name() << ":" << _name << _attr;
       return os;
     }
     
@@ -410,8 +411,7 @@ namespace tchecker {
     
     std::ostream & edge_declaration_t::do_output(std::ostream &os) const
     {
-      os << "edge:" << _process.name() << ":" << _src.name() << ":";
-      os << _tgt.name() << ":" << _event.name() << "{" << _attr << "}";
+      os << "edge:" << _process.name() << ":" << _src.name() << ":" << _tgt.name() << ":" << _event.name() << _attr;
       return os;
     }
     
@@ -498,7 +498,7 @@ namespace tchecker {
       os << "sync:";
       for (auto it = _syncs.begin(); it != _syncs.end(); ++it) {
         if (it != _syncs.begin())
-          os << ",";
+          os << " : ";
         os << **it;
       }
       
@@ -667,7 +667,7 @@ namespace tchecker {
     
     std::ostream & system_declaration_t::do_output(std::ostream & os) const
     {
-      os << "system " << _name << std::endl;
+      os << "system:" << _name << std::endl;
       for (tchecker::parsing::inner_declaration_t const * d : _decl)
         os << *d << std::endl;
       return os;
