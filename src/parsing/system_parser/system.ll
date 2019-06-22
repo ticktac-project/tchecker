@@ -119,7 +119,7 @@ integer   [-+]?[0-9]+
 [ \t]*"}"      { BEGIN INITIAL;
                  return system::parser_t::make_TOK_RBRACE(loc); }
 [\n]+          { loc.lines(static_cast<int>(yyleng)); loc.step(); }
-[^:,}#\n]*     { return system::parser_t::make_TOK_TEXT(yytext, loc); }
+[^:{}#\n]*     { return system::parser_t::make_TOK_TEXT(yytext, loc); }
 }
 
 

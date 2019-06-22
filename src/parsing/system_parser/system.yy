@@ -26,6 +26,8 @@
   #include <string>
   #include <vector>
   
+  #include <boost/algorithm/string.hpp>
+  
   #include "tchecker/basictypes.hh"
   #include "tchecker/parsing/declaration.hh"
   #include "tchecker/utils/log.hh"
@@ -171,17 +173,15 @@ TOK_CLOCK ":" uinteger ":" TOK_ID "\n"
   else {
     auto const * src = system_declaration->get_location_declaration($3, $5);
     if (src == nullptr)
-    error(@5, "location " + $5 + " is not declared in process " +
-    $3);
+      error(@5, "location " + $5 + " is not declared in process " +$3);
     else {
       auto const * tgt = system_declaration->get_location_declaration($3, $7);
       if (tgt == nullptr)
-      error(@7, "location " + $7 + " is not declared in process " +
-      $3);
+        error(@7, "location " + $7 + " is not declared in process " + $3);
       else {
         auto const * event = system_declaration->get_event_declaration($9);
         if (event == nullptr)
-        error(@9, "event " + $9 + " is not declared");
+          error(@9, "event " + $9 + " is not declared");
         else {
           try {
             auto * d = new tchecker::parsing::edge_declaration_t(*proc, *src, *tgt, *event, std::move($10));
@@ -203,7 +203,7 @@ TOK_CLOCK ":" uinteger ":" TOK_ID "\n"
 {
   auto const * d = system_declaration->get_event_declaration($3);
   if (d != nullptr)
-  error(@3, "multiple declarations of event " + $3);
+    error(@3, "multiple declarations of event " + $3);
   else {
     try {
       d = new tchecker::parsing::event_declaration_t($3);
@@ -222,11 +222,11 @@ TOK_CLOCK ":" uinteger ":" TOK_ID "\n"
 {
   auto const * d = system_declaration->get_int_declaration($11);
   if (d != nullptr)
-  error(@11, "multiple declarations of int variable " + $11);
+    error(@11, "multiple declarations of int variable " + $11);
   else {
     auto const * clockd = system_declaration->get_clock_declaration($11);
     if (clockd != nullptr)
-    error(@11, "variable " + $11 + " already declared as a clock");
+      error(@11, "variable " + $11 + " already declared as a clock");
     else {
       try {
         d = new tchecker::parsing::int_declaration_t($11, $3, $5, $7, $9);
@@ -246,12 +246,11 @@ TOK_CLOCK ":" uinteger ":" TOK_ID "\n"
 {
   auto const * d = system_declaration->get_location_declaration($3, $5);
   if (d != nullptr)
-  error(@5, "multiple declarations of location " + $5 +
-  " in process " + $3);
+    error(@5, "multiple declarations of location " + $5 + " in process " + $3);
   else {
     auto const * proc = system_declaration->get_process_declaration($3);
     if (proc == nullptr)
-    error(@3, "process " + $3 + " is not declared");
+      error(@3, "process " + $3 + " is not declared");
     else {
       try {
         d = new location_declaration_t($5, *proc, std::move($6));
@@ -271,7 +270,7 @@ TOK_CLOCK ":" uinteger ":" TOK_ID "\n"
 {
   auto const * d = system_declaration->get_process_declaration($3);
   if (d != nullptr)
-  error(@3, "multiple declarations of process " + $3);
+    error(@3, "multiple declarations of process " + $3);
   else {
     try {
       d = new tchecker::parsing::process_declaration_t($3);
@@ -342,12 +341,13 @@ TOK_ID ":" text_or_empty
 {
   $$ = nullptr;
   if ($1 == "")
-  error(@1, "empty attribute key");
+    error(@1, "empty attribute key");
   else {
     std::stringstream key_loc, value_loc;
     key_loc << @1;
     value_loc << @3;
-    $$ = new tchecker::parsing::attr_t($1, $3, key_loc.str(),value_loc.str());
+    boost::trim($3);
+    $$ = new tchecker::parsing::attr_t($1, $3, key_loc.str(), value_loc.str());
   }
 }
 ;
