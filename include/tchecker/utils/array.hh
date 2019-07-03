@@ -374,7 +374,8 @@ namespace tchecker {
      */
     static inline void destruct(tchecker::make_array_t<T, T_ALLOCSIZE, BASE> * ptr)
     {
-      ptr->~make_array_t();
+      if (ptr != nullptr)
+        ptr->~make_array_t();
     }
   protected:
     /*!
