@@ -793,8 +793,8 @@ namespace tchecker {
         tchecker::details::rvalue_expression_compiler_t<BYTECODE_BACK_INSERTER> int_rvalue_compiler(_bytecode_back_inserter);
         
         lvalue.visit(clocks_compiler);
-        int_rvalue.visit(int_rvalue_compiler);
         clock_rvalue.visit(clocks_compiler);
+        int_rvalue.visit(int_rvalue_compiler);
         _bytecode_back_inserter = tchecker::VM_CLKRESET;
       }
       
