@@ -57,7 +57,7 @@ namespace tchecker {
     VM_LNOT,         // stack = v1 ... vK-1 (! vK)
     //
     VM_CLKCONSTR,    // stack = v1 ... vK-4 1                  output (vK-2 vK-1 s vK) where
-    //                                        s is a parameter of VM_CLKCONSTR (strictness)
+    //                                                         s is a parameter of VM_CLKCONSTR (strictness)
     VM_CLKRESET,     // stack = v1 ... vK-3                    output (vK-2 vK-1 vK)
     //
     VM_NOP,          // SHOULD BE LAST INSTRUCTION
