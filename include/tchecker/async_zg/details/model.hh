@@ -35,18 +35,18 @@ namespace tchecker {
        \class model_t
        \brief Model for asynchronous zone graph
        \tparam SYSTEM : type of system, see tchecker::ta::details::model_t
-       \tparam VM_VARIABLES : type of system variables accessor, see tchecker::ta::details::model_t
+       \tparam VARIABLES : type of model variables, should inherit from tchecker::async_zg::details::variables_t
        \note see tchecker::ta::details::model_t for why instances cannot be constructed.
        */
-      template <class SYSTEM, class VM_VARIABLES>
+      template <class SYSTEM, class VARIABLES>
       class model_t
-      : public tchecker::clockbounds::model_t<SYSTEM, VM_VARIABLES> {
+      : public tchecker::clockbounds::model_t<SYSTEM, VARIABLES> {
       public:
         /*!
          \brief Copy constructor
          */
-        model_t(tchecker::async_zg::details::model_t<SYSTEM, VM_VARIABLES> const & model)
-        : tchecker::clockbounds::model_t<SYSTEM, VM_VARIABLES>(model),
+        model_t(tchecker::async_zg::details::model_t<SYSTEM, VARIABLES> const & model)
+        : tchecker::clockbounds::model_t<SYSTEM, VARIABLES>(model),
         _offset_dimension(model._offset_dimension),
         _refcount(model._refcount),
         _refmap(nullptr),
@@ -59,8 +59,8 @@ namespace tchecker {
         /*!
          \brief Move constructor
          */
-        model_t(tchecker::async_zg::details::model_t<SYSTEM, VM_VARIABLES> && model)
-        : tchecker::clockbounds::model_t<SYSTEM, VM_VARIABLES>(std::move(model)),
+        model_t(tchecker::async_zg::details::model_t<SYSTEM, VARIABLES> && model)
+        : tchecker::clockbounds::model_t<SYSTEM, VARIABLES>(std::move(model)),
         _offset_dimension(model._offset_dimension),
         _refcount(model._refcount),
         _refmap(model._refmap),
@@ -83,11 +83,11 @@ namespace tchecker {
          \post this is a copy of model
          \return this after assignment
          */
-        tchecker::async_zg::details::model_t<SYSTEM, VM_VARIABLES> &
-        operator= (tchecker::async_zg::details::model_t<SYSTEM, VM_VARIABLES> const & model)
+        tchecker::async_zg::details::model_t<SYSTEM, VARIABLES> &
+        operator= (tchecker::async_zg::details::model_t<SYSTEM, VARIABLES> const & model)
         {
           if (this != &model) {
-            tchecker::clockbounds::model_t<SYSTEM, VM_VARIABLES>::operator=(model);
+            tchecker::clockbounds::model_t<SYSTEM, VARIABLES>::operator=(model);
             _offset_dimension = model._dimension;
             _refcount = model._refcount;
             delete[] _refmap;
@@ -104,11 +104,11 @@ namespace tchecker {
          \post model has been moved to this
          \return this after assignment
          */
-        tchecker::async_zg::details::model_t<SYSTEM, VM_VARIABLES> &
-        operator= (tchecker::async_zg::details::model_t<SYSTEM, VM_VARIABLES> && model)
+        tchecker::async_zg::details::model_t<SYSTEM, VARIABLES> &
+        operator= (tchecker::async_zg::details::model_t<SYSTEM, VARIABLES> && model)
         {
           if (this != &model) {
-            tchecker::clockbounds::model_t<SYSTEM, VM_VARIABLES>::operator=(std::move(model));
+            tchecker::clockbounds::model_t<SYSTEM, VARIABLES>::operator=(std::move(model));
             _offset_dimension = model._dimension;
             _refcount = model._refcount;
             _refmap = model._refmap;
@@ -170,11 +170,10 @@ namespace tchecker {
          value that can be represented by type tchecker::clock_id_t
          */
         model_t(SYSTEM * system, tchecker::log_t & log)
-        : tchecker::clockbounds::model_t<SYSTEM, VM_VARIABLES>(system, log)
+        : tchecker::clockbounds::model_t<SYSTEM, VARIABLES>(system, log)
         {
           // clock number excluding the zero clock
-          tchecker::clock_id_t clock_nb
-          = tchecker::clockbounds::model_t<SYSTEM, VM_VARIABLES>::vm_variables().clocks(*system).layout().size() - 1;
+          tchecker::clock_id_t clock_nb = tchecker::clockbounds::model_t<SYSTEM, VARIABLES>::variables().clocks().size() - 1;
           tchecker::process_id_t proc_nb = system->processes_count();
           
           if (proc_nb > std::numeric_limits<tchecker::clock_id_t>::max())
@@ -199,7 +198,7 @@ namespace tchecker {
           for (id = 0; id < _refcount; ++id)
             _offset_clock_index.add(id, "$" + std::to_string(id));
           tchecker::clock_index_t const & clock_index
-          = tchecker::clockbounds::model_t<SYSTEM, VM_VARIABLES>::vm_variables().clocks(*system).layout().index();
+          = tchecker::clockbounds::model_t<SYSTEM, VARIABLES>::variables().clocks().index();
           auto it = clock_index.begin(), end = clock_index.end();
           for (++it; it != end; ++it, ++id)
             _offset_clock_index.add(id, "$" + clock_index.value(*it));

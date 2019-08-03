@@ -25,16 +25,16 @@ namespace tchecker {
      \class model_t
      \brief Interface to model providing clock bounds
      \tparam SYSTEM : type of system, see tchecker::ta::details::model_t
-     \tparam VM_VARIABLES : type of system variables accessor, see tchecker::ta::details::model_t
+     \tparam VARIABLES : type of variables, should inherit from tchecker::ta::details::variables_t
      */
-    template <class SYSTEM, class VM_VARIABLES>
-    class model_t : public tchecker::ta::details::model_t<SYSTEM, VM_VARIABLES> {
+    template <class SYSTEM, class VARIABLES>
+    class model_t : public tchecker::ta::details::model_t<SYSTEM, VARIABLES> {
     public:
       /*!
        \brief Copy constructor
        */
-      model_t(tchecker::clockbounds::model_t<SYSTEM, VM_VARIABLES> const & model)
-      : tchecker::ta::details::model_t<SYSTEM, VM_VARIABLES>(model),
+      model_t(tchecker::clockbounds::model_t<SYSTEM, VARIABLES> const & model)
+      : tchecker::ta::details::model_t<SYSTEM, VARIABLES>(model),
       _global_lu_map(new tchecker::clockbounds::global_lu_map_t(*model._global_lu_map)),
       _local_lu_map(new tchecker::clockbounds::local_lu_map_t(*model._local_lu_map)),
       _global_m_map(new tchecker::clockbounds::global_m_map_t(*model._global_m_map)),
@@ -44,8 +44,8 @@ namespace tchecker {
       /*!
        \brief Move constructor
        */
-      model_t(tchecker::clockbounds::model_t<SYSTEM, VM_VARIABLES> && model)
-      : tchecker::ta::details::model_t<SYSTEM, VM_VARIABLES>(std::move(model)),
+      model_t(tchecker::clockbounds::model_t<SYSTEM, VARIABLES> && model)
+      : tchecker::ta::details::model_t<SYSTEM, VARIABLES>(std::move(model)),
       _global_lu_map(model._global_lu_map),
       _local_lu_map(model._local_lu_map),
       _global_m_map(model._global_m_map),
@@ -74,11 +74,11 @@ namespace tchecker {
        \post this is a copy of model
        \return this after assignment
        */
-      tchecker::clockbounds::model_t<SYSTEM, VM_VARIABLES> &
-      operator= (tchecker::clockbounds::model_t<SYSTEM, VM_VARIABLES> const & model)
+      tchecker::clockbounds::model_t<SYSTEM, VARIABLES> &
+      operator= (tchecker::clockbounds::model_t<SYSTEM, VARIABLES> const & model)
       {
         if (this != &model) {
-          tchecker::ta::details::model_t<SYSTEM, VM_VARIABLES>::operator=(model);
+          tchecker::ta::details::model_t<SYSTEM, VARIABLES>::operator=(model);
           delete _global_lu_map;
           delete _local_lu_map;
           delete _global_m_map;
@@ -97,11 +97,11 @@ namespace tchecker {
        \post model has been moved to this
        \return this after assignment
        */
-      tchecker::clockbounds::model_t<SYSTEM, VM_VARIABLES> &
-      operator= (tchecker::clockbounds::model_t<SYSTEM, VM_VARIABLES> && model)
+      tchecker::clockbounds::model_t<SYSTEM, VARIABLES> &
+      operator= (tchecker::clockbounds::model_t<SYSTEM, VARIABLES> && model)
       {
         if (this != &model) {
-          tchecker::ta::details::model_t<SYSTEM, VM_VARIABLES>::operator=(std::move(model));
+          tchecker::ta::details::model_t<SYSTEM, VARIABLES>::operator=(std::move(model));
           delete _global_lu_map;
           delete _local_lu_map;
           delete _global_m_map;
@@ -163,11 +163,10 @@ namespace tchecker {
        \note see tchecker::ta::details::model_t for why instances cannot be constructed
        */
       model_t(SYSTEM * system, tchecker::log_t & log)
-      : tchecker::ta::details::model_t<SYSTEM, VM_VARIABLES>(system, log)
+      : tchecker::ta::details::model_t<SYSTEM, VARIABLES>(system, log)
       {
         tchecker::loc_id_t loc_nb = system->locations_count();
-        tchecker::clock_id_t clock_nb
-        = tchecker::ta::details::model_t<SYSTEM, VM_VARIABLES>::vm_variables().clocks(*system).layout().size();
+        tchecker::clock_id_t clock_nb = tchecker::ta::details::model_t<SYSTEM, VARIABLES>::variables().clocks().size();
         
         _global_lu_map = new tchecker::clockbounds::global_lu_map_t(clock_nb);
         _local_lu_map = new tchecker::clockbounds::local_lu_map_t(loc_nb, clock_nb);
@@ -176,7 +175,7 @@ namespace tchecker {
         
         bool has_clock_bounds
         = tchecker::clockbounds::compute_all_clockbounds_map
-        (*dynamic_cast<tchecker::ta::details::model_t<SYSTEM, VM_VARIABLES> const *>(this),
+        (*dynamic_cast<tchecker::ta::details::model_t<SYSTEM, VARIABLES> const *>(this),
          *_global_lu_map,
          *_local_lu_map,
          *_global_m_map,

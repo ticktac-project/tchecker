@@ -11,5 +11,6 @@ ${TCHECKER_INCLUDE_DIR}/tchecker/async_zg/details/output.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/async_zg/details/state.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/async_zg/details/transition.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/async_zg/details/ts.hh
+${TCHECKER_INCLUDE_DIR}/tchecker/async_zg/details/variables.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/async_zg/details/zg.hh
 PARENT_SCOPE)

@@ -8,5 +8,6 @@ ${CMAKE_CURRENT_SOURCE_DIR}/solver.cc
 ${TCHECKER_INCLUDE_DIR}/tchecker/clockbounds/clockbounds.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/clockbounds/model.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/clockbounds/solver.hh
+${TCHECKER_INCLUDE_DIR}/tchecker/clockbounds/variables.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/clockbounds/vlocbounds.hh
 PARENT_SCOPE)

@@ -18,6 +18,7 @@
 #include "tchecker/basictypes.hh"
 #include "tchecker/variables/clocks.hh"
 #include "tchecker/variables/intvars.hh"
+#include "tchecker/vm/variables.hh"
 
 
 /*!
@@ -122,15 +123,12 @@ namespace tchecker {
   public:
     /*!
      \brief Constructor
-     \param intvars_layout_size : number of layout integer variables
-     \param clocks_layout_size : number of layout clock variables
-     \note it is assumed that all values in 0..intvars_layout_size-1 are valid
-     integer variables IDs, and that all values in 0..clocks_layout_size-1 are
-     valid clock variables IDS.
+     \param vm_variables : virtual machine variables
      */
-    vm_t(std::size_t intvars_layout_size, std::size_t clocks_layout_size)
-    : _intvars_layout_size(intvars_layout_size),
-    _clocks_layout_size(clocks_layout_size)
+    vm_t(tchecker::vm_variables_t const & vm_variables)
+    : _vm_variables(vm_variables),
+    _intvars_layout_size(_vm_variables.bounded_integers().size()),
+    _clocks_layout_size(_vm_variables.clocks().size())
     {}
     
     /*!
@@ -502,11 +500,8 @@ namespace tchecker {
     template <class EXPECTED, class ACTUAL>
     inline static bool contains_value(ACTUAL val)
     {
-      static_assert(std::is_integral<EXPECTED>::value,
-                    "EXPECTED should be an integral type");
-      
-      static_assert(std::is_integral<ACTUAL>::value,
-                    "ACTUAL should be an integral type");
+      static_assert(std::is_integral<EXPECTED>::value, "EXPECTED should be an integral type");
+      static_assert(std::is_integral<ACTUAL>::value, "ACTUAL should be an integral type");
       
       return ((val >= std::numeric_limits<EXPECTED>::min()) && (val <= std::numeric_limits<EXPECTED>::max()));
     }
@@ -586,10 +581,11 @@ namespace tchecker {
     }
     
     
-    std::size_t const _intvars_layout_size;    /*!< Number of integer variables */
-    std::size_t const _clocks_layout_size;     /*!< Number of clocks */
-    bool _return;                              /*!< Return flag */
-    std::vector<tchecker::bytecode_t> _stack;  /*!< Interpretation stack */
+    tchecker::vm_variables_t const _vm_variables;  /*!< Virtual machine variables */
+    std::size_t const _intvars_layout_size;        /*!< Number of integer variables */
+    std::size_t const _clocks_layout_size;         /*!< Number of clocks */
+    bool _return;                                  /*!< Return flag */
+    std::vector<tchecker::bytecode_t> _stack;      /*!< Interpretation stack */
     // NB: implemented as an std::vector for methods clear() and size()
   };
   

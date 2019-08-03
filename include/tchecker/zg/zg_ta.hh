@@ -9,7 +9,7 @@
 #define TCHECKER_ZG_TA_HH
 
 #include "tchecker/parsing/declaration.hh"
-#include "tchecker/ta/details/vm_variables.hh"
+#include "tchecker/ta/details/ta.hh"
 #include "tchecker/ta/system.hh"
 #include "tchecker/ta/ta.hh"
 #include "tchecker/utils/allocation_size.hh"
@@ -21,6 +21,7 @@
 #include "tchecker/zg/details/state.hh"
 #include "tchecker/zg/details/transition.hh"
 #include "tchecker/zg/details/ts.hh"
+#include "tchecker/zg/details/variables.hh"
 #include "tchecker/zg/details/zg.hh"
 #include "tchecker/zone/dbm/semantics.hh"
 
@@ -38,7 +39,7 @@ namespace tchecker {
       /*!
        \brief Model instantiation
        */
-      using model_instantiation_t = tchecker::zg::details::model_t<tchecker::ta::system_t, tchecker::ta::details::vm_variables_t>;
+      using model_instantiation_t = tchecker::zg::details::model_t<tchecker::ta::system_t, tchecker::zg::details::variables_t>;
       
       /*!
        \class model_t
@@ -60,11 +61,31 @@ namespace tchecker {
       
       
       /*!
+       \brief Short name for timed automata for zone graphs
+       */
+      using ta_instantiation_t
+      = tchecker::ta::details::ta_t<tchecker::zg::ta::model_t, tchecker::ta::vloc_t, tchecker::ta::intvars_valuation_t>;
+      
+      
+      
+      /*!
+       \class ta_t
+       \brief Timed automaton for zone graph
+       */
+      class ta_t final : public tchecker::zg::ta::ta_instantiation_t {
+      public:
+        using tchecker::zg::ta::ta_instantiation_t::ta_t;
+      };
+      
+      
+      
+      
+      /*!
        \brief Zone graph over timed automaton
        \tparam ZONE_SEMANTICS : type of zone semantics
        */
       template <class ZONE_SEMANTICS>
-      using zg_t = tchecker::zg::details::zg_t<tchecker::ta::ta_t, ZONE_SEMANTICS>;
+      using zg_t = tchecker::zg::details::zg_t<tchecker::zg::ta::ta_t, ZONE_SEMANTICS>;
       
       
       
@@ -130,8 +151,8 @@ namespace tchecker {
         : tchecker::zg::details::state_pool_allocator_t<STATE>
         (alloc_nb,
          alloc_nb, model.system().processes_count(),
-         alloc_nb, model.vm_variables().intvars(model.system()).layout().size(),
-         alloc_nb, model.vm_variables().clocks(model.system()).layout().size())
+         alloc_nb, model.variables().bounded_integers().size(),
+         alloc_nb, model.variables().clocks().size())
         {}
       };
       

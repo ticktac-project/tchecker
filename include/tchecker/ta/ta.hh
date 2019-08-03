@@ -17,7 +17,8 @@
 #include "tchecker/ta/details/ta.hh"
 #include "tchecker/ta/details/ts.hh"
 #include "tchecker/ta/details/transition.hh"
-#include "tchecker/ta/details/vm_variables.hh"
+#include "tchecker/ta/details/variables.hh"
+#include "tchecker/ta/system.hh"
 #include "tchecker/utils/allocation_size.hh"
 #include "tchecker/utils/log.hh"
 #include "tchecker/utils/shared_objects.hh"
@@ -35,7 +36,7 @@ namespace tchecker {
     /*!
      \brief Type of model instantiated with timed automata system and variables
      */
-    using model_instantiation_t = tchecker::ta::details::model_t<tchecker::ta::system_t, tchecker::ta::details::vm_variables_t>;
+    using model_instantiation_t = tchecker::ta::details::model_t<tchecker::ta::system_t, tchecker::ta::details::variables_t>;
     
     /*!
      \class model_t
@@ -157,7 +158,7 @@ namespace tchecker {
       : tchecker::ta::details::state_pool_allocator_t<STATE>
       (alloc_nb,
        alloc_nb, model.system().processes_count(),
-       alloc_nb, model.vm_variables().intvars(model.system()).layout().size())
+       alloc_nb, model.variables().bounded_integers().size())
       {}
     };
     

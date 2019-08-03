@@ -18,7 +18,7 @@
 #include "tchecker/fsm/details/state.hh"
 #include "tchecker/fsm/details/transition.hh"
 #include "tchecker/fsm/details/ts.hh"
-#include "tchecker/fsm/details/vm_variables.hh"
+#include "tchecker/fsm/details/variables.hh"
 #include "tchecker/fsm/system.hh"
 #include "tchecker/flat_system/vloc.hh"
 #include "tchecker/utils/allocation_size.hh"
@@ -38,7 +38,7 @@ namespace tchecker {
     /*!
      \brief Type of model instantiation
      */
-    using model_instantiation_t = tchecker::fsm::details::model_t<tchecker::fsm::system_t, tchecker::fsm::details::vm_variables_t>;
+    using model_instantiation_t = tchecker::fsm::details::model_t<tchecker::fsm::system_t, tchecker::fsm::details::variables_t>;
     
     
     /*!
@@ -162,7 +162,7 @@ namespace tchecker {
       : tchecker::fsm::details::state_pool_allocator_t<STATE>
       (alloc_nb,
        alloc_nb, model.system().processes_count(),
-       alloc_nb, model.vm_variables().intvars(model.system()).layout().size())
+       alloc_nb, model.variables().bounded_integers().size())
       {}
     };
     

@@ -82,11 +82,40 @@ namespace tchecker {
   using clock_index_t = tchecker::index_t<tchecker::clock_id_t, std::string>;
   
   
+  
+  
   /*!
+   \class clock_variables_t
    \brief Declaration of clock variables
    */
-  using clock_variables_t =
-  tchecker::variables_with_layout_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t>;
+  class clock_variables_t
+  : public tchecker::variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t> {
+  public:
+    using tchecker::variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t>::variables_t;
+    
+    /*!
+     \brief Declare a clock variable
+     \param name : variable name
+     \param dim : dimension (array)
+     \pre 'name' is not a declared variable
+     dim > 0
+     \post a clock variable with base name 'name' and dimension 'dim' has been declared
+     \throw std::invalid_argument : if the precondition is violated
+     */
+    void declare(std::string const & name, tchecker::clock_id_t dim)
+    {
+      tchecker::clock_id_t id
+      = tchecker::variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t>::size();
+      
+      tchecker::clock_info_t info{dim};
+      
+      tchecker::variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t>::declare(id, name, info);
+    }
+  protected:
+    using tchecker::variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t>::declare;
+  };
+
+  
   
   
   /*!

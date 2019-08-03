@@ -27,25 +27,25 @@ namespace tchecker {
        \class model_t
        \brief Model for zone graph
        \tparam SYSTEM : type of system, see tchecker::clockbounds::model_t
-       \tparam VM_VARIABLES : type of system variables accessor, see tchecker::clockbounds::model_t
+       \tparam VARIABLES : type of model variables, should inherit from tchecker::clockbounds::model_t
        \note see tchecker::clockbounds::model_t for why instances cannot be constructed
        */
-      template <class SYSTEM, class VM_VARIABLES>
-      class model_t : public tchecker::clockbounds::model_t<SYSTEM, VM_VARIABLES> {
+      template <class SYSTEM, class VARIABLES>
+      class model_t : public tchecker::clockbounds::model_t<SYSTEM, VARIABLES> {
       public:
         /*!
          \brief Copy constructor
          */
-        model_t(tchecker::zg::details::model_t<SYSTEM, VM_VARIABLES> const & model)
-        : tchecker::clockbounds::model_t<SYSTEM, VM_VARIABLES>(model),
+        model_t(tchecker::zg::details::model_t<SYSTEM, VARIABLES> const & model)
+        : tchecker::clockbounds::model_t<SYSTEM, VARIABLES>(model),
         _dimension(model._dimension)
         {}
         
         /*!
          \brief Move constructor
          */
-        model_t(tchecker::zg::details::model_t<SYSTEM, VM_VARIABLES> && model)
-        : tchecker::clockbounds::model_t<SYSTEM, VM_VARIABLES>(std::move(model)),
+        model_t(tchecker::zg::details::model_t<SYSTEM, VARIABLES> && model)
+        : tchecker::clockbounds::model_t<SYSTEM, VARIABLES>(std::move(model)),
         _dimension(model._dimension)
         {}
         
@@ -60,11 +60,11 @@ namespace tchecker {
          \post this is a copy of model
          \return this after assignment
          */
-        tchecker::zg::details::model_t<SYSTEM, VM_VARIABLES> &
-        operator= (tchecker::zg::details::model_t<SYSTEM, VM_VARIABLES> const & model)
+        tchecker::zg::details::model_t<SYSTEM, VARIABLES> &
+        operator= (tchecker::zg::details::model_t<SYSTEM, VARIABLES> const & model)
         {
           if (this != &model) {
-            tchecker::clockbounds::model_t<SYSTEM, VM_VARIABLES>::operator=(model);
+            tchecker::clockbounds::model_t<SYSTEM, VARIABLES>::operator=(model);
             _dimension = model._dimension;
           }
           return *this;
@@ -76,11 +76,11 @@ namespace tchecker {
          \post model has been moved to this
          \return this after assignment
          */
-        tchecker::zg::details::model_t<SYSTEM, VM_VARIABLES> &
-        operator= (tchecker::zg::details::model_t<SYSTEM, VM_VARIABLES> && model)
+        tchecker::zg::details::model_t<SYSTEM, VARIABLES> &
+        operator= (tchecker::zg::details::model_t<SYSTEM, VARIABLES> && model)
         {
           if (this != &model) {
-            tchecker::clockbounds::model_t<SYSTEM, VM_VARIABLES>::operator=(std::move(model));
+            tchecker::clockbounds::model_t<SYSTEM, VARIABLES>::operator=(std::move(model));
             _dimension = model._dimension;
           }
           return *this;
@@ -103,8 +103,8 @@ namespace tchecker {
          \throw std::invalid_argument : if system has no computable clock bounds
          */
         model_t(SYSTEM * system, tchecker::log_t & log)
-        : tchecker::clockbounds::model_t<SYSTEM, VM_VARIABLES>(system, log),
-        _dimension(tchecker::clockbounds::model_t<SYSTEM, VM_VARIABLES>::vm_variables().clocks(*system).layout().size())
+        : tchecker::clockbounds::model_t<SYSTEM, VARIABLES>(system, log),
+        _dimension(tchecker::clockbounds::model_t<SYSTEM, VARIABLES>::variables().clocks().size())
         {}
         
         tchecker::clock_id_t _dimension;                          /*!< Dimension (number of clocks) */

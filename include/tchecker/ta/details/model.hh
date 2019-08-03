@@ -26,22 +26,21 @@ namespace tchecker {
        \class model_t
        \brief Model for timed-automata
        \tparam SYSTEM : type of system, should inherit from tchecker::ta::details::system_t
-       \tparam VM_VARIABLES : type of system variables accessor, should have same signature as
-       tchecker::ta::details::vm_variables_t
+       \tparam VARIABLES : type of model variables, should inherit from tchecker::ta::details::variables_t
        \note see tchecker::fsm::details::model_t for why instances cannot be constructed.
        */
-      template <class SYSTEM, class VM_VARIABLES>
-      class model_t : public tchecker::fsm::details::model_t<SYSTEM, VM_VARIABLES> {
+      template <class SYSTEM, class VARIABLES>
+      class model_t : public tchecker::fsm::details::model_t<SYSTEM, VARIABLES> {
       public:
         /*!
          \brief Copy constructor
          */
-        model_t(tchecker::ta::details::model_t<SYSTEM, VM_VARIABLES> const &) = default;
+        model_t(tchecker::ta::details::model_t<SYSTEM, VARIABLES> const &) = default;
         
         /*!
          \brief Move constructor
          */
-        model_t(tchecker::ta::details::model_t<SYSTEM, VM_VARIABLES> &&) = default;
+        model_t(tchecker::ta::details::model_t<SYSTEM, VARIABLES> &&) = default;
         
         /*!
          \brief Destructor
@@ -55,7 +54,7 @@ namespace tchecker {
          \note see tchecker::fsm::details::model_t
          */
         model_t(SYSTEM * system, tchecker::log_t & log)
-        : tchecker::fsm::details::model_t<SYSTEM, VM_VARIABLES>(system, log)
+        : tchecker::fsm::details::model_t<SYSTEM, VARIABLES>(system, log)
         {}
       };
       

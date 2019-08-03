@@ -52,9 +52,7 @@ namespace tchecker {
          \post this is a finite state machine over model
          */
         fsm_t(MODEL & model)
-        : tchecker::flat_system::flat_system_t<MODEL, VLOC>(model),
-        _vm(model.vm_variables().intvars(model.system()).layout().size(),
-            model.vm_variables().clocks(model.system()).layout().size())
+        : tchecker::flat_system::flat_system_t<MODEL, VLOC>(model), _vm(model.variables())
         {}
         
         /*!
@@ -110,8 +108,7 @@ namespace tchecker {
          \param intvars_val : valuation of bounded integer variables
          \param initial_range : range of initial locations
          \param invariant : container for invariant clock constraints
-         \pre intvars_val size is compatible with the layout of bounded
-         integer variables in the model
+         \pre intvars_val size is compatible with the model's bounded integer variables
          \post vloc and intvars_val have been initialized w.r.t. the locations
          in initial_range and the initial valuation of bounded integer variables.
          Clock invariants have been inserted into invariant
@@ -128,9 +125,8 @@ namespace tchecker {
                                                  initial_iterator_value_t const & initial_range,
                                                  tchecker::clock_constraint_container_t & invariant)
         {
-          auto const & intvars_layout = this->_model.system().intvars().layout();
-          if (intvars_layout.size() != intvars_val.size())
-            throw std::invalid_argument("Incompatible layout and valuation");
+          if (! this->_model.variables().compatible(intvars_val))
+            throw std::invalid_argument("Incompatible variables and valuation");
           
           // intialize vloc
           auto status = tchecker::flat_system::flat_system_t<MODEL, VLOC>::initialize(vloc, initial_range);
@@ -138,10 +134,10 @@ namespace tchecker {
             return status;
           
           // initialize intvars_val
-          auto const & intvars_index = intvars_layout.index();
-          for (auto const & p : intvars_index) {
+          auto const & intvars = this->_model.variables().bounded_integers();
+          for (auto const & p : intvars.index()) {
             tchecker::intvar_id_t id = p.first;
-            intvars_val[id] = intvars_layout.info(id).initial_value();
+            intvars_val[id] = intvars.info(id).initial_value();
           }
           
           // check invariant
@@ -186,9 +182,10 @@ namespace tchecker {
          \param clkreset : container for clock resets in vedge statement
          \param tgt_invariant : container for clock constraints in the invariant of
          vloc after it is updated
-         \pre the source location of edges in edges_range match the locations in vloc,
-         no process has more than one edge in edges_range, and the pid of every process
-         in vedge is less than the size of vloc
+         \pre intvars_val size is compatible with the model's bounded integer variables.
+         The source location of edges in edges_range match the locations in vloc.
+         No process has more than one edge in edges_range.
+         The pid of every process in vedge is less than the size of vloc
          \post the locations in vloc have been updated to target locations
          of edges for processes in vedge, and have been left unchanged for the other
          processes. The values of variables in intvars_val have been updated according
@@ -205,6 +202,8 @@ namespace tchecker {
          intvars_val, STATE_TGT_INVARIANT_VIOLATED if the valuatin of the integer
          variables after statement execution do not satisfy the invariant of updated
          vloc
+         \throw std::invalid_argument : if the intvars_val size is not compatible with
+         the model's bounded integer variables
          \throw std::invalid_argument : if the pid of an edge in vedge is greater or
          equal to the size of vloc
          \throw std::runtime_error : if the guard in vedge generates clock resets, or
@@ -221,6 +220,9 @@ namespace tchecker {
                                            tchecker::clock_reset_container_t & clkreset,
                                            tchecker::clock_constraint_container_t & tgt_invariant)
         {
+          if (! this->_model.variables().compatible(intvars_val))
+            throw std::invalid_argument("Incompatible variables and valuation");
+          
           // check source invariant
           for (typename VLOC::loc_t const * loc : vloc)
             if (check_location_invariant(loc, intvars_val, src_invariant) != 1)
@@ -271,7 +273,8 @@ namespace tchecker {
           catch (std::exception const & e) {
             throw std::runtime_error(e.what()
                                      + (", in evaluation of " + loc->invariant().to_string() + " from valuation "
-                                        + tchecker::to_string(intvars_val, this->_model.system().intvars().layout().index())));
+                                        + tchecker::to_string(intvars_val,
+                                                              this->_model.variables().bounded_integers().index())));
           }
         }
         
@@ -296,7 +299,8 @@ namespace tchecker {
           catch (std::exception const & e) {
             throw std::runtime_error(e.what()
                                      + (", in evaluation of " + edge->guard().to_string() + " from valuation "
-                                        + tchecker::to_string(intvars_val, this->_model.system().intvars().layout().index())));
+                                        + tchecker::to_string(intvars_val,
+                                                              this->_model.variables().bounded_integers().index())));
           }
         }
         
@@ -321,7 +325,8 @@ namespace tchecker {
           catch (std::exception const & e) {
             throw std::runtime_error(e.what()
                                      + (", in evaluation of " + edge->statement().to_string() + " from valuation "
-                                        + tchecker::to_string(intvars_val, this->_model.system().intvars().layout().index())));
+                                        + tchecker::to_string(intvars_val,
+                                                              this->_model.variables().bounded_integers().index())));
           }
         }
         

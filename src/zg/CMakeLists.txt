@@ -10,6 +10,7 @@ ${TCHECKER_INCLUDE_DIR}/tchecker/zg/details/output.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/zg/details/state.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/zg/details/transition.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/zg/details/ts.hh
+${TCHECKER_INCLUDE_DIR}/tchecker/zg/details/variables.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/zg/details/zg.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/zg/zg_ta.hh
 PARENT_SCOPE)

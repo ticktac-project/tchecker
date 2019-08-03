@@ -129,12 +129,46 @@ namespace tchecker {
   using intvar_index_t = tchecker::index_t<tchecker::intvar_id_t, std::string>;
   
   
+  
   /*!
+   \class integer_variables_t
    \brief Declaration of integer variables
    */
-  using integer_variables_t = variables_with_layout_t<tchecker::intvar_id_t, tchecker::intvar_info_t, tchecker::intvar_index_t>;
-  
-  
+  class integer_variables_t
+  : public tchecker::variables_t<tchecker::intvar_id_t, tchecker::intvar_info_t, tchecker::intvar_index_t> {
+  public:
+    using tchecker::variables_t<tchecker::intvar_id_t, tchecker::intvar_info_t, tchecker::intvar_index_t>::variables_t;
+    
+    /*!
+     \brief Declare a bounded integer variable
+     \param name : variable name
+     \param dim : dimension (array)
+     \param min : minimal value
+     \param max : maximal value
+     \param initial : initial value
+     \pre 'name' is not a declared variable,
+     dim > 0,
+     and min <= initial <= max
+     \post A bounded integer variable with base name 'name', dimension 'dim', minimal value 'min', maximal value 'max',
+     and initial value 'initial' has been declared
+     \throw std::invalid_argument : if the precondition is violated
+     */
+    void declare(std::string const & name,
+                 tchecker::intvar_id_t dim,
+                 tchecker::integer_t min,
+                 tchecker::integer_t max,
+                 tchecker::integer_t initial)
+    {
+      tchecker::intvar_id_t id
+      = tchecker::variables_t<tchecker::intvar_id_t, tchecker::intvar_info_t, tchecker::intvar_index_t>::size();
+      
+      tchecker::intvar_info_t info{dim, min, max, initial};
+      
+      tchecker::variables_t<tchecker::intvar_id_t, tchecker::intvar_info_t, tchecker::intvar_index_t>::declare(id, name, info);
+    }
+  protected:
+    using tchecker::variables_t<tchecker::intvar_id_t, tchecker::intvar_info_t, tchecker::intvar_index_t>::declare;
+  };
   
   
   

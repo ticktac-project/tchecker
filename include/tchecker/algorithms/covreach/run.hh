@@ -95,8 +95,7 @@ namespace tchecker {
             node_outputter_args(model_t const & model)
             {
               return std::tuple<tchecker::intvar_index_t const &, tchecker::clock_index_t const &>
-              (model.vm_variables().intvars(model.system()).layout().index(),
-               model.vm_variables().clocks(model.system()).layout().index());
+              (model.variables().bounded_integers().index(), model.variables().clocks().index());
             }
           };
           
@@ -166,10 +165,9 @@ namespace tchecker {
             static std::tuple<tchecker::intvar_index_t const &, tchecker::clock_index_t const &, tchecker::clock_index_t const &>
             node_outputter_args(model_t const & model)
             {
-              return std::tuple<tchecker::intvar_index_t const &, tchecker::clock_index_t const &, tchecker::clock_index_t const &>
-              (model.vm_variables().intvars(model.system()).layout().index(),
-               model.offset_clock_index(),
-               model.vm_variables().clocks(model.system()).layout().index());
+              return
+              std::tuple<tchecker::intvar_index_t const &, tchecker::clock_index_t const &, tchecker::clock_index_t const &>
+              (model.variables().bounded_integers().index(), model.offset_clock_index(), model.variables().clocks().index());
             }
           };
           
