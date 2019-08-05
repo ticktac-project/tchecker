@@ -107,19 +107,15 @@ namespace tchecker {
     template <class VARIABLES, class INFO, class ID, class ... ARGS>
     void declare(std::string const & name, ID dim, ARGS && ... args)
     {
-      if (std::numeric_limits<ID>::max() - VARIABLES::size() + 1 < dim)
-        throw std::invalid_argument("Not enough identifiers left for VM variable declaration");
-      
-      ID id = static_cast<ID>(VARIABLES::size());
       INFO info(1, args...);
       
       if (dim == 1)
-        VARIABLES::declare(id, name, info);
+        VARIABLES::declare(name, 1, info);
       else {
         std::stringstream s;
         for (ID i = 0; i < dim; ++i) {
           s << name << "[" << i << "]";
-          VARIABLES::declare(static_cast<ID>(id + i), s.str(), info);
+          VARIABLES::declare(s.str(), 1, info);
           s.clear();
         }
       }

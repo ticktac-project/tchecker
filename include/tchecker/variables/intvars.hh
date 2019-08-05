@@ -135,9 +135,13 @@ namespace tchecker {
    \brief Declaration of integer variables
    */
   class integer_variables_t
-  : public tchecker::variables_t<tchecker::intvar_id_t, tchecker::intvar_info_t, tchecker::intvar_index_t> {
+  : public tchecker::auto_id_variables_t<tchecker::intvar_id_t, tchecker::intvar_info_t, tchecker::intvar_index_t> {
+    
+    using auto_id_intvars_t
+    = tchecker::auto_id_variables_t<tchecker::intvar_id_t, tchecker::intvar_info_t, tchecker::intvar_index_t>;
+    
   public:
-    using tchecker::variables_t<tchecker::intvar_id_t, tchecker::intvar_info_t, tchecker::intvar_index_t>::variables_t;
+    using auto_id_intvars_t::auto_id_variables_t;
     
     /*!
      \brief Declare a bounded integer variable
@@ -159,15 +163,11 @@ namespace tchecker {
                  tchecker::integer_t max,
                  tchecker::integer_t initial)
     {
-      tchecker::intvar_id_t id
-      = tchecker::variables_t<tchecker::intvar_id_t, tchecker::intvar_info_t, tchecker::intvar_index_t>::size();
-      
       tchecker::intvar_info_t info{dim, min, max, initial};
-      
-      tchecker::variables_t<tchecker::intvar_id_t, tchecker::intvar_info_t, tchecker::intvar_index_t>::declare(id, name, info);
+      auto_id_intvars_t::declare(name, dim, info);
     }
   protected:
-    using tchecker::variables_t<tchecker::intvar_id_t, tchecker::intvar_info_t, tchecker::intvar_index_t>::declare;
+    using auto_id_intvars_t::declare;
   };
   
   

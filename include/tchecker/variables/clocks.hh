@@ -89,9 +89,13 @@ namespace tchecker {
    \brief Declaration of clock variables
    */
   class clock_variables_t
-  : public tchecker::variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t> {
+  : public tchecker::auto_id_variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t> {
+    
+    using auto_id_clocks_t
+    = tchecker::auto_id_variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t>;
+    
   public:
-    using tchecker::variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t>::variables_t;
+    using auto_id_clocks_t::auto_id_variables_t;
     
     /*!
      \brief Declare a clock variable
@@ -104,15 +108,11 @@ namespace tchecker {
      */
     void declare(std::string const & name, tchecker::clock_id_t dim)
     {
-      tchecker::clock_id_t id
-      = tchecker::variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t>::size();
-      
       tchecker::clock_info_t info{dim};
-      
-      tchecker::variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t>::declare(id, name, info);
+      auto_id_clocks_t::declare(name, dim, info);
     }
   protected:
-    using tchecker::variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t>::declare;
+    using auto_id_clocks_t::declare;
   };
 
   

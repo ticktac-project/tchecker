@@ -9,6 +9,7 @@
 #define TCHECKER_VARIABLES_HH
 
 #include <sstream>
+#include <stdexcept>
 #include <string>
 
 #include <boost/container/flat_map.hpp>
@@ -167,7 +168,7 @@ namespace tchecker {
      \param id : variable identifier
      \param name : variable name
      \param info : variable informations
-     \pre there is no declared variables with id or name
+     \pre there is no declared variable with id or name
      \throw std::invalid_argument : if the precondition is violated
      */
     void declare(ID id, std::string const & name, INFO const & info)
@@ -178,6 +179,82 @@ namespace tchecker {
   protected:
     INDEX _index;      /*!< Index of variables */
     info_map_t _info;  /*!< Map variable ID -> informations */
+  };
+  
+  
+  
+  
+  /*!
+   \class auto_id_variables_t
+   \brief Definition of variables with automatic variable identfier computation.
+   Guarantees that when an array `x` of dimension `dim` is declared, then all the
+   `dim` variable identifiers from the identifier of `x` a reserved.
+   \tparam ID : type of variable identifiers
+   \tparam INFO : type of variable informations
+   \tparam INDEX : type of variable index, should derive from tchecker::index_t
+   */
+  template <class ID, class INFO, class INDEX>
+  class auto_id_variables_t : public tchecker::variables_t<ID, INFO, INDEX> {
+  public:
+    /*!
+     \brief Constructor
+     \post the first variable identifier is 0
+     */
+    auto_id_variables_t() : _next_id(0)
+    {}
+    
+    /*!
+     \brief Copy constructor
+     */
+    auto_id_variables_t(tchecker::auto_id_variables_t<ID, INFO, INDEX> const &) = default;
+    
+    /*!
+     \brief Move constructor
+     */
+    auto_id_variables_t(tchecker::auto_id_variables_t<ID, INFO, INDEX> &&) = default;
+    
+    /*!
+     \brief Destructor
+     */
+    ~auto_id_variables_t() = default;
+    
+    /*!
+     \brief Assignment operator
+     */
+    tchecker::auto_id_variables_t<ID, INFO, INDEX> &
+    operator= (tchecker::auto_id_variables_t<ID, INFO, INDEX> const &) = default;
+    
+    /*!
+     \brief Move-assignment operator
+     */
+    tchecker::auto_id_variables_t<ID, INFO, INDEX> &
+    operator= (tchecker::auto_id_variables_t<ID, INFO, INDEX> &&) = default;
+    
+    /*!
+     \brief Declare a variable
+     \param name : variable name
+     \param dim : variable dimension (array)
+     \param info : variable informations
+     \pre there is no declared variable with base name `name`
+     there are enough variable identifiers left to declare `dim` variables
+     \post a variable with base name `name` of dimension `dim`, with information `info` has been
+     declared.
+     The `dim` variable identifiers starting from this variable identifier have been reserved for
+     this variable.
+     The next available variable identifier is equal to this variable identifier plus `dim`.
+     \throw std::invalid_argument : if the precondition is violated
+     */
+    void declare(std::string const & name, ID dim, INFO const & info)
+    {
+      if (_next_id + dim < _next_id) // overflow
+        throw std::invalid_argument("Not enough variable ID left");
+      tchecker::variables_t<ID, INFO, INDEX>::declare(_next_id, name, info);
+      _next_id += dim;
+    }
+  protected:
+    using tchecker::variables_t<ID, INFO, INDEX>::declare;
+    
+    ID _next_id;  /*!< Next available variable identifier */
   };
   
 } // end of namespace tchecker
