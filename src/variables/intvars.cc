@@ -16,14 +16,11 @@ namespace tchecker {
   
   intvar_info_t::intvar_info_t(unsigned int size, tchecker::integer_t min, tchecker::integer_t max,
                                tchecker::integer_t initial_value)
-  : _size(size),
+  : tchecker::size_info_t(size),
   _min(min),
   _max(max),
   _initial_value(initial_value)
   {
-    if (_size == 0)
-      throw std::invalid_argument("expecting size > 0");
-    
     if ( (_min > _initial_value) || (_initial_value > _max) )
       throw std::invalid_argument("expecting min <= initial_value <= max");
   }

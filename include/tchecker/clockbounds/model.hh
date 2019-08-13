@@ -166,7 +166,8 @@ namespace tchecker {
       : tchecker::ta::details::model_t<SYSTEM, VARIABLES>(system, log)
       {
         tchecker::loc_id_t loc_nb = system->locations_count();
-        tchecker::clock_id_t clock_nb = tchecker::ta::details::model_t<SYSTEM, VARIABLES>::variables().clocks().size();
+        tchecker::clock_id_t clock_nb
+        = tchecker::ta::details::model_t<SYSTEM, VARIABLES>::variables().flattened_clocks().size();
         
         _global_lu_map = new tchecker::clockbounds::global_lu_map_t(clock_nb);
         _local_lu_map = new tchecker::clockbounds::local_lu_map_t(loc_nb, clock_nb);

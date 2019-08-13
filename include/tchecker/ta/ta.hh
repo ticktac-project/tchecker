@@ -34,9 +34,15 @@ namespace tchecker {
   namespace ta {
     
     /*!
+     \brief Type of variables
+     */
+    using variables_t = tchecker::ta::details::variables_t;
+    
+    
+    /*!
      \brief Type of model instantiated with timed automata system and variables
      */
-    using model_instantiation_t = tchecker::ta::details::model_t<tchecker::ta::system_t, tchecker::ta::details::variables_t>;
+    using model_instantiation_t = tchecker::ta::details::model_t<tchecker::ta::system_t, tchecker::ta::variables_t>;
     
     /*!
      \class model_t
@@ -158,7 +164,7 @@ namespace tchecker {
       : tchecker::ta::details::state_pool_allocator_t<STATE>
       (alloc_nb,
        alloc_nb, model.system().processes_count(),
-       alloc_nb, model.variables().bounded_integers().size())
+       alloc_nb, model.variables().flattened_bounded_integers().size())
       {}
     };
     

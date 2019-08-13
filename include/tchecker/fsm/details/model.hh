@@ -323,7 +323,7 @@ namespace tchecker {
                                                  tchecker::log_t & log,
                                                  std::string const & context_msg)
         {
-          return tchecker::typecheck(expr, _variables.bounded_integers(), _variables.clocks(),
+          return tchecker::typecheck(expr, _variables.system_bounded_integers(), _variables.system_clocks(),
                                      [&] (std::string const & msg) { log.error(context_msg, msg); });
         }
         
@@ -338,7 +338,7 @@ namespace tchecker {
                                                 tchecker::log_t & log,
                                                 std::string const & context_msg)
         {
-          return tchecker::typecheck(stmt, _variables.bounded_integers(), _variables.clocks(),
+          return tchecker::typecheck(stmt, _variables.system_bounded_integers(), _variables.system_clocks(),
                                      [&] (std::string const & msg) { log.error(context_msg, msg); });
         }
         

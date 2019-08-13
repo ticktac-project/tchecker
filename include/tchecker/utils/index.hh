@@ -84,24 +84,48 @@ namespace tchecker {
      \brief Adds a pair (key, value)
      \param t : value
      \param k : key
+     \post the pair (k, t) has been added
      \throw std::invalid_argument : if t or k is already indexed
      */
     void add(KEY const & k, T const & t)
     {
       assert( _key_map.size() == _value_map.size() );
       
-      auto p_key = _key_map.insert(typename key_map_t::value_type(k, t));
-      if (! p_key.second)
+      auto && [it, ok] = _key_map.insert(typename key_map_t::value_type(k, t));
+      if (! ok)
         throw std::invalid_argument("key is already indexed");
       
-      auto p_value = _value_map.insert(typename value_map_t::value_type(t, k));
-      if (! p_value.second) {
-        _key_map.erase(p_key.first);
+      auto && [it2, ok2] = _value_map.insert(typename value_map_t::value_type(t, k));
+      if (! ok2) {
+        _key_map.erase(it);
         assert( _key_map.size() == _value_map.size() );
         throw std::invalid_argument("value is already indexed");
       }
       
       assert( _key_map.size() == _value_map.size() );
+    }
+    
+    
+    /*!
+     \brief Erase
+     \param k : key
+     \post any pair with key k as been removed
+     \throw std::invalid_argument : if k is not a key in this index
+     */
+    void erase(KEY const & k)
+    {
+      assert( _key_map.size() == _value_map.size() );
+      
+      auto key_it = _key_map.find(k);
+      if (key_it == _key_map.end())
+        throw std::invalid_argument("Unknown key");
+      
+      auto value_it = _value_map.find(key_it->second);
+      if (value_it == _value_map.end())
+        throw std::invalid_argument("Unknown value, inconsistent index");
+      
+      _key_map.erase(key_it);
+      _value_map.erase(value_it);
     }
     
     

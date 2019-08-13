@@ -27,15 +27,7 @@ namespace tchecker {
        */
       class variables_t : public tchecker::clockbounds::variables_t {
       public:
-        /*!
-         \brief Constructor
-         \tparam SYSTEM : type of system, should inherit from tchecker::ta::details::system_t
-         \param system : a system
-         \post the model variables have been built from system
-         */
-        template <class SYSTEM>
-        variables_t(SYSTEM const & system) : tchecker::clockbounds::variables_t(system)
-        {}
+        using tchecker::clockbounds::variables_t::variables_t;
       };
       
     } // end of namespace details

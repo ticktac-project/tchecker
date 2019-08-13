@@ -24,6 +24,7 @@
 #include "tchecker/utils/allocation_size.hh"
 #include "tchecker/utils/log.hh"
 #include "tchecker/utils/shared_objects.hh"
+#include "tchecker/variables/clocks.hh"
 #include "tchecker/variables/intvars.hh"
 
 /*!
@@ -36,9 +37,32 @@ namespace tchecker {
   namespace fsm {
     
     /*!
+     \class variables_t
+     \brief Finite state machine variables with empty set of system clocks
+     */
+    class variables_t : public tchecker::fsm::details::variables_t {
+    public:
+      using tchecker::fsm::details::variables_t::variables_t;
+      
+      /*!
+       \brief Accessor
+       \return System clocks (empty set of clocks)
+       */
+      inline constexpr tchecker::clock_variables_t const & system_clocks() const
+      {
+        return _empty_clocks;
+      }
+    private:
+      tchecker::clock_variables_t _empty_clocks;  /*!< Empty set of clocks */
+    };
+    
+    
+    
+    
+    /*!
      \brief Type of model instantiation
      */
-    using model_instantiation_t = tchecker::fsm::details::model_t<tchecker::fsm::system_t, tchecker::fsm::details::variables_t>;
+    using model_instantiation_t = tchecker::fsm::details::model_t<tchecker::fsm::system_t, tchecker::fsm::variables_t>;
     
     
     /*!
@@ -162,7 +186,7 @@ namespace tchecker {
       : tchecker::fsm::details::state_pool_allocator_t<STATE>
       (alloc_nb,
        alloc_nb, model.system().processes_count(),
-       alloc_nb, model.variables().bounded_integers().size())
+       alloc_nb, model.variables().flattened_bounded_integers().size())
       {}
     };
     

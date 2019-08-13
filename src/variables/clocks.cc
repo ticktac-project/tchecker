@@ -11,24 +11,6 @@
 
 namespace tchecker {
   
-  /* clock_info_t */
-  
-  /*!
-   \brief Constructor
-   \param dim : dimension (array)
-   \pre dim > 0
-   \throw std::invalid_argument : if the precondition is violated
-   */
-  clock_info_t::clock_info_t(unsigned int size)
-  : _size(size)
-  {
-    if (size == 0)
-      throw std::invalid_argument("expecting size > 0");
-  }
-  
-  
-  
-  
   /* clock_constraint_t */
   
   clock_constraint_t::clock_constraint_t(tchecker::clock_id_t id1,

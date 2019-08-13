@@ -28,52 +28,12 @@ namespace tchecker {
    \class clock_info_t
    \brief Informations on clock variables
    */
-  class clock_info_t {
+  class clock_info_t : public tchecker::size_info_t {
   public:
-    /*!
-     \brief Constructor
-     \param size : array size (1 for non-array variables)
-     \pre size > 0
-     \throw std::invalid_argument : if the precondition is violated
-     */
-    clock_info_t(unsigned int size);
-    
-    /*!
-     \brief Copy constructor
-     */
-    clock_info_t(tchecker::clock_info_t const &) = default;
-    
-    /*!
-     \brief Move constructor
-     */
-    clock_info_t(tchecker::clock_info_t &&) = default;
-    
-    /*!
-     \brief Destructor
-     */
-    ~clock_info_t() = default;
-    
-    /*!
-     \brief Assignment operator
-     */
-    tchecker::clock_info_t & operator= (tchecker::clock_info_t const &) = default;
-    
-    /*!
-     \brief Move assignment operator
-     */
-    tchecker::clock_info_t & operator= (tchecker::clock_info_t &&) = default;
-    
-    /*!
-     \brief Accessor
-     \return Size
-     */
-    inline unsigned int size() const
-    {
-      return _size;
-    }
-  private:
-    unsigned int _size;   /*!< Size (array) */
+    using tchecker::size_info_t::size_info_t;
   };
+
+  
   
   
   /*!
@@ -89,30 +49,54 @@ namespace tchecker {
    \brief Declaration of clock variables
    */
   class clock_variables_t
-  : public tchecker::auto_id_variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t> {
-    
-    using auto_id_clocks_t
-    = tchecker::auto_id_variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t>;
-    
+  : public tchecker::size_variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t> {
   public:
-    using auto_id_clocks_t::auto_id_variables_t;
+    using tchecker::size_variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t>::size_variables_t;
     
     /*!
      \brief Declare a clock variable
      \param name : variable name
-     \param dim : dimension (array)
+     \param size : size (array)
      \pre 'name' is not a declared variable
-     dim > 0
-     \post a clock variable with base name 'name' and dimension 'dim' has been declared
+     size > 0
+     \post a clock variable with base name 'name' and with size 'size' has been declared
      \throw std::invalid_argument : if the precondition is violated
      */
-    void declare(std::string const & name, tchecker::clock_id_t dim)
+    void declare(std::string const & name, tchecker::clock_id_t size)
     {
-      tchecker::clock_info_t info{dim};
-      auto_id_clocks_t::declare(name, dim, info);
+      tchecker::clock_info_t info{size};
+      tchecker::size_variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t>::declare(name, info);
     }
   protected:
-    using auto_id_clocks_t::declare;
+    using tchecker::size_variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t>::declare;
+  };
+  
+  
+  
+  
+  /*!
+   \class flat_clock_variables_t
+   \brief Declaration of flat clock variables (clock variables of size 1)
+   */
+  class flat_clock_variables_t
+  : public tchecker::flat_variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t> {
+  public:
+    using tchecker::flat_variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t>::flat_variables_t;
+    
+    /*!
+     \brief Declare a clock variable
+     \param name : variable name
+     \pre 'name' is not a declared variable
+     \post a clock variable with base name 'name' and size 1 has been declared
+     \throw std::invalid_argument : if the precondition is violated
+     */
+    void declare(std::string const & name)
+    {
+      tchecker::clock_info_t info{1};
+      tchecker::flat_variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t>::declare(name, info);
+    }
+  protected:
+    using tchecker::flat_variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t>::declare;
   };
 
   

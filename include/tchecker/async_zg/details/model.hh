@@ -173,7 +173,8 @@ namespace tchecker {
         : tchecker::clockbounds::model_t<SYSTEM, VARIABLES>(system, log)
         {
           // clock number excluding the zero clock
-          tchecker::clock_id_t clock_nb = tchecker::clockbounds::model_t<SYSTEM, VARIABLES>::variables().clocks().size() - 1;
+          tchecker::clock_id_t clock_nb
+          = tchecker::clockbounds::model_t<SYSTEM, VARIABLES>::variables().flattened_clocks().size() - 1;
           tchecker::process_id_t proc_nb = system->processes_count();
           
           if (proc_nb > std::numeric_limits<tchecker::clock_id_t>::max())
@@ -198,7 +199,7 @@ namespace tchecker {
           for (id = 0; id < _refcount; ++id)
             _offset_clock_index.add(id, "$" + std::to_string(id));
           tchecker::clock_index_t const & clock_index
-          = tchecker::clockbounds::model_t<SYSTEM, VARIABLES>::variables().clocks().index();
+          = tchecker::clockbounds::model_t<SYSTEM, VARIABLES>::variables().flattened_clocks().index();
           auto it = clock_index.begin(), end = clock_index.end();
           for (++it; it != end; ++it, ++id)
             _offset_clock_index.add(id, "$" + clock_index.value(*it));

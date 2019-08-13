@@ -14,7 +14,7 @@ namespace tchecker {
     /* model_t */
     
     model_t::model_t(tchecker::parsing::system_declaration_t const & system_declaration, tchecker::log_t & log)
-    : tchecker::fsm::details::model_t<tchecker::fsm::system_t, tchecker::fsm::details::variables_t>
+    : tchecker::fsm::details::model_t<tchecker::fsm::system_t, tchecker::fsm::variables_t>
     (tchecker::fsm::build_system(system_declaration, log), log)
     {}
     

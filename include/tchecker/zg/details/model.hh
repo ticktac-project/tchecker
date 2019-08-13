@@ -104,7 +104,7 @@ namespace tchecker {
          */
         model_t(SYSTEM * system, tchecker::log_t & log)
         : tchecker::clockbounds::model_t<SYSTEM, VARIABLES>(system, log),
-        _dimension(tchecker::clockbounds::model_t<SYSTEM, VARIABLES>::variables().clocks().size())
+        _dimension(tchecker::clockbounds::model_t<SYSTEM, VARIABLES>::variables().flattened_clocks().size())
         {}
         
         tchecker::clock_id_t _dimension;                          /*!< Dimension (number of clocks) */
