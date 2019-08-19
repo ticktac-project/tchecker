@@ -146,7 +146,14 @@ namespace tchecker {
   {}
   
   
-  std::ostream & par_expression_t::do_output(std::ostream & os) const {
+  par_expression_t::~par_expression_t()
+  {
+    delete _expr;
+  }
+  
+  
+  std::ostream & par_expression_t::do_output(std::ostream & os) const
+  {
     return os << "(" << * _expr << ")";
   }
   

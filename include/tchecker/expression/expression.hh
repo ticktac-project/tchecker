@@ -305,7 +305,7 @@ namespace tchecker {
     /*!
      \brief Destructor
      */
-    virtual ~par_expression_t() = default;
+    virtual ~par_expression_t();
     
     /*!
      \brief Accessor
