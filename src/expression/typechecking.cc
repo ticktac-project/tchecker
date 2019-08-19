@@ -224,7 +224,7 @@ namespace tchecker {
             _typed_expr = new tchecker::typed_diagonal_clkconstr_expression_t(expr_type, expr.binary_operator(), typed_left_operand,
                                                                               typed_right_operand);
             break;
-          default:  // either EXPR_TYPE_ATOMIC_PREDICATE or EXPR_TYPE_BAD
+          default:
             _typed_expr = new tchecker::typed_binary_expression_t(expr_type, expr.binary_operator(), typed_left_operand,
                                                                   typed_right_operand);
             break;
