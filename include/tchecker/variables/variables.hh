@@ -395,14 +395,14 @@ namespace tchecker {
     {
       for (auto && [id, name] : v.index()) {
         INFO flat_info = v.info(id);
-        auto size = flat_info.size();
+        unsigned int size = flat_info.size();
         
         if (size == 1)
           tchecker::size_variables_t<ID, INFO, INDEX>::declare(id, name, flat_info);
         else {
           flat_info.flatten();
           
-          for (auto i = 0; i < size; ++i) {
+          for (unsigned int i = 0; i < size; ++i) {
             std::stringstream ss;
             ss << name << "[" << i << "]";
             tchecker::size_variables_t<ID, INFO, INDEX>::declare(id + i, ss.str(), flat_info);
