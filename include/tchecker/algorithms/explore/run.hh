@@ -225,7 +225,15 @@ namespace tchecker {
         gc.start();
         
         tchecker::explore::algorithm_t<ts_t, graph_t, WAITING> algorithm;
-        algorithm.run(ts, graph);
+        
+        try {
+          algorithm.run(ts, graph);
+        }
+        catch (...) {
+          gc.stop();
+          graph.free_all();
+          throw;
+        }
         
         gc.stop();
         graph.free_all();

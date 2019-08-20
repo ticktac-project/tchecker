@@ -235,7 +235,16 @@ namespace tchecker {
         enum tchecker::covreach::outcome_t outcome;
         tchecker::covreach::stats_t stats;
         tchecker::covreach::algorithm_t<ts_t, graph_t, WAITING> algorithm;
-        std::tie(outcome, stats) = algorithm.run(ts, graph, accepting_labels);
+        
+        try {
+          std::tie(outcome, stats) = algorithm.run(ts, graph, accepting_labels);
+        }
+        catch (...) {
+          gc.stop();
+          graph.clear();
+          graph.free_all();
+          throw;
+        }
         
         std::cout << "REACHABLE " << (outcome == tchecker::covreach::REACHABLE ? "true" : "false") << std::endl;
         
