@@ -182,6 +182,15 @@ namespace tchecker {
         }
         return tchecker::STATE_OK;
       }
+      
+      /*!
+       \brief Accessor
+       \return Underlying model
+       */
+      inline constexpr MODEL const & model() const
+      {
+        return _model;
+      }
     protected:
       MODEL & _model;
     };

@@ -152,6 +152,15 @@ namespace tchecker {
                                                                                clkreset,
                                                                                tgt_invariant);
         }
+        
+        /*!
+         \brief Accessor
+         \return Underlying model
+         */
+        inline constexpr model_t const & model() const
+        {
+          return tchecker::fsm::details::fsm_t<MODEL, VLOC, INTVARS_VAL>::model();
+        }
       };
       
     } // end of namespace details

@@ -120,6 +120,29 @@ namespace tchecker {
         {
           return _fsm.next(*s.vloc_ptr(), *s.intvars_val_ptr(), v);
         }
+        
+        /*!
+         \brief Accessor
+         \return Underlying finite state machine
+         */
+        inline constexpr FSM const & fsm() const
+        {
+          return _fsm;
+        }
+        
+        /*!
+         \brief Type of model
+         */
+        using model_t = typename FSM::model_t;
+        
+        /*!
+         \brief Accessor
+         \return Underlying model
+         */
+        inline constexpr model_t const & model() const
+        {
+          return _fsm.model();
+        }
       private:
         FSM _fsm;  /*!< FSM */
       };

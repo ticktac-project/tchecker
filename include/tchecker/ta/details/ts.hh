@@ -119,6 +119,29 @@ namespace tchecker {
           return _ta.next(*s.vloc_ptr(), *s.intvars_val_ptr(), v, t.src_invariant_container(), t.guard_container(),
                           t.reset_container(), t.tgt_invariant_container());
         }
+        
+        /*!
+         \brief Accessor
+         \return Underlying timed automaton
+         */
+        inline constexpr TA const & ta() const
+        {
+          return _ta;
+        }
+        
+        /*!
+         \brief Type of model
+         */
+        using model_t = typename TA::model_t;
+        
+        /*!
+         \brief Accessor
+         \return Underlying model
+         */
+        inline constexpr model_t const & model() const
+        {
+          return _ta.model();
+        }
       protected:
         TA _ta;  /*!< Timed automaton */
       };

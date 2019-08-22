@@ -33,6 +33,11 @@ namespace tchecker {
       class zg_t {
       public:
         /*!
+         \brief Type of model
+         */
+        using model_t = typename TA::model_t;
+        
+        /*!
          \brief Type of tuple of locations
          */
         using vloc_t = typename TA::vloc_t;
@@ -200,6 +205,15 @@ namespace tchecker {
           bool tgt_delay_allowed = tchecker::ta::delay_allowed(vloc);
           return _zone_semantics.next(zone, src_delay_allowed, src_invariant, guard, clkreset, tgt_delay_allowed,
                                       tgt_invariant, vloc);
+        }
+        
+        /*!
+         \brief Accessor
+         \return Underlying model
+         */
+        inline constexpr model_t const & model() const
+        {
+          return _ta.model();
         }
       protected:
         TA _ta;                          /*!< Timed automaton */

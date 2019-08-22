@@ -251,6 +251,15 @@ namespace tchecker {
           
           return tchecker::STATE_OK;
         }
+        
+        /*!
+         \brief Accessor
+         \return Underlying model
+         */
+        inline constexpr model_t const & model() const
+        {
+          return tchecker::flat_system::flat_system_t<MODEL, VLOC>::model();
+        }
       protected:
         /*!
          \brief Check location invariant

@@ -129,6 +129,29 @@ namespace tchecker {
                                 t.src_invariant_container(), t.guard_container(), t.reset_container(),
                                 t.tgt_invariant_container());
         }
+        
+        /*!
+         \brief Accessor
+         \return Underlying asynchronous zone graph
+         */
+        inline constexpr ASYNC_ZG const & async_zg() const
+        {
+          return _async_zg;
+        }
+        
+        /*!
+         \brief Type of model
+         */
+        using model_t = typename ASYNC_ZG::model_t;
+        
+        /*!
+         \brief Accessor
+         \return Underlying model
+         */
+        inline constexpr model_t const & model() const
+        {
+          return _async_zg.model();
+        }
       protected:
         ASYNC_ZG _async_zg;   /*!< Asynchronous zone graph */
       };

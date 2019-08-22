@@ -33,6 +33,11 @@ namespace tchecker {
       class zg_t {
       public:
         /*!
+         \brief Type of model
+         */
+        using model_t = typename TA::model_t;
+        
+        /*!
          \brief Type of tuple of locations
          */
         using vloc_t = typename TA::vloc_t;
@@ -272,6 +277,15 @@ namespace tchecker {
           reference_clock_synchronization(vedge, _offset_guard);
           return _async_zone_semantics.next(offset_zone, sync_zone, src_delay_allowed, _offset_src_invariant, _offset_guard,
                                             _offset_clkreset, tgt_delay_allowed, _offset_tgt_invariant, vloc);
+        }
+        
+        /*!
+         \brief Accessor
+         \return Underlying model
+         */
+        inline constexpr model_t const & model() const
+        {
+          return _ta.model();
         }
       private:
         /*!
