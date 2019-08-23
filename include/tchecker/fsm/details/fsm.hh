@@ -52,7 +52,7 @@ namespace tchecker {
          \post this is a finite state machine over model
          */
         fsm_t(MODEL & model)
-        : tchecker::flat_system::flat_system_t<MODEL, VLOC>(model), _vm(model.variables().vm_variables())
+        : tchecker::flat_system::flat_system_t<MODEL, VLOC>(model), _vm(model.vm_variables())
         {}
         
         /*!
@@ -125,7 +125,7 @@ namespace tchecker {
                                                  initial_iterator_value_t const & initial_range,
                                                  tchecker::clock_constraint_container_t & invariant)
         {
-          if (! this->_model.variables().vm_variables().compatible(intvars_val))
+          if (! this->_model.vm_variables().compatible(intvars_val))
             throw std::invalid_argument("Incompatible variables and valuation");
           
           // intialize vloc
@@ -134,7 +134,7 @@ namespace tchecker {
             return status;
           
           // initialize intvars_val
-          auto const & intvars = this->_model.variables().flattened_bounded_integers();
+          auto const & intvars = this->_model.flattened_integer_variables();
           for (auto const & p : intvars.index()) {
             tchecker::intvar_id_t id = p.first;
             intvars_val[id] = intvars.info(id).initial_value();
@@ -220,7 +220,7 @@ namespace tchecker {
                                            tchecker::clock_reset_container_t & clkreset,
                                            tchecker::clock_constraint_container_t & tgt_invariant)
         {
-          if (! this->_model.variables().vm_variables().compatible(intvars_val))
+          if (! this->_model.vm_variables().compatible(intvars_val))
             throw std::invalid_argument("Incompatible variables and valuation");
           
           // check source invariant
@@ -283,7 +283,7 @@ namespace tchecker {
             throw std::runtime_error(e.what()
                                      + (", in evaluation of " + loc->invariant().to_string() + " from valuation "
                                         + tchecker::to_string(intvars_val,
-                                                              this->_model.variables().flattened_bounded_integers().index())));
+                                                              this->_model.flattened_integer_variables().index())));
           }
         }
         
@@ -309,7 +309,7 @@ namespace tchecker {
             throw std::runtime_error(e.what()
                                      + (", in evaluation of " + edge->guard().to_string() + " from valuation "
                                         + tchecker::to_string(intvars_val,
-                                                              this->_model.variables().flattened_bounded_integers().index())));
+                                                              this->_model.flattened_integer_variables().index())));
           }
         }
         
@@ -335,7 +335,7 @@ namespace tchecker {
             throw std::runtime_error(e.what()
                                      + (", in evaluation of " + edge->statement().to_string() + " from valuation "
                                         + tchecker::to_string(intvars_val,
-                                                              this->_model.variables().flattened_bounded_integers().index())));
+                                                              this->_model.flattened_integer_variables().index())));
           }
         }
         

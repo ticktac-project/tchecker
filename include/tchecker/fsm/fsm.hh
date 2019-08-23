@@ -38,7 +38,7 @@ namespace tchecker {
     
     /*!
      \class variables_t
-     \brief Finite state machine variables with empty set of system clocks
+     \brief Variables for finite state systems with empty set of clocks
      */
     class variables_t : public tchecker::fsm::details::variables_t {
     public:
@@ -46,11 +46,26 @@ namespace tchecker {
       
       /*!
        \brief Accessor
-       \return System clocks (empty set of clocks)
+       \tparam SYSTEM : type of system, should derive from tchecker::fsm::details::system_t
+       \param system : a system
+       \return clock variables in system
        */
-      inline constexpr tchecker::clock_variables_t const & system_clocks() const
+      template <class SYSTEM>
+      inline constexpr tchecker::clock_variables_t const & system_clock_variables(SYSTEM const & system) const
       {
         return _empty_clocks;
+      }
+      
+      /*!
+       \brief Accessor
+       \tparam SYSTEM : type of system, should derive from tchecker::fsm::details::system_t
+       \param system : a system
+       \return flattened clock variables in system
+       */
+      template <class SYSTEM>
+      inline constexpr tchecker::flat_clock_variables_t const & flattened_clock_variables(SYSTEM const & system) const
+      {
+        return _empty_clocks.flattened();
       }
     private:
       tchecker::clock_variables_t _empty_clocks;  /*!< Empty set of clocks */
@@ -186,7 +201,7 @@ namespace tchecker {
       : tchecker::fsm::details::state_pool_allocator_t<STATE>
       (alloc_nb,
        alloc_nb, model.system().processes_count(),
-       alloc_nb, model.variables().flattened_bounded_integers().size())
+       alloc_nb, model.flattened_integer_variables().size())
       {}
     };
     

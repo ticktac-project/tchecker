@@ -115,13 +115,13 @@ namespace tchecker {
             node_outputter_args(tchecker::explore::details::zg::ta::explored_model_t<ZONE_SEMANTICS>::model_t const & model)
             {
               return std::tuple<tchecker::intvar_index_t const &, tchecker::clock_index_t const &>
-              (model.variables().flattened_bounded_integers().index(), model.variables().flattened_clocks().index());
+              (model.flattened_integer_variables().index(), model.flattened_clock_variables().index());
             }
             
             static std::tuple<tchecker::clock_index_t const &>
             edge_outputter_args(tchecker::explore::details::zg::ta::explored_model_t<ZONE_SEMANTICS>::model_t const & model)
             {
-              return std::tuple<tchecker::clock_index_t const &>(model.variables().flattened_clocks().index());
+              return std::tuple<tchecker::clock_index_t const &>(model.flattened_clock_variables().index());
             }
           };
           
@@ -158,14 +158,16 @@ namespace tchecker {
             node_outputter_args(tchecker::explore::details::async_zg::ta::explored_model_t<ZONE_SEMANTICS>::model_t const & model)
             {
               return std::tuple<tchecker::intvar_index_t const &, tchecker::clock_index_t const &, tchecker::clock_index_t const &>
-              (model.variables().flattened_bounded_integers().index(), model.offset_clock_index(), model.variables().flattened_clocks().index());
+              (model.flattened_integer_variables().index(),
+               model.offset_clock_index(),
+               model.flattened_clock_variables().index());
             }
             
             static std::tuple<tchecker::clock_index_t const &>
             edge_outputter_args(tchecker::explore::details::async_zg::ta::explored_model_t<ZONE_SEMANTICS>::model_t const & model)
             {
               // display invariants, guards and resets w.r.t. system clocks
-              return std::tuple<tchecker::clock_index_t const &>(model.variables().flattened_clocks().index());
+              return std::tuple<tchecker::clock_index_t const &>(model.flattened_clock_variables().index());
             }
           };
           

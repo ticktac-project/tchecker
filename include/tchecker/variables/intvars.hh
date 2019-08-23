@@ -124,9 +124,10 @@ namespace tchecker {
    \brief Declaration of integer variables
    */
   class integer_variables_t
-  : public tchecker::size_variables_t<tchecker::intvar_id_t, tchecker::intvar_info_t, tchecker::intvar_index_t> {
+  : public tchecker::array_variables_t<tchecker::intvar_id_t, tchecker::intvar_info_t, tchecker::intvar_index_t> {
   public:
-    using tchecker::size_variables_t<tchecker::intvar_id_t, tchecker::intvar_info_t, tchecker::intvar_index_t>::size_variables_t;
+    using
+    tchecker::array_variables_t<tchecker::intvar_id_t, tchecker::intvar_info_t, tchecker::intvar_index_t>::array_variables_t;
     
     /*!
      \brief Declare a bounded integer variable
@@ -149,47 +150,19 @@ namespace tchecker {
                  tchecker::integer_t initial)
     {
       tchecker::intvar_info_t info{size, min, max, initial};
-      tchecker::size_variables_t<tchecker::intvar_id_t, tchecker::intvar_info_t, tchecker::intvar_index_t>::declare(name, info);
+      tchecker::array_variables_t<tchecker::intvar_id_t, tchecker::intvar_info_t, tchecker::intvar_index_t>::declare(name, info);
     }
   protected:
-    using tchecker::size_variables_t<tchecker::intvar_id_t, tchecker::intvar_info_t, tchecker::intvar_index_t>::declare;
+    using tchecker::array_variables_t<tchecker::intvar_id_t, tchecker::intvar_info_t, tchecker::intvar_index_t>::declare;
   };
-  
   
   
   
   /*!
-   \class flat_integer_variables_t
-   \brief Declaration of flat bounded integer variables (bounded integer variables of size 1)
+   \brief Type of flat bounded integer variables
    */
-  class flat_integer_variables_t
-  : public tchecker::flat_variables_t<tchecker::intvar_id_t, tchecker::intvar_info_t, tchecker::intvar_index_t> {
-  public:
-    using tchecker::flat_variables_t<tchecker::intvar_id_t, tchecker::intvar_info_t, tchecker::intvar_index_t>::flat_variables_t;
-    
-    /*!
-     \brief Declare a flat bounded integer variable
-     \param name : variable name
-     \param min : minimal value
-     \param max : maximal value
-     \param initial : initial value
-     \pre 'name' is not a declared variable,
-     and min <= initial <= max
-     \post A bounded integer variable with base name 'name', size 1, minimal value 'min', maximal value 'max',
-     and initial value 'initial' has been declared
-     \throw std::invalid_argument : if the precondition is violated
-     */
-    void declare(std::string const & name,
-                 tchecker::integer_t min,
-                 tchecker::integer_t max,
-                 tchecker::integer_t initial)
-    {
-      tchecker::intvar_info_t info{1, min, max, initial};
-      tchecker::flat_variables_t<tchecker::intvar_id_t, tchecker::intvar_info_t, tchecker::intvar_index_t>::declare(name, info);
-    }
-  protected:
-    using tchecker::flat_variables_t<tchecker::intvar_id_t, tchecker::intvar_info_t, tchecker::intvar_index_t>::declare;
-  };
+  using flat_integer_variables_t
+  = tchecker::flat_variables_t<tchecker::intvar_id_t, tchecker::intvar_info_t, tchecker::intvar_index_t>;
   
   
   

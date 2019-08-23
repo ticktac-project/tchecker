@@ -46,6 +46,18 @@ namespace tchecker {
          \brief Destructor
          */
         virtual ~model_t() = default;
+        
+        /*!
+         \brief Assignment operator
+         */
+        tchecker::ta::details::model_t<SYSTEM, VARIABLES> &
+        operator= (tchecker::ta::details::model_t<SYSTEM, VARIABLES> const &) = default;
+        
+        /*!
+         \brief Move-assignment operator
+         */
+        tchecker::ta::details::model_t<SYSTEM, VARIABLES> &
+        operator= (tchecker::ta::details::model_t<SYSTEM, VARIABLES> &&) = default;
       protected:
         /*!
          \brief Constructor

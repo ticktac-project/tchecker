@@ -252,7 +252,7 @@ namespace tchecker {
       tchecker::clockbounds::diagonal_free::solver_t solve(MODEL const & model)
       {
         tchecker::loc_id_t loc_nb = model.system().locations_count();
-        tchecker::clock_id_t clock_nb = model.variables().flattened_clocks().size();
+        tchecker::clock_id_t clock_nb = model.flattened_clock_variables().size();
         
         tchecker::clockbounds::diagonal_free::solver_t solver(loc_nb, clock_nb,
                                                               [&] (tchecker::loc_id_t loc_id) {

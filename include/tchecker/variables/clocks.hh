@@ -49,9 +49,9 @@ namespace tchecker {
    \brief Declaration of clock variables
    */
   class clock_variables_t
-  : public tchecker::size_variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t> {
+  : public tchecker::array_variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t> {
   public:
-    using tchecker::size_variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t>::size_variables_t;
+    using tchecker::array_variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t>::array_variables_t;
     
     /*!
      \brief Declare a clock variable
@@ -65,39 +65,18 @@ namespace tchecker {
     void declare(std::string const & name, tchecker::clock_id_t size)
     {
       tchecker::clock_info_t info{size};
-      tchecker::size_variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t>::declare(name, info);
+      tchecker::array_variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t>::declare(name, info);
     }
   protected:
-    using tchecker::size_variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t>::declare;
+    using tchecker::array_variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t>::declare;
   };
-  
-  
   
   
   /*!
-   \class flat_clock_variables_t
-   \brief Declaration of flat clock variables (clock variables of size 1)
+   \brief Type of flat clocks
    */
-  class flat_clock_variables_t
-  : public tchecker::flat_variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t> {
-  public:
-    using tchecker::flat_variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t>::flat_variables_t;
-    
-    /*!
-     \brief Declare a clock variable
-     \param name : variable name
-     \pre 'name' is not a declared variable
-     \post a clock variable with base name 'name' and size 1 has been declared
-     \throw std::invalid_argument : if the precondition is violated
-     */
-    void declare(std::string const & name)
-    {
-      tchecker::clock_info_t info{1};
-      tchecker::flat_variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t>::declare(name, info);
-    }
-  protected:
-    using tchecker::flat_variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t>::declare;
-  };
+  using flat_clock_variables_t
+  = tchecker::flat_variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t>;
 
   
   

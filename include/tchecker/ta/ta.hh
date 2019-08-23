@@ -34,9 +34,14 @@ namespace tchecker {
   namespace ta {
     
     /*!
-     \brief Type of variables
+     \class variables_t
+     \brief Type of model variables
      */
-    using variables_t = tchecker::ta::details::variables_t;
+    class variables_t : public tchecker::ta::details::variables_t {
+    public:
+      using tchecker::ta::details::variables_t::variables_t;
+    };
+    
     
     
     /*!
@@ -164,7 +169,7 @@ namespace tchecker {
       : tchecker::ta::details::state_pool_allocator_t<STATE>
       (alloc_nb,
        alloc_nb, model.system().processes_count(),
-       alloc_nb, model.variables().flattened_bounded_integers().size())
+       alloc_nb, model.flattened_integer_variables().size())
       {}
     };
     

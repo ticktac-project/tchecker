@@ -156,8 +156,8 @@ namespace tchecker {
         : tchecker::async_zg::details::state_pool_allocator_t<STATE>
         (alloc_nb,
          alloc_nb, model.system().processes_count(),
-         alloc_nb, model.variables().flattened_bounded_integers().size(),
-         alloc_nb, model.offset_dimension(), model.variables().flattened_clocks().size())
+         alloc_nb, model.flattened_integer_variables().size(),
+         alloc_nb, model.offset_dimension(), model.flattened_clock_variables().size())
         {}
       };
       

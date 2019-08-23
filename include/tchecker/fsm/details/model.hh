@@ -38,11 +38,11 @@ namespace tchecker {
        \brief Model for finite-state machines: model for flat system + bytecode
        for location invariants and for edges guards and statements
        \tparam SYSTEM : type of system, should inherit from tchecker::fsm::details::system_t
-       \tparam VARIABLES : type of variables, should inherit from tchecker::fsm::details::variables_t
+       \tparam VARIABLES : type of model variables, should inherit from tchecker::fsm::details::variables_t
        \note Instances cannot be constructed. Refer to class tchecker::flat_system::details::model_t for the reason why.
        */
       template <class SYSTEM, class VARIABLES>
-      class model_t : public tchecker::flat_system::model_t<SYSTEM> {
+      class model_t : public tchecker::flat_system::model_t<SYSTEM>, protected VARIABLES {
       public:
         /*!
          \brief Copy constructor
@@ -50,7 +50,7 @@ namespace tchecker {
          \post this is a copy of model
          */
         model_t(tchecker::fsm::details::model_t<SYSTEM, VARIABLES> const & model)
-        : tchecker::flat_system::model_t<SYSTEM>(model), _variables(model._variables)
+        : tchecker::flat_system::model_t<SYSTEM>(model), VARIABLES(*this), _vm_variables(model._vm_variables)
         {
           tchecker::log_t log;  // log with no output (log needed by compile, but no output expected)
           compile(*this->_system, log);
@@ -83,7 +83,7 @@ namespace tchecker {
             
             tchecker::flat_system::model_t<SYSTEM>::operator=(model);
             
-            _variables = model._variables;
+            _vm_variables = model._vm_variables;
             tchecker::log_t log;  // log with no output (log needed by compile, but no output expected)
             compile(*this->_system, log);
             assert(log.error_count() == 0);
@@ -177,23 +177,64 @@ namespace tchecker {
         
         /*!
          \brief Accessor
-         \return Variables
+         \return Virtual machine ariables
          */
-        VARIABLES const & variables() const
+        inline constexpr tchecker::vm_variables_t const & vm_variables() const
         {
-          return _variables;
+          return _vm_variables;
+        }
+        
+        /*!
+         \brief Accessor
+         \return System bounded integer variables
+         */
+        inline constexpr tchecker::integer_variables_t const & system_integer_variables() const
+        {
+          return VARIABLES::system_integer_variables(*this->_system);
+        }
+        
+        /*!
+         \brief Accessor
+         \return Flattened bounded integer variables
+         */
+        inline constexpr tchecker::flat_integer_variables_t const & flattened_integer_variables() const
+        {
+          return VARIABLES::flattened_integer_variables(*this->_system);
+        }
+        
+        /*!
+         \brief Accessor
+         \return System clock variables
+         */
+        inline constexpr tchecker::clock_variables_t const & system_clock_variables() const
+        {
+          return VARIABLES::system_clock_variables(*this->_system);
+        }
+        
+        /*!
+         \brief Accessor
+         \return Flattened clock variables
+         */
+        inline constexpr tchecker::flat_clock_variables_t const & flattened_clock_variables() const
+        {
+          return VARIABLES::flattened_clock_variables(*this->_system);
         }
       protected:
         /*!
          \brief Constructor
          \param system : a system
          \param log : logging facility
+         \param args : arguments to a constructor of class VARIABLES
          \post this consists in system + synchronizer + variables + bytecode for system locations and edges
          \throw std::runtime_error : if system has a weakly synchronized event with a non-trivial guard
          \throw std::runtime_error : if guards, statements, invariants in system cannot be compiled into bytecode
          */
-        model_t(SYSTEM * system, tchecker::log_t & log)
-        : tchecker::flat_system::model_t<SYSTEM>(system), _variables(*this->_system)
+        template <class ... ARGS>
+        model_t(SYSTEM * system, tchecker::log_t & log, ARGS && ... args)
+        : tchecker::flat_system::model_t<SYSTEM>(system),
+        VARIABLES(args...),
+        _vm_variables(VARIABLES::flattened_integer_variables(*system),
+                      VARIABLES::flattened_clock_variables(*system))
         {
           if (tchecker::fsm::details::has_guarded_weakly_synchronized_event(*system))
             throw std::runtime_error("Weakly synchronized event shall not be guarded");
@@ -323,7 +364,9 @@ namespace tchecker {
                                                  tchecker::log_t & log,
                                                  std::string const & context_msg)
         {
-          return tchecker::typecheck(expr, _variables.system_bounded_integers(), _variables.system_clocks(),
+          return tchecker::typecheck(expr,
+                                     VARIABLES::system_integer_variables(*this->_system),
+                                     VARIABLES::system_clock_variables(*this->_system),
                                      [&] (std::string const & msg) { log.error(context_msg, msg); });
         }
         
@@ -338,7 +381,9 @@ namespace tchecker {
                                                 tchecker::log_t & log,
                                                 std::string const & context_msg)
         {
-          return tchecker::typecheck(stmt, _variables.system_bounded_integers(), _variables.system_clocks(),
+          return tchecker::typecheck(stmt,
+                                     VARIABLES::system_integer_variables(*this->_system),
+                                     VARIABLES::system_clock_variables(*this->_system),
                                      [&] (std::string const & msg) { log.error(context_msg, msg); });
         }
         
@@ -367,7 +412,7 @@ namespace tchecker {
           _statements_bytecode.clear();
         }
         
-        VARIABLES _variables;                                           /*!< Model variables (VM, etc) */
+        tchecker::vm_variables_t _vm_variables;                         /*!< Virtual machine variables */
         std::vector<tchecker::typed_expression_t *> _typed_invariants;  /*!< Type-checked locations invariants */
         std::vector<tchecker::typed_expression_t *> _typed_guards;      /*!< Type-checked edges guards */
         std::vector<tchecker::typed_statement_t *> _typed_statements;   /*!< Type-checked edges statements */

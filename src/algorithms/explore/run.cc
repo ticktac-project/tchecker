@@ -19,7 +19,7 @@ namespace tchecker {
         std::tuple<tchecker::intvar_index_t const &>
         explored_model_t::node_outputter_args(tchecker::explore::details::fsm::explored_model_t::model_t const & model)
         {
-          return std::tuple<tchecker::intvar_index_t const &>(model.variables().flattened_bounded_integers().index());
+          return std::tuple<tchecker::intvar_index_t const &>(model.flattened_integer_variables().index());
         }
         
         std::tuple<>
@@ -38,13 +38,13 @@ namespace tchecker {
         std::tuple<tchecker::intvar_index_t const &>
         explored_model_t::node_outputter_args(tchecker::explore::details::ta::explored_model_t::model_t const & model)
         {
-          return std::tuple<tchecker::intvar_index_t const &>(model.variables().flattened_bounded_integers().index());
+          return std::tuple<tchecker::intvar_index_t const &>(model.flattened_integer_variables().index());
         }
         
         std::tuple<tchecker::clock_index_t const &>
         explored_model_t::edge_outputter_args(tchecker::explore::details::ta::explored_model_t::model_t const & model)
         {
-          return std::tuple<tchecker::clock_index_t const &>(model.variables().flattened_clocks().index());
+          return std::tuple<tchecker::clock_index_t const &>(model.flattened_clock_variables().index());
         }
         
       } // end of namespace ta

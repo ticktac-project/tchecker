@@ -247,7 +247,7 @@ namespace tchecker {
         }
       }
       catch (std::exception const & e) {
-        throw std::invalid_argument("Variable cannot declared");
+        throw std::invalid_argument("Variable " + name + " cannot be declared");
       }
     }
   protected:
@@ -319,15 +319,18 @@ namespace tchecker {
      \pre there is no declared variable with base name `name`
      there are enough variable identifiers left to declare info.size() variables
      \post a variable with base name `name` of dimension info.size(), with information `info` has
-     been declared. This variable has been given the first available index (i.e. declared variables
-     use consecutive indices)
+     been declared. This variable has been given the next available identifier (i.e. declared variables
+     use consecutive identifiers)
      The info.size() identifiers starting from this variable identifier have been reserved for
      this variable.
+     \return the identifier associated to the declared variable
      \throw std::invalid_argument : if the precondition is violated
      */
-    void declare(std::string const & name, INFO const & info)
+    ID declare(std::string const & name, INFO const & info)
     {
-      declare(_next_id, name, info);
+      ID id = _next_id;
+      declare(id, name, info);
+      return id;
     }
     
     /*!
@@ -368,7 +371,7 @@ namespace tchecker {
   
   /*!
    \class flat_variables_t
-   \brief Definition of variables with a size (arrays)
+   \brief Definition of flat variables (i.e. variables of size 1)
    \tparam ID : type of variable identifiers
    \tparam INFO : type of variable informations, should derive from tchecker::size_info_t
    \tparam INDEX : type of variable index, should derive from tchecker::index_t
@@ -384,7 +387,7 @@ namespace tchecker {
     /*!
      \brief Constructor
      \param v : variables
-     \pre variables in v do not overlap
+     \pre variable identifiers in v do not overlap
      \post this has been built from flattening every variable in v. Each variable in v
      has been transformed in v's size consecutive variables of size 1 with same information
      as in v (except for the size). The variable indices start from the index of the corresponding
@@ -447,14 +450,15 @@ namespace tchecker {
      info.size() == 1
      there is at least one variable identifier left
      \post a variable with base name `name` and information `info` has been declared.
-     This variable has been allocatd the next available identifier
+     This variable has been allocated the next available identifier
+     \return identifier of the declared variable
      \throw std::invalid_argument : if the precondition is violated
      */
-    void declare(std::string const & name, INFO const & info)
+    ID declare(std::string const & name, INFO const & info)
     {
       if (info.size() != 1)
-        throw std::invalid_argument("Variable should have size 1");
-      tchecker::size_variables_t<ID, INFO, INDEX>::declare(name, info);
+        throw std::invalid_argument("Variable " + name + " should have size 1");
+      return tchecker::size_variables_t<ID, INFO, INDEX>::declare(name, info);
     }
     
     /*!
@@ -480,6 +484,111 @@ namespace tchecker {
     }
   private:
     using tchecker::size_variables_t<ID, INFO, INDEX>::declare;
+  };
+  
+  
+  
+  
+  /*!
+   \class array_variables_t
+   \brief Declaration of array variables and corresponding flattened variables
+   \tparam ID : type of variable identifiers
+   \tparam INFO : type of variable informations, should derive from tchecker::size_info_t
+   \tparam INDEX : type of variable index, should derive from tchecker::index_t
+   */
+  template <class ID, class INFO, class INDEX>
+  class array_variables_t : public tchecker::size_variables_t<ID, INFO, INDEX> {
+  public:
+    using tchecker::size_variables_t<ID, INFO, INDEX>::size_variables_t;
+    
+    /*!
+     \brief Declare a variable
+     \param id : variable identifier
+     \param name : variable name
+     \param info : variable informations
+     \pre there is no declared variable with base name `name`
+     `id` is greater or equal to the next available variable identifier
+     info.size() >= 1
+     there are enough variable identifiers left to declare info.size() variables
+     \post a variable with base name `name` of dimension info.size(), with information `info` has
+     been declared. This variable has identifier `id`.
+     The info.size() identifiers starting from this variable identifier have been reserved for
+     this variable.
+     Corresponding info.size() consecutive flat variables starting at identifier `id` have been
+     declared. The flat variables have information `info` except for size which ahs been set to 1.
+     \throw std::invalid_argument : if the precondition is violated
+     */
+    void declare(ID id, std::string const & name, INFO const & info)
+    {
+      tchecker::size_variables_t<ID, INFO, INDEX>::declare(id, name, info);
+      declare_flattened(id, name, info);
+    }
+    
+    /*!
+     \brief Declare a variable
+     \param name : variable name
+     \param info : variable informations
+     \pre there is no declared variable with base name `name`
+     info.size() >= 1
+     there are enough variable identifiers left to declare info.size() variables
+     \post a variable with base name `name` and information `info` has been declared.
+     This variable has been allocated the next available identifier
+     Corresponding info.size() consecutive flat variables starting at the same identifier as
+     variable `name` have been declared. The flat variables have information `info` except
+     for size which ahs been set to 1.
+     \return identifier of the declared variable
+     \throw std::invalid_argument : if the precondition is violated
+     */
+    ID declare(std::string const & name, INFO const & info)
+    {
+      ID id = tchecker::size_variables_t<ID, INFO, INDEX>::declare(name, info);
+      declare_flattened(id, name, info);
+      return id;
+    }
+    
+    /*!
+     \brief Accessor
+     \return flattened variables
+     */
+    inline constexpr tchecker::flat_variables_t<ID, INFO, INDEX> const & flattened() const
+    {
+      return _flattened_variables;
+    }
+  protected:
+    using tchecker::size_variables_t<ID, INFO, INDEX>::declare;
+    
+    /*!
+     \brief Declare flat variables conrresponding to an array variable
+     \param id : variable identifier
+     \param name : variable name
+     \param info : variable informations
+     \pre there is no declared variable with base name `name`
+     `id` is greater or equal to the next available variable identifier
+     info.size() >= 1
+     there are enough variable identifiers left to declare info.size() variables
+     \post info.size() consecutive flat variables have been declared from identifier `id`.
+     Each flat variable has information `info`, except for `size` which has been set to 1.
+     \throw std::invalid_argument : if the precondition is violated
+     */
+    void declare_flattened(ID id, std::string const & name, INFO const & info)
+    {
+      INFO flat_info{info};
+      auto size = info.size();
+      
+      if (size == 1)
+        _flattened_variables.declare(id, name, flat_info);
+      else {
+        flat_info.flatten();
+        
+        for (auto i = 0; i < size; ++i) {
+          std::stringstream ss;
+          ss << name << "[" << i << "]";
+          _flattened_variables.declare(id + i, ss.str(), flat_info);
+        }
+      }
+    }
+    
+    tchecker::flat_variables_t<ID, INFO, INDEX> _flattened_variables;  /*!< Flattened variables */
   };
   
 } // end of namespace tchecker

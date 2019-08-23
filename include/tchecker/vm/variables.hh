@@ -24,33 +24,18 @@ namespace tchecker {
 
   /*!
    \class vm_variables_t
-   \brief Virtual machine variables (flattened variables: arrays are translated to consecutive 1-dimensional variables)
+   \brief Virtual machine variables (proxy to flat bounded integer variables and flat clock variables)
    */
-  class vm_variables_t : public tchecker::flat_integer_variables_t, public tchecker::flat_clock_variables_t {
+  class vm_variables_t {
   public:
     /*!
-     \brief Default constructor
-     */
-    vm_variables_t() = default;
-    
-    /*!
      \brief Constructor
-     \param intvars : integer variables
-     \post Flat bounded integer variables have been computed from invars
-     \note this has an empty set of clocks
+     \param intvars : flat bounded integer variables
+     \param clocks : flat clock variables
+     \note this keeps a reference on intvars and on clocks
      */
-    vm_variables_t(tchecker::integer_variables_t const & intvars)
-    : tchecker::flat_integer_variables_t(intvars)
-    {}
-    
-    /*!
-     \brief Constructor
-     \param intvars : integer variables
-     \param clocks : clock variables
-     \post Flat bounded integer variables and flat clocks have been computed from intvars and clocks
-     */
-    vm_variables_t(tchecker::integer_variables_t const & intvars, tchecker::clock_variables_t const & clocks)
-    : tchecker::flat_integer_variables_t(intvars), tchecker::flat_clock_variables_t(clocks)
+    vm_variables_t(tchecker::flat_integer_variables_t const & intvars, tchecker::flat_clock_variables_t const & clocks)
+    : _intvars(intvars), _clocks(clocks)
     {}
     
     /*!
@@ -69,7 +54,7 @@ namespace tchecker {
     ~vm_variables_t() = default;
     
     /*!
-     \brief Assignment operator
+     \brief Assignement operator
      */
     tchecker::vm_variables_t & operator= (tchecker::vm_variables_t const &) = default;
     
@@ -77,36 +62,39 @@ namespace tchecker {
      \brief Move-assignment operator
      */
     tchecker::vm_variables_t & operator= (tchecker::vm_variables_t &&) = default;
-
+    
     /*!
      \brief Accessor
-     \return VM clock variables
+     \return flat bounded integer variables
      */
-    inline constexpr tchecker::flat_clock_variables_t const & clocks() const
+    inline constexpr tchecker::flat_integer_variables_t const & bounded_integers() const
     {
-      return *this;
+      return _intvars;
     }
     
     /*!
      \brief Accessor
-     \return VM bounded integer variables
+     \return flat clock variables
      */
-    inline constexpr tchecker::flat_integer_variables_t const & bounded_integers() const
+    inline constexpr tchecker::flat_clock_variables_t const & clocks() const
     {
-      return *this;
+      return _clocks;
     }
     
     /*!
      \brief Compatibility check
      \tparam INTVARS_VAL : type of integer variables valuation
      \param ival : integer variables valuation
-     \return true if ival has enough variables w.r.t. to VM integer variables
+     \return true if ival can store a valuation of VM bounded integer variables
      */
     template <class INTVARS_VAL>
-    bool compatible(INTVARS_VAL const & ival) const
+    constexpr bool compatible(INTVARS_VAL const & ival) const
     {
-      return (ival.size() >= tchecker::flat_integer_variables_t::size());
+      return (ival.size() >= _intvars.size());
     }
+  protected:
+    tchecker::flat_integer_variables_t const & _intvars; /*!< Flat bounded integers */
+    tchecker::flat_clock_variables_t const & _clocks;    /*!< Flat clocks */
   };
   
 } // end of namespace tchecker
