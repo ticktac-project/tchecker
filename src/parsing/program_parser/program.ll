@@ -7,6 +7,7 @@
 
 %{
 #include <cstdlib>
+#include <sstream>
 
 #include "tchecker/expression/expression.hh"
 #include "tchecker/parsing/parsing.hh"
@@ -88,6 +89,10 @@ integer  [0-9]+
 [ \t]+         { loc.step(); }
 <<EOF>>        { return program::parser_t::make_TOK_EOF(loc); }
 
+<*>.|\n        { std::stringstream msg;
+                 msg << loc << " Invalid character: " << yytext;
+                 throw std::runtime_error(msg.str()); }
+
 %%
 
 
@@ -119,10 +124,10 @@ namespace tchecker {
         yy_delete_buffer(current_buffer);
         yy_switch_to_buffer(previous_buffer);
 			}
-			catch (std::exception const & e) {
+			catch (...) {
         yy_delete_buffer(current_buffer);
         yy_switch_to_buffer(previous_buffer);
-				throw e;
+				throw;
 			}
 		}
 

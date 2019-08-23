@@ -9,6 +9,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <exception>
+#include <sstream>
 
 #include "tchecker/parsing/declaration.hh"
 #include "tchecker/parsing/parsing.hh"
@@ -123,6 +124,12 @@ integer   [-+]?[0-9]+
 }
 
 
+<*>.|\n        { std::stringstream msg;
+                 msg << loc << " Invalid character: " << yytext;
+                 throw std::runtime_error(msg.str()); }
+
+
+
 
 %%
 
@@ -169,9 +176,9 @@ namespace tchecker {
 				parser.parse();
         yy_flush_buffer(YY_CURRENT_BUFFER);
       }
-      catch (std::exception const & e) {
+      catch (...) {
         yy_flush_buffer(YY_CURRENT_BUFFER);
-        throw e;
+        throw;
       }      
       
       return sysdecl;
