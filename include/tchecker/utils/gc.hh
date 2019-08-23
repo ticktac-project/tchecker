@@ -28,8 +28,8 @@ namespace tchecker {
    terminate. The GC is run in a separate thread. Hence, enrolled functions should
    be thread safe.
    \note Use enroll() to register functions and pools. Then, use start() to start
-   garbage collecting, and stop_and_join() to stop garbarge collecting. Stop garbage
-   collecting before any enrolled pool is destructed or freed.
+   garbage collecting, and use stop() to stop garbarge collecting.
+   \note Garbage collection must be stopped before any enrolled pool is destructed
    */
   class gc_t {
   public:
@@ -56,8 +56,8 @@ namespace tchecker {
     /*!
      \brief Garbarge collection
      \post Repeatedly runs enrolled functions in a round-robin
-     \note The function terminates if stop() or stop_and_join() is called, and
-     every enrolled function terminates
+     \note The function terminates if stop() is called. As a result, execution
+     of enrolled functions is suspended
      */
     void collect() const;
     
