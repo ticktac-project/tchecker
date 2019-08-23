@@ -174,7 +174,7 @@ namespace tchecker {
         {
           // clock number excluding the zero clock
           tchecker::clock_id_t clock_nb
-          = tchecker::clockbounds::model_t<SYSTEM, VARIABLES>::flattened_clock_variables().size() - 1;
+          = tchecker::clockbounds::model_t<SYSTEM, VARIABLES>::flattened_clock_variables().identifiers().end() - 1;
           tchecker::process_id_t proc_nb = system->processes_count();
           
           if (proc_nb > std::numeric_limits<tchecker::clock_id_t>::max())

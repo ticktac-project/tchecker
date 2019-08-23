@@ -18,6 +18,7 @@
 
 #include "tchecker/basictypes.hh"
 #include "tchecker/utils/index.hh"
+#include "tchecker/utils/iterator.hh"
 
 /*!
  \file variables.hh
@@ -282,7 +283,7 @@ namespace tchecker {
      \brief Constructor
      \post the first variable identifier is 0
      */
-    size_variables_t() : _next_id(0)
+    size_variables_t() : _first_id(0), _next_id(0)
     {}
     
     /*!
@@ -358,11 +359,26 @@ namespace tchecker {
         throw std::invalid_argument("Not enough variable identifiers left");
       
       tchecker::variables_t<ID, INFO, INDEX>::declare(id, name, info);
+      if ((id < _first_id) || (_first_id == _next_id))
+        _first_id = id;
       _next_id = id + size;
+    }
+    
+    /*!
+     \brief Accessor
+     \return Range (begin, end) of variable identifiers, `begin` is the first used
+     identifier and `end` immediately follows the last used identifier
+     \note The erturned range may contained unused identifiers if variables have
+     not been declared with consecutive identifiers
+     */
+    inline constexpr tchecker::range_t<ID> identifiers() const
+    {
+      return tchecker::make_range(_first_id, _next_id);
     }
   protected:
     using tchecker::variables_t<ID, INFO, INDEX>::declare;
     
+    ID _first_id; /*!< First used variable identifier */
     ID _next_id;  /*!< Next available variable identifier */
   };
   
