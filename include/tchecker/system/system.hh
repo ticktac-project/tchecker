@@ -262,6 +262,23 @@ namespace tchecker {
       return _locs[id];
     }
     
+    /*!
+     \brief Accessor
+     \param process_name : process name
+     \param name : location name
+     \pre process_name and name are declared names of a process and a
+     location in that process respectively
+     \return location with name in process process_name
+     \throw std::invalid_argument : if the precondition is violated
+     */
+    inline LOC * location(std::string const & process_name, std::string const & name) const
+    {
+      auto p = _locs_map.find(locs_map_key(process_name, name));
+      if (p == _locs_map.end())
+        throw std::invalid_argument("unknown location");
+      return p->second;
+    }
+    
     // iterator over initial locations
   private:
     /*!
@@ -555,23 +572,6 @@ namespace tchecker {
   protected:
     /*!
      \brief Accessor
-     \param process_name : process name
-     \param name : location name
-     \pre process_name and name are declared names of a process and a
-     location in that process respectively
-     \return location with name in process process_name
-     \throw std::invalid_argument : if the precondition is violated
-     */
-    inline LOC * location(std::string const & process_name, std::string const & name)
-    {
-      auto p = _locs_map.find(locs_map_key(process_name, name));
-      if (p == _locs_map.end())
-        throw std::invalid_argument("unknown location");
-      return p->second;
-    }
-    
-    /*!
-     \brief Accessor
      \return Next location ID (1 + biggest ID among declared locations)
      */
     inline tchecker::loc_id_t next_loc_id() const
@@ -709,9 +709,11 @@ namespace tchecker {
      \brief Key constructor for location map
      \param process_name : process name
      \param name : location name
+     \pre process_name is a declared process
      \return key for location name in process process_name
+     \throw std::invalid_argument : if the precondition is violated
      */
-    inline loc_map_key_t locs_map_key(std::string const & process_name, std::string const & name)
+    inline loc_map_key_t locs_map_key(std::string const & process_name, std::string const & name) const
     {
       return locs_map_key(_processes.key(process_name), name);
     }
