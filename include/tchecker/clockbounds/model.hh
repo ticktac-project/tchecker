@@ -54,7 +54,7 @@ namespace tchecker {
         model._global_lu_map = nullptr;
         model._local_lu_map = nullptr;
         model._global_m_map = nullptr;
-        model._loval_m_map = nullptr;
+        model._local_m_map = nullptr;
       }
       
       /*!
@@ -113,7 +113,7 @@ namespace tchecker {
           model._global_lu_map = nullptr;
           model._local_lu_map = nullptr;
           model._global_m_map = nullptr;
-          model._loval_m_map = nullptr;
+          model._local_m_map = nullptr;
         }
         return *this;
       }
