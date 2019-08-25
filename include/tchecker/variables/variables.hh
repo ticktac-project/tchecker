@@ -8,6 +8,7 @@
 #ifndef TCHECKER_VARIABLES_HH
 #define TCHECKER_VARIABLES_HH
 
+#include <functional>
 #include <limits>
 #include <sstream>
 #include <stdexcept>
@@ -34,12 +35,17 @@ namespace tchecker {
   class size_info_t {
   public:
     /*!
+     \brief Size type
+     */
+    using size_t = unsigned int;
+    
+    /*!
      \brief Constructor
      \param size : variable size
      \pre size > 0
      \throw std::invalid_argument: if the precondition is violated
      */
-    size_info_t(unsigned int size);
+    size_info_t(tchecker::size_info_t::size_t size);
     
     /*!
      \brief Copy constructor
@@ -70,7 +76,7 @@ namespace tchecker {
      \brief Accessor
      \return size of the variable
      */
-    inline constexpr unsigned int size() const
+    inline constexpr tchecker::size_info_t::size_t size() const
     {
       return _size;
     }
@@ -84,7 +90,7 @@ namespace tchecker {
       _size = 1;
     }
   protected:
-    unsigned int _size;  /*!< Variable size */
+    tchecker::size_info_t::size_t _size;  /*!< Variable size */
   };
 
   
@@ -260,6 +266,46 @@ namespace tchecker {
   
   
   /*!
+   \brief Declare flat variables corresponding to a variable
+   \tparam ID : type of variable identifier
+   \tparam INFO : type of variable information, should derive from tchecker::size_info_t
+   \param id : variable identifier
+   \param name : variable name
+   \param info : variable informations
+   \param declare : declaration function
+   \pre same preconditions as function `declare`
+   \post info.size() consecutive flat variables have been declared from identifier `id`.
+   Each flat variable has information `info`, except for `size` which has been set to 1.
+   Variables have been declared using function `declare`
+   \throw as function declare
+   */
+  template <class ID, class INFO>
+  void declare_flattened_variable(ID id, std::string const & name, INFO const & info,
+                                  std::function<void(ID, std::string const &, INFO const &)> declare)
+  {
+    static_assert(std::is_base_of<tchecker::size_info_t, INFO>::value,
+                  "INFO should provide variable size");
+    
+    typename INFO::size_t size = info.size();
+    
+    if (size == 1)
+      declare(id, name, info);
+    else {
+      INFO flat_info{info};
+      flat_info.flatten();
+      
+      for (typename INFO::size_t i = 0; i < size; ++i) {
+        std::stringstream ss;
+        ss << name << "[" << i << "]";
+        declare(id + i, ss.str(), flat_info);
+      }
+    }
+  }
+  
+  
+  
+  
+  /*!
    \class size_variables_t
    \brief Definition of variables with a size (arrays)
    \tparam ID : type of variable identifiers
@@ -272,10 +318,10 @@ namespace tchecker {
     static_assert(std::is_base_of<tchecker::size_info_t, INFO>::value,
                   "INFO must provide variable size");
     
-    static_assert(std::numeric_limits<ID>::min() <= std::numeric_limits<unsigned int>::min(),
+    static_assert(std::numeric_limits<ID>::min() <= std::numeric_limits<typename INFO::size_t>::min(),
                   "ID type is too small");
     
-    static_assert(std::numeric_limits<ID>::max() >= std::numeric_limits<unsigned int>::max(),
+    static_assert(std::numeric_limits<ID>::max() >= std::numeric_limits<typename INFO::size_t>::max(),
                   "ID type is too small");
     
   public:
@@ -353,7 +399,7 @@ namespace tchecker {
       if (id < _next_id)
         throw std::invalid_argument("Variable identifier is already used");
       
-      unsigned int size = info.size();
+      typename INFO::size_t size = info.size();
       
       if (id + size < id) // overflow
         throw std::invalid_argument("Not enough variable identifiers left");
@@ -412,22 +458,15 @@ namespace tchecker {
      */
     flat_variables_t(tchecker::variables_t<ID, INFO, INDEX> const & v)
     {
-      for (auto && [id, name] : v.index()) {
-        INFO flat_info = v.info(id);
-        unsigned int size = flat_info.size();
-        
-        if (size == 1)
-          tchecker::size_variables_t<ID, INFO, INDEX>::declare(id, name, flat_info);
-        else {
-          flat_info.flatten();
-          
-          for (unsigned int i = 0; i < size; ++i) {
-            std::stringstream ss;
-            ss << name << "[" << i << "]";
-            tchecker::size_variables_t<ID, INFO, INDEX>::declare(id + i, ss.str(), flat_info);
-          }
-        }
-      }
+      for (auto && [id, name] : v.index())
+        tchecker::declare_flattened_variable<ID, INFO>(id,
+                                                       name,
+                                                       v.info(id),
+                                                       [&] (ID flat_id, std::string const & flat_name, INFO const & flat_info) {
+                                                         tchecker::size_variables_t<ID, INFO, INDEX>::declare(flat_id,
+                                                                                                              flat_name,
+                                                                                                              flat_info);
+                                                       });
     }
     
     /*!
@@ -537,7 +576,12 @@ namespace tchecker {
     void declare(ID id, std::string const & name, INFO const & info)
     {
       tchecker::size_variables_t<ID, INFO, INDEX>::declare(id, name, info);
-      declare_flattened(id, name, info);
+      tchecker::declare_flattened_variable<ID, INFO>(id,
+                                                     name,
+                                                     info,
+                                                     [&] (ID flat_id, std::string const & flat_name, INFO const & flat_info) {
+                                                       _flattened_variables.declare(flat_id, flat_name, flat_info);
+                                                     });
     }
     
     /*!
@@ -558,7 +602,12 @@ namespace tchecker {
     ID declare(std::string const & name, INFO const & info)
     {
       ID id = tchecker::size_variables_t<ID, INFO, INDEX>::declare(name, info);
-      declare_flattened(id, name, info);
+      tchecker::declare_flattened_variable<ID, INFO>(id,
+                                                     name,
+                                                     info,
+                                                     [&] (ID flat_id, std::string const & flat_name, INFO const & flat_info) {
+                                                       _flattened_variables.declare(flat_id, flat_name, flat_info);
+                                                     });
       return id;
     }
     
@@ -572,37 +621,6 @@ namespace tchecker {
     }
   protected:
     using tchecker::size_variables_t<ID, INFO, INDEX>::declare;
-    
-    /*!
-     \brief Declare flat variables conrresponding to an array variable
-     \param id : variable identifier
-     \param name : variable name
-     \param info : variable informations
-     \pre there is no declared variable with base name `name`
-     `id` is greater or equal to the next available variable identifier
-     info.size() >= 1
-     there are enough variable identifiers left to declare info.size() variables
-     \post info.size() consecutive flat variables have been declared from identifier `id`.
-     Each flat variable has information `info`, except for `size` which has been set to 1.
-     \throw std::invalid_argument : if the precondition is violated
-     */
-    void declare_flattened(ID id, std::string const & name, INFO const & info)
-    {
-      INFO flat_info{info};
-      auto size = info.size();
-      
-      if (size == 1)
-        _flattened_variables.declare(id, name, flat_info);
-      else {
-        flat_info.flatten();
-        
-        for (auto i = 0; i < size; ++i) {
-          std::stringstream ss;
-          ss << name << "[" << i << "]";
-          _flattened_variables.declare(id + i, ss.str(), flat_info);
-        }
-      }
-    }
     
     tchecker::flat_variables_t<ID, INFO, INDEX> _flattened_variables;  /*!< Flattened variables */
   };
