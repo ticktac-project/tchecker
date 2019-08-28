@@ -39,10 +39,30 @@ namespace tchecker {
     gc_t();
     
     /*!
+     \brief Copy constructor (deleted)
+     */
+    gc_t(tchecker::gc_t const &) = delete;
+    
+    /*!
+     \brief Move constructor
+     */
+    gc_t(tchecker::gc_t && gc);
+    
+    /*!
      \brief Destructor
      \post The garbage collection thread has been stopped
      */
     ~gc_t();
+    
+    /*!
+     \brief Assignment operator (deleted)
+     */
+    tchecker::gc_t & operator= (tchecker::gc_t const &) = delete;
+    
+    /*!
+     \brief Move-assignment operator
+     */
+    tchecker::gc_t & operator= (tchecker::gc_t &&);
     
     /*!
      \brief Enroll a function

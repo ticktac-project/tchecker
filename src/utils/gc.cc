@@ -15,10 +15,31 @@ namespace tchecker {
   {}
   
   
+  gc_t::gc_t(tchecker::gc_t && gc)
+  : _functions(std::move(gc._functions)), _stop(gc._stop), _thread(gc._thread)
+  {
+    gc._stop = true;
+    gc._thread = nullptr;
+  }
+  
+  
   gc_t::~gc_t()
   {
     if ((_thread != nullptr) && _thread->joinable())
       stop();
+  }
+  
+  
+  tchecker::gc_t & gc_t::operator= (tchecker::gc_t && gc)
+  {
+    if (this != &gc) {
+      _functions = std::move(gc._functions);
+      _stop = gc._stop;
+      _thread = gc._thread;
+      gc._stop = true;
+      gc._thread = nullptr;
+    }
+    return *this;
   }
   
   
