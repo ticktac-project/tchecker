@@ -63,16 +63,18 @@ namespace tchecker {
     
     /*!
      \brief Start garbage collection
-     \post A garbage collection thread has been started
-     \throw std::runtime_error : if garbage collection is already running
+     \post The garbage collection thread has been started
+     \note Does nothing if the garbage collection thread is already running
+     \throw when std::thread(Function && f, Args &&... args) throws
      */
     void start();
     
     /*!
      \brief Terminates the garbage collection thread
-     \post The garbarge collection thread has been stopped, assuming that
-     all enrolled functions terminate
-     \note This method is blocking until the thread terminates
+     \pre All enrolled functions terminate
+     \post The garbarge collection thread has been stopped
+     \note This method is blocking until the garbage collection thread terminates.
+     This method may not terminate if an enrolled function does not terminate.
      */
     void stop();
   private:

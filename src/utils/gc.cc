@@ -5,6 +5,8 @@
  *
  */
 
+#include <cassert>
+
 #include "tchecker/utils/gc.hh"
 
 namespace tchecker {
@@ -45,19 +47,27 @@ namespace tchecker {
   
   void gc_t::start()
   {
-    if (_thread != nullptr)
-      throw std::runtime_error("garbage collection is already running");
-    _stop = false;
-    _thread = new std::thread(&tchecker::gc_t::collect, this);
+    assert(_stop == (_thread == nullptr));
+    if (_thread == nullptr) {
+      _stop = false;
+      _thread = new std::thread(&tchecker::gc_t::collect, this);
+    }
+    assert(_stop == false);
+    assert(_thread != nullptr);
   }
   
   
   void gc_t::stop()
   {
-    _stop = true;
-    _thread->join();
-    delete _thread;
-    _thread = nullptr;
+    assert(_stop == (_thread == nullptr));
+    if (_thread != nullptr) {
+      _stop = true;
+      _thread->join();
+      delete _thread;
+      _thread = nullptr;
+    }
+    assert(_thread == nullptr);
+    assert(_stop == true);
   }
   
 } // end of namespace tchecker
