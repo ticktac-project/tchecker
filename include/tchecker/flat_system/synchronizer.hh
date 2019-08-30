@@ -181,13 +181,14 @@ namespace tchecker {
        \param loc_event_edges : map location ID * event ID -> edges
        \param sync_begin : iterator on first synchronization
        \param sync_end : past-the-end iterator on synchronizations
+       \note this keeps a pointer to vloc and a pointer to loc_event_edges
        */
       synchronous_edges_iterator_t
       (VLOC const & vloc,
        loc_edge_range_t<VLOC> (*loc_event_edges) (typename VLOC::loc_t const *, tchecker::event_id_t),
        SYNC_ITERATOR const & sync_begin,
        SYNC_ITERATOR const & sync_end)
-      : _vloc(vloc),
+      : _vloc(&vloc),
       _loc_event_edges(loc_event_edges),
       _sync_it(sync_begin),
       _sync_end(sync_end)
@@ -213,6 +214,7 @@ namespace tchecker {
        \brief Destructor
        */
       ~synchronous_edges_iterator_t() = default;
+      // NB: DO NOT DESTRUCT _vloc WHICH IS A REFERENCE (see constructor)
       
       /*!
        \brief Assignment operator
@@ -237,7 +239,7 @@ namespace tchecker {
        */
       bool operator== (tchecker::details::synchronous_edges_iterator_t<VLOC, EDGE, SYNC_ITERATOR> const & it) const
       {
-        return ((&_vloc == &it._vloc) &&
+        return ((_vloc == it._vloc) &&
                 (_loc_event_edges == it._loc_event_edges) &&
                 (_sync_it == it._sync_it) &&
                 (_sync_end == it._sync_end) &&
@@ -314,7 +316,7 @@ namespace tchecker {
           _cartesian_it.clear();
           auto constraints = _sync_it->synchronization_constraints();
           for (auto const & constr : constraints) {
-            auto edges = _loc_event_edges(_vloc[constr.pid()], constr.event_id());
+            auto edges = _loc_event_edges((*_vloc)[constr.pid()], constr.event_id());
             if ((constr.strength() == tchecker::SYNC_WEAK) && (edges.begin() == edges.end()))
               continue;
             _cartesian_it.push_back(edges);
@@ -323,12 +325,12 @@ namespace tchecker {
       }
       
       
-      VLOC const & _vloc;                                                        /*!< Tuple of locations */
+      VLOC const * _vloc;                                                       /*!< Tuple of locations */
       loc_edge_range_t<VLOC> (*_loc_event_edges) (typename VLOC::loc_t const *,
-                                                  tchecker::event_id_t);         /*!< Map: (location, event) to edges */
-      SYNC_ITERATOR _sync_it;                                                    /*!< Iterator on first synchronization */
-      SYNC_ITERATOR _sync_end;                                                   /*!< Past-the-end iterator on synchronizations */
-      tchecker::cartesian_iterator_t<loc_edge_iterator_t<VLOC>> _cartesian_it;   /*!< Cartesian iterator */
+                                                  tchecker::event_id_t);        /*!< Map: (location, event) to edges */
+      SYNC_ITERATOR _sync_it;                                                   /*!< Iterator on first synchronization */
+      SYNC_ITERATOR _sync_end;                                                  /*!< Past-the-end iterator on synchronizations */
+      tchecker::cartesian_iterator_t<loc_edge_iterator_t<VLOC>> _cartesian_it;  /*!< Cartesian iterator */
     };
     
     
