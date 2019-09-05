@@ -271,7 +271,8 @@ namespace tchecker {
     }
     
     
-    void reset(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x, tchecker::clock_id_t y, int32_t value)
+    void reset(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x, tchecker::clock_id_t y,
+               int32_t value)
     {
       if (y == 0)
         reset_to_value(dbm, dim, x, value);
@@ -375,6 +376,28 @@ namespace tchecker {
       
       assert(tchecker::dbm::is_consistent(dbm, dim));
       assert(tchecker::dbm::is_tight(dbm, dim));
+    }
+    
+    
+    enum tchecker::dbm::status_t intersection(tchecker::dbm::db_t * dbm,
+                                              tchecker::dbm::db_t const * dbm1,
+                                              tchecker::dbm::db_t const * dbm2,
+                                              tchecker::clock_id_t dim)
+    {
+      assert(dim >= 1);
+      assert(dbm != nullptr);
+      assert(dbm1 != nullptr);
+      assert(dbm2 != nullptr);
+      assert(tchecker::dbm::is_consistent(dbm1, dim));
+      assert(tchecker::dbm::is_consistent(dbm2, dim));
+      assert(tchecker::dbm::is_tight(dbm1, dim));
+      assert(tchecker::dbm::is_tight(dbm2, dim));
+      
+      for (tchecker::clock_id_t i = 0; i < dim; ++i)
+        for (tchecker::clock_id_t j = 0; j < dim; ++j)
+          DBM(i,j) = tchecker::dbm::min(DBM1(i,j), DBM2(i,j));
+      
+      return tchecker::dbm::tighten(dbm, dim);
     }
     
     

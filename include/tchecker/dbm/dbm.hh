@@ -277,7 +277,8 @@ namespace tchecker {
      \throw std::invalid_argument : if `<= value` cannot be represented as a tchecker::dbm::db_t (only if compilation flag
      DBM_UNSAFE is not set)
      */
-    void reset(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x, tchecker::clock_id_t y, int32_t value);
+    void reset(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x, tchecker::clock_id_t y,
+               int32_t value);
     
     /*!
      \brief Reset a clock to a constant
@@ -356,6 +357,28 @@ namespace tchecker {
      dbm is tight.
      */
     void open_up(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim);
+    
+    /*!
+     \brief Intersection
+     \param dbm : a dbm
+     \param dbm1 : a dbm
+     \param dbm2 : a dbm
+     \param dim : dimension of dbm1, dbm1 and dbm2
+     \pre dbm, dbm1 and dbm2 are not nullptr (checked by assertion)
+     dbm, dbm1 and dbm2 are dim*dim arrays of difference bounds
+     dbm1 and dbm2 are consistent (checked by assertion)
+     dbm1 and dbm2 are tight (checked by assertion)
+     dim >= 1 (checked by assertion).
+     \post dbm is the intersection of dbm1 and dbm2
+     dbm is consistent
+     dbm is tight
+     \return EMPTY if the intersection of dbm1 and dbm2 is empty, NON_EMPTY otherwise
+     \note dbm can be one of dbm1 or dbm2
+     */
+    enum tchecker::dbm::status_t intersection(tchecker::dbm::db_t * dbm,
+                                              tchecker::dbm::db_t const * dbm1,
+                                              tchecker::dbm::db_t const * dbm2,
+                                              tchecker::clock_id_t dim);
     
     /*!
      \brief ExtraM extrapolation
@@ -463,8 +486,8 @@ namespace tchecker {
      and Walukiewicz. Inf. Comput., 2016)
      \note set l[i]/u[i] to -tchecker::dbm::INF_VALUE if clock i has no lower/upper bound
      */
-    bool is_alu_le(tchecker::dbm::db_t const * dbm1, tchecker::dbm::db_t const * dbm2, tchecker::clock_id_t dim, int32_t const * l,
-                   int32_t const * u);
+    bool is_alu_le(tchecker::dbm::db_t const * dbm1, tchecker::dbm::db_t const * dbm2, tchecker::clock_id_t dim,
+                   int32_t const * l, int32_t const * u);
     
     /*!
      \brief Checks inclusion w.r.t. abstraction aM
@@ -485,7 +508,8 @@ namespace tchecker {
      and Walukiewicz. Inf. Comput., 2016)
      \note set m[i] to -tchecker::dbm::INF_VALUE if clock i has no lower/upper bound
      */
-    bool is_am_le(tchecker::dbm::db_t const * dbm1, tchecker::dbm::db_t const * dbm2, tchecker::clock_id_t dim, int32_t const * m);
+    bool is_am_le(tchecker::dbm::db_t const * dbm1, tchecker::dbm::db_t const * dbm2, tchecker::clock_id_t dim,
+                  int32_t const * m);
     
     /*!
      \brief Hash function
@@ -521,7 +545,8 @@ namespace tchecker {
      dbm is a dim*dim array of difference bounds
      dim >= 1 (checked by assertion).
      clock_name maps any clock ID in [0,dim) to a name
-     \post the relevant constraints in dbm has been output to os. Relevant constraints are those that differ from the universal DBM.
+     \post the relevant constraints in dbm has been output to os. Relevant constraints are those that differ from the
+     universal DBM.
      \return os after output
      */
     std::ostream & output(std::ostream & os, tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim,

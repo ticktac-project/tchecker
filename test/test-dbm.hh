@@ -8,6 +8,7 @@
 #include "tchecker/dbm/dbm.hh"
 
 #define DBM(i,j)       dbm[(i)*dim+(j)]
+#define DBM1(i,j)      dbm1[(i)*dim+(j)]
 #define DBM2(i,j)      dbm2[(i)*dim+(j)]
 
 TEST_CASE( "is_universal, structural tests", "[dbm]") {
@@ -1035,6 +1036,106 @@ TEST_CASE( "DBM open_up (delay)", "[dbm]" ) {
     REQUIRE(tchecker::dbm::is_equal(dbm, dbm2, dim));
   }
   
+}
+
+
+
+
+TEST_CASE( "DBM intersection", "[dbm]" ) {
+  
+  SECTION( "intersection with universal zone has no effect" ) {
+    tchecker::clock_id_t const dim = 3;
+    
+    tchecker::dbm::db_t dbm1[dim * dim];
+    tchecker::dbm::universal_positive(dbm1, dim);
+    // 0 <= x1 < 5 & 2 <= x2 <= 3
+    DBM1(0,1) = tchecker::dbm::LE_ZERO;
+    DBM1(0,2) = tchecker::dbm::db(tchecker::dbm::LE, -2);
+    DBM1(1,0) = tchecker::dbm::db(tchecker::dbm::LT, 5);
+    DBM1(2,0) = tchecker::dbm::db(tchecker::dbm::LE, 3);
+    tchecker::dbm::tighten(dbm1, dim);
+    
+    tchecker::dbm::db_t dbm2[dim * dim];
+    tchecker::dbm::universal_positive(dbm2, dim);
+    
+    tchecker::dbm::db_t dbm[dim * dim];
+    REQUIRE(tchecker::dbm::intersection(dbm, dbm1, dbm2, dim) == tchecker::dbm::NON_EMPTY);
+    REQUIRE(tchecker::dbm::is_tight(dbm, dim));
+    REQUIRE(tchecker::dbm::is_equal(dbm, dbm1, dim));
+  }
+  
+  SECTION( "non-empty intersection" ) {
+    tchecker::clock_id_t const dim = 4;
+    
+    tchecker::dbm::db_t dbm1[dim * dim];
+    tchecker::dbm::universal_positive(dbm1, dim);
+    // 0 <= x1 < 5 & 2 <= x2 <= 3 & 1 < x3 <= 4
+    DBM1(0,1) = tchecker::dbm::LE_ZERO;
+    DBM1(0,2) = tchecker::dbm::db(tchecker::dbm::LE, -2);
+    DBM1(0,3) = tchecker::dbm::db(tchecker::dbm::LT, -1);
+    DBM1(1,0) = tchecker::dbm::db(tchecker::dbm::LT, 5);
+    DBM1(2,0) = tchecker::dbm::db(tchecker::dbm::LE, 3);
+    DBM1(3,0) = tchecker::dbm::db(tchecker::dbm::LE, 4);
+    tchecker::dbm::tighten(dbm1, dim);
+    
+    tchecker::dbm::db_t dbm2[dim * dim];
+    tchecker::dbm::universal_positive(dbm2, dim);
+    // 1 <= x1 & 1 < x1 - x2 < 2
+    DBM2(0,1) = tchecker::dbm::db(tchecker::dbm::LE, -1);
+    DBM2(1,2) = tchecker::dbm::db(tchecker::dbm::LT, 2);
+    DBM2(2,1) = tchecker::dbm::db(tchecker::dbm::LT, -1);
+    tchecker::dbm::tighten(dbm2, dim);
+    
+    tchecker::dbm::db_t dbm[dim * dim];
+    REQUIRE(tchecker::dbm::intersection(dbm, dbm1, dbm2, dim) == tchecker::dbm::NON_EMPTY);
+    REQUIRE(tchecker::dbm::is_tight(dbm, dim));
+    
+    // DBM should be:
+    // <=0  <-3  <=-2  <-1
+    // <5  <=0  <2  <4
+    // <=3  <-1  <=0  <2
+    // <=4  <1  <=2  <=0
+    REQUIRE(DBM(0,0) == tchecker::dbm::LE_ZERO);
+    REQUIRE(DBM(0,1) == tchecker::dbm::db(tchecker::dbm::LT, -3));
+    REQUIRE(DBM(0,2) == tchecker::dbm::db(tchecker::dbm::LE, -2));
+    REQUIRE(DBM(0,3) == tchecker::dbm::db(tchecker::dbm::LT, -1));
+    REQUIRE(DBM(1,0) == tchecker::dbm::db(tchecker::dbm::LT, 5));
+    REQUIRE(DBM(1,1) == tchecker::dbm::LE_ZERO);
+    REQUIRE(DBM(1,2) == tchecker::dbm::db(tchecker::dbm::LT, 2));
+    REQUIRE(DBM(1,3) == tchecker::dbm::db(tchecker::dbm::LT, 4));
+    REQUIRE(DBM(2,0) == tchecker::dbm::db(tchecker::dbm::LE, 3));
+    REQUIRE(DBM(2,1) == tchecker::dbm::db(tchecker::dbm::LT, -1));
+    REQUIRE(DBM(2,2) == tchecker::dbm::LE_ZERO);
+    REQUIRE(DBM(2,3) == tchecker::dbm::db(tchecker::dbm::LT, 2));
+    REQUIRE(DBM(3,0) == tchecker::dbm::db(tchecker::dbm::LE, 4));
+    REQUIRE(DBM(3,1) == tchecker::dbm::db(tchecker::dbm::LT, 1));
+    REQUIRE(DBM(3,2) == tchecker::dbm::db(tchecker::dbm::LE, 2));
+    REQUIRE(DBM(3,3) == tchecker::dbm::LE_ZERO);
+  }
+ 
+  SECTION( "empty intersection" ) {
+    tchecker::clock_id_t const dim = 4;
+    
+    tchecker::dbm::db_t dbm1[dim * dim];
+    tchecker::dbm::universal_positive(dbm1, dim);
+    // 0 <= x1 < 5 & 2 <= x2 <= 3 & 1 < x3 <= 4
+    DBM1(0,1) = tchecker::dbm::LE_ZERO;
+    DBM1(0,2) = tchecker::dbm::db(tchecker::dbm::LE, -2);
+    DBM1(0,3) = tchecker::dbm::db(tchecker::dbm::LT, -1);
+    DBM1(1,0) = tchecker::dbm::db(tchecker::dbm::LT, 5);
+    DBM1(2,0) = tchecker::dbm::db(tchecker::dbm::LE, 3);
+    DBM1(3,0) = tchecker::dbm::db(tchecker::dbm::LE, 4);
+    tchecker::dbm::tighten(dbm1, dim);
+    
+    tchecker::dbm::db_t dbm2[dim * dim];
+    tchecker::dbm::universal_positive(dbm2, dim);
+    // x1 - x2 > 4
+    DBM2(2,1) = tchecker::dbm::db(tchecker::dbm::LT, -4);
+    tchecker::dbm::tighten(dbm2, dim);
+    
+    tchecker::dbm::db_t dbm[dim * dim];
+    REQUIRE(tchecker::dbm::intersection(dbm, dbm1, dbm2, dim) == tchecker::dbm::EMPTY);
+  }
 }
 
 
