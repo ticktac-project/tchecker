@@ -1,5 +1,9 @@
 # TChecker
 
+[![Build Status](https://travis-ci.org/ticktac-project/tchecker.svg?branch=master)](https://travis-ci.org/ticktac-project/tchecker)
+[![License](https://img.shields.io/badge/license-MIT-informational.svg)](https://github.com/ticktac-project/tchecker/blob/master/LICENSE)
+
+
 ## Description
 
 This is TChecker, an *open-source* model-checker for timed systems. TChecker is
