@@ -77,7 +77,10 @@ namespace tchecker {
       /*!
        \brief Destructor
        */
-      ~state_pool_allocator_t() = default;
+      ~state_pool_allocator_t()
+      {
+        destruct_all();
+      }
       
       /*!
        \brief Assignment operator (deleted)
