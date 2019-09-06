@@ -4,11 +4,15 @@
 
 find_package(Boost REQUIRED)
 
+option(LIBTCHECKER_ENABLE_SHARED "Build TChecker shared library" OFF)
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 
 if(${CMAKE_HOST_SYSTEM_NAME} MATCHES "Linux")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 endif()
+
+set(CMAKE_MACOSX_RPATH 1)
 
 tck_check_cxx_flags("-ferror-limit=150" ERROR_LIMIT)
 tck_check_cxx_flags("-fstrict-vtable-pointers" STRICT_VTABLE_POINTERS)
@@ -66,14 +70,32 @@ ${VM_SRC}
 ${ZG_SRC}
 ${ZONE_SRC})
 
-add_library(libtchecker STATIC ${LIBTCHECKER_SRC})
-set_property(TARGET libtchecker PROPERTY CXX_STANDARD 17)
-set_property(TARGET libtchecker PROPERTY CXX_STANDARD_REQUIRED ON)
 
+# Build TChecker static library
+add_library(libtchecker_static STATIC ${LIBTCHECKER_SRC})
+set_property(TARGET libtchecker_static PROPERTY OUTPUT_NAME tchecker)
+set_property(TARGET libtchecker_static PROPERTY CXX_STANDARD 17)
+set_property(TARGET libtchecker_static PROPERTY CXX_STANDARD_REQUIRED ON)
+
+
+# Build TChecker shared library if required
+if(LIBTCHECKER_ENABLE_SHARED)
+  add_library(libtchecker_shared SHARED ${LIBTCHECKER_SRC})
+  set_property(TARGET libtchecker_shared PROPERTY OUTPUT_NAME tchecker)
+  set_property(TARGET libtchecker_shared PROPERTY CXX_STANDARD 17)
+  set_property(TARGET libtchecker_shared PROPERTY CXX_STANDARD_REQUIRED ON)
+  if(${CMAKE_HOST_SYSTEM_NAME} MATCHES "Linux")
+    set_property(TARGET libtchecker_shared PROPERTY POSITION_INDEPENDENT_CODE 1)
+  endif()
+endif()
+
+
+# Build TChecker executable
 add_executable(tchecker ${CMAKE_CURRENT_SOURCE_DIR}/tchecker/tchecker.cc)
-target_link_libraries(tchecker libtchecker)
+target_link_libraries(tchecker libtchecker_static)
 set_property(TARGET tchecker PROPERTY CXX_STANDARD 17)
 set_property(TARGET tchecker PROPERTY CXX_STANDARD_REQUIRED ON)
+
 
 # Project view in IDEs (Xcode, etc)
 foreach(FILE ${LIBTCHECKER_SRC}) 
@@ -92,10 +114,13 @@ foreach(FILE ${LIBTCHECKER_SRC})
 endforeach()
 
 # Install rule for binaries, lib and header files
-install(TARGETS tchecker libtchecker
-	RUNTIME DESTINATION bin
-	LIBRARY DESTINATION lib
-	ARCHIVE DESTINATION lib)
+install(TARGETS tchecker libtchecker_static
+  RUNTIME DESTINATION bin
+  ARCHIVE DESTINATION lib)
+
+if(LIBTCHECKER_ENABLE_SHARED)
+  install(TARGETS libtchecker_shared LIBRARY DESTINATION lib)
+endif()
 
 install(DIRECTORY ../include/ DESTINATION include)
 
