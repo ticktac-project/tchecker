@@ -19,6 +19,20 @@ add_custom_command(OUTPUT system.lex-fixed.cc
 COMMAND sed -e "s/register//g" ${FLEX_system_lexer_OUTPUTS} > system.lex-fixed.cc
 DEPENDS ${FLEX_system_lexer_OUTPUTS})
 
-add_library(system_parsing OBJECT ${BISON_system_parser_OUTPUTS} system.lex-fixed.cc system.ll system.yy)
-set_property(TARGET system_parsing PROPERTY CXX_STANDARD 17)
-set_property(TARGET system_parsing PROPERTY CXX_STANDARD_REQUIRED ON)
+# Build system parsing static object library
+add_library(system_parsing_static OBJECT
+  ${BISON_system_parser_OUTPUTS} system.lex-fixed.cc system.ll system.yy)
+set_property(TARGET system_parsing_static PROPERTY CXX_STANDARD 17)
+set_property(TARGET system_parsing_static PROPERTY CXX_STANDARD_REQUIRED ON)
+
+# Build system parsing shared object library
+if(LIBTCHECKER_ENABLE_SHARED)
+  add_library(system_parsing_shared OBJECT
+    ${BISON_system_parser_OUTPUTS} system.lex-fixed.cc system.ll system.yy)
+  set_property(TARGET system_parsing_shared PROPERTY CXX_STANDARD 17)
+  set_property(TARGET system_parsing_shared PROPERTY CXX_STANDARD_REQUIRED ON)
+  if(${CMAKE_HOST_SYSTEM_NAME} MATCHES "Linux")
+    set_property(TARGET system_parsing_shared PROPERTY
+      POSITION_INDEPENDENT_CODE 1)
+  endif()
+endif()

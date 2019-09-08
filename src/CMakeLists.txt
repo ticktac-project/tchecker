@@ -73,6 +73,9 @@ ${ZONE_SRC})
 
 # Build TChecker static library
 add_library(libtchecker_static STATIC ${LIBTCHECKER_SRC})
+target_link_libraries(libtchecker_static
+  program_parsing_static
+  system_parsing_static)
 set_property(TARGET libtchecker_static PROPERTY OUTPUT_NAME tchecker)
 set_property(TARGET libtchecker_static PROPERTY CXX_STANDARD 17)
 set_property(TARGET libtchecker_static PROPERTY CXX_STANDARD_REQUIRED ON)
@@ -81,6 +84,9 @@ set_property(TARGET libtchecker_static PROPERTY CXX_STANDARD_REQUIRED ON)
 # Build TChecker shared library if required
 if(LIBTCHECKER_ENABLE_SHARED)
   add_library(libtchecker_shared SHARED ${LIBTCHECKER_SRC})
+  target_link_libraries(libtchecker_shared
+    program_parsing_shared
+    system_parsing_shared)
   set_property(TARGET libtchecker_shared PROPERTY OUTPUT_NAME tchecker)
   set_property(TARGET libtchecker_shared PROPERTY CXX_STANDARD 17)
   set_property(TARGET libtchecker_shared PROPERTY CXX_STANDARD_REQUIRED ON)
