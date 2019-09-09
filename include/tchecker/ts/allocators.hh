@@ -106,6 +106,21 @@ namespace tchecker {
       }
       
       /*!
+       \brief Destruct state
+       \param p : pointer to a state
+       \pre p has been constructed by this allocator
+       p is not nullptr
+       \post the object pointed by p has been destructed if its reference counter is 1
+       (i.e. p is the only pointer to the object), and p points to nullptr. Does nothing
+       otherwise
+       \return true if the state has been destructed, false otherwise
+       */
+      bool destruct(tchecker::intrusive_shared_ptr_t<STATE> & p)
+      {
+        return _state_pool.destruct(p);
+      }
+      
+      /*!
        \brief Collect unused states
        \post Unused states have been deleted
        \note Use method enroll() to enroll on a tchecker::gc_t garbage collector
@@ -342,6 +357,19 @@ namespace tchecker {
       }
       
       /*!
+       \brief Destruct state
+       \param p : pointer to state
+       \pre p has been allocated by this allocator
+       p is not nullptr
+       \post the state pointed by p has been destructed and set to nullptr if its reference
+       counter is 1 (i.e. p is the only pointer to this state)
+       */
+      bool destruct_state(state_ptr_t & p)
+      {
+        return _state_allocator.destruct(p);
+      }
+      
+      /*!
        \brief Transition allocation
        \param args : parameters to a constructor of transition_t
        \return pointer to a newly allocated transition constructed from args
@@ -362,6 +390,19 @@ namespace tchecker {
       {
         return std::apply(&tchecker::ts::allocator_t<STATE_ALLOCATOR, TRANSITION_ALLOCATOR>::_allocate_transition<ARGS...>,
                           std::tuple_cat(std::make_tuple(this), args));
+      }
+      
+      /*!
+       \brief Destruct transition
+       \param p : pointer to transition
+       \pre p has been allocated by this allocator
+       p is not nullptr
+       \post the transition pointed by p has been destructed and set to nullptr if its reference
+       counter is 1 (i.e. p is the only pointer to this transition)
+       */
+      bool destruct_transition(transition_ptr_t & p)
+      {
+        return _transition_allocator.destruct(p);
       }
       
       /*!
@@ -400,7 +441,7 @@ namespace tchecker {
       }
       
       /*!
-       \brief TRansition allocation
+       \brief Transition allocation
        \param args : parameters to a constructor of transition_t
        \return pointer to a newly allocated transiton constructed from args
        */

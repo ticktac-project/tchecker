@@ -166,6 +166,34 @@ namespace tchecker {
         }
         
         /*!
+         \brief Destruct state
+         \param p : pointer to state
+         \pre p has been constructed by this allocator.
+         p is not nullptr
+         \post the state pointed by p has been destructed if its reference counter is 1 (i.e. p is the only
+         reference to the state), and p points to nullptr. Does nothing otherwise.
+         The tuple of locations, integer variables valuation, offset zone and synchronized zone have been destructed
+         (if the state was the only one pointing to them)
+         \return true if the state has been destructed, false otherwise
+         */
+        bool destruct(tchecker::intrusive_shared_ptr_t<STATE> & p)
+        {
+          if (p.ptr() == nullptr)
+            return false;
+          
+          auto offset_zone_ptr = p->offset_zone_ptr();
+          auto sync_zone_ptr = p->sync_zone_ptr();
+          
+          if ( ! tchecker::ta::details::state_pool_allocator_t<STATE, VLOC, INTVARS_VAL>::destruct(p) )
+            return false;
+          
+          _offset_zone_pool.destruct(offset_zone_ptr);
+          _sync_zone_pool.destruct(sync_zone_ptr);
+          
+          return true;
+        }
+        
+        /*!
          \brief Collect unused states
          \post Unused states, unused tuples of locations, unused integer variables valuations and unused zones have been
          collected

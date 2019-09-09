@@ -160,6 +160,34 @@ namespace tchecker {
     }
     
     /*!
+     \brief Destruct an object
+     \param p : pointer to object
+     \pre p has been allocated by this pool
+     p is not nullptr
+     \post the object pointed by p has been destructed and de-allocated if its reference
+     counter is 1 (i.e. p is the only pointer to the obejct), and the pointer p points to
+     nullptr. Does nothing otherwise
+     \return true if the object pointed by p has been destructed, false otherwise
+     */
+    bool destruct(tchecker::intrusive_shared_ptr_t<T> & p)
+    {
+      if (p.ptr() == nullptr)
+        return false;
+      if (p->refcount() != 1)
+        return false;
+      
+      T * t = p.ptr();
+      T::destruct(t);
+      
+      typename T::refcount_t * chunk = reinterpret_cast<typename T::refcount_t *>(t) - 1;
+      release(chunk);
+      
+      p = nullptr;
+      
+      return true;
+    }
+    
+    /*!
      \brief Collects unused chunks
      \post All objects with reference counter = 0 (COLLECTABLE_CHUNK) have been
      collected in the list of free objects, and their counters have been set to

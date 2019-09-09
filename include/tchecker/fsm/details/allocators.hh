@@ -116,9 +116,10 @@ namespace tchecker {
         template <class ... ARGS>
         tchecker::intrusive_shared_ptr_t<STATE> construct(ARGS && ... args)
         {
-          return tchecker::ts::state_pool_allocator_t<STATE>::construct(args...,
-                                                                        _vloc_pool.construct(_vloc_capacity),
-                                                                        _intvars_val_pool.construct(_intvars_val_capacity));
+          return
+          tchecker::ts::state_pool_allocator_t<STATE>::construct(args...,
+                                                                 _vloc_pool.construct(_vloc_capacity),
+                                                                 _intvars_val_pool.construct(_intvars_val_capacity));
         }
         
         /*!
@@ -131,9 +132,38 @@ namespace tchecker {
         template <class ... ARGS>
         tchecker::intrusive_shared_ptr_t<STATE> construct_from_state(STATE const & state, ARGS && ... args)
         {
-          return tchecker::ts::state_pool_allocator_t<STATE>::construct(args...,
-                                                                        _vloc_pool.construct(state.vloc()),
-                                                                        _intvars_val_pool.construct(state.intvars_valuation()));
+          return
+          tchecker::ts::state_pool_allocator_t<STATE>::construct(args...,
+                                                                 _vloc_pool.construct(state.vloc()),
+                                                                 _intvars_val_pool.construct(state.intvars_valuation()));
+        }
+        
+        /*!
+         \brief Destruct state
+         \param p : pointer to state
+         \pre p has been constructed by this allocator
+         \pre p is not nullptr
+         \post the state pointed by p has been destructed if its reference counter is 1 (i.e. p is the
+         only pointer to the state), and p points to nullptr. Does nothing otherwise. The tuple of
+         locations and integer variables valuation in the state have been destructed (if the state
+         was the only one pointing to them)
+         \return true if the state has been destructed, false otherwise
+         */
+        bool destruct(tchecker::intrusive_shared_ptr_t<STATE> & p)
+        {
+          if (p.ptr() == nullptr)
+            return false;
+          
+          auto vloc_ptr = p->vloc_ptr();
+          auto intvars_val_ptr = p->intvars_val_ptr();
+          
+          if ( ! tchecker::ts::state_pool_allocator_t<STATE>::destruct(p) )
+            return false;
+
+          _vloc_pool.destruct(vloc_ptr);
+          _intvars_val_pool.destruct(intvars_val_ptr);
+
+          return true;
         }
         
         /*!
