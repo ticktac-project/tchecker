@@ -309,51 +309,52 @@ namespace tchecker {
       }
       
       /*!
-       \brief State allocation
+       \brief State construction
        \param args : parameters to a constructor of state_t
        \return pointer to a newly allocated state constructed from args
        */
       template <class ... ARGS>
-      inline state_ptr_t allocate_state(ARGS && ... args)
+      inline state_ptr_t construct_state(ARGS && ... args)
       {
-        return _allocate_state(std::forward<ARGS>(args)...);
+        return _construct_state(std::forward<ARGS>(args)...);
       }
       
       /*!
-       \brief State allocation
+       \brief State construction
        \param args : tuple of parameters to a constructor of state_t
        \return pointer to a newly allocated state constructed from args
        */
       template <class ... ARGS>
-      inline state_ptr_t allocate_state(std::tuple<ARGS...> && args)
+      inline state_ptr_t construct_state(std::tuple<ARGS...> && args)
       {
-        return std::apply(&tchecker::ts::allocator_t<STATE_ALLOCATOR, TRANSITION_ALLOCATOR>::_allocate_state<ARGS...>,
+        return std::apply(&tchecker::ts::allocator_t<STATE_ALLOCATOR, TRANSITION_ALLOCATOR>::_construct_state<ARGS...>,
                           std::tuple_cat(std::make_tuple(this), args));
       }
       
       /*!
-       \brief State allocation
+       \brief State construction
        \param state : a state
        \param args : extra parameters to a constructor of state_t
        \return pointer to a newly allocated state constructed from state and args
        */
       template <class ... ARGS>
-      inline state_ptr_t allocate_from_state(state_ptr_t const & state, ARGS && ... args)
+      inline state_ptr_t construct_from_state(state_ptr_t const & state, ARGS && ... args)
       {
-        return _allocate_from_state(state, std::forward<ARGS>(args)...);
+        return _construct_from_state(state, std::forward<ARGS>(args)...);
       }
       
       /*!
-       \brief State allocation
+       \brief State construction
        \param state : a state
        \param args : tuple of extra parameters to a constructor of state_t
        \return pointer to a newly allocated state constructed from state and args
        */
       template <class ... ARGS>
-      inline state_ptr_t allocate_from_state(state_ptr_t const & state, std::tuple<ARGS...> && args)
+      inline state_ptr_t construct_from_state(state_ptr_t const & state, std::tuple<ARGS...> && args)
       {
-        return std::apply(&tchecker::ts::allocator_t<STATE_ALLOCATOR, TRANSITION_ALLOCATOR>::_allocate_from_state<ARGS...>,
-                          std::tuple_cat(std::tuple<decltype(this), state_ptr_t const &>(this, state), args));
+        return
+        std::apply(&tchecker::ts::allocator_t<STATE_ALLOCATOR, TRANSITION_ALLOCATOR>::_construct_from_state<ARGS...>,
+                   std::tuple_cat(std::tuple<decltype(this), state_ptr_t const &>(this, state), args));
       }
       
       /*!
@@ -370,26 +371,27 @@ namespace tchecker {
       }
       
       /*!
-       \brief Transition allocation
+       \brief Transition contruction
        \param args : parameters to a constructor of transition_t
        \return pointer to a newly allocated transition constructed from args
        */
       template <class ... ARGS>
-      inline transition_ptr_t allocate_transition(ARGS && ... args)
+      inline transition_ptr_t construct_transition(ARGS && ... args)
       {
         return _allocate_transition(std::forward<ARGS>(args)...);
       }
       
       /*!
-       \brief Transition allocation
+       \brief Transition construction
        \param args : tuple of parameters to a constructor of transition_t
        \return pointer to a newly allocated transition constructed from args
        */
       template <class ... ARGS>
-      inline transition_ptr_t allocate_transition(std::tuple<ARGS...> && args)
+      inline transition_ptr_t construct_transition(std::tuple<ARGS...> && args)
       {
-        return std::apply(&tchecker::ts::allocator_t<STATE_ALLOCATOR, TRANSITION_ALLOCATOR>::_allocate_transition<ARGS...>,
-                          std::tuple_cat(std::make_tuple(this), args));
+        return
+        std::apply(&tchecker::ts::allocator_t<STATE_ALLOCATOR, TRANSITION_ALLOCATOR>::_construct_transition<ARGS...>,
+                   std::tuple_cat(std::make_tuple(this), args));
       }
       
       /*!
@@ -418,35 +420,35 @@ namespace tchecker {
       }
     protected:
       /*!
-       \brief State allocation
+       \brief State construction
        \param args : parameters to a constructor of state_t
        \return pointer to a newly allocated state constructed from args
        */
       template <class ... ARGS>
-      inline state_ptr_t _allocate_state(ARGS && ... args)
+      inline state_ptr_t _construct_state(ARGS && ... args)
       {
         return _state_allocator.construct(args...);
       }
       
       /*!
-       \brief State allocation
+       \brief State construction
        \param state : a state
        \param args : extra parameters to a constructor of state_t
        \return pointer to a newly allocated state constructed from state and args
        */
       template <class ... ARGS>
-      inline state_ptr_t _allocate_from_state(state_ptr_t const & state, ARGS && ... args)
+      inline state_ptr_t _construct_from_state(state_ptr_t const & state, ARGS && ... args)
       {
         return _state_allocator.construct_from_state(*state, std::forward<ARGS>(args)...);
       }
       
       /*!
-       \brief Transition allocation
+       \brief Transition construction
        \param args : parameters to a constructor of transition_t
        \return pointer to a newly allocated transiton constructed from args
        */
       template <class ... ARGS>
-      inline transition_ptr_t _allocate_transition(ARGS && ... args)
+      inline transition_ptr_t _construct_transition(ARGS && ... args)
       {
         return _transition_allocator.construct(args...);
       }

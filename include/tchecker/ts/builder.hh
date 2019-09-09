@@ -91,8 +91,8 @@ namespace tchecker {
       std::tuple<state_ptr_t, transition_ptr_t, tchecker::state_status_t>
       initial_state(typename TS::initial_iterator_value_t const & v, std::tuple<SARGS...> && sargs, std::tuple<TARGS...> && targs)
       {
-        state_ptr_t state = _allocator.allocate_state(std::forward<std::tuple<SARGS...>>(sargs));
-        transition_ptr_t transition = _allocator.allocate_transition(std::forward<std::tuple<TARGS...>>(targs));
+        state_ptr_t state = _allocator.construct_state(std::forward<std::tuple<SARGS...>>(sargs));
+        transition_ptr_t transition = _allocator.construct_transition(std::forward<std::tuple<TARGS...>>(targs));
         
         tchecker::state_status_t status = _ts.initialize(*state, *transition, v);
         
@@ -117,8 +117,8 @@ namespace tchecker {
                  std::tuple<SARGS...> && sargs,
                  std::tuple<TARGS...> && targs)
       {
-        state_ptr_t next_state = _allocator.allocate_from_state(state, std::forward<std::tuple<SARGS...>>(sargs));
-        transition_ptr_t transition = _allocator.allocate_transition(std::forward<std::tuple<TARGS...>>(targs));
+        state_ptr_t next_state = _allocator.construct_from_state(state, std::forward<std::tuple<SARGS...>>(sargs));
+        transition_ptr_t transition = _allocator.construct_transition(std::forward<std::tuple<TARGS...>>(targs));
         
         tchecker::state_status_t status = _ts.next(*next_state, *transition, v);
         
