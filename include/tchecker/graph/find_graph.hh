@@ -88,6 +88,29 @@ namespace tchecker {
         {}
         return false;
       }
+      
+      /*!
+       \brief Type of iterator on nodes
+       */
+      using const_iterator_t = typename std::unordered_set<NODE_PTR, HASH, EQUAL>::const_iterator;
+      
+      /*!
+       \brief Accessor
+       \return iterator on first node if any, past-the-end iterator otherwise
+       */
+      inline tchecker::graph::find_graph_t<NODE_PTR, HASH, EQUAL>::const_iterator_t begin() const
+      {
+        return _nodes.begin();
+      }
+      
+      /*!
+       \brief Accessor
+       \return past-the-end iterator
+       */
+      inline tchecker::graph::find_graph_t<NODE_PTR, HASH, EQUAL>::const_iterator_t end() const
+      {
+        return _nodes.end();
+      }
     protected:
       std::unordered_set<NODE_PTR, HASH, EQUAL> _nodes;   /*!< Set of nodes */
     };
