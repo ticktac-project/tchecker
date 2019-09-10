@@ -12,6 +12,7 @@
 #include <type_traits>
 #include <vector>
 
+#include "tchecker/utils/iterator.hh"
 #include "tchecker/utils/shared_objects.hh"
 
 /*!
@@ -278,6 +279,16 @@ namespace tchecker {
       template <class NODE_PTR, class KEY=std::size_t>
       class graph_t {
         static_assert(std::is_unsigned<KEY>::value, "");
+      private:
+        /*!
+         \brief Type of map : index -> container of nodes
+         */
+        using nodes_map_t = std::vector<tchecker::graph::cover::details::nodes_container_t<NODE_PTR>>;
+        
+        /*!
+         \brief Type of nodes container
+         */
+        using nodes_container_t = tchecker::graph::cover::details::nodes_container_t<NODE_PTR>;
       public:
         /*!
          \brief Type of pointers to node
@@ -428,19 +439,48 @@ namespace tchecker {
         std::size_t nodes_count() const
         {
           std::size_t count = 0;
-          for (tchecker::graph::cover::details::nodes_container_t<NODE_PTR> const & c : _nodes)
+          for (nodes_container_t const & c : _nodes)
             count += c.size();
           return count;
         }
-      protected:
-        /*!
-         \brief Type of map : index -> guarded vector of nodes
-         */
-        using nodes_map_t = std::vector<tchecker::graph::cover::details::nodes_container_t<NODE_PTR>>;
         
-        tchecker::graph::cover::node_to_key_t<KEY, NODE_PTR> _node_to_key;   /*!< a node-to-key map */
-        tchecker::graph::cover::node_binary_predicate_t<NODE_PTR> _le_node;  /*!< less-or-equal relation on node pointers */
-        nodes_map_t _nodes;                                                  /*!< map : key -> nodes with that key */
+        /*!
+         \brief Type of iterator over nodes in the graph
+         */
+        using const_iterator_t =
+        tchecker::join_iterator_t<typename nodes_map_t::const_iterator, typename nodes_container_t::const_iterator_t>;
+
+        /*!
+         \brief Accessor
+         \return Iterator pointing to the first node in the graph, or past-the-end if the graph is empty
+         */
+        tchecker::graph::cover::graph_t<NODE_PTR, KEY>::const_iterator_t begin() const
+        {
+          return tchecker::graph::cover::graph_t<NODE_PTR, KEY>::const_iterator_t
+          (_nodes.begin(),
+           _nodes.end(),
+           [] (typename nodes_map_t::const_iterator const & it) {
+             return std::make_tuple(it->begin(), it->end());
+           });
+        }
+        
+        /*!
+         \brief Accessor
+         \return Past-the-end iterator
+         */
+        tchecker::graph::cover::graph_t<NODE_PTR, KEY>::const_iterator_t end() const
+        {
+          return tchecker::graph::cover::graph_t<NODE_PTR, KEY>::const_iterator_t
+          (_nodes.end(),
+           _nodes.end(),
+           [] (typename nodes_map_t::const_iterator const & it) {
+             return std::make_tuple(it->begin(), it->end());
+           });
+        }
+      protected:
+        tchecker::graph::cover::node_to_key_t<KEY, NODE_PTR> _node_to_key;  /*!< a node-to-key map */
+        tchecker::graph::cover::node_binary_predicate_t<NODE_PTR> _le_node; /*!< less-or-equal relation on node pointers */
+        nodes_map_t _nodes;                                                 /*!< map : key -> nodes with that key */
       };
       
     } // end of namespace cover
