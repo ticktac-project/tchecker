@@ -778,9 +778,13 @@ namespace tchecker {
       loc_edges_begin(vloc.begin(), loc_edges),
       loc_edges_end(vloc.end(), loc_edges);
       
+      auto get_sub_range = [] (typename asynchronous_edges_iterator_t<VLOC>::iterator_t const & it) {
+        return it->iterators();
+      };
+      
       asynchronous_edges_iterator_t<VLOC>
-      begin(loc_edges_begin, loc_edges_end),
-      end(loc_edges_end, loc_edges_end);
+      begin(loc_edges_begin, loc_edges_end, get_sub_range),
+      end(loc_edges_end, loc_edges_end, get_sub_range);
       
       return tchecker::make_range(begin, end);
     }

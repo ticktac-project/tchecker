@@ -174,17 +174,12 @@ namespace tchecker {
    \class join_iterator_t
    \brief Join iterator over ranges. join_iterator_t makes a range of ranges
    ((x11,...,x1N),...,(xK1,...,xKM)) appear as the flat range
-   (x11,...,x1N,...,xK1,...,xKM)
-   \tparam I : type of iterator over ranges of type tchecker::range_t<II>
+   (x11,...,x1N,...,xK1,...,xKM), skipping empty sub-ranges
+   \tparam I : type of iterator over sub-ranges
    \tparam II : type of iterator in sub-ranges
    */
   template <class I, class II = typename I::value_type::iterator_t>
   class join_iterator_t {
-    
-    static_assert(std::is_same<typename I::value_type,
-                  tchecker::range_t<II>>::value,
-                  "Incompatible iterators cannot be joined.");
-    
   public:
     /*!
      \brief Type of iterator
@@ -192,7 +187,7 @@ namespace tchecker {
     using iterator_t = I;
     
     /*!
-     \brief Type of range iterator
+     \brief Type of sub-range iterator
      */
     using range_iterator_t = II;
     
@@ -201,16 +196,18 @@ namespace tchecker {
      \note required by C++ concept ForwardIterator
      */
     join_iterator_t()
+    : _get_sub_range([] (I const & it) { return std::make_tuple(II{}, II{}); })
     {}
     
     /*!
      \brief Constructor
      \param it : iterator
      \param end : past-the-end iterator
+     \param get_sub_range : function that yields an II range from an I iterator
      \post this iterator ranges from it to end
      */
-    join_iterator_t(I const & it, I const & end)
-    : _it(it), _end(end)
+    join_iterator_t(I const & it, I const & end, std::function<std::tuple<II, II>(I const &)> get_sub_range)
+    : _it(it), _end(end), _get_sub_range(get_sub_range)
     {
       advance_while_empty_range();
     }
@@ -218,10 +215,11 @@ namespace tchecker {
     /*!
      \brief Constructor
      \param r : range
+     \param get_sub_range : function that yields an II range from an I iterator
      \post this iterator ranges from r.begin() to r.end()
      */
-    join_iterator_t(tchecker::range_t<I> const & r)
-    : join_iterator_t(r.begin(), r.end())
+    join_iterator_t(tchecker::range_t<I> const & r, std::function<std::tuple<II, II>(I const &)> get_sub_range)
+    : join_iterator_t(r.begin(), r.end(), get_sub_range)
     {}
     
     /*!
@@ -339,7 +337,8 @@ namespace tchecker {
     {
       // Find first non-empty range, if any
       while (_it != _end) {
-        std::tie(_range_it, _range_end) = _it->iterators();
+        //std::tie(_range_it, _range_end) = _it->iterators();
+        std::tie(_range_it, _range_end) = _get_sub_range(_it);
         if (_range_it != _range_end)
           break;
         ++ _it;
@@ -348,10 +347,11 @@ namespace tchecker {
         _range_it = _range_end = II();
     }
     
-    I _it;          /*!< Iterator to first range (if any) */
-    I _end;         /*!< Past-the-end iterator */
-    II _range_it;   /*!< Iterator in current range */
-    II _range_end;  /*!< Past-the-end iterator in current range */
+    I _it;                                                       /*!< Iterator to first range (if any) */
+    I _end;                                                      /*!< Past-the-end iterator */
+    II _range_it;                                                /*!< Iterator in current range */
+    II _range_end;                                               /*!< Past-the-end iterator in current range */
+    std::function<std::tuple<II, II>(I const &)> _get_sub_range; /*!< Function to retrieve II range from an I iterator */
   };
   
 } // end of namespace tchecker
