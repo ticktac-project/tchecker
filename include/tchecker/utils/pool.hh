@@ -251,7 +251,7 @@ namespace tchecker {
       {
         void * block_end = static_cast<char *>(block) + _block_size;
         
-        for (char * chunk = first_chunk_ptr(block) ;  chunk != block_end; chunk += _alloc_size)
+        for (char * chunk = first_chunk_ptr(block); chunk != block_end; chunk += _alloc_size)
         {
           // Ignore chunks inside unused raw block
           if ( (_raw_head <= chunk) && (chunk < _raw_end) )
