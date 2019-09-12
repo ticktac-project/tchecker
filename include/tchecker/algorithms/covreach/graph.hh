@@ -482,14 +482,16 @@ namespace tchecker {
        \brief Clear
        \pre the garbage collector is not running
        \post this graph is empty
-       \note this does not deallocate nodes and edges, in particular due to cycles in the graph, the garbage collector
-       may not be able to collect those nodes and edges
+       \note nodes and edges have not been destructed (they may be collected using their allocators)
        */
       void clear()
       {
+        using cover_graph_t
+        = tchecker::graph::cover::graph_t<typename tchecker::covreach::details::graph_types_t<TS>::node_ptr_t, KEY>;
+        
+        tchecker::graph::directed::graph_t<node_ptr_t, edge_ptr_t>::clear(cover_graph_t::begin(), cover_graph_t::end());
         _root_nodes.clear();
         tchecker::graph::cover::graph_t<node_ptr_t, key_t>::clear();
-        tchecker::graph::directed::graph_t<node_ptr_t, edge_ptr_t>::clear();
       }
       
       /*!
@@ -583,7 +585,9 @@ namespace tchecker {
        \post all incoming edges of node n1 have been moved into incoming edges of node n2
        and their type has been changed to edge_type
        */
-      void move_incoming_edges(node_ptr_t const & n1, node_ptr_t const & n2, enum tchecker::covreach::edge_type_t edge_type)
+      void move_incoming_edges(node_ptr_t const & n1,
+                               node_ptr_t const & n2,
+                               enum tchecker::covreach::edge_type_t edge_type)
       {
         auto in_edges = incoming_edges(n1);
         for (edge_ptr_t const & edge : in_edges)
@@ -636,7 +640,8 @@ namespace tchecker {
        \param n : node
        \return range of incoming edges of node n
        */
-      inline tchecker::range_t<typename tchecker::graph::directed::graph_t<node_ptr_t, edge_ptr_t>::incoming_edges_iterator_t>
+      inline
+      tchecker::range_t<typename tchecker::graph::directed::graph_t<node_ptr_t, edge_ptr_t>::incoming_edges_iterator_t>
       incoming_edges(node_ptr_t const & n) const
       {
         return tchecker::graph::directed::graph_t<node_ptr_t, edge_ptr_t>::incoming_edges(n);
@@ -647,7 +652,8 @@ namespace tchecker {
        \param n : node
        \return range of outgoing edges of node n
        */
-      inline tchecker::range_t<typename tchecker::graph::directed::graph_t<node_ptr_t, edge_ptr_t>::outgoing_edges_iterator_t>
+      inline
+      tchecker::range_t<typename tchecker::graph::directed::graph_t<node_ptr_t, edge_ptr_t>::outgoing_edges_iterator_t>
       outgoing_edges(node_ptr_t const & n) const
       {
         return tchecker::graph::directed::graph_t<node_ptr_t, edge_ptr_t>::outgoing_edges(n);

@@ -96,7 +96,7 @@ namespace tchecker {
         struct outgoing {}; /*!< Tag for list of outgoing edges */
         struct incoming {}; /*!< Tag for list of incoming edges */
         
-      } // enf of namespace details
+      } // end of namespace details
       
       
       
@@ -320,10 +320,19 @@ namespace tchecker {
         
         /*!
          \brief Clear
-         \post Does nothing
+         \tparam NODES_BEGIN : type of iterator over nodes
+         \tparam NODES_END : type of past-the-end iterator over nodes
+         \param begin : iterator to first node
+         \param end : past-the-end iterator
+         \post edges have been removed from all nodes in [begin,end)
+         \note this function does not destruct edges or nodes
          */
-        void clear()
-        {}
+        template <class NODES_BEGIN, class NODES_END>
+        void clear(NODES_BEGIN const & begin, NODES_END const & end)
+        {
+          for (NODES_BEGIN it = begin; it != end; ++it)
+            remove_edges(*it);
+        }
         
         /*!
          \brief Type of iterator on incoming edges
