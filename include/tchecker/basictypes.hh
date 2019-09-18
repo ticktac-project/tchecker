@@ -22,7 +22,22 @@ namespace tchecker {
   /*!
    \brief Type of integers
    */
-  using integer_t = int32_t;
+#if (USEINT==64)
+using integer_t = int64_t;
+const integer_t int_maxval = INT64_MAX;
+const integer_t int_minval = INT64_MIN;
+#elif (USEINT==32)
+using integer_t = int32_t;
+const integer_t int_maxval = INT32_MAX;
+const integer_t int_minval = INT32_MIN;
+#elif (USEINT==16)
+using integer_t = int16_t;
+const integer_t int_maxval = INT16_MAX;
+const integer_t int_minval = INT16_MIN;
+#else
+#error Only 64/32/16 int bit supported
+#endif
+
   
   /*!
    \brief Type of event identifiers

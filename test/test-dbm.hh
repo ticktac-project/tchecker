@@ -774,7 +774,7 @@ TEST_CASE( "reset DBM", "[dbm]" ) {
   // <inf <=8  <inf  <=0
   
   SECTION( "reset to zero" ) {
-    int32_t const value = 0;
+    tchecker::dbm::db_t const value = 0;
     tchecker::clock_id_t const x = 1;
     
     // difference bound (x,k) is (x,0)+(0,k) where (x,0) is value
@@ -791,7 +791,7 @@ TEST_CASE( "reset DBM", "[dbm]" ) {
   }
   
   SECTION( "reset to positive value" ) {
-    int32_t const value = 3;
+    tchecker::dbm::db_t const value = 3;
     tchecker::clock_id_t const x = 2;
     
     // difference bound (x,k) is (x,0)+(0,k) where (x,0) is value
@@ -856,7 +856,7 @@ TEST_CASE( "reset DBM", "[dbm]" ) {
   
   SECTION( "reset clock to increment (1st)" ) {
     tchecker::clock_id_t const x = 1;
-    int32_t const value = 1;
+    tchecker::dbm::db_t const value = 1;
     
     // x' - x <= value & x - k <= c & k - k' <= 0 --> x' - k' <= value + c
     // x - x' <= -value & k - x <= c & k' - k <= 0 ---> k' - x' <= -value + c
@@ -876,7 +876,7 @@ TEST_CASE( "reset DBM", "[dbm]" ) {
   
   SECTION( "reset clock to increment (2nd)" ) {
     tchecker::clock_id_t const x = 2;
-    int32_t const value = 10;
+    tchecker::dbm::db_t const value = 10;
     
     // x' - x <= value & x - k <= c & k - k' <= 0 --> x' - k' <= value + c
     // x - x' <= -value & k - x <= c & k' - k <= 0 ---> k' - x' <= -value + c
@@ -896,7 +896,7 @@ TEST_CASE( "reset DBM", "[dbm]" ) {
   
   SECTION( "reset clock to increment (3rd)" ) {
     tchecker::clock_id_t const x = 3;
-    int32_t const value = 7;
+    tchecker::dbm::db_t const value = 7;
     
     // x' - x <= value & x - k <= c & k - k' <= 0 --> x' - k' <= value + c
     // x - x' <= -value & k - x <= c & k' - k <= 0 ---> k' - x' <= -value + c
@@ -917,7 +917,7 @@ TEST_CASE( "reset DBM", "[dbm]" ) {
   SECTION( "reset clock to sum (1st)" ) {
     tchecker::clock_id_t const x = 2;
     tchecker::clock_id_t const y = 3;
-    int32_t const value = 1;
+    tchecker::dbm::db_t const value = 1;
     
     // x - y <= value & y - k <= c --> x - k <= value + c
     // y - x <= -value & k - y <= c --> k - x <= -value + c
@@ -938,7 +938,7 @@ TEST_CASE( "reset DBM", "[dbm]" ) {
   SECTION( "reset clock to sum (2nd)" ) {
     tchecker::clock_id_t const x = 3;
     tchecker::clock_id_t const y = 1;
-    int32_t const value = 8;
+    tchecker::dbm::db_t const value = 8;
     
     // x - y <= value & y - k <= c --> x - k <= value + c
     // y - x <= -value & k - y <= c --> k - x <= -value + c
@@ -959,7 +959,7 @@ TEST_CASE( "reset DBM", "[dbm]" ) {
   SECTION( "reset clock to sum (3nd)" ) {
     tchecker::clock_id_t const x = 1;
     tchecker::clock_id_t const y = 2;
-    int32_t const value = 190;
+    tchecker::dbm::db_t const value = 190;
     
     // x - y <= value & y - k <= c --> x - k <= value + c
     // y - x <= -value & k - y <= c --> k - x <= -value + c
@@ -1160,7 +1160,7 @@ TEST_CASE( "Checking tightness when the 0-row is modified", "[dbm]" ) {
   DBM(2,2) = tchecker::dbm::LE_ZERO;
   
   // clock bounds
-  int32_t M[dim] = {0, 1, 1};
+  tchecker::dbm::db_t M[dim] = {0, 1, 1};
   
   SECTION( "ExtraM" ) {
     tchecker::dbm::db_t dbm2[dim * dim];
@@ -1229,8 +1229,8 @@ TEST_CASE( "Extrapolations from STTT06", "[dbm]" ) {
   tchecker::dbm::tighten(dbm, dim);
   
   // clock bounds
-  int32_t m[dim] = {0, 1, 10};
-  int32_t l[dim] = {0, 1, 1}, u[dim] = {0, 1, 10};
+  tchecker::dbm::db_t m[dim] = {0, 1, 10};
+  tchecker::dbm::db_t l[dim] = {0, 1, 1}, u[dim] = {0, 1, 10};
   
   SECTION( "ExtraM" ) {
     tchecker::dbm::db_t dbm2[dim * dim];
@@ -1346,8 +1346,8 @@ TEST_CASE( "Extrapolations boundary case on M/U bounds", "[dbm]" ) {
   tchecker::dbm::tighten(dbm, dim);
   
   // clock bounds
-  int32_t m[dim] = {0, 2, -tchecker::dbm::INF_VALUE};
-  int32_t l[dim] = {0, 2, -tchecker::dbm::INF_VALUE},
+  tchecker::dbm::db_t m[dim] = {0, 2, -tchecker::dbm::INF_VALUE};
+  tchecker::dbm::db_t l[dim] = {0, 2, -tchecker::dbm::INF_VALUE},
   u[dim] = {0, 1, -tchecker::dbm::INF_VALUE};
   
   SECTION( "ExtraM" ) {
@@ -1418,7 +1418,7 @@ TEST_CASE( "Zone inclusion w.r.t. abstraction aM (1)", "[dbm]" ) {
   tchecker::dbm::tighten(dbm, dim);
   
   // aM(dbm) is `dbm \cup x>i` for bound mi
-  int32_t m1[dim] = {0, 1, 1}, m2[dim] = {0, 2, 2}, m3[dim] = {0, 3, 3};
+  tchecker::dbm::db_t m1[dim] = {0, 1, 1}, m2[dim] = {0, 2, 2}, m3[dim] = {0, 3, 3};
   
   SECTION( "aM(dbm) contains dbm" ) {
     REQUIRE(tchecker::dbm::is_am_le(dbm, dbm, dim, m1));
@@ -1477,7 +1477,7 @@ TEST_CASE( "Zone inclusion w.r.t. abstraction aM (1)", "[dbm]" ) {
     
     REQUIRE(tchecker::dbm::is_am_le(dbm, dbm_positive, dim, m1));
     
-    int32_t m_inf[dim] = {0, -tchecker::dbm::INF_VALUE, -tchecker::dbm::INF_VALUE};
+    tchecker::dbm::db_t m_inf[dim] = {0, -tchecker::dbm::INF_VALUE, -tchecker::dbm::INF_VALUE};
     
     REQUIRE(tchecker::dbm::is_am_le(dbm, dbm_positive, dim, m_inf));
     REQUIRE(tchecker::dbm::is_am_le(dbm_positive, dbm, dim, m_inf));
@@ -1501,7 +1501,7 @@ TEST_CASE( "Zone inclusion w.r.t. abstraction aM (2)", "[dbm]" ) {
   DBM(y,0) = tchecker::dbm::db(tchecker::dbm::LE, 3);
   tchecker::dbm::tighten(dbm, dim);
   
-  int32_t m[dim] = {0, 2, 2};
+  tchecker::dbm::db_t m[dim] = {0, 2, 2};
   
   SECTION( "1 <= x & 1 <= y is aM contained in dbm" ) {
     tchecker::dbm::db_t dbm2[dim*dim];
@@ -1547,7 +1547,7 @@ TEST_CASE( "Zone inclusion w.r.t. abstraction aLU from LICS12", "[dbm]" ) {
   DBM(y,x) = tchecker::dbm::db(tchecker::dbm::LE, 0);
   tchecker::dbm::tighten(dbm, dim);
   
-  int32_t l[dim] = {0, 1, 2}, u[dim] = {0, 4 ,4};
+  tchecker::dbm::db_t l[dim] = {0, 1, 2}, u[dim] = {0, 4 ,4};
   
   SECTION( "aLU(dbm) contains dbm" ) {
     REQUIRE(tchecker::dbm::is_alu_le(dbm, dbm, dim, l, u));
@@ -1608,8 +1608,8 @@ TEST_CASE( "Zone inclusion w.r.t. abstraction aLU from LICS12", "[dbm]" ) {
     REQUIRE(tchecker::dbm::is_alu_le(dbm, dbm_positive, dim, l, u));
     REQUIRE_FALSE(tchecker::dbm::is_alu_le(dbm_positive, dbm, dim, l, u));
     
-    int32_t l_inf[dim] = {0, -tchecker::dbm::INF_VALUE, -tchecker::dbm::INF_VALUE};
-    int32_t u_inf[dim] = {0, -tchecker::dbm::INF_VALUE, -tchecker::dbm::INF_VALUE};
+    tchecker::dbm::db_t l_inf[dim] = {0, -tchecker::dbm::INF_VALUE, -tchecker::dbm::INF_VALUE};
+    tchecker::dbm::db_t u_inf[dim] = {0, -tchecker::dbm::INF_VALUE, -tchecker::dbm::INF_VALUE};
     
     REQUIRE(tchecker::dbm::is_alu_le(dbm_positive, dbm, dim, l_inf, u_inf));
   }

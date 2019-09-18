@@ -282,7 +282,7 @@ namespace tchecker {
      */
     enum tchecker::dbm::status_t
     constrain(tchecker::dbm::db_t * offset_dbm, tchecker::clock_id_t offset_dim, tchecker::clock_id_t x, tchecker::clock_id_t y,
-              tchecker::dbm::comparator_t cmp, int32_t value);
+              tchecker::dbm::comparator_t cmp, tchecker::dbm::db_t value);
     
     /*!
      \brief Restriction to synchronized valuations

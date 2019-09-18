@@ -212,7 +212,7 @@ namespace tchecker {
     
     enum tchecker::dbm::status_t
     constrain(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x, tchecker::clock_id_t y,
-              tchecker::dbm::comparator_t cmp, int32_t value)
+              tchecker::dbm::comparator_t cmp, tchecker::dbm::db_t value)
     {
       assert(dbm != nullptr);
       assert(dim >= 1);
@@ -272,7 +272,7 @@ namespace tchecker {
     
     
     void reset(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x, tchecker::clock_id_t y,
-               int32_t value)
+               tchecker::dbm::db_t value)
     {
       if (y == 0)
         reset_to_value(dbm, dim, x, value);
@@ -283,7 +283,7 @@ namespace tchecker {
     }
     
     
-    void reset_to_value(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x, int32_t value)
+    void reset_to_value(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x, tchecker::dbm::db_t value)
     {
       assert(dbm != nullptr);
       assert(dim >= 1);
@@ -330,7 +330,7 @@ namespace tchecker {
     
     
     void reset_to_sum(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x, tchecker::clock_id_t y,
-                      int32_t value)
+                      tchecker::dbm::db_t value)
     {
       assert(dbm != nullptr);
       assert(dim >= 1);
@@ -401,7 +401,7 @@ namespace tchecker {
     }
     
     
-    void extra_m(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, int32_t const * m)
+    void extra_m(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::dbm::db_t const * m)
     {
       assert(dbm != nullptr);
       assert(dim >= 1);
@@ -422,7 +422,7 @@ namespace tchecker {
         assert(m[j] < tchecker::dbm::INF_VALUE);
         if (DBM(0,j) == tchecker::dbm::LE_ZERO)
           continue;
-        int32_t c0j = tchecker::dbm::value(DBM(0,j));
+        tchecker::dbm::db_t c0j = tchecker::dbm::value(DBM(0,j));
         if (-c0j > m[j]) {
           DBM(0,j) = (m[j] == -tchecker::dbm::INF_VALUE ? tchecker::dbm::LE_ZERO : tchecker::dbm::db(tchecker::dbm::LT, -m[j]));
           modified = true;
@@ -440,8 +440,8 @@ namespace tchecker {
             continue;
           if (DBM(i,j) == tchecker::dbm::LT_INFINITY)
             continue;
-          
-          int32_t cij = tchecker::dbm::value(DBM(i,j));
+
+          tchecker::dbm::db_t cij = tchecker::dbm::value(DBM(i,j));
           if (cij > m[i]) {
             DBM(i,j) = tchecker::dbm::LT_INFINITY;
             modified = true;
@@ -463,7 +463,7 @@ namespace tchecker {
     }
     
     
-    void extra_m_plus(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, int32_t const * m)
+    void extra_m_plus(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::dbm::db_t const * m)
     {
       assert(dbm != nullptr);
       assert(dim >= 1);
@@ -487,8 +487,8 @@ namespace tchecker {
       // i > 0, all cases except the 4th apply
       for (tchecker::clock_id_t i = 1; i < dim; ++i) {
         assert(m[i] < tchecker::dbm::INF_VALUE);
-        
-        int32_t c0i = tchecker::dbm::value(DBM(0,i));
+
+        tchecker::dbm::db_t c0i = tchecker::dbm::value(DBM(0,i));
         
         if (-c0i > m[i]) { // 2nd case
           for (tchecker::clock_id_t j = 0; j < dim; ++j) {
@@ -509,9 +509,9 @@ namespace tchecker {
               continue;
             if (DBM(i,j) == tchecker::dbm::LT_INFINITY)
               continue;
-            
-            int32_t c0j = tchecker::dbm::value(DBM(0,j));
-            int32_t cij = tchecker::dbm::value(DBM(i,j));
+
+            tchecker::dbm::db_t c0j = tchecker::dbm::value(DBM(0,j));
+            tchecker::dbm::db_t cij = tchecker::dbm::value(DBM(i,j));
             
             if ((cij > m[i]) || (-c0j > m[j])) {
               DBM(i,j) = tchecker::dbm::LT_INFINITY;
@@ -525,8 +525,8 @@ namespace tchecker {
       assert(m[0] < tchecker::dbm::INF_VALUE);
       for (tchecker::clock_id_t j = 1; j < dim; ++j) {
         assert(m[j] < tchecker::dbm::INF_VALUE);
-        
-        int32_t c0j = tchecker::dbm::value(DBM(0,j));
+
+        tchecker::dbm::db_t c0j = tchecker::dbm::value(DBM(0,j));
         if (-c0j > m[j]) {
           DBM(0,j) = (m[j] == -tchecker::dbm::INF_VALUE ? tchecker::dbm::LE_ZERO : tchecker::dbm::db(tchecker::dbm::LT, -m[j]));
           modified = true;
@@ -542,7 +542,7 @@ namespace tchecker {
     }
     
     
-    void extra_lu(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, int32_t const * l, int32_t const * u)
+    void extra_lu(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::dbm::db_t const * l, tchecker::dbm::db_t const * u)
     {
       assert(dbm != nullptr);
       assert(dim >= 1);
@@ -564,7 +564,7 @@ namespace tchecker {
         assert(u[j] < tchecker::dbm::INF_VALUE);
         if (DBM(0,j) == tchecker::dbm::LE_ZERO)
           continue;
-        int32_t c0j = tchecker::dbm::value(DBM(0,j));
+        tchecker::dbm::db_t c0j = tchecker::dbm::value(DBM(0,j));
         if (-c0j > u[j]) {
           DBM(0,j) = (u[j] == -tchecker::dbm::INF_VALUE ? tchecker::dbm::LE_ZERO : tchecker::dbm::db(tchecker::dbm::LT, -u[j]));
           modified = true;
@@ -584,8 +584,8 @@ namespace tchecker {
             continue;
           if (DBM(i,j) == tchecker::dbm::LT_INFINITY)
             continue;
-          
-          int32_t cij = tchecker::dbm::value(DBM(i,j));
+
+          tchecker::dbm::db_t cij = tchecker::dbm::value(DBM(i,j));
           if (cij > l[i]) {
             DBM(i,j) = tchecker::dbm::LT_INFINITY;
             modified = true;
@@ -607,7 +607,7 @@ namespace tchecker {
     }
     
     
-    void extra_lu_plus(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, int32_t const * l, int32_t const * u)
+    void extra_lu_plus(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::dbm::db_t const * l, tchecker::dbm::db_t const * u)
     {
       assert(dbm != nullptr);
       assert(dim >= 1);
@@ -633,8 +633,8 @@ namespace tchecker {
       for (tchecker::clock_id_t i = 1; i < dim; ++i) {
         assert(l[i] < tchecker::dbm::INF_VALUE);
         assert(u[i] < tchecker::dbm::INF_VALUE);
-        
-        int32_t c0i = tchecker::dbm::value(DBM(0,i));
+
+        tchecker::dbm::db_t c0i = tchecker::dbm::value(DBM(0,i));
         
         if (-c0i > l[i]) { // 2nd case
           for (tchecker::clock_id_t j = 0; j < dim; ++j) {
@@ -656,9 +656,9 @@ namespace tchecker {
               continue;
             if (DBM(i,j) == tchecker::dbm::LT_INFINITY)
               continue;
-            
-            int32_t c0j = tchecker::dbm::value(DBM(0,j));
-            int32_t cij = tchecker::dbm::value(DBM(i,j));
+
+            tchecker::dbm::db_t c0j = tchecker::dbm::value(DBM(0,j));
+            tchecker::dbm::db_t cij = tchecker::dbm::value(DBM(i,j));
             
             if ((cij > l[i]) || (-c0j > u[j])) {
               DBM(i,j) = tchecker::dbm::LT_INFINITY;
@@ -675,8 +675,8 @@ namespace tchecker {
       for (tchecker::clock_id_t j = 1; j < dim; ++j) {
         assert(l[j] < tchecker::dbm::INF_VALUE);
         assert(u[j] < tchecker::dbm::INF_VALUE);
-        
-        int32_t c0j = tchecker::dbm::value(DBM(0,j));
+
+        tchecker::dbm::db_t c0j = tchecker::dbm::value(DBM(0,j));
         if (-c0j > u[j]) {
           DBM(0,j) = (u[j] == -tchecker::dbm::INF_VALUE ? tchecker::dbm::LE_ZERO : tchecker::dbm::db(tchecker::dbm::LT, -u[j]));
           modified = true;
@@ -692,7 +692,7 @@ namespace tchecker {
     }
     
     
-    bool is_alu_le(tchecker::dbm::db_t const * dbm1, tchecker::dbm::db_t const * dbm2, tchecker::clock_id_t dim, int32_t const * l, int32_t const * u)
+    bool is_alu_le(tchecker::dbm::db_t const * dbm1, tchecker::dbm::db_t const * dbm2, tchecker::clock_id_t dim, tchecker::dbm::db_t const * l, tchecker::dbm::db_t const * u)
     {
       assert(dbm1 != nullptr);
       assert(dbm2 != nullptr);
@@ -743,7 +743,7 @@ namespace tchecker {
     }
     
     
-    bool is_am_le(tchecker::dbm::db_t const * dbm1, tchecker::dbm::db_t const * dbm2, tchecker::clock_id_t dim, int32_t const * m)
+    bool is_am_le(tchecker::dbm::db_t const * dbm1, tchecker::dbm::db_t const * dbm2, tchecker::clock_id_t dim, tchecker::dbm::db_t const * m)
     {
       return tchecker::dbm::is_alu_le(dbm1, dbm2, dim, m, m);
     }
@@ -803,7 +803,7 @@ namespace tchecker {
           if (tchecker::dbm::sum(cij, cji) == tchecker::dbm::LE_ZERO) {
             os << " & ";
             os << clock_name(i) << "=" << clock_name(j);
-            int32_t vij = tchecker::dbm::value(cij);
+            tchecker::dbm::db_t vij = tchecker::dbm::value(cij);
             if (vij > 0)
               os << "+" << tchecker::dbm::value(cij);
             else if (vij < 0)

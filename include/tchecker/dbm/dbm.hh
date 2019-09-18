@@ -225,7 +225,7 @@ namespace tchecker {
      */
     enum tchecker::dbm::status_t
     constrain(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x, tchecker::clock_id_t y,
-              tchecker::dbm::comparator_t cmp, int32_t value);
+              tchecker::dbm::comparator_t cmp, tchecker::dbm::db_t value);
     
     /*!
      \brief Equality predicate
@@ -278,7 +278,7 @@ namespace tchecker {
      DBM_UNSAFE is not set)
      */
     void reset(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x, tchecker::clock_id_t y,
-               int32_t value);
+               tchecker::dbm::db_t value);
     
     /*!
      \brief Reset a clock to a constant
@@ -300,7 +300,7 @@ namespace tchecker {
      \throw std::invalid_argument : if `<= value` cannot be represented as a tchecker::dbm::db_t (only if compilation flag
      DBM_UNSAFE is not set)
      */
-    void reset_to_value(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x, int32_t value);
+    void reset_to_value(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x, tchecker::dbm::db_t value);
     
     /*!
      \brief Reset a clock to another clock
@@ -342,7 +342,7 @@ namespace tchecker {
      dbm is tight (checked by assertion)
      */
     void reset_to_sum(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x, tchecker::clock_id_t y,
-                      int32_t value);
+                      tchecker::dbm::db_t value);
     
     /*!
      \brief Open up (delay)
@@ -399,7 +399,7 @@ namespace tchecker {
      Int. J. STTT, 2006)
      \note set m[i] to -tchecker::dbm::INF_VALUE if clock i has no bound
      */
-    void extra_m(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, int32_t const * m);
+    void extra_m(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::dbm::db_t const * m);
     
     /*!
      \brief ExtraM+ extrapolation
@@ -420,7 +420,7 @@ namespace tchecker {
      Int. J. STTT, 2006)
      \note set m[i] to -tchecker::dbm::INF_VALUE if clock i has no bound
      */
-    void extra_m_plus(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, int32_t const * m);
+    void extra_m_plus(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::dbm::db_t const * m);
     
     /*!
      \brief ExtraLU extrapolation
@@ -442,7 +442,7 @@ namespace tchecker {
      Pelanek. Int. J. STTT, 2006)
      \note set l[i]/u[i] to -tchecker::dbm::INF_VALUE if clock i has no lower/upper bound
      */
-    void extra_lu(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, int32_t const * l, int32_t const * u);
+    void extra_lu(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::dbm::db_t const * l, tchecker::dbm::db_t const * u);
     
     /*!
      \brief ExtraLU+ extrapolation
@@ -464,7 +464,7 @@ namespace tchecker {
      Pelanek. Int. J. STTT, 2006)
      \note set l[i]/u[i] to -tchecker::dbm::INF_VALUE if clock i has no lower/upper bound
      */
-    void extra_lu_plus(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, int32_t const * l, int32_t const * u);
+    void extra_lu_plus(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::dbm::db_t const * l, tchecker::dbm::db_t const * u);
     
     /*!
      \brief Checks inclusion w.r.t. abstraction aLU
@@ -487,7 +487,7 @@ namespace tchecker {
      \note set l[i]/u[i] to -tchecker::dbm::INF_VALUE if clock i has no lower/upper bound
      */
     bool is_alu_le(tchecker::dbm::db_t const * dbm1, tchecker::dbm::db_t const * dbm2, tchecker::clock_id_t dim,
-                   int32_t const * l, int32_t const * u);
+                   tchecker::dbm::db_t const * l, tchecker::dbm::db_t const * u);
     
     /*!
      \brief Checks inclusion w.r.t. abstraction aM
@@ -509,7 +509,7 @@ namespace tchecker {
      \note set m[i] to -tchecker::dbm::INF_VALUE if clock i has no lower/upper bound
      */
     bool is_am_le(tchecker::dbm::db_t const * dbm1, tchecker::dbm::db_t const * dbm2, tchecker::clock_id_t dim,
-                  int32_t const * m);
+                  tchecker::dbm::db_t const * m);
     
     /*!
      \brief Hash function

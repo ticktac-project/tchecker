@@ -18,10 +18,25 @@
 #define CMP(x)   tchecker::dbm::comparator(x)
 #define VAL(x)   tchecker::dbm::value(x)
 
+#if (USEINT==64)
+// This has to be kept coherent with the definition of integer
+using test_int_t = int64_t; // Modify here
+const test_int_t max_int_used = std::numeric_limits<int64_t>::max() >> 1;
+const test_int_t min_int_used = std::numeric_limits<int64_t>::min() >> 1;
+#elif (USEINT==32)
+// This has to be kept coherent with the definition of integer
+using test_int_t = int32_t; // Modify here
+const test_int_t max_int_used = std::numeric_limits<int32_t>::max() >> 1;
+const test_int_t min_int_used = std::numeric_limits<int32_t>::min() >> 1;
+#elif (USEINT==16)
+// This has to be kept coherent with the definition of integer
+using test_int_t = int16_t; // Modify here
+const test_int_t max_int_used = std::numeric_limits<int16_t>::max() >> 1;
+const test_int_t min_int_used = std::numeric_limits<int16_t>::min() >> 1;
+#else
+#error Only 64/32/16 int bit supported
+#endif
 TEST_CASE( "construction of upper bounds", "[db]" ) {
-  
-  int max_int_31 = std::numeric_limits<int>::max() >> 1;
-  int min_int_31 = std::numeric_limits<int>::min() >> 1;
   
   tchecker::dbm::db_t le_1 = DB(DB_LE, 1);   // <= 1
   tchecker::dbm::db_t lt_1 = DB(DB_LT, 1);   // < 1
@@ -34,7 +49,7 @@ TEST_CASE( "construction of upper bounds", "[db]" ) {
     REQUIRE(CMP(tchecker::dbm::LT_ZERO) == tchecker::dbm::LT);
     REQUIRE(VAL(tchecker::dbm::LT_ZERO) == 0);
     REQUIRE(CMP(tchecker::dbm::LT_INFINITY) == tchecker::dbm::LT);
-    REQUIRE(VAL(tchecker::dbm::LT_INFINITY) == max_int_31);
+    REQUIRE(VAL(tchecker::dbm::LT_INFINITY) == max_int_used);
   }
   
   SECTION( "user defined upper bounds" ) {
@@ -49,11 +64,11 @@ TEST_CASE( "construction of upper bounds", "[db]" ) {
   }
   
   SECTION( "non representable upper bounds" ) {
-    REQUIRE_THROWS_AS(DB(tchecker::dbm::LT, max_int_31), std::invalid_argument);
-    REQUIRE_THROWS_AS(DB(tchecker::dbm::LT, max_int_31 + 1), std::invalid_argument);		      
-    REQUIRE_THROWS_AS(DB(tchecker::dbm::LT, min_int_31 - 1), std::invalid_argument);		      
-    REQUIRE_NOTHROW(DB(tchecker::dbm::LT, max_int_31 - 1));
-    REQUIRE_NOTHROW(DB(tchecker::dbm::LT, min_int_31));
+    REQUIRE_THROWS_AS(DB(tchecker::dbm::LT, max_int_used), std::invalid_argument);
+    REQUIRE_THROWS_AS(DB(tchecker::dbm::LT, max_int_used + 1), std::invalid_argument);
+    REQUIRE_THROWS_AS(DB(tchecker::dbm::LT, min_int_used - 1), std::invalid_argument);
+    REQUIRE_NOTHROW(DB(tchecker::dbm::LT, max_int_used - 1));
+    REQUIRE_NOTHROW(DB(tchecker::dbm::LT, min_int_used));
   }
   
 }
@@ -312,11 +327,9 @@ TEST_CASE( "sum", "[db]" ) {
   tchecker::dbm::db_t lt_2 = DB(tchecker::dbm::LT, 2);     // < 2
   tchecker::dbm::db_t le_m1 = DB(tchecker::dbm::LE, -1);   // <= -1
   tchecker::dbm::db_t lt_m11 = DB(tchecker::dbm::LT, -11); // < -11
-  
-  int max_int_31 = std::numeric_limits<int>::max() >> 1;
-  int min_int_31 = std::numeric_limits<int>::min() >> 1;
-  tchecker::dbm::db_t le_big = DB(tchecker::dbm::LE, max_int_31 - 1);
-  tchecker::dbm::db_t le_small = DB(tchecker::dbm::LE, min_int_31);
+
+  tchecker::dbm::db_t le_big = DB(tchecker::dbm::LE, max_int_used - 1);
+  tchecker::dbm::db_t le_small = DB(tchecker::dbm::LE, min_int_used);
   
   SECTION( "sum of upper bounds" ) {
     REQUIRE(SUM(le_1, le_1) == DB(DB_LE, 2));
@@ -395,18 +408,20 @@ TEST_CASE( "sum", "[db]" ) {
 TEST_CASE( "add", "[db]" ) {
   tchecker::dbm::db_t le_3 = DB(DB_LE, 3);   // <= 3
   tchecker::dbm::db_t lt_m2 = DB(DB_LT, -2); // < -2
-  
-  int max_int_31 = std::numeric_limits<int>::max() >> 1;
-  int min_int_31 = std::numeric_limits<int>::min() >> 1;
-  tchecker::dbm::db_t le_big = DB(tchecker::dbm::LE, max_int_31 - 1);
-  tchecker::dbm::db_t le_small = DB(tchecker::dbm::LE, min_int_31);
+
+  tchecker::dbm::db_t le_big = DB(tchecker::dbm::LE, max_int_used - 1);
+  tchecker::dbm::db_t le_small = DB(tchecker::dbm::LE, min_int_used);
   
   SECTION( "add value to upper bound" ) {
     REQUIRE(ADD(le_3, 0) == le_3);
     REQUIRE(ADD(le_3, 1) == DB(DB_LE, 4));
     REQUIRE(ADD(le_3, 124) == DB(DB_LE, 127));
     REQUIRE(ADD(le_3, -3) == tchecker::dbm::LE_ZERO);
+#if (USEINT>16)
     REQUIRE(ADD(le_3, -39287) == DB(DB_LE, -39284));
+#else
+      REQUIRE(ADD(le_3, -3287) == DB(DB_LE, -3284));
+#endif
     
     REQUIRE(ADD(lt_m2, 0) == DB(DB_LT, -2));
     REQUIRE(ADD(lt_m2, 1) == DB(DB_LT, -1));
