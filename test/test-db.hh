@@ -17,18 +17,20 @@
 #define HASH(x)  tchecker::dbm::hash(x)
 #define CMP(x)   tchecker::dbm::comparator(x)
 #define VAL(x)   tchecker::dbm::value(x)
-
-#if (USEINT==64)
+#ifndef TCHECKER_CONFIG_HH
+#error "no TCHECKER_CONFIG_HH"
+#endif
+#if (INTEGER_T_SIZE==64)
 // This has to be kept coherent with the definition of integer
 using test_int_t = int64_t; // Modify here
 const test_int_t max_int_used = std::numeric_limits<int64_t>::max() >> 1;
 const test_int_t min_int_used = std::numeric_limits<int64_t>::min() >> 1;
-#elif (USEINT==32)
+#elif (INTEGER_T_SIZE==32)
 // This has to be kept coherent with the definition of integer
 using test_int_t = int32_t; // Modify here
 const test_int_t max_int_used = std::numeric_limits<int32_t>::max() >> 1;
 const test_int_t min_int_used = std::numeric_limits<int32_t>::min() >> 1;
-#elif (USEINT==16)
+#elif (INTEGER_T_SIZE==16)
 // This has to be kept coherent with the definition of integer
 using test_int_t = int16_t; // Modify here
 const test_int_t max_int_used = std::numeric_limits<int16_t>::max() >> 1;
