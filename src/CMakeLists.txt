@@ -19,9 +19,11 @@ tck_check_cxx_flags("-fstrict-vtable-pointers" STRICT_VTABLE_POINTERS)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g ${ERROR_LIMIT}")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DNDEBUG -O2 -flto ${STRICT_VTABLE_POINTERS}")
 
-set(TCHECKER_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+set(TCHECKER_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../include")
+set(TCHECKER_BINARY_INCLUDE_DIR "${CMAKE_CURRENT_BINARY_DIR}/../include")
 
 include_directories(${TCHECKER_INCLUDE_DIR})
+include_directories(${TCHECKER_BINARY_INCLUDE_DIR})
 include_directories(${Boost_INCLUDE_DIRS})
 
 add_subdirectory(algorithms)
@@ -125,8 +127,6 @@ install(TARGETS tchecker libtchecker_static
 if(LIBTCHECKER_ENABLE_SHARED)
   install(TARGETS libtchecker_shared LIBRARY DESTINATION lib)
 endif()
-
-install(DIRECTORY ../include/ DESTINATION include)
 
 # Doxygen documentation + install rule
 find_package(Doxygen)
