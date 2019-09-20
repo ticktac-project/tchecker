@@ -9,13 +9,15 @@ include(CheckCXXCompilerFlag)
 option(USE16 "Use 16bit int" OFF)
 option(USE64 "Use 64bit int" OFF)
 
+set(INTEGER_T_SIZE 32)
 if (USE16)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSEINT=16")
+    set(INTEGER_T_SIZE 16)
 elseif(USE64)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSEINT=64")
+    set(INTEGER_T_SIZE 64)
 else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSEINT=32")
 endif()
+
+message(STATUS "Setting sizeof(integer_t) to ${INTEGER_T_SIZE}")
 
 #
 # Check if "flag" is accepted by the current CXX compiler. If the flag is
