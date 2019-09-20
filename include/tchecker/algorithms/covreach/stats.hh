@@ -66,6 +66,12 @@ namespace tchecker {
        \return the numer of covered leaf nodes
        */
       unsigned long covered_leaf_nodes() const;
+  
+      /*!
+       \brief Accessor
+       \return the numer of covered leaf nodes
+       */
+      unsigned long directly_covered_leaf_nodes() const;
       
       /*!
        \brief Accessor
@@ -90,10 +96,18 @@ namespace tchecker {
        \post the number of covered non-leaf nodes has increased by 1
        */
       void increment_covered_nonleaf_nodes();
+  
+      /*!
+       \brief Increment counter of covered leaf nodes within the same successors
+       \post the number of covered non-leaf nodes has increased by 1
+       */
+      void increment_directly_covered_nonleaf_nodes();
+      
     private:
       unsigned long _visited_nodes;          /*!< Number of visited nodes */
       unsigned long _covered_leaf_nodes;     /*!< Number of covered leaf nodes */
       unsigned long _covered_nonleaf_nodes;  /*!< Number of covered non-leaf nodes */
+      unsigned long _directly_covered_leaf_nodes; /*< Number of covered leaf nodes covered by other nodes in the current successors */
     };
     
     

@@ -367,7 +367,7 @@ namespace tchecker {
         {
           if (n->is_stored())
             throw std::invalid_argument("adding a stored node is not allowed");
-          tchecker::graph::cover::node_position_t position =_node_to_key(n) % _nodes.size();
+          tchecker::graph::cover::node_position_t position = get_node_position(n);
           n->position_in_table(position);
           _nodes[position].add(n);
         }
@@ -413,6 +413,24 @@ namespace tchecker {
           covering_node = nullptr;
           return false;
         }
+
+        /*!
+         * Avoiding pushing and pulling of objects
+         */
+         bool is_covered_external(NODE_PTR const & n, NODE_PTR & covering_node) const{
+           //This is a bit of a hack.
+           // Ensure that this is the same as the key used in add_node!
+          auto const & container = _nodes[get_node_position(n)];
+          for (NODE_PTR const & node : container)
+            if (_le_node(n, node)) {
+              covering_node = node;
+              return true;
+            }
+
+          covering_node = nullptr;
+          return false;
+         }
+
         
         /*!
          \brief Accessor
@@ -476,6 +494,14 @@ namespace tchecker {
            [] (typename nodes_map_t::const_iterator const & it) {
              return std::make_tuple(it->begin(), it->end());
            });
+        }
+
+        inline bool is_le(NODE_PTR const & node1, NODE_PTR const & node2) const{
+          return _le_node(node1, node2);
+        }
+      private:
+        inline node_position_t get_node_position(NODE_PTR const & n) const {
+          return _node_to_key(n) % _nodes.size();
         }
       protected:
         tchecker::graph::cover::node_to_key_t<KEY, NODE_PTR> _node_to_key;  /*!< a node-to-key map */

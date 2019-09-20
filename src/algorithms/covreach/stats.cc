@@ -12,7 +12,7 @@ namespace tchecker {
   namespace covreach {
     
     stats_t::stats_t()
-    : _visited_nodes(0), _covered_leaf_nodes(0), _covered_nonleaf_nodes(0)
+    : _visited_nodes(0), _covered_leaf_nodes(0), _covered_nonleaf_nodes(0), _directly_covered_leaf_nodes(0)
     {}
     
     
@@ -41,7 +41,11 @@ namespace tchecker {
     {
       return _covered_leaf_nodes;
     }
-    
+  
+    unsigned long stats_t::directly_covered_leaf_nodes() const
+    {
+      return _directly_covered_leaf_nodes;
+    }
     
     unsigned long stats_t::covered_nonleaf_nodes() const
     {
@@ -66,13 +70,17 @@ namespace tchecker {
       ++ _covered_nonleaf_nodes;
     }
     
-    
+    void stats_t::increment_directly_covered_nonleaf_nodes()
+    {
+      ++_directly_covered_leaf_nodes;
+    }
     
     
     std::ostream & operator<< (std::ostream & os, tchecker::covreach::stats_t const & stats)
     {
       os << "VISITED_NODES " << stats.visited_nodes() << std::endl;
       os << "COVERED_LEAF_NODES " << stats.covered_leaf_nodes() << std::endl;
+      os << "DIRECTLY_COVERED_LEAF_NODES " << stats.directly_covered_leaf_nodes() << std::endl;
       os << "COVERED_NONLEAF_NODES " << stats.covered_nonleaf_nodes() << std::endl;
       return os;
     }

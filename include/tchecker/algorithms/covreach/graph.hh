@@ -607,6 +607,13 @@ namespace tchecker {
       {
         return tchecker::graph::cover::graph_t<node_ptr_t, key_t>::is_covered(n, covering_node);
       }
+  
+      /*!
+        * Avoiding pushing and pulling of objects
+      */
+      bool is_covered_external(node_ptr_t const & n, node_ptr_t & covering_node){
+        return tchecker::graph::cover::graph_t<node_ptr_t, key_t>::is_covered_external(n, covering_node);
+      }
       
       /*!
        \brief Accessor
@@ -705,6 +712,13 @@ namespace tchecker {
       std::size_t nodes_count() const
       {
         return tchecker::graph::cover::graph_t<node_ptr_t, key_t>::nodes_count();
+      }
+      
+      /*!
+       * Allowing to compare non-inserted nodes
+       */
+      inline bool is_le(node_ptr_t const & node1, node_ptr_t const & node2) const{
+        return tchecker::graph::cover::graph_t<node_ptr_t, key_t>::is_le(node1, node2);
       }
     private:
       /*!

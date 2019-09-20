@@ -107,18 +107,31 @@ namespace tchecker {
           // expand node
           nodes.clear();
           expand_node(node, builder, graph, nodes);
-          
+          // next_node in nodes is either activate or inactive;
+          // None have been added to the graph
+          // No edges were created
+
           // remove small nodes
           for (node_ptr_t & next_node : nodes) {
-            if (! next_node->is_active())   // covered by another node in next_nodes
-              continue;
+            if (!next_node->is_active()){   // covered by another node in next_nodes
+              // Do not add edges do not add to graph
+              stats.increment_directly_covered_nonleaf_nodes();
+              continue; // ptr is released when nodes is cleared later collected by GC
+            }
             
-            if (graph.is_covered(next_node, covering_node)) {
-              cover_node(next_node, covering_node, graph);
+            if (graph.is_covered_external(next_node, covering_node)) {
+              //cover_node(next_node, covering_node, graph);
               next_node->make_inactive();
+              // Add the abstract edge if wanted
+              graph.add_edge(node, covering_node, tchecker::covreach::ABSTRACT_EDGE);
               stats.increment_covered_leaf_nodes();
               continue;
             }
+            
+            // Now we are sure that the node is not included in some other node
+            // and we will add it to the graph along with the edge
+            graph.add_node(next_node);
+            graph.add_edge(node, next_node, tchecker::covreach::ACTUAL_EDGE);
             
             waiting.insert(next_node);
             
@@ -181,10 +194,24 @@ namespace tchecker {
           std::tie(next_node, transition) = *it;
           assert(next_node != node_ptr_t{nullptr});
           
-          graph.add_node(next_node);
-          graph.add_edge(node, next_node, tchecker::covreach::ACTUAL_EDGE);
+          //graph.add_node(next_node);
+          //graph.add_edge(node, next_node, tchecker::covreach::ACTUAL_EDGE);
           
           nodes.push_back(next_node);
+        }
+        // Check for each node if covered by some node
+        for (auto & node_a : nodes){
+          for (auto & node_b : nodes){
+            if (node_a == node_b){
+              // Do not compare to self
+              continue;
+            }
+            if (graph.is_le(node_a, node_b)){
+              node_a->make_inactive();
+              // Once it is inacive -> continue
+              break;
+            }
+          }
         }
       }
       
