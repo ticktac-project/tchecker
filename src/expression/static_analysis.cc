@@ -416,16 +416,16 @@ namespace tchecker {
       virtual ~extract_variables_visitor_t() = default;
       
       /*!
-       \brief Assignment operator
+       \brief Assignment operator (deleted)
        */
       tchecker::details::extract_variables_visitor_t &
-      operator= (tchecker::details::extract_variables_visitor_t const &) = default;
+      operator= (tchecker::details::extract_variables_visitor_t const &) = delete;
       
       /*!
-       \brief Move assignment operator
+       \brief Move assignment operator (deleted)
        */
       tchecker::details::extract_variables_visitor_t &
-      operator= (tchecker::details::extract_variables_visitor_t &&) = default;
+      operator= (tchecker::details::extract_variables_visitor_t &&) = delete;
       
       /*!
        \brief Add (expr.id() |-> _pid) to the map corresponding to expr.type()

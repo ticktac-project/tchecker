@@ -569,19 +569,15 @@ namespace tchecker {
       
       
       /*!
-       \brief Assignment operator
-       \param dup : duplicator
-       \post this is a copy of dup
+       \brief Assignment operator (deleted)
        */
-      tchecker::parsing::system_duplicator_t & operator= (tchecker::parsing::system_duplicator_t const & dup) = default;
+      tchecker::parsing::system_duplicator_t & operator= (tchecker::parsing::system_duplicator_t const & dup) = delete;
       
       
       /*!
-       \brief Move assignment operator
-       \param dup : duplicator
-       \post this is a copy of dup
+       \brief Move assignment operator (deleted)
        */
-      tchecker::parsing::system_duplicator_t & operator= (tchecker::parsing::system_duplicator_t && dup) = default;
+      tchecker::parsing::system_duplicator_t & operator= (tchecker::parsing::system_duplicator_t && dup) = delete;
       
       
       /*!

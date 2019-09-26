@@ -40,7 +40,7 @@ TEST_CASE( "no throw if no weakly synchronized events", "[guard_weak_sync]" ) {
   \n\
   sync:P1@a1:P2@a2\n";
   
-  tchecker::log_t log(std::cerr);
+  tchecker::log_t log(&std::cerr);
   tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(model, log);
   
   REQUIRE(sysdecl != nullptr);
@@ -76,7 +76,7 @@ TEST_CASE( "no throw if weakly synchronized events have no guard", "[guard_weak_
   \n\
   sync:P1@a1:P2@a2?:P3@a3?\n";
   
-  tchecker::log_t log(std::cerr);
+  tchecker::log_t log(&std::cerr);
   tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(model, log);
   
   REQUIRE(sysdecl != nullptr);
@@ -112,7 +112,7 @@ TEST_CASE( "throw if first weakly synchronized event has a guard", "[guard_weak_
   \n\
   sync:P1@a1?:P2@a2:P3@a3\n";
   
-  tchecker::log_t log(std::cerr);
+  tchecker::log_t log(&std::cerr);
   tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(model, log);
   
   REQUIRE(sysdecl != nullptr);
@@ -148,7 +148,7 @@ TEST_CASE( "throw if last weakly synchronized event has a guard", "[guard_weak_s
   \n\
   sync:P1@a1:P2@a2:P3@a3?\n";
   
-  tchecker::log_t log(std::cerr);
+  tchecker::log_t log(&std::cerr);
   tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(model, log);
   
   REQUIRE(sysdecl != nullptr);
@@ -184,7 +184,7 @@ TEST_CASE( "throw if middle weakly synchronized event has a guard", "[guard_weak
   \n\
   sync:P1@a1:P2@a2?:P3@a3\n";
   
-  tchecker::log_t log(std::cerr);
+  tchecker::log_t log(&std::cerr);
   tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(model, log);
   
   REQUIRE(sysdecl != nullptr);
@@ -225,7 +225,7 @@ TEST_CASE( "throw if some weakly synchronized event has a guard, several transit
   \n\
   sync:P1@a1?:P2@a2:P3@a3?\n";
   
-  tchecker::log_t log(std::cerr);
+  tchecker::log_t log(&std::cerr);
   tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(model, log);
   
   REQUIRE(sysdecl != nullptr);

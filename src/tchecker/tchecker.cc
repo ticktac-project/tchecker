@@ -123,7 +123,7 @@ void usage(std::string const & exec_name)
  */
 int main(int argc, char * argv[])
 {
-  tchecker::log_t log(std::cerr);
+  tchecker::log_t log(&std::cerr);
   
   // no command: list all available commands
   if (argc < 2) {

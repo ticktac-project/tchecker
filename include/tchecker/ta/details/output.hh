@@ -183,15 +183,15 @@ namespace tchecker {
         ~transition_outputter_t() = default;
         
         /*!
-         \brief Assignment operator
+         \brief Assignment operator (deleted)
          */
         tchecker::ta::details::transition_outputter_t &
-        operator= (tchecker::ta::details::transition_outputter_t const &) = default;
+        operator= (tchecker::ta::details::transition_outputter_t const &) = delete;
         
         /*!
-         \brief Move-assignment operator
+         \brief Move-assignment operator (deleted)
          */
-        tchecker::ta::details::transition_outputter_t & operator= (tchecker::ta::details::transition_outputter_t &&) = default;
+        tchecker::ta::details::transition_outputter_t & operator= (tchecker::ta::details::transition_outputter_t &&) = delete;
         
         /*!
          \brief Output transition

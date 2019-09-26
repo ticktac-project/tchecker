@@ -36,12 +36,12 @@ namespace tchecker {
     /*!
      \brief Copy constructor
      */
-    spinlock_t(tchecker::spinlock_t const &) = default;
+    spinlock_t(tchecker::spinlock_t const &) = delete;
     
     /*!
      \brief Move constructor
      */
-    spinlock_t(tchecker::spinlock_t &&) = default;
+    spinlock_t(tchecker::spinlock_t &&) = delete;
     
     /*!
      \brief Destructor
@@ -51,12 +51,12 @@ namespace tchecker {
     /*!
      \brief Assignment operator
      */
-    tchecker::spinlock_t & operator= (tchecker::spinlock_t const &) = default;
+    tchecker::spinlock_t & operator= (tchecker::spinlock_t const &) = delete;
     
     /*!
      \brief Move assignment oeprator
      */
-    tchecker::spinlock_t & operator= (tchecker::spinlock_t &&) = default;
+    tchecker::spinlock_t & operator= (tchecker::spinlock_t &&) = delete;
     
     /*!
      \brief Acquire the lock

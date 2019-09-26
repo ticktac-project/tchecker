@@ -18,7 +18,6 @@
 #include "tchecker/basictypes.hh"
 #include "tchecker/variables/clocks.hh"
 #include "tchecker/variables/intvars.hh"
-#include "tchecker/vm/variables.hh"
 
 
 /*!
@@ -125,10 +124,8 @@ namespace tchecker {
      \brief Constructor
      \param vm_variables : virtual machine variables
      */
-    vm_t(tchecker::vm_variables_t const & vm_variables)
-    : _vm_variables(vm_variables),
-    _intvars_layout_size(_vm_variables.bounded_integers().size()),
-    _clocks_layout_size(_vm_variables.clocks().size())
+    vm_t(std::size_t flat_intvars_size, std::size_t flat_clocks_size)
+    : _flat_intvars_size(flat_intvars_size), _flat_clocks_size(flat_clocks_size)
     {}
     
     /*!
@@ -163,6 +160,16 @@ namespace tchecker {
     // NB: deleted due to const member
     
     /*!
+     \brief Bounded integer variables valuation compatibility check
+     \param intvars_val : bounded  integer variables valuation
+     \return true if intvars_val can store a valuation of bounded integer variables from this VM
+     */
+    constexpr bool compatible(tchecker::intvars_valuation_t const & intvars_val) const
+    {
+      return (intvars_val.size() >= _flat_intvars_size);
+    }
+    
+    /*!
      \brief Bytecode interpreter
      \param bytecode : tchecker bytecode
      \param intvars_val : valuation of integer variables
@@ -187,7 +194,7 @@ namespace tchecker {
     {
       assert( size() == 0 );    // stack should be empty
       
-      if ( intvars_val.capacity() > _intvars_layout_size )
+      if ( intvars_val.capacity() > _flat_intvars_size )
         throw std::invalid_argument("intvars valuation is too large");
       
       tchecker::integer_t eval = 0;
@@ -287,7 +294,7 @@ namespace tchecker {
         case VM_VALUEAT:
         {
           auto const id = top_and_pop<tchecker::intvar_id_t>();
-          if (id >= _intvars_layout_size)
+          if (id >= _flat_intvars_size)
             throw std::out_of_range("invalid variable ID");
           push<tchecker::integer_t>(intvars_val[id]);
           return top<tchecker::integer_t>();
@@ -299,7 +306,7 @@ namespace tchecker {
         {
           auto const value = top_and_pop<tchecker::integer_t>();
           auto const id = top_and_pop<tchecker::intvar_id_t>();
-          if (id >= _intvars_layout_size)
+          if (id >= _flat_intvars_size)
             throw std::out_of_range("invalid variable ID");
           intvars_val[id] = value;
           return value;
@@ -456,10 +463,10 @@ namespace tchecker {
           auto const bound = top_and_pop<tchecker::integer_t>();
           auto const id2 = top_and_pop<tchecker::clock_id_t>();
           auto const id1 = top_and_pop<tchecker::clock_id_t>();
-          if (id1 >= _clocks_layout_size)
-            throw std::out_of_range("invalid clock ID");
-          if (id2 >= _clocks_layout_size)
-            throw std::out_of_range("invalid clock ID");
+          if (id1 >= _flat_clocks_size)
+            throw std::out_of_range("invalid first clock ID");
+          if (id2 >= _flat_clocks_size)
+            throw std::out_of_range("invalid second clock ID");
           static_assert(tchecker::clock_constraint_t::LT == 0, "");
           clkconstr.emplace_back(id1, id2, (cmp == 0 ? tchecker::clock_constraint_t::LT : tchecker::clock_constraint_t::LE), bound);
           return 1;
@@ -472,10 +479,10 @@ namespace tchecker {
           auto const value = top_and_pop<tchecker::integer_t>();
           auto const right_id = top_and_pop<tchecker::clock_id_t>();
           auto const left_id = top_and_pop<tchecker::clock_id_t>();
-          if (right_id >= _clocks_layout_size)
-            throw std::out_of_range("invalid clock ID");
-          if (left_id >= _clocks_layout_size)
-            throw std::out_of_range("invalid clock ID");
+          if (right_id >= _flat_clocks_size)
+            throw std::out_of_range("invalid first clock ID");
+          if (left_id >= _flat_clocks_size)
+            throw std::out_of_range("invalid second clock ID");
           clkreset.emplace_back(left_id, right_id, value);
           return 1;
         }
@@ -581,9 +588,8 @@ namespace tchecker {
     }
     
     
-    tchecker::vm_variables_t const _vm_variables;  /*!< Virtual machine variables */
-    std::size_t const _intvars_layout_size;        /*!< Number of integer variables */
-    std::size_t const _clocks_layout_size;         /*!< Number of clocks */
+    std::size_t const _flat_intvars_size;          /*!< Number of flat bounded integer variables */
+    std::size_t const _flat_clocks_size;           /*!< Number of flat clock variables */
     bool _return;                                  /*!< Return flag */
     std::vector<tchecker::bytecode_t> _stack;      /*!< Interpretation stack */
     // NB: implemented as an std::vector for methods clear() and size()

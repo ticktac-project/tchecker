@@ -52,7 +52,8 @@ namespace tchecker {
          \post this is a finite state machine over model
          */
         fsm_t(MODEL & model)
-        : tchecker::flat_system::flat_system_t<MODEL, VLOC>(model), _vm(model.vm_variables())
+        : tchecker::flat_system::flat_system_t<MODEL, VLOC>(model),
+        _vm(model.flattened_integer_variables().size(), model.flattened_clock_variables().size())
         {}
         
         /*!
@@ -125,7 +126,7 @@ namespace tchecker {
                                                  initial_iterator_value_t const & initial_range,
                                                  tchecker::clock_constraint_container_t & invariant)
         {
-          if (! this->_model.vm_variables().compatible(intvars_val))
+          if (! _vm.compatible(intvars_val))
             throw std::invalid_argument("Incompatible variables and valuation");
           
           // intialize vloc
@@ -220,7 +221,7 @@ namespace tchecker {
                                            tchecker::clock_reset_container_t & clkreset,
                                            tchecker::clock_constraint_container_t & tgt_invariant)
         {
-          if (! this->_model.vm_variables().compatible(intvars_val))
+          if (! _vm.compatible(intvars_val))
             throw std::invalid_argument("Incompatible variables and valuation");
           
           // check source invariant

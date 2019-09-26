@@ -19,7 +19,6 @@
 #include "tchecker/utils/iterator.hh"
 #include "tchecker/utils/log.hh"
 #include "tchecker/vm/compilers.hh"
-#include "tchecker/vm/variables.hh"
 #include "tchecker/vm/vm.hh"
 
 /*!
@@ -50,7 +49,7 @@ namespace tchecker {
          \post this is a copy of model
          */
         model_t(tchecker::fsm::details::model_t<SYSTEM, VARIABLES> const & model)
-        : tchecker::flat_system::model_t<SYSTEM>(model), VARIABLES(*this), _vm_variables(model._vm_variables)
+        : tchecker::flat_system::model_t<SYSTEM>(model), VARIABLES(*this)
         {
           tchecker::log_t log;  // log with no output (log needed by compile, but no output expected)
           compile(*this->_system, log);
@@ -83,7 +82,6 @@ namespace tchecker {
             
             tchecker::flat_system::model_t<SYSTEM>::operator=(model);
             
-            _vm_variables = model._vm_variables;
             tchecker::log_t log;  // log with no output (log needed by compile, but no output expected)
             compile(*this->_system, log);
             assert(log.error_count() == 0);
@@ -177,15 +175,6 @@ namespace tchecker {
         
         /*!
          \brief Accessor
-         \return Virtual machine ariables
-         */
-        inline constexpr tchecker::vm_variables_t const & vm_variables() const
-        {
-          return _vm_variables;
-        }
-        
-        /*!
-         \brief Accessor
          \return System bounded integer variables
          */
         inline constexpr tchecker::integer_variables_t const & system_integer_variables() const
@@ -232,9 +221,7 @@ namespace tchecker {
         template <class ... ARGS>
         model_t(SYSTEM * system, tchecker::log_t & log, ARGS && ... args)
         : tchecker::flat_system::model_t<SYSTEM>(system),
-        VARIABLES(args...),
-        _vm_variables(VARIABLES::flattened_integer_variables(*system),
-                      VARIABLES::flattened_clock_variables(*system))
+        VARIABLES(args...)
         {
           if (tchecker::fsm::details::has_guarded_weakly_synchronized_event(*system))
             throw std::runtime_error("Weakly synchronized event shall not be guarded");
@@ -412,7 +399,6 @@ namespace tchecker {
           _statements_bytecode.clear();
         }
         
-        tchecker::vm_variables_t _vm_variables;                         /*!< Virtual machine variables */
         std::vector<tchecker::typed_expression_t *> _typed_invariants;  /*!< Type-checked locations invariants */
         std::vector<tchecker::typed_expression_t *> _typed_guards;      /*!< Type-checked edges guards */
         std::vector<tchecker::typed_statement_t *> _typed_statements;   /*!< Type-checked edges statements */

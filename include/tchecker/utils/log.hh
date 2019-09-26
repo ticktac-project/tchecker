@@ -11,8 +11,6 @@
 #include <iostream>
 #include <string>
 
-#include <boost/iostreams/stream.hpp>
-
 /*!
  \file log.hh
  \brief Logging facility
@@ -36,9 +34,12 @@ namespace tchecker {
     /*!
      \brief Constructor
      \param os : output stream
+     \pre os != nullptr
      \post this log is empty and writes messages to os
+     \note this keeps a pointer to os
+     \throws std::invalid_argument if os is nullptr
      */
-    log_t(std::ostream & os);
+    log_t(std::ostream * os);
     
     /*!
      \brief Copy constructor
@@ -53,6 +54,11 @@ namespace tchecker {
      \post log has been moved to this
      */
     log_t(log_t && log) = default;
+    
+    /*!
+     \brief Destructor
+     */
+    ~log_t() = default;
     
     /*!
      \brief Assignment
@@ -166,8 +172,10 @@ namespace tchecker {
     template <class LOCATION>
     void message(LOCATION const & l, std::string const & msg)
     {
-      _os << l << ": ";
-      message(msg);
+      if (_os != nullptr) {
+        *_os << l << ": ";
+        message(msg);
+      }
     }
     
     /*!
@@ -177,12 +185,11 @@ namespace tchecker {
      */
     void message(std::string const & msg)
     {
-      _os << msg << std::endl;
+      if (_os != nullptr)
+        *_os << msg << std::endl;
     }
     
-    /*!< Null output stream */
-    boost::iostreams::stream<boost::iostreams::null_sink> _null_os;
-    std::ostream & _os;           /*!< Output stream */
+    std::ostream * _os;           /*!< Output stream */
     std::size_t _error_count;     /*!< Number of error messages */
     std::size_t _warning_count;   /*!< Number of warning messages */
   };

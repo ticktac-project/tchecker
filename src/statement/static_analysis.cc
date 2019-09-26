@@ -44,16 +44,16 @@ namespace tchecker {
 			virtual ~extract_read_variables_visitor_t() = default;
 			
 			/*!
-			 \brief Assignment operator
+			 \brief Assignment operator (deleted)
 			 */
 			tchecker::details::extract_read_variables_visitor_t &
-			operator= (tchecker::details::extract_read_variables_visitor_t const &) = default;
+      operator= (tchecker::details::extract_read_variables_visitor_t const &) = delete;
 			
 			/*!
-			 \brief Move assignment operator
+			 \brief Move assignment operator (deleted)
 			 */
 			tchecker::details::extract_read_variables_visitor_t &
-			operator= (tchecker::details::extract_read_variables_visitor_t &&) = default;
+      operator= (tchecker::details::extract_read_variables_visitor_t &&) = delete;
 			
 			/*!
 			 \brief Add variable IDs from the right-hand side expression of stmt to the sets
@@ -150,16 +150,16 @@ namespace tchecker {
 			virtual ~extract_written_variables_visitor_t() = default;
 			
 			/*!
-			 \brief Assignment operator
+			 \brief Assignment operator (deleted)
 			 */
 			tchecker::details::extract_written_variables_visitor_t &
-			operator= (tchecker::details::extract_written_variables_visitor_t const &) = default;
+			operator= (tchecker::details::extract_written_variables_visitor_t const &) = delete;
 			
 			/*!
-			 \brief Move assignment operator
+			 \brief Move assignment operator (deleted)
 			 */
 			tchecker::details::extract_written_variables_visitor_t &
-			operator= (tchecker::details::extract_written_variables_visitor_t &&) = default;
+			operator= (tchecker::details::extract_written_variables_visitor_t &&) = delete;
 			
 			/*!
 			 \brief Add variable IDs from the left-hand side expression of stmt to the sets

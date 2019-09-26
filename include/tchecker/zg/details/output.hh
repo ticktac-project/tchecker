@@ -91,14 +91,14 @@ namespace tchecker {
         ~state_outputter_t() = default;
         
         /*!
-         \brief Assignment operator
+         \brief Assignment operator (deleted)
          */
-        tchecker::zg::details::state_outputter_t & operator= (tchecker::zg::details::state_outputter_t const &) = default;
+        tchecker::zg::details::state_outputter_t & operator= (tchecker::zg::details::state_outputter_t const &) = delete;
         
         /*!
-         \brief Move-assignment operator
+         \brief Move-assignment operator (deleted)
          */
-        tchecker::zg::details::state_outputter_t & operator= (tchecker::zg::details::state_outputter_t &&) = default;
+        tchecker::zg::details::state_outputter_t & operator= (tchecker::zg::details::state_outputter_t &&) = delete;
         
         /*!
          \brief Output state

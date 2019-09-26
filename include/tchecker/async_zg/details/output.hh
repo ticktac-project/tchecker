@@ -103,15 +103,15 @@ namespace tchecker {
         ~state_outputter_t() = default;
         
         /*!
-         \brief Assignment operator
+         \brief Assignment operator (deleted)
          */
         tchecker::async_zg::details::state_outputter_t &
-        operator= (tchecker::async_zg::details::state_outputter_t const &) = default;
+        operator= (tchecker::async_zg::details::state_outputter_t const &) = delete;
         
         /*!
-         \brief Move-assignment operator
+         \brief Move-assignment operator (deleted)
          */
-        tchecker::async_zg::details::state_outputter_t & operator= (tchecker::async_zg::details::state_outputter_t &&) = default;
+        tchecker::async_zg::details::state_outputter_t & operator= (tchecker::async_zg::details::state_outputter_t &&) = delete;
         
         /*!
          \brief Output state
