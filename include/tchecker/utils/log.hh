@@ -134,7 +134,7 @@ namespace tchecker {
      \brief Accessor
      \return Number of error messages in this log
      */
-    inline std::size_t error_count() const
+    inline constexpr std::size_t error_count() const
     {
       return _error_count;
     }
@@ -143,7 +143,7 @@ namespace tchecker {
      \brief Accessor
      \return Number of warning messages in this log
      */
-    inline std::size_t warning_count() const
+    inline constexpr std::size_t warning_count() const
     {
       return _warning_count;
     }

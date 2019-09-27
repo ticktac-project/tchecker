@@ -164,7 +164,7 @@ namespace tchecker {
      \param intvars_val : bounded  integer variables valuation
      \return true if intvars_val can store a valuation of bounded integer variables from this VM
      */
-    constexpr bool compatible(tchecker::intvars_valuation_t const & intvars_val) const
+    inline constexpr bool compatible(tchecker::intvars_valuation_t const & intvars_val) const
     {
       return (intvars_val.size() >= _flat_intvars_size);
     }
@@ -582,7 +582,7 @@ namespace tchecker {
      \brief Accessor
      \return size of the stack
      */
-    inline std::size_t size() const
+    inline constexpr std::size_t size() const
     {
       return _stack.size();
     }

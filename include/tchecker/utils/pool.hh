@@ -303,7 +303,7 @@ namespace tchecker {
      \return Memory footprint of the pool
      \note Constant time
      */
-    inline std::size_t memsize() const
+    inline constexpr std::size_t memsize() const
     {
       return (_blocks_count * _block_size);
     }

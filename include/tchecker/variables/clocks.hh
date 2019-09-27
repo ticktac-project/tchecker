@@ -139,7 +139,7 @@ namespace tchecker {
      \brief Accessor
      \return ID of 1st clock
      */
-    inline tchecker::clock_id_t id1() const
+    inline constexpr tchecker::clock_id_t id1() const
     {
       return _id1;
     }
@@ -148,7 +148,7 @@ namespace tchecker {
      \brief Accessor
      \return ID of 1st clock
      */
-    inline tchecker::clock_id_t & id1()
+    inline constexpr tchecker::clock_id_t & id1()
     {
       return _id1;
     }
@@ -157,7 +157,7 @@ namespace tchecker {
      \brief Accessor
      \return ID of 2nd clock
      */
-    inline tchecker::clock_id_t id2() const
+    inline constexpr tchecker::clock_id_t id2() const
     {
       return _id2;
     }
@@ -166,7 +166,7 @@ namespace tchecker {
      \brief Accessor
      \return ID of 2nd clock
      */
-    inline tchecker::clock_id_t & id2()
+    inline constexpr tchecker::clock_id_t & id2()
     {
       return _id2;
     }
@@ -175,7 +175,7 @@ namespace tchecker {
      \brief Accessor
      \return comparator (< or <=)
      */
-    inline enum tchecker::clock_constraint_t::comparator_t comparator() const
+    inline constexpr enum tchecker::clock_constraint_t::comparator_t comparator() const
     {
       return _cmp;
     }
@@ -184,7 +184,7 @@ namespace tchecker {
      \brief Accessor
      \return comparator (< or <=)
      */
-    inline enum tchecker::clock_constraint_t::comparator_t & comparator()
+    inline constexpr enum tchecker::clock_constraint_t::comparator_t & comparator()
     {
       return _cmp;
     }
@@ -193,7 +193,7 @@ namespace tchecker {
      \brief Accessor
      \return value
      */
-    inline tchecker::integer_t value() const
+    inline constexpr tchecker::integer_t value() const
     {
       return _value;
     }
@@ -202,7 +202,7 @@ namespace tchecker {
      \brief Accessor
      \return value
      */
-    inline tchecker::integer_t & value()
+    inline constexpr tchecker::integer_t & value()
     {
       return _value;
     }
@@ -212,7 +212,7 @@ namespace tchecker {
      \return true if this is a diagonal constraint, false otherwise
      \note diagonal() is equivalent to !simple()
      */
-    inline bool diagonal() const
+    inline constexpr bool diagonal() const
     {
       return ( (_id1 != tchecker::zero_clock_id) && (_id2 != tchecker::zero_clock_id) );
     }
@@ -222,7 +222,7 @@ namespace tchecker {
      \return true if this is a simple constraint, false otherwise
      \note simple() is equivalent to !diagonal()
      */
-    inline bool simple() const
+    inline constexpr bool simple() const
     {
       return ( (_id1 == tchecker::zero_clock_id) || (_id2 == tchecker::zero_clock_id) );
     }
@@ -344,7 +344,7 @@ namespace tchecker {
      \brief Accessor
      \return ID of the left-value clock
      */
-    inline tchecker::clock_id_t left_id() const
+    inline constexpr tchecker::clock_id_t left_id() const
     {
       return _left_id;
     }
@@ -353,7 +353,7 @@ namespace tchecker {
      \brief Accessor
      \return ID of the left-value clock
      */
-    inline tchecker::clock_id_t & left_id()
+    inline constexpr tchecker::clock_id_t & left_id()
     {
       return _left_id;
     }
@@ -362,7 +362,7 @@ namespace tchecker {
      \brief Accessor
      \return ID of the right-value clock
      */
-    inline tchecker::clock_id_t right_id() const
+    inline constexpr tchecker::clock_id_t right_id() const
     {
       return _right_id;
     }
@@ -371,7 +371,7 @@ namespace tchecker {
      \brief Accessor
      \return ID of the right-value clock
      */
-    inline tchecker::clock_id_t & right_id()
+    inline constexpr tchecker::clock_id_t & right_id()
     {
       return _right_id;
     }
@@ -380,7 +380,7 @@ namespace tchecker {
      \brief Accessor
      \return reset value
      */
-    inline tchecker::integer_t value() const
+    inline constexpr tchecker::integer_t value() const
     {
       return _value;
     }
@@ -389,7 +389,7 @@ namespace tchecker {
      \brief Accessor
      \return reset value
      */
-    inline tchecker::integer_t & value()
+    inline constexpr tchecker::integer_t & value()
     {
       return _value;
     }
@@ -398,7 +398,7 @@ namespace tchecker {
      \brief Accessor
      \return true if this is a reset to 0 (i.e. x=0), false otherwise
      */
-    inline bool reset_to_zero() const
+    inline constexpr bool reset_to_zero() const
     {
       return (reset_to_constant() && (_value == 0) );
     }
@@ -407,7 +407,7 @@ namespace tchecker {
      \brief Accessor
      \return true if this is a reset to a constant (i.e. x=k), false otherwise
      */
-    inline bool reset_to_constant() const
+    inline constexpr bool reset_to_constant() const
     {
       return (_right_id == tchecker::zero_clock_id);
     }
@@ -416,7 +416,7 @@ namespace tchecker {
      \brief Accessor
      \return true if this is a reset to a clock (i.e. x=y), false otherwise
      */
-    inline bool reset_to_clock() const
+    inline constexpr bool reset_to_clock() const
     {
       return ( ! reset_to_constant() && (_value == 0) );
     }
@@ -426,7 +426,7 @@ namespace tchecker {
      \return true if this is a reset to a clock plus a positive constant (i.e.
      x=y+k with k>0), false otherwise
      */
-    inline bool reset_to_sum() const
+    inline constexpr bool reset_to_sum() const
     {
       return ( ! reset_to_constant() && (_value > 0) );
     }

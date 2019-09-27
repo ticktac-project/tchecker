@@ -84,7 +84,7 @@ namespace tchecker {
      \brief Accessor
      \return iterator to first element
      */
-    inline I const & begin() const
+    inline constexpr I const & begin() const
     {
       return _begin;
     }
@@ -93,7 +93,7 @@ namespace tchecker {
      \brief Accessor
      \return past-the-end iterator
      */
-    inline I const & end() const
+    inline constexpr I const & end() const
     {
       return _end;
     }
@@ -112,7 +112,7 @@ namespace tchecker {
      \param range : a range
      \return true if this and range are equal, false otherwise
      */
-    inline bool operator== (tchecker::range_t<I> const & range) const
+    inline constexpr bool operator== (tchecker::range_t<I> const & range) const
     {
       return ((_begin == range._begin) && (_end == range._end));
     }
@@ -122,7 +122,7 @@ namespace tchecker {
      \param range : a range
      \return true if this and range are not equal, false otherwise
      */
-    inline bool operator!= (tchecker::range_t<I> const & range) const
+    inline constexpr bool operator!= (tchecker::range_t<I> const & range) const
     {
       return (! (*this == range));
     }
@@ -131,7 +131,7 @@ namespace tchecker {
      \brief Emptiness check
      \return true if this is an empty range, false otherwise
      */
-    inline bool empty() const
+    inline constexpr bool empty() const
     {
       return (_begin == _end);
     }

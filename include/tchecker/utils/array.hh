@@ -90,7 +90,7 @@ namespace tchecker {
      \brief Accessor
      \return Array capacity
      */
-    inline CAPACITY capacity() const
+    inline constexpr  CAPACITY capacity() const
     {
       return _capacity;
     }

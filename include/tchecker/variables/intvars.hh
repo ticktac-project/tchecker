@@ -81,7 +81,7 @@ namespace tchecker {
      \brief Accessor
      \return Minimal value
      */
-    inline tchecker::integer_t min() const
+    inline constexpr tchecker::integer_t min() const
     {
       return _min;
     }
@@ -91,7 +91,7 @@ namespace tchecker {
      \brief Accessor
      \return Maximal value
      */
-    inline tchecker::integer_t max() const
+    inline constexpr tchecker::integer_t max() const
     {
       return _max;
     }
@@ -101,7 +101,7 @@ namespace tchecker {
      \brief Accessor
      \return Initial value
      */
-    inline tchecker::integer_t initial_value() const
+    inline constexpr tchecker::integer_t initial_value() const
     {
       return _initial_value;
     }
@@ -205,7 +205,7 @@ namespace tchecker {
      \return Size
      \note Size coincide with capacity for intvars valuations
      */
-    inline typename tchecker::intvars_valuation_t::capacity_t size() const
+    inline constexpr typename tchecker::intvars_valuation_t::capacity_t size() const
     {
       return capacity();
     }

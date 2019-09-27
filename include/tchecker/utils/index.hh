@@ -146,7 +146,7 @@ namespace tchecker {
      \brief Accessor
      \return Size of index
      */
-    inline size_t size() const
+    inline constexpr size_t size() const
     {
       assert(_key_map.size() == _value_map.size());
       return _key_map.size();
@@ -194,7 +194,7 @@ namespace tchecker {
      \param e : key map element
      \return key in key map element e
      */
-    inline KEY const & key(typename const_key_map_iterator_t::value_type const & e) const
+    inline constexpr KEY const & key(typename const_key_map_iterator_t::value_type const & e) const
     {
       return e.first;
     }
@@ -205,7 +205,7 @@ namespace tchecker {
      \param e : key map element
      \return value in key map element e
      */
-    inline T const & value(typename const_key_map_iterator_t::value_type const & e) const
+    inline constexpr T const & value(typename const_key_map_iterator_t::value_type const & e) const
     {
       return e.second;
     }
@@ -242,7 +242,7 @@ namespace tchecker {
      \param e : element in value map
      \return key in value map element e
      */
-    inline KEY const & key(typename const_value_map_iterator_t::value_type const & e) const
+    inline constexpr KEY const & key(typename const_value_map_iterator_t::value_type const & e) const
     {
       return e.second;
     }
@@ -253,7 +253,7 @@ namespace tchecker {
      \param e : element in value map
      \return value in value map element e
      */
-    inline T const & value(typename const_value_map_iterator_t::value_type const & e) const
+    inline constexpr T const & value(typename const_value_map_iterator_t::value_type const & e) const
     {
       return e.first;
     }
