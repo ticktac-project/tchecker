@@ -184,7 +184,7 @@ namespace tchecker {
      \pre name is a declared variable
      \throw std::invalid_argument if precondition is violated
      */
-    inline constexpr ID id(std::string const & name) const
+    inline ID id(std::string const & name) const
     {
       auto it = _index.find_value(name);
       if (it == _index.end_value_map())
@@ -200,7 +200,7 @@ namespace tchecker {
      \pre id is a declared variable
      \throw std::invalid_argument id precondition is violated
      */
-    inline constexpr std::string const & name(ID id) const
+    inline std::string const & name(ID id) const
     {
       auto it = _index.find_key(id);
       if (it == _index.end_key_map())
@@ -216,7 +216,7 @@ namespace tchecker {
      \return informations for variable id
      \throw std::invalid_argument : if the precondition is violated
      */
-    inline constexpr INFO const & info(ID id) const
+    inline INFO const & info(ID id) const
     {
       auto it = _info.find(id);
       if (it == _info.end())
@@ -229,7 +229,7 @@ namespace tchecker {
      \brief Accessor
      \return Number of variables
      */
-    inline constexpr std::size_t size() const
+    inline std::size_t size() const
     {
       return _index.size();
     }

@@ -582,7 +582,7 @@ namespace tchecker {
      \brief Accessor
      \return size of the stack
      */
-    inline constexpr std::size_t size() const
+    inline std::size_t size() const
     {
       return _stack.size();
     }

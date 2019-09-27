@@ -146,7 +146,7 @@ namespace tchecker {
      \brief Accessor
      \return Size of index
      */
-    inline constexpr size_t size() const
+    inline size_t size() const
     {
       assert(_key_map.size() == _value_map.size());
       return _key_map.size();
