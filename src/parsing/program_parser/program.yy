@@ -11,7 +11,7 @@
 %defines
 %define parser_class_name {parser_t}
 %define api.namespace {tchecker::parsing::program}
-%define api.prefix {pp}
+%define api.prefix {ppyy}
 %define api.token.constructor
 %define api.value.type variant
 %define parse.assert true
@@ -41,13 +41,10 @@
 
 %locations
 
-%initial-action {
-};
-
 
 %code {
   // Declare the lexer for the parser's sake.
-  tchecker::parsing::program::parser_t::symbol_type pplex
+  tchecker::parsing::program::parser_t::symbol_type ppyylex
   (std::string const & program_context,
   tchecker::log_t & log,
   tchecker::expression_t * & expr,
@@ -55,7 +52,7 @@
   
   
   // Global variables
-  static unsigned int error_count = 0;
+  static unsigned int error_count;
   
   
   // Fake expression used is case of syntax error to allow parsing of the
@@ -125,6 +122,11 @@
 }
 
 
+%initial-action {
+  error_count = 0;
+};
+
+
 %token                TOK_ASSIGN            "="
 %token                TOK_LPAR              "("
 %token                TOK_RPAR              ")"
@@ -161,13 +163,13 @@
 
 
 %type <tchecker::statement_t *>             assignment
-sequence_statement
-statement
+                                            sequence_statement
+                                            statement
 %type <tchecker::expression_t *>            atomic_formula
-conjunctive_formula
-non_atomic_conjunctive_formula
-predicate_formula
-term
+                                            conjunctive_formula
+                                            non_atomic_conjunctive_formula
+                                            predicate_formula
+                                            term
 %type <tchecker::lvalue_expression_t *>			lvalue_term
 %type <tchecker::var_expression_t *>        variable_term
 %type <enum tchecker::binary_operator_t>    predicate_operator
@@ -177,15 +179,15 @@ term
 
 %printer { yyoutput << $$; }                <*>;
 %printer { yyoutput << * $$; }              assignment
-atomic_formula
-conjunctive_formula
-non_atomic_conjunctive_formula
-predicate_formula
-sequence_statement
-statement
-lvalue_term
-variable_term
-term;
+                                            atomic_formula
+                                            conjunctive_formula
+                                            non_atomic_conjunctive_formula
+                                            predicate_formula
+                                            sequence_statement
+                                            statement
+                                            lvalue_term
+                                            variable_term
+                                            term;
 
 
 %start   program
@@ -201,7 +203,7 @@ sequence_statement
     delete $1;
   }
   else
-  stmt = $1;
+    stmt = $1;
 }
 | conjunctive_formula
 {
@@ -210,7 +212,7 @@ sequence_statement
     delete $1;
   }
   else
-  expr = $1;
+    expr = $1;
   stmt = nullptr;
 }
 ;

@@ -19,12 +19,11 @@
 
 // Tell Flex the lexer's prototype ...
 #define YY_DECL \
-tchecker::parsing::program::parser_t::symbol_type pplex \
+tchecker::parsing::program::parser_t::symbol_type ppyylex \
 (std::string const & program_context, \
 tchecker::log_t & log, \
 tchecker::expression_t * & expr, \
 tchecker::statement_t * & stmt)
-
 
 // Work around an incompatibility in flex (at least versions
 // 2.5.31 through 2.5.33): it generates code that does
@@ -53,13 +52,13 @@ integer  [0-9]+
 %{
   // Code run each time a pattern is matched.
 	// move token's length wide
-  #define YY_USER_ACTION  loc.columns(static_cast<int>(yyleng));
+  #define YY_USER_ACTION  loc.columns(static_cast<int>(ppyyleng));
 %}
 
 %%
 
 %{
-	// Code run each time pplex is called.
+	// Code run each time ppyylex is called.
 	loc.step();
 %}
 
@@ -83,14 +82,14 @@ integer  [0-9]+
 "<"            { return program::parser_t::make_TOK_LT(loc); }
 ">"            { return program::parser_t::make_TOK_GT(loc); }
 "nop"          { return program::parser_t::make_TOK_NOP(loc); }
-{integer}      { return program::parser_t::make_TOK_INTEGER(yytext,loc); }
-{id}           { return program::parser_t::make_TOK_ID(yytext, loc); }
-[\n]+          { loc.lines(static_cast<int>(yyleng)); loc.step(); }
+{integer}      { return program::parser_t::make_TOK_INTEGER(ppyytext,loc); }
+{id}           { return program::parser_t::make_TOK_ID(ppyytext, loc); }
+[\n]+          { loc.lines(static_cast<int>(ppyyleng)); loc.step(); }
 [ \t]+         { loc.step(); }
 <<EOF>>        { return program::parser_t::make_TOK_EOF(loc); }
 
 <*>.|\n        { std::stringstream msg;
-                 msg << loc << " Invalid character: " << yytext;
+                 msg << loc << " Invalid character: " << ppyytext;
                  throw std::runtime_error(msg.str()); }
 
 %%
@@ -106,12 +105,14 @@ namespace tchecker {
                        tchecker::expression_t * & expr,
                        tchecker::statement_t * & stmt)
 		{
+      std::size_t old_error_count = log.error_count();
+      
 			expr = nullptr;
 			stmt = nullptr;
       
 			// Scan from expr
       YY_BUFFER_STATE previous_buffer = YY_CURRENT_BUFFER;
-			YY_BUFFER_STATE current_buffer = yy_scan_string(prog_str.c_str());
+			YY_BUFFER_STATE current_buffer = ppyy_scan_string(prog_str.c_str());
 			
 			// Initialise
 			pp_reset_locations();
@@ -121,14 +122,25 @@ namespace tchecker {
 			try {
 				tchecker::parsing::program::parser_t parser(prog_context, log, expr, stmt);
 				parser.parse();
-        yy_delete_buffer(current_buffer);
-        yy_switch_to_buffer(previous_buffer);
+        ppyy_delete_buffer(current_buffer);
+        ppyy_switch_to_buffer(previous_buffer);
 			}
 			catch (...) {
-        yy_delete_buffer(current_buffer);
-        yy_switch_to_buffer(previous_buffer);
+        delete expr;
+        delete stmt;
+        expr = nullptr;
+        stmt = nullptr;
+        ppyy_delete_buffer(current_buffer);
+        ppyy_switch_to_buffer(previous_buffer);
 				throw;
 			}
+      
+      if (log.error_count() > old_error_count) {
+        delete expr;
+        delete stmt;
+        expr = nullptr;
+        stmt = nullptr;
+      }
 		}
 
 		

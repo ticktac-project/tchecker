@@ -10,7 +10,7 @@ ${CMAKE_CURRENT_BINARY_DIR}/system.tab.cc
 DEFINES_FILE  ${CMAKE_CURRENT_BINARY_DIR}/system.tab.hh
 COMPILE_FLAGS -v)
 
-FLEX_TARGET(system_lexer system.ll ${CMAKE_CURRENT_BINARY_DIR}/system.lex.cc COMPILE_FLAGS -Psp)
+FLEX_TARGET(system_lexer system.ll ${CMAKE_CURRENT_BINARY_DIR}/system.lex.cc COMPILE_FLAGS -Pspyy)
 
 ADD_FLEX_BISON_DEPENDENCY(system_lexer system_parser)
 

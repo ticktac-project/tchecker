@@ -11,7 +11,7 @@
 %defines
 %define parser_class_name {parser_t}
 %define api.namespace {tchecker::parsing::system}
-%define api.prefix {sp}
+%define api.prefix {spyy}
 %define api.token.constructor
 %define api.value.type variant
 %define parse.assert true
@@ -42,22 +42,24 @@
 %locations
 
 
-%initial-action {
-  // Initialize the initial location.
-  @$.begin.filename = @$.end.filename = &const_cast<std::string &>(filename);
-};
-
-
 %code {
   // Declare the lexer for the parser's sake.
-  tchecker::parsing::system::parser_t::symbol_type splex
+  tchecker::parsing::system::parser_t::symbol_type spyylex
   (std::string const & filename,
   tchecker::log_t & log,
   tchecker::parsing::system_declaration_t * & system_declaration);
   
   // Error detection
-  static unsigned int error_count = 0;
+  static unsigned int error_count;
 }
+
+%initial-action {
+  // Initialize the initial location.
+  @$.begin.filename = @$.end.filename = &const_cast<std::string &>(filename);
+  
+  error_count = 0;
+};
+
 
 
 %token                TOK_CLOCK          "clock"
@@ -86,13 +88,13 @@
 %type <tchecker::parsing::sync_constraint_t *>                      sync_constraint
 %type <tchecker::parsing::attr_t *>                                 attr
 %type <tchecker::parsing::attributes_t>                             attr_list
-non_empty_attr_list
+                                                                    non_empty_attr_list
 %type <std::string>                                                 text_or_empty
 %type <enum tchecker::sync_strength_t>                              sync_strength
 
 %printer { yyoutput << $$; }                                        <*>;
 %printer { yyoutput << * $$; }                                      attr
-sync_constraint;
+                                                                    sync_constraint;
 %printer {
   for (auto it = $$.begin(); it != $$.end(); ++it) {
     if (it != $$.begin())
