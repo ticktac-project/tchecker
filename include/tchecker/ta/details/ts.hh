@@ -44,7 +44,7 @@ namespace tchecker {
          \param ta_args : arguments to a constructor of TA
          */
         template <class ... TA_ARGS>
-        ts_t(TA_ARGS && ... ta_args)
+        explicit ts_t(TA_ARGS && ... ta_args)
         : _ta(std::forward<TA_ARGS>(ta_args)...)
         {}
         

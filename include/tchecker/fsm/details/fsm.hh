@@ -51,7 +51,7 @@ namespace tchecker {
          \param model : a model
          \post this is a finite state machine over model
          */
-        fsm_t(MODEL & model)
+        explicit fsm_t(MODEL & model)
         : tchecker::flat_system::flat_system_t<MODEL, VLOC>(model),
         _vm(model.flattened_integer_variables().size(), model.flattened_clock_variables().size())
         {}

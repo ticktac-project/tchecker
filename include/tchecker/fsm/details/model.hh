@@ -219,7 +219,7 @@ namespace tchecker {
          \throw std::runtime_error : if guards, statements, invariants in system cannot be compiled into bytecode
          */
         template <class ... ARGS>
-        model_t(SYSTEM * system, tchecker::log_t & log, ARGS && ... args)
+        explicit model_t(SYSTEM * system, tchecker::log_t & log, ARGS && ... args)
         : tchecker::flat_system::model_t<SYSTEM>(system),
         VARIABLES(args...)
         {

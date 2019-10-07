@@ -107,7 +107,7 @@ namespace tchecker {
      \brief Constructor
      \param value : integer constant
      */
-    int_expression_t(tchecker::integer_t value);
+    explicit int_expression_t(tchecker::integer_t value);
     
     /*!
      \brief Destructor
@@ -177,7 +177,7 @@ namespace tchecker {
      \pre name is not empty
      \throw std::invalid_argument : if name is empty
      */
-    var_expression_t(std::string const & name);
+    explicit var_expression_t(std::string const & name);
     
     /*!
      \brief Destructor

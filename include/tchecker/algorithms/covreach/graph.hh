@@ -52,7 +52,7 @@ namespace tchecker {
        \post this node has been built from sargs and is active and unprotected
        */
       template <class ... SARGS>
-      node_t(SARGS && ... sargs) : STATE(std::forward<SARGS>(sargs)...), _protected(0)
+      explicit node_t(SARGS && ... sargs) : STATE(std::forward<SARGS>(sargs)...), _protected(0)
       {}
       
       /*!
@@ -158,7 +158,7 @@ namespace tchecker {
        \param edge_type : type of edge
        \post this edge has type edge_type and does not point any node
        */
-      edge_t(enum tchecker::covreach::edge_type_t edge_type = tchecker::covreach::ACTUAL_EDGE)
+      explicit edge_t(enum tchecker::covreach::edge_type_t edge_type = tchecker::covreach::ACTUAL_EDGE)
       : _edge_type(edge_type)
       {}
       

@@ -65,7 +65,7 @@ namespace tchecker {
          \tparam MODEL : type of model
          */
         template <class MODEL>
-        cover_zone_inclusion_t(MODEL const & model)
+        explicit cover_zone_inclusion_t(MODEL const & model)
         {}
         
         /*!
@@ -130,7 +130,7 @@ namespace tchecker {
          \note this keeps a reference to the L and U maps in model.global_lu_map()
          */
         template <class MODEL>
-        cover_zone_alu_global_t(MODEL const & model)
+        explicit cover_zone_alu_global_t(MODEL const & model)
         : _L(model.global_lu_map().L()), _U(model.global_lu_map().U())
         {}
         
@@ -200,7 +200,7 @@ namespace tchecker {
          \note this keeps a reference on model.local_lu_map()
          */
         template <class MODEL>
-        cover_zone_alu_local_t(MODEL const & model)
+        explicit cover_zone_alu_local_t(MODEL const & model)
         : _local_lu_map(model.local_lu_map())
         {
           _L = tchecker::clockbounds::allocate_map(_local_lu_map.get().clock_number());
@@ -311,7 +311,7 @@ namespace tchecker {
          \note this keeps a reference to the M map in model.global_m_map()
          */
         template <class MODEL>
-        cover_zone_am_global_t(MODEL const & model)
+        explicit cover_zone_am_global_t(MODEL const & model)
         : _M(model.global_m_map().M())
         {}
         
@@ -380,7 +380,7 @@ namespace tchecker {
          \note this keeps a reference on model.local_m_map()
          */
         template <class MODEL>
-        cover_zone_am_local_t(MODEL const & model)
+        explicit cover_zone_am_local_t(MODEL const & model)
         : _local_m_map(model.local_m_map())
         {
           _M = tchecker::clockbounds::allocate_map(_local_m_map.get().clock_number());
@@ -480,7 +480,7 @@ namespace tchecker {
          \tparam MODEL : type of model
          */
         template <class MODEL>
-        cover_sync_zone_inclusion_t(MODEL const & model)
+        explicit cover_sync_zone_inclusion_t(MODEL const & model)
         {}
         
         /*!

@@ -114,7 +114,7 @@ namespace tchecker {
      \pre name is not empty
      \throw std::invalid_argument : if the precondition is violated
      */
-    system_t(std::string const & name) : _name(name)
+    explicit system_t(std::string const & name) : _name(name)
     {
       if (_name.empty())
         throw std::invalid_argument("error, empty name");

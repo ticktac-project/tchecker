@@ -162,7 +162,7 @@ namespace tchecker {
        \throw std::invalid_argument : if system has no computable clock bounds
        \note see tchecker::ta::details::model_t for why instances cannot be constructed
        */
-      model_t(SYSTEM * system, tchecker::log_t & log)
+      explicit model_t(SYSTEM * system, tchecker::log_t & log)
       : tchecker::ta::details::model_t<SYSTEM, VARIABLES>(system, log)
       {
         tchecker::loc_id_t loc_nb = system->locations_count();

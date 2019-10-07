@@ -184,7 +184,7 @@ namespace tchecker {
          \param intvar_index : index of integer variables
          \note this keeps a reference on intvar_index
          */
-        state_outputter_t(tchecker::intvar_index_t const & intvar_index) : _intvar_index(intvar_index)
+        explicit state_outputter_t(tchecker::intvar_index_t const & intvar_index) : _intvar_index(intvar_index)
         {}
         
         /*!

@@ -36,7 +36,7 @@ namespace tchecker {
      \post this is an iterator on edge
      \throw std::invalid_argument : if edge is nullptr
      */
-    vedge_iterator_t(EDGE const * edge)
+    explicit vedge_iterator_t(EDGE const * edge)
     : _edge(edge)
     {
       if (edge == nullptr)

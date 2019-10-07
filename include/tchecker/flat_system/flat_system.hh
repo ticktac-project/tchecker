@@ -50,7 +50,7 @@ namespace tchecker {
        \param model : a model
        \note this keeps a reference on model
        */
-      flat_system_t(MODEL & model)
+      explicit flat_system_t(MODEL & model)
       : _model(model)
       {}
       

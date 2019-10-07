@@ -169,7 +169,7 @@ namespace tchecker {
          \throw std::invalid_argument : if the number of reference/offset variables exceeds the maximum
          value that can be represented by type tchecker::clock_id_t
          */
-        model_t(SYSTEM * system, tchecker::log_t & log)
+        explicit model_t(SYSTEM * system, tchecker::log_t & log)
         : tchecker::clockbounds::model_t<SYSTEM, VARIABLES>(system, log)
         {
           // clock number excluding the zero clock

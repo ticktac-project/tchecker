@@ -46,7 +46,7 @@ namespace tchecker {
          \param fsm_args : arguments to a constructor of FSM
          */
         template <class ... FSM_ARGS>
-        ts_t(FSM_ARGS && ... fsm_args)
+        explicit ts_t(FSM_ARGS && ... fsm_args)
         : _fsm(std::forward<FSM_ARGS>(fsm_args)...)
         {}
         

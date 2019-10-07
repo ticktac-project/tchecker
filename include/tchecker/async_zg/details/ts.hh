@@ -50,7 +50,7 @@ namespace tchecker {
          \param model : a model to build ASYNC_ZG, should inherit from tchecker::async_zg::details::model_t
          */
         template <class MODEL>
-        ts_t(MODEL & model)
+        explicit ts_t(MODEL & model)
         : _async_zg(model)
         {}
         

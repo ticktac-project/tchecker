@@ -38,7 +38,7 @@ namespace tchecker {
        \param args : arguments to a constructor of NODE_OUTPUTTER
        */
       template <class ... ARGS>
-      dot_outputter_t(std::tuple<ARGS...> args)
+      explicit dot_outputter_t(std::tuple<ARGS...> args)
       : _node_outputter(std::make_from_tuple<NODE_OUTPUTTER>(args))
       {}
       

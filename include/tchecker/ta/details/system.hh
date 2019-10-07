@@ -52,7 +52,7 @@ namespace tchecker {
          \throw std::invalid_argument : if the precondition is violated
          \throw std::runtime_error : if the zero clock does not have index 0
          */
-        system_t(std::string const & name) : tchecker::fsm::details::system_t<LOC, EDGE>(name)
+        explicit system_t(std::string const & name) : tchecker::fsm::details::system_t<LOC, EDGE>(name)
         {
           // add the zero clock
           add_clock(tchecker::zero_clock_name, 1);

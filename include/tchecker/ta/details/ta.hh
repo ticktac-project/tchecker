@@ -52,7 +52,7 @@ namespace tchecker {
          \brief Constructor
          \param model : a model
          */
-        ta_t(MODEL & model)
+        explicit ta_t(MODEL & model)
         : tchecker::fsm::details::fsm_t<MODEL, VLOC, INTVARS_VAL>(model)
         {}
         

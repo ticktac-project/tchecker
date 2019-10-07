@@ -44,7 +44,7 @@ namespace tchecker {
        \post output has been initialized with name
        */
       template <class ... GO_ARGS>
-      tracing_graph_t(std::string const & name, GO_ARGS && ... go_args)
+      explicit tracing_graph_t(std::string const & name, GO_ARGS && ... go_args)
       : _graph_outputter(std::forward<GO_ARGS>(go_args)...)
       {
         _graph_outputter.initialize(name);

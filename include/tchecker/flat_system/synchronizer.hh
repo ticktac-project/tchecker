@@ -47,7 +47,7 @@ namespace tchecker {
        \param locations_count : number of locations
        \note the domain of the map is [0..locations_count)
        */
-      location_edges_map_t(std::size_t locations_count)
+      explicit location_edges_map_t(std::size_t locations_count)
       : _locations_count(locations_count),
       _map(_locations_count, edge_collection_t())
       {}
@@ -567,7 +567,7 @@ namespace tchecker {
      \note this stores a reference to system, and pointers to edges in
      system
      */
-    synchronizer_t(SYSTEM const & system)
+    explicit synchronizer_t(SYSTEM const & system)
     : _system(system),
     _asynchronous_outgoing_edges_map(system.locations_count()),
     _asynchronous_incoming_edges_map(system.locations_count())

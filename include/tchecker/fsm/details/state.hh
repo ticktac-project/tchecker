@@ -61,7 +61,7 @@ namespace tchecker {
          \pre vloc and intvars_val must not be nullptr (not checked)
          \note this keeps a pointer to vloc and intvars_val
          */
-        state_t(VLOC_PTR const & vloc, INTVARS_VAL_PTR const & intvars_val)
+        explicit state_t(VLOC_PTR const & vloc, INTVARS_VAL_PTR const & intvars_val)
         : _vloc(vloc), _intvars_val(intvars_val)
         {}
         

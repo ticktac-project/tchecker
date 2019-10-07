@@ -59,7 +59,7 @@ namespace tchecker {
          \param model : a model
          */
         template <class MODEL>
-        zg_t(MODEL & model)
+        explicit zg_t(MODEL & model)
         : _ta(model), _zone_semantics(model)
         {}
         

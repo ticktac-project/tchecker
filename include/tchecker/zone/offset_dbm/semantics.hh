@@ -166,7 +166,7 @@ namespace tchecker {
        \tparam MODEL : type of model, should inherit from tchecker::async_zg::details::model_t
        */
       template <class MODEL>
-      elapsed_semantics_t(MODEL const & model)
+      explicit elapsed_semantics_t(MODEL const & model)
       : EXTRAPOLATION(model), _offset_dim(model.offset_dimension()), _refcount(model.refcount()), _refmap(nullptr),
       _sync_zone_computer(nullptr)
       {
@@ -472,7 +472,7 @@ namespace tchecker {
        \tparam MODEL : type of model, should inherit from tchecker::async_zg::details::model_t
        */
       template <class MODEL>
-      non_elapsed_semantics_t(MODEL const & model)
+      explicit non_elapsed_semantics_t(MODEL const & model)
       : EXTRAPOLATION(model), _offset_dim(model.offset_dimension()), _refcount(model.refcount()), _refmap(nullptr),
       _sync_zone_computer(nullptr)
       {

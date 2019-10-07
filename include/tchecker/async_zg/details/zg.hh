@@ -65,7 +65,7 @@ namespace tchecker {
          \note this keeps a pointer to the refmap in model
          */
         template <class ASYNC_MODEL>
-        zg_t(ASYNC_MODEL & model)
+        explicit zg_t(ASYNC_MODEL & model)
         : _ta(model), _async_zone_semantics(model), _refcount(model.refcount()), _refmap(model.refmap())
         {}
         

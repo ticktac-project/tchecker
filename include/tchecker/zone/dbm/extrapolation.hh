@@ -77,7 +77,7 @@ namespace tchecker {
        \note this keeps a reference on model.global_m_map()
        */
       template <class MODEL>
-      global_M_extrapolation_t(MODEL const & model)
+      explicit global_M_extrapolation_t(MODEL const & model)
       : _global_m_map(model.global_m_map())
       {
         _M = _global_m_map.get().M().ptr();
@@ -138,7 +138,7 @@ namespace tchecker {
       {
         if (this != &e) {
           _global_m_map = std::move(e._global_m_map);
-          _M = e._M;
+          _M = _global_m_map.get().M().ptr();
           e._M = nullptr;
         }
         return *this;
@@ -180,7 +180,7 @@ namespace tchecker {
        \note this keeps a reference on model.local_m_map()
        */
       template <class MODEL>
-      local_M_extrapolation_t(MODEL const & model)
+      explicit local_M_extrapolation_t(MODEL const & model)
       : _local_m_map(model.local_m_map())
       {
         _M = tchecker::clockbounds::allocate_map(_local_m_map.get().clock_number());
@@ -194,10 +194,7 @@ namespace tchecker {
       local_M_extrapolation_t(tchecker::dbm::local_M_extrapolation_t<EXTRAPOLATION> const & e)
       : _local_m_map(e._local_m_map)
       {
-        tchecker::clock_id_t clock_number = _local_m_map.get().clock_number();
-        _M = tchecker::clockbounds::allocate_map(clock_number);
-        for (tchecker::clock_id_t i = 0; i < clock_number; ++i)
-          _M[i] = e._M[i];
+        _M = tchecker::clockbounds::clone_map(*e._M);
       }
       
       /*!
@@ -232,10 +229,7 @@ namespace tchecker {
         if (this != &e) {
           _local_m_map = e._local_m_map;
           tchecker::clockbounds::deallocate_map(_M);
-          tchecker::clock_id_t clock_number = _local_m_map.get().clock_number();
-          _M = tchecker::clockbounds::allocate_map(clock_number);
-          for (tchecker::clock_id_t i = 0; i < clock_number; ++i)
-            _M[i] = e._M[i];
+          _M = tchecker::clockbounds::clone_map(*e._M);
         }
         return *this;
       }
@@ -294,7 +288,7 @@ namespace tchecker {
        \note this keeps a reference on model.global_lu_map()
        */
       template <class MODEL>
-      global_LU_extrapolation_t(MODEL const & model)
+      explicit global_LU_extrapolation_t(MODEL const & model)
       : _global_lu_map(model.global_lu_map())
       {
         _L = _global_lu_map.get().L().ptr();
@@ -321,8 +315,8 @@ namespace tchecker {
       global_LU_extrapolation_t(tchecker::dbm::global_LU_extrapolation_t<EXTRAPOLATION>  && e)
       : _global_lu_map(std::move(e._global_lu_map))
       {
-        _L = e._L;
-        _U = e._U;
+        _L = _global_lu_map.get().L().ptr();
+        _U = _global_lu_map.get().U().ptr();
         e._L = nullptr;
         e._U = nullptr;
       }
@@ -361,8 +355,8 @@ namespace tchecker {
       {
         if (this != e) {
           _global_lu_map = std::move(e._global_lu_map);
-          _L = e._L;
-          _U = e._U;
+          _L = _global_lu_map.get().L().ptr();
+          _U = _global_lu_map.get().U().ptr();
           e._L = nullptr;
           e._U = nullptr;
         }
@@ -406,7 +400,7 @@ namespace tchecker {
        \note this keeps a reference on model.local_lu_map()
        */
       template <class MODEL>
-      local_LU_extrapolation_t(MODEL const & model)
+      explicit local_LU_extrapolation_t(MODEL const & model)
       : _local_lu_map(model.local_lu_map())
       {
         _L = tchecker::clockbounds::allocate_map(_local_lu_map.get().clock_number());
@@ -421,13 +415,8 @@ namespace tchecker {
       local_LU_extrapolation_t(tchecker::dbm::local_LU_extrapolation_t<EXTRAPOLATION> const & e)
       : _local_lu_map(e._local_lu_map)
       {
-        tchecker::clock_id_t clock_number = _local_lu_map.get().clock_number();
-        _L = tchecker::clockbounds::allocate_map(clock_number);
-        _U = tchecker::clockbounds::allocate_map(clock_number);
-        for (tchecker::clock_id_t i = 0; i < clock_number; ++i) {
-          _L[i] = e._L[i];
-          _U[i] = e._U[i];
-        }
+        _L = tchecker::clockbounds::clone_map(*e._L);
+        _U = tchecker::clockbounds::clone_map(*e._U);
       }
       
       /*!
@@ -466,13 +455,8 @@ namespace tchecker {
           _local_lu_map = e._local_lu_map;
           tchecker::clockbounds::deallocate_map(_U);
           tchecker::clockbounds::deallocate_map(_L);
-          tchecker::clock_id_t clock_number = _local_lu_map.get().clock_number();
-          _L = tchecker::clockbounds::allocate_map(clock_number);
-          _U = tchecker::clockbounds::allocate_map(clock_number);
-          for (tchecker::clock_id_t i = 0; i < clock_number; ++i) {
-            _L[i] = e._L[i];
-            _U[i] = e._U[i];
-          }
+          _L = tchecker::clockbounds::clone_map(*e._L);
+          _U = tchecker::clockbounds::clone_map(*e._U);
         }
         return *this;
       }
@@ -542,7 +526,7 @@ namespace tchecker {
        \tparam MODEL : type of model
        */
       template <class MODEL>
-      no_extrapolation_t(MODEL const & model) {}
+      explicit no_extrapolation_t(MODEL const & model) {}
       
       /*!
        \brief Copy constructor

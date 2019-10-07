@@ -108,7 +108,7 @@ namespace tchecker {
        \post this consists in system + synchronizer on system edges
        \note this takes ownership on system
        */
-      model_t(SYSTEM * system)
+      explicit model_t(SYSTEM * system)
       : _system(nullptr),
       _synchronizer(nullptr)
       {

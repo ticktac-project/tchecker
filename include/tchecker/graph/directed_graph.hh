@@ -188,7 +188,7 @@ namespace tchecker {
          \param edge : first edge
          \post this iterator points to edge
          */
-        edge_iterator_t(EDGE_PTR const & edge)
+        explicit edge_iterator_t(EDGE_PTR const & edge)
         : _edge(edge)
         {}
         

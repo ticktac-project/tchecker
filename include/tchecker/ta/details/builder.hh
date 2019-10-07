@@ -120,7 +120,7 @@ namespace tchecker {
         /*!
          \brief Constructor
          */
-        system_builder_t(tchecker::log_t & log) : tchecker::fsm::details::system_builder_t<SYSTEM>(log)
+        explicit system_builder_t(tchecker::log_t & log) : tchecker::fsm::details::system_builder_t<SYSTEM>(log)
         {}
         
         /*!

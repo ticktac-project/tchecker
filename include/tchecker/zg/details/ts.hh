@@ -49,7 +49,7 @@ namespace tchecker {
          \param model : a model to build ZG
          */
         template <class MODEL>
-        ts_t(MODEL & model)
+        explicit ts_t(MODEL & model)
         : _zg(model)
         {}
         

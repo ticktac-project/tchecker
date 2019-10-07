@@ -68,7 +68,7 @@ namespace tchecker {
          \pre name is not empty
          \throw std::invalid_argument : if the precondition is violated
          */
-        system_t(std::string const & name) : tchecker::system_t<LOC, EDGE>(name)
+        explicit system_t(std::string const & name) : tchecker::system_t<LOC, EDGE>(name)
         {}
         
         
