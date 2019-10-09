@@ -11,6 +11,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <unordered_set>
 
 #include "tchecker/basictypes.hh"
 #include "tchecker/utils/index.hh"
@@ -488,7 +489,54 @@ namespace tchecker {
   /*!
    \brief Clock reset container
    */
-  using clock_reset_container_t = std::vector<tchecker::clock_reset_t>;
+  //using clock_reset_container_t = std::vector<tchecker::clock_reset_t>;
+class clock_reset_container_t : private std::vector<tchecker::clock_reset_t>{
+  public:
+    // All constructors/destructors can be default
+    
+    // Access to members of private vector
+    using std::vector<tchecker::clock_reset_t>::begin;
+    using std::vector<tchecker::clock_reset_t>::end;
+    using std::vector<tchecker::clock_reset_t>::cbegin;
+    using std::vector<tchecker::clock_reset_t>::cend;
+    using std::vector<tchecker::clock_reset_t>::const_iterator;
+    using std::vector<tchecker::clock_reset_t>::iterator;
+    // When reserving, it makes sense to only reserve the size for the vector holding
+    // the clock_reset_t, are the size of the vectors is independent from this size
+    using std::vector<tchecker::clock_reset_t>::reserve;
+    
+    /*!
+     \brief Clears the container
+     \post All internal vectors are cleared and is_safe is false
+     */
+    void clear();
+    
+    /*!
+     * \brief Constructs a clock_reset_t from the arguments; Computes whether the or not the union of all resets is still safe to be performed consecutivel
+     * @param left_id : left clock id
+     * @param right_id : right clock id
+     * @param value  : reset value ("Bare" value, not accounting for LE or LT as the one stored in clock_reset_t
+     * \note The approach chosen is naive in the sense that certain resets can be made safe by reordering them. This is not done here
+     */
+    void emplace_back(tchecker::clock_id_t left_id, tchecker::clock_id_t right_id, tchecker::integer_t value);
+    
+    /*!
+     * \brief if true, resets can be performed consecutively on the same dbm
+     * @return
+     */
+    bool is_safe() const;
+  
+  private:
+    
+    /*! \brief Computes the "safety" of a reset
+     *  A reset is considered unsafe or non-trivial if the set of target and source clocks overlaps
+     */
+    void calc_safety();
+
+    std::vector<tchecker::clock_id_t> _left_ids; /*! id of all clocks used as a "target" for reset*/
+    std::vector<tchecker::clock_id_t> _right_ids; /*! id of all clocks used as a "source" for reset*/
+    bool _is_safe=true;
+  };
   
   /*!
    \brief Const iterator over clock reset container

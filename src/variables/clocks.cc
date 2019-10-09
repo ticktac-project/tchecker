@@ -89,4 +89,49 @@ namespace tchecker {
     return os;
   }
   
+  void clock_reset_container_t::clear(){
+    std::vector<tchecker::clock_reset_t>::clear();
+    _left_ids.clear();
+    _right_ids.clear();
+    _is_safe = true;
+  }
+  
+  void clock_reset_container_t::emplace_back(tchecker::clock_id_t left_id, tchecker::clock_id_t right_id,
+                                             tchecker::integer_t value) {
+    assert(left_id != 0);
+    //Check if clock was already assigned
+    for (std::vector<tchecker::clock_id_t>::const_iterator it_left = _left_ids.cbegin(); it_left != _left_ids.cend(); ++it_left){
+      assert(left_id != *it_left); // Every clock is allowed to be assigned only once. todo move this assert into the parser
+    }
+    _left_ids.push_back(left_id);
+  
+    std::vector<tchecker::clock_reset_t>::emplace_back(left_id, right_id, value);
+  
+    if (right_id!=0) {
+      _right_ids.push_back(right_id);
+      calc_safety(); // As we do not know how many will be inserted we have to recompute this each time
+    }
+  }
+  
+  bool clock_reset_container_t::is_safe() const {
+    return _is_safe;
+  }
+  
+  inline void clock_reset_container_t::calc_safety(){
+    // Naive approach; Number of resets usually small so direct comparison is ok
+    // If it is already unsafe it will stay unsafe
+    if (_is_safe){
+      for (const tchecker::clock_id_t & r_id : _right_ids) {
+        for (const tchecker::clock_id_t &l_id : _left_ids) {
+          if (r_id == l_id){
+            _is_safe = false;
+            return; //unsafe is insafe, no way around it
+          }
+        }
+      }
+    }
+  
+  }
+  
+  
 } // end of namespace tchecker

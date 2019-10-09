@@ -32,7 +32,57 @@
 namespace tchecker {
   
   namespace dbm {
+  
+    namespace details{
+      /*!
+       * \brief Auxialliry class used to store all information necessary for non-trivial
+       * resets.
+       */
+      class reset_struct_t{
+      public:
+        /*!
+         * \brief The structure represents M'(x',y'). The default constructor corresponds to
+         * M'(x',y') = M(x,y)
+         * M'(x',y') <-> x'-y' <= c' <-> (x+v_x)-(y+v_y)<=c' <-> M(x,y)+(v_x-v_y) <= c' -> M'(x',y') = M(x,y)+(v_x-v_y)
+         * @param x : id of clock x; x' = x + v_x
+         * @param y : id of clock y; y' = y + v_y
+         */
+        reset_struct_t(tchecker::clock_id_t x, tchecker::clock_id_t y);
+      
+        void set_x(tchecker::clock_id_t x, tchecker::dbm::db_t v_x);
+        void set_y(tchecker::clock_id_t y, tchecker::dbm::db_t v_y);
+        bool is_mod() const;
+        void visit_reset(const clock_reset_t & reset);
+        void visit_reset(const clock_reset_container_t & reset_vec);
+        tchecker::dbm::db_t compute(tchecker::dbm::db_t const * const dbm, tchecker::clock_id_t dim)const;
     
+    
+      private:
+        tchecker::clock_id_t x_,y_;
+        tchecker::dbm::db_t v_x_,v_y_;
+        bool is_mod_;
+        bool is_set_x_, is_set_y_;
+      };
+    
+      /*!
+       * \brief Fill a vector with default resets (dbm_new == dbm_old)
+       * @param vec
+       * @param dim
+       */
+      void fill_reset_vector(std::vector<reset_struct_t> & vec, const tchecker::clock_id_t dim);
+    
+      /*!
+       *\brief Apply the resets
+       * @param dbm1 : modifiable dbm for zone after reset
+       * @param dbm2 : constant dbm for zone before reset
+       * @param dim : dimension of the zone
+       * @param vec : vector of resets
+       * @param apply_all : Whether all resets should be applied no matter if the value of dbm_new_ij == dbm_old_ij
+       */
+      void apply_reset_vector(tchecker::dbm::db_t * dbm1, tchecker::dbm::db_t const * const dbm2, const tchecker::clock_id_t dim, const std::vector<reset_struct_t> & vec, bool apply_all=false);
+    
+    } // end details
+  
     /*!
      \brief Status of a DBM
      */
