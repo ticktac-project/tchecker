@@ -23,7 +23,89 @@ namespace tchecker {
 #define DBM1(i,j)         dbm1[(i)*dim+(j)]
 #define DBM2(i,j)         dbm2[(i)*dim+(j)]
     
-
+    namespace details{
+      
+      // reset_struct_t
+      reset_struct_t::reset_struct_t(tchecker::clock_id_t x, tchecker::clock_id_t y)
+          :x_(x), y_(y), v_x_(0), v_y_(0), is_mod_(false), is_set_x_(false), is_set_y_(false)
+      {}
+      
+      void reset_struct_t::set_x(tchecker::clock_id_t x, tchecker::dbm::db_t v_x){
+        if(!is_set_x_){
+          x_ = x;
+          v_x_ = v_x;
+          is_mod_ = true;
+          is_set_x_ = true;
+        }
+      }
+      
+      void reset_struct_t::set_y(tchecker::clock_id_t y, tchecker::dbm::db_t v_y){
+        if(!is_set_y_){
+          y_ = y;
+          v_y_ = v_y;
+          is_mod_ = true;
+          is_set_y_ = true;
+        }
+      }
+      
+      bool reset_struct_t::is_mod() const{
+        return is_mod_;
+      }
+      
+      void reset_struct_t::visit_reset(const clock_reset_t & reset){
+        if ((!is_set_x_) && (reset.left_id() == x_)){
+          // The reset effects the "first" clock of the constraint
+          set_x(reset.right_id(), reset.value()); // Now associated to the right clock of the reset
+          //The offset value has unchanged sign here.
+          //Store the bare value
+        }
+        if ((!is_set_y_) && (reset.left_id() == y_)){
+          // The reset effects the "second" clock of the constraint
+          set_y(reset.right_id(), reset.value()); // Now associated to the right clock of the reset
+          //The offset value has to change sign here.
+          //Store the bare value
+        }
+      }
+      
+      void reset_struct_t::visit_reset(const clock_reset_container_t &reset_vec) {
+        for (const clock_reset_t & reset : reset_vec){
+          visit_reset(reset);
+        }
+      }
+      
+      tchecker::dbm::db_t reset_struct_t::compute(tchecker::dbm::db_t const * const dbm, tchecker::clock_id_t dim)const {
+        // The values in v_x_ and v_y_ are "bare" values as they are stored in the
+        // clock_reset_t
+        return tchecker::dbm::add(DBM(x_,y_),(v_x_-v_y_));
+      }
+      
+      // endreset_struct_t
+      
+      void fill_reset_vector(std::vector<reset_struct_t> & vec, const tchecker::clock_id_t dim){
+        vec.clear();
+        vec.reserve(dim*dim);
+        for (tchecker::clock_id_t i=0; i<dim; ++i){
+          for (tchecker::clock_id_t j=0; j<dim; ++j) {
+            vec.emplace_back(i,j); //ATTENTION, this has to give the same order as the memory layout of the dbm
+          }
+        }
+      }
+      
+      void apply_reset_vector(tchecker::dbm::db_t * dbm1, tchecker::dbm::db_t const * const dbm2, const tchecker::clock_id_t dim, const std::vector<reset_struct_t> & vec, bool apply_all){
+        assert(vec.size() == dim*dim);
+        assert(tchecker::dbm::is_tight(dbm2, dim));
+        tchecker::dbm::db_t * dbm1_ptr = dbm1;
+        for (const auto & r : vec){
+          if (apply_all || r.is_mod()){//Apply if either all have to be applied, or this value changed due to the resets
+            *dbm1_ptr = r.compute(dbm2, dim);
+          }
+          dbm1_ptr++;
+        }
+        // Done. The dbm should be tight
+        assert(tchecker::dbm::is_tight(dbm1, dim));
+      }
+    } //details end
+    
     void universal(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim)
     {
       assert(dbm != nullptr);

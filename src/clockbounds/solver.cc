@@ -414,7 +414,7 @@ namespace tchecker {
           
           for (tchecker::clock_id_t lclock = lclocks.begin(); lclock != lclocks.end(); ++lclock)
             for (tchecker::clock_id_t rclock = rclocks.begin(); rclock != rclocks.end(); ++rclock)
-              _solver.add_assignment(_src, lclock, _tgt, rclock, 0);
+              _solver.add_assignment(_src, _tgt, lclock, rclock, 0); //Fixed argument order
         }
         
         /*!
