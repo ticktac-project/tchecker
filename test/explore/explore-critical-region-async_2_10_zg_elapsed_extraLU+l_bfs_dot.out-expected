@@ -1,0 +1,2183 @@
+digraph critical_region_async_2_10 {
+node [shape="box",style="rounded"];
+n0 [label="<l,I,req,req,not_ready,not_ready> id=0 (0<=x1 & 0<=x2)"]
+n1 [label="<l,C,req,req,not_ready,not_ready> id=1 (0<=x1 & 0<=x2)"]
+n0 -> n1
+n2 [label="<l,I,req,req,testing,not_ready> id=0 (0<=x1<=10 & 0<=x2 & x1-x2<=0)"]
+n0 -> n2
+n3 [label="<l,I,req,req,not_ready,testing> id=0 (0<=x1 & 0<=x2<=10 & 0<=x1-x2)"]
+n0 -> n3
+n4 [label="<l,C,req,req,not_ready,not_ready> id=2 (0<=x1 & 0<=x2)"]
+n1 -> n4
+n5 [label="<l,C,req,req,testing,not_ready> id=1 (0<=x1<=10 & 0<=x2 & x1-x2<=0)"]
+n1 -> n5
+n6 [label="<l,C,req,req,not_ready,testing> id=1 (0<=x1 & 0<=x2<=10 & 0<=x1-x2)"]
+n1 -> n6
+n2 -> n5
+n7 [label="<l,I,req,req,not_ready,not_ready> id=0 (0<=x1 & 10<=x2)"]
+n2 -> n7
+n8 [label="<l,I,req,req,requesting,not_ready> id=0 (0<=x1 & 0<=x2)"]
+n2 -> n8
+n9 [label="<l,I,req,req,testing,testing> id=0 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)"]
+n2 -> n9
+n3 -> n6
+n10 [label="<l,I,req,req,testing,testing> id=0 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)"]
+n3 -> n10
+n11 [label="<l,I,req,req,not_ready,not_ready> id=0 (10<=x1 & 0<=x2)"]
+n3 -> n11
+n12 [label="<l,I,req,req,not_ready,requesting> id=0 (0<=x1 & 0<=x2)"]
+n3 -> n12
+n4 -> n1
+n13 [label="<l,C,req,req,testing,not_ready> id=2 (0<=x1<=10 & 0<=x2 & x1-x2<=0)"]
+n4 -> n13
+n14 [label="<l,C,req,req,not_ready,testing> id=2 (0<=x1 & 0<=x2<=10 & 0<=x1-x2)"]
+n4 -> n14
+n5 -> n13
+n15 [label="<l,C,req,req,not_ready,not_ready> id=1 (0<=x1 & 10<=x2)"]
+n5 -> n15
+n16 [label="<l,C,req,req,requesting,not_ready> id=1 (0<=x1 & 0<=x2)"]
+n5 -> n16
+n17 [label="<l,C,req,req,testing,testing> id=1 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)"]
+n5 -> n17
+n6 -> n14
+n18 [label="<l,C,req,req,testing,testing> id=1 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)"]
+n6 -> n18
+n19 [label="<l,C,req,req,not_ready,not_ready> id=1 (10<=x1 & 0<=x2)"]
+n6 -> n19
+n20 [label="<l,C,req,req,not_ready,requesting> id=1 (0<=x1 & 0<=x2)"]
+n6 -> n20
+n7 -> n15
+n21 [label="<l,I,req,req,testing,not_ready> id=0 (0<=x1<=10 & 10<=x2 & x1-x2<=-10)"]
+n7 -> n21
+n7 -> n3
+n8 -> n16
+n22 [label="<l,I,req,req,requesting,testing> id=0 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)"]
+n8 -> n22
+n9 -> n17
+n23 [label="<l,I,req,req,not_ready,testing> id=0 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)"]
+n9 -> n23
+n9 -> n22
+n24 [label="<l,I,req,req,testing,not_ready> id=0 (x1=10 & 0<=x2 & x1-x2<=10)"]
+n9 -> n24
+n25 [label="<l,I,req,req,testing,requesting> id=0 (0<=x1<=10 & 0<=x2 & x1-x2<=10)"]
+n9 -> n25
+n10 -> n18
+n26 [label="<l,I,req,req,not_ready,testing> id=0 (0<=x1 & x2=10 & -10<=x1-x2)"]
+n10 -> n26
+n10 -> n22
+n27 [label="<l,I,req,req,testing,not_ready> id=0 (0<=x1<=10 & 0<=x2 & x1-x2<=10)"]
+n10 -> n27
+n10 -> n25
+n11 -> n19
+n11 -> n2
+n28 [label="<l,I,req,req,not_ready,testing> id=0 (10<=x1 & 0<=x2<=10 & 10<=x1-x2)"]
+n11 -> n28
+n12 -> n20
+n12 -> n25
+n13 -> n5
+n29 [label="<l,C,req,req,not_ready,not_ready> id=2 (0<=x1 & 10<=x2)"]
+n13 -> n29
+n30 [label="<l,C,req,req,requesting,not_ready> id=2 (0<=x1 & 0<=x2)"]
+n13 -> n30
+n31 [label="<l,C,req,req,testing,testing> id=2 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)"]
+n13 -> n31
+n14 -> n6
+n32 [label="<l,C,req,req,testing,testing> id=2 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)"]
+n14 -> n32
+n33 [label="<l,C,req,req,not_ready,not_ready> id=2 (10<=x1 & 0<=x2)"]
+n14 -> n33
+n34 [label="<l,C,req,req,not_ready,requesting> id=2 (0<=x1 & 0<=x2)"]
+n14 -> n34
+n15 -> n29
+n35 [label="<l,C,req,req,testing,not_ready> id=1 (0<=x1<=10 & 10<=x2 & x1-x2<=-10)"]
+n15 -> n35
+n15 -> n6
+n16 -> n30
+n36 [label="<l,C,ack,req,critical,not_ready> id=0 (0<=x1<=20 & 0<=x2 & x1-x2<=0)"]
+n16 -> n36
+n37 [label="<l,C,req,req,requesting,testing> id=1 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)"]
+n16 -> n37
+n17 -> n31
+n38 [label="<l,C,req,req,not_ready,testing> id=1 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)"]
+n17 -> n38
+n17 -> n37
+n39 [label="<l,C,req,req,testing,not_ready> id=1 (x1=10 & 0<=x2 & x1-x2<=10)"]
+n17 -> n39
+n40 [label="<l,C,req,req,testing,requesting> id=1 (0<=x1<=10 & 0<=x2 & x1-x2<=10)"]
+n17 -> n40
+n18 -> n32
+n41 [label="<l,C,req,req,not_ready,testing> id=1 (0<=x1 & x2=10 & -10<=x1-x2)"]
+n18 -> n41
+n18 -> n37
+n42 [label="<l,C,req,req,testing,not_ready> id=1 (0<=x1<=10 & 0<=x2 & x1-x2<=10)"]
+n18 -> n42
+n18 -> n40
+n19 -> n33
+n19 -> n5
+n43 [label="<l,C,req,req,not_ready,testing> id=1 (10<=x1 & 0<=x2<=10 & 10<=x1-x2)"]
+n19 -> n43
+n20 -> n34
+n20 -> n40
+n21 -> n35
+n44 [label="<l,I,req,req,not_ready,not_ready> id=0 (0<=x1 & 20<=x2)"]
+n21 -> n44
+n45 [label="<l,I,req,req,requesting,not_ready> id=0 (0<=x1 & 10<=x2)"]
+n21 -> n45
+n21 -> n9
+n22 -> n37
+n22 -> n8
+n46 [label="<l,I,req,req,requesting,requesting> id=0 (0<=x1 & 0<=x2)"]
+n22 -> n46
+n23 -> n38
+n23 -> n10
+n23 -> n0
+n23 -> n12
+n24 -> n39
+n24 -> n0
+n47 [label="<l,I,req,req,testing,testing> id=0 (x1=10 & x2=0 & x1=x2+10)"]
+n24 -> n47
+n25 -> n40
+n25 -> n12
+n25 -> n46
+n26 -> n41
+n48 [label="<l,I,req,req,testing,testing> id=0 (x1=0 & x2=10 & x1=x2-10)"]
+n26 -> n48
+n26 -> n0
+n27 -> n42
+n27 -> n0
+n27 -> n8
+n27 -> n9
+n28 -> n43
+n28 -> n10
+n49 [label="<l,I,req,req,not_ready,not_ready> id=0 (20<=x1 & 0<=x2)"]
+n28 -> n49
+n50 [label="<l,I,req,req,not_ready,requesting> id=0 (10<=x1 & 0<=x2)"]
+n28 -> n50
+n29 -> n15
+n51 [label="<l,C,req,req,testing,not_ready> id=2 (0<=x1<=10 & 10<=x2 & x1-x2<=-10)"]
+n29 -> n51
+n29 -> n14
+n30 -> n16
+n52 [label="<l,C,req,req,requesting,testing> id=2 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)"]
+n30 -> n52
+n31 -> n17
+n53 [label="<l,C,req,req,not_ready,testing> id=2 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)"]
+n31 -> n53
+n31 -> n52
+n54 [label="<l,C,req,req,testing,not_ready> id=2 (x1=10 & 0<=x2 & x1-x2<=10)"]
+n31 -> n54
+n55 [label="<l,C,req,req,testing,requesting> id=2 (0<=x1<=10 & 0<=x2 & x1-x2<=10)"]
+n31 -> n55
+n32 -> n18
+n56 [label="<l,C,req,req,not_ready,testing> id=2 (0<=x1 & x2=10 & -10<=x1-x2)"]
+n32 -> n56
+n32 -> n52
+n57 [label="<l,C,req,req,testing,not_ready> id=2 (0<=x1<=10 & 0<=x2 & x1-x2<=10)"]
+n32 -> n57
+n32 -> n55
+n33 -> n19
+n33 -> n13
+n58 [label="<l,C,req,req,not_ready,testing> id=2 (10<=x1 & 0<=x2<=10 & 10<=x1-x2)"]
+n33 -> n58
+n34 -> n20
+n59 [label="<l,C,req,ack,not_ready,critical> id=0 (0<=x1 & 0<=x2<=20 & 0<=x1-x2)"]
+n34 -> n59
+n34 -> n55
+n35 -> n51
+n60 [label="<l,C,req,req,not_ready,not_ready> id=1 (0<=x1 & 20<=x2)"]
+n35 -> n60
+n61 [label="<l,C,req,req,requesting,not_ready> id=1 (0<=x1 & 10<=x2)"]
+n35 -> n61
+n35 -> n17
+n62 [label="<l,C,ack,req,critical,not_ready> id=1 (0<=x1<=20 & 0<=x2 & x1-x2<=0)"]
+n36 -> n62
+n63 [label="<l,C,req,req,testing2,not_ready> id=1 (0<=x1<=10 & 0<=x2 & x1-x2<=0)"]
+n36 -> n63
+n64 [label="<l,C,ack,req,error,not_ready> id=0 (0<=x1 & 20<=x2)"]
+n36 -> n64
+n65 [label="<l,C,ack,req,critical,testing> id=0 (0<=x1<=20 & 0<=x2<=10 & 0<=x1-x2<=20)"]
+n36 -> n65
+n37 -> n52
+n66 [label="<l,C,ack,req,critical,testing> id=0 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)"]
+n37 -> n66
+n37 -> n16
+n67 [label="<l,C,req,req,requesting,requesting> id=1 (0<=x1 & 0<=x2)"]
+n37 -> n67
+n38 -> n53
+n38 -> n18
+n38 -> n1
+n38 -> n20
+n39 -> n54
+n39 -> n1
+n68 [label="<l,C,req,req,testing,testing> id=1 (x1=10 & x2=0 & x1=x2+10)"]
+n39 -> n68
+n40 -> n55
+n40 -> n20
+n40 -> n67
+n41 -> n56
+n69 [label="<l,C,req,req,testing,testing> id=1 (x1=0 & x2=10 & x1=x2-10)"]
+n41 -> n69
+n41 -> n1
+n42 -> n57
+n42 -> n1
+n42 -> n16
+n42 -> n17
+n43 -> n58
+n43 -> n18
+n70 [label="<l,C,req,req,not_ready,not_ready> id=1 (20<=x1 & 0<=x2)"]
+n43 -> n70
+n71 [label="<l,C,req,req,not_ready,requesting> id=1 (10<=x1 & 0<=x2)"]
+n43 -> n71
+n44 -> n60
+n72 [label="<l,I,req,req,testing,not_ready> id=0 (0<=x1<=10 & 20<=x2 & x1-x2<=-20)"]
+n44 -> n72
+n44 -> n3
+n45 -> n61
+n45 -> n22
+n46 -> n67
+n47 -> n68
+n47 -> n3
+n73 [label="<l,I,req,req,testing,requesting> id=0 (x1=10 & 0<=x2 & x1-x2<=10)"]
+n47 -> n73
+n48 -> n69
+n74 [label="<l,I,req,req,requesting,testing> id=0 (0<=x1 & x2=10 & -10<=x1-x2)"]
+n48 -> n74
+n48 -> n2
+n49 -> n70
+n49 -> n2
+n75 [label="<l,I,req,req,not_ready,testing> id=0 (20<=x1 & 0<=x2<=10 & 20<=x1-x2)"]
+n49 -> n75
+n50 -> n71
+n50 -> n25
+n51 -> n35
+n76 [label="<l,C,req,req,not_ready,not_ready> id=2 (0<=x1 & 20<=x2)"]
+n51 -> n76
+n77 [label="<l,C,req,req,requesting,not_ready> id=2 (0<=x1 & 10<=x2)"]
+n51 -> n77
+n51 -> n31
+n52 -> n37
+n52 -> n30
+n78 [label="<l,C,req,req,requesting,requesting> id=2 (0<=x1 & 0<=x2)"]
+n52 -> n78
+n53 -> n38
+n53 -> n32
+n53 -> n4
+n53 -> n34
+n54 -> n39
+n54 -> n4
+n79 [label="<l,C,req,req,testing,testing> id=2 (x1=10 & x2=0 & x1=x2+10)"]
+n54 -> n79
+n55 -> n40
+n80 [label="<l,C,req,ack,testing,critical> id=0 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)"]
+n55 -> n80
+n55 -> n34
+n55 -> n78
+n56 -> n41
+n81 [label="<l,C,req,req,testing,testing> id=2 (x1=0 & x2=10 & x1=x2-10)"]
+n56 -> n81
+n56 -> n4
+n57 -> n42
+n57 -> n4
+n57 -> n30
+n57 -> n31
+n58 -> n43
+n58 -> n32
+n82 [label="<l,C,req,req,not_ready,not_ready> id=2 (20<=x1 & 0<=x2)"]
+n58 -> n82
+n83 [label="<l,C,req,req,not_ready,requesting> id=2 (10<=x1 & 0<=x2)"]
+n58 -> n83
+n84 [label="<l,C,req,ack,not_ready,critical> id=1 (0<=x1 & 0<=x2<=20 & 0<=x1-x2)"]
+n59 -> n84
+n85 [label="<l,C,req,req,not_ready,testing2> id=2 (0<=x1 & 0<=x2<=10 & 0<=x1-x2)"]
+n59 -> n85
+n86 [label="<l,C,req,ack,testing,critical> id=0 (0<=x1<=10 & 0<=x2<=20 & -20<=x1-x2<=0)"]
+n59 -> n86
+n87 [label="<l,C,req,ack,not_ready,error> id=0 (20<=x1 & 0<=x2)"]
+n59 -> n87
+n60 -> n76
+n88 [label="<l,C,req,req,testing,not_ready> id=1 (0<=x1<=10 & 20<=x2 & x1-x2<=-20)"]
+n60 -> n88
+n60 -> n6
+n61 -> n77
+n89 [label="<l,C,ack,req,critical,not_ready> id=0 (0<=x1<=20 & 10<=x2 & x1-x2<=-10)"]
+n61 -> n89
+n61 -> n37
+n90 [label="<l,C,ack,req,critical,not_ready> id=2 (0<=x1<=20 & 0<=x2 & x1-x2<=0)"]
+n62 -> n90
+n62 -> n63
+n91 [label="<l,C,ack,req,error,not_ready> id=1 (0<=x1 & 20<=x2)"]
+n62 -> n91
+n92 [label="<l,C,ack,req,critical,testing> id=1 (0<=x1<=20 & 0<=x2<=10 & 0<=x1-x2<=20)"]
+n62 -> n92
+n93 [label="<l,C,req,req,testing2,not_ready> id=2 (0<=x1<=10 & 0<=x2 & x1-x2<=0)"]
+n63 -> n93
+n94 [label="<l,C,req,req,error,not_ready> id=1 (0<=x1 & 10<=x2)"]
+n63 -> n94
+n95 [label="<l,C,req,req,safe,not_ready> id=1 (0<=x1 & 0<=x2)"]
+n63 -> n95
+n96 [label="<l,C,req,req,testing2,testing> id=1 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)"]
+n63 -> n96
+n64 -> n91
+n97 [label="<l,C,ack,req,error,testing> id=0 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)"]
+n64 -> n97
+n65 -> n92
+n98 [label="<l,C,req,req,testing2,testing> id=1 (0<=x1<=10 & 0<=x2<=10 & -9<=x1-x2<=0)"]
+n65 -> n98
+n65 -> n97
+n99 [label="<l,C,ack,req,critical,not_ready> id=0 (10<=x1<=20 & 0<=x2 & x1-x2<=20)"]
+n65 -> n99
+n100 [label="<l,C,ack,req,critical,requesting> id=0 (0<=x1<=20 & 0<=x2 & x1-x2<=20)"]
+n65 -> n100
+n101 [label="<l,C,ack,req,critical,testing> id=1 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)"]
+n66 -> n101
+n102 [label="<l,C,req,req,testing2,testing> id=1 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)"]
+n66 -> n102
+n103 [label="<l,C,ack,req,critical,not_ready> id=0 (0<=x1<=20 & 0<=x2 & x1-x2<=10)"]
+n66 -> n103
+n66 -> n100
+n67 -> n78
+n67 -> n100
+n68 -> n79
+n68 -> n6
+n104 [label="<l,C,req,req,testing,requesting> id=1 (x1=10 & 0<=x2 & x1-x2<=10)"]
+n68 -> n104
+n69 -> n81
+n105 [label="<l,C,req,req,requesting,testing> id=1 (0<=x1 & x2=10 & -10<=x1-x2)"]
+n69 -> n105
+n69 -> n5
+n70 -> n82
+n70 -> n5
+n106 [label="<l,C,req,req,not_ready,testing> id=1 (20<=x1 & 0<=x2<=10 & 20<=x1-x2)"]
+n70 -> n106
+n71 -> n83
+n71 -> n40
+n72 -> n88
+n107 [label="<l,I,req,req,not_ready,not_ready> id=0 (0<=x1 & 20<x2)"]
+n72 -> n107
+n108 [label="<l,I,req,req,requesting,not_ready> id=0 (0<=x1 & 20<=x2)"]
+n72 -> n108
+n109 [label="<l,I,req,req,testing,testing> id=0 (0<=x1<=10 & 0<=x2<=10 & x1=x2)"]
+n72 -> n109
+n73 -> n104
+n73 -> n12
+n74 -> n105
+n74 -> n8
+n75 -> n106
+n75 -> n109
+n110 [label="<l,I,req,req,not_ready,not_ready> id=0 (20<x1 & 0<=x2)"]
+n75 -> n110
+n111 [label="<l,I,req,req,not_ready,requesting> id=0 (20<=x1 & 0<=x2)"]
+n75 -> n111
+n76 -> n60
+n112 [label="<l,C,req,req,testing,not_ready> id=2 (0<=x1<=10 & 20<=x2 & x1-x2<=-20)"]
+n76 -> n112
+n76 -> n14
+n77 -> n61
+n77 -> n52
+n78 -> n67
+n113 [label="<l,C,req,ack,requesting,critical> id=0 (0<=x1 & 0<=x2<=20 & -20<=x1-x2)"]
+n78 -> n113
+n79 -> n68
+n79 -> n14
+n114 [label="<l,C,req,req,testing,requesting> id=2 (x1=10 & 0<=x2 & x1-x2<=10)"]
+n79 -> n114
+n115 [label="<l,C,req,ack,testing,critical> id=1 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)"]
+n80 -> n115
+n116 [label="<l,C,req,req,testing,testing2> id=2 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)"]
+n80 -> n116
+n117 [label="<l,C,req,ack,not_ready,critical> id=0 (0<=x1 & 0<=x2<=20 & -10<=x1-x2)"]
+n80 -> n117
+n80 -> n113
+n81 -> n69
+n118 [label="<l,C,req,req,requesting,testing> id=2 (0<=x1 & x2=10 & -10<=x1-x2)"]
+n81 -> n118
+n81 -> n13
+n82 -> n70
+n82 -> n13
+n119 [label="<l,C,req,req,not_ready,testing> id=2 (20<=x1 & 0<=x2<=10 & 20<=x1-x2)"]
+n82 -> n119
+n83 -> n71
+n120 [label="<l,C,req,ack,not_ready,critical> id=0 (10<=x1 & 0<=x2<=20 & 10<=x1-x2)"]
+n83 -> n120
+n83 -> n55
+n121 [label="<l,C,req,ack,not_ready,critical> id=2 (0<=x1 & 0<=x2<=20 & 0<=x1-x2)"]
+n84 -> n121
+n84 -> n85
+n122 [label="<l,C,req,ack,testing,critical> id=1 (0<=x1<=10 & 0<=x2<=20 & -20<=x1-x2<=0)"]
+n84 -> n122
+n123 [label="<l,C,req,ack,not_ready,error> id=1 (20<=x1 & 0<=x2)"]
+n84 -> n123
+n124 [label="<l,C,req,req,not_ready,testing2> id=1 (0<=x1 & 0<=x2<=10 & 0<=x1-x2)"]
+n85 -> n124
+n125 [label="<l,C,req,req,testing,testing2> id=2 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)"]
+n85 -> n125
+n126 [label="<l,C,req,req,not_ready,error> id=2 (10<=x1 & 0<=x2)"]
+n85 -> n126
+n127 [label="<l,C,req,req,not_ready,safe> id=2 (0<=x1 & 0<=x2)"]
+n85 -> n127
+n86 -> n122
+n128 [label="<l,C,req,req,testing,testing2> id=2 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=9)"]
+n86 -> n128
+n129 [label="<l,C,req,ack,not_ready,critical> id=0 (0<=x1 & 10<=x2<=20 & -20<=x1-x2)"]
+n86 -> n129
+n86 -> n113
+n130 [label="<l,C,req,ack,testing,error> id=0 (0<=x1<=10 & 0<=x2 & x1-x2<=10)"]
+n86 -> n130
+n87 -> n123
+n87 -> n130
+n88 -> n112
+n131 [label="<l,C,req,req,not_ready,not_ready> id=1 (0<=x1 & 20<x2)"]
+n88 -> n131
+n132 [label="<l,C,req,req,requesting,not_ready> id=1 (0<=x1 & 20<=x2)"]
+n88 -> n132
+n133 [label="<l,C,req,req,testing,testing> id=1 (0<=x1<=10 & 0<=x2<=10 & x1=x2)"]
+n88 -> n133
+n134 [label="<l,C,ack,req,critical,not_ready> id=1 (0<=x1<=20 & 10<=x2 & x1-x2<=-10)"]
+n89 -> n134
+n135 [label="<l,C,req,req,testing2,not_ready> id=1 (0<=x1<=10 & 10<=x2 & x1-x2<=-10)"]
+n89 -> n135
+n136 [label="<l,C,ack,req,error,not_ready> id=0 (0<=x1 & 20<x2)"]
+n89 -> n136
+n137 [label="<l,C,ack,req,critical,testing> id=0 (0<=x1<=20 & 0<=x2<=10 & 0<=x1-x2<=10)"]
+n89 -> n137
+n90 -> n62
+n90 -> n63
+n138 [label="<l,C,ack,req,error,not_ready> id=2 (0<=x1 & 20<=x2)"]
+n90 -> n138
+n139 [label="<l,C,ack,req,critical,testing> id=2 (0<=x1<=20 & 0<=x2<=10 & 0<=x1-x2<=20)"]
+n90 -> n139
+n91 -> n138
+n140 [label="<l,C,ack,req,error,testing> id=1 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)"]
+n91 -> n140
+n92 -> n139
+n92 -> n98
+n92 -> n140
+n141 [label="<l,C,ack,req,critical,not_ready> id=1 (10<=x1<=20 & 0<=x2 & x1-x2<=20)"]
+n92 -> n141
+n142 [label="<l,C,ack,req,critical,requesting> id=1 (0<=x1<=20 & 0<=x2 & x1-x2<=20)"]
+n92 -> n142
+n93 -> n63
+n143 [label="<l,C,req,req,error,not_ready> id=2 (0<=x1 & 10<=x2)"]
+n93 -> n143
+n144 [label="<l,C,req,req,safe,not_ready> id=2 (0<=x1 & 0<=x2)"]
+n93 -> n144
+n145 [label="<l,C,req,req,testing2,testing> id=2 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)"]
+n93 -> n145
+n94 -> n143
+n146 [label="<l,C,req,req,error,testing> id=1 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)"]
+n94 -> n146
+n95 -> n144
+n147 [label="<l,C,req,req,safe,testing> id=1 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)"]
+n95 -> n147
+n96 -> n145
+n96 -> n146
+n96 -> n147
+n148 [label="<l,C,req,req,testing2,not_ready> id=1 (x1=10 & 0<=x2 & x1-x2<=10)"]
+n96 -> n148
+n149 [label="<l,C,req,req,testing2,requesting> id=1 (0<=x1<=10 & 0<=x2 & x1-x2<=10)"]
+n96 -> n149
+n97 -> n140
+n150 [label="<l,C,ack,req,error,not_ready> id=0 (0<=x1 & 0<=x2)"]
+n97 -> n150
+n151 [label="<l,C,ack,req,error,requesting> id=0 (0<=x1 & 0<=x2)"]
+n97 -> n151
+n152 [label="<l,C,req,req,testing2,testing> id=2 (0<=x1<=10 & 0<=x2<=10 & -9<=x1-x2<=0)"]
+n98 -> n152
+n153 [label="<l,C,req,req,error,testing> id=1 (0<=x1 & x2=10 & -10<=x1-x2)"]
+n98 -> n153
+n98 -> n147
+n154 [label="<l,C,req,req,testing2,not_ready> id=1 (1<=x1<=10 & 0<=x2 & x1-x2<=10)"]
+n98 -> n154
+n98 -> n149
+n99 -> n141
+n99 -> n150
+n155 [label="<l,C,ack,req,critical,testing> id=0 (10<=x1<=20 & 0<=x2<=10 & 10<=x1-x2<=20)"]
+n99 -> n155
+n100 -> n142
+n100 -> n149
+n100 -> n151
+n156 [label="<l,C,ack,req,critical,testing> id=2 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)"]
+n101 -> n156
+n101 -> n102
+n157 [label="<l,C,ack,req,critical,not_ready> id=1 (0<=x1<=20 & 0<=x2 & x1-x2<=10)"]
+n101 -> n157
+n101 -> n142
+n158 [label="<l,C,req,req,testing2,testing> id=2 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)"]
+n102 -> n158
+n102 -> n153
+n102 -> n147
+n159 [label="<l,C,req,req,testing2,not_ready> id=1 (0<=x1<=10 & 0<=x2 & x1-x2<=10)"]
+n102 -> n159
+n102 -> n149
+n103 -> n157
+n103 -> n63
+n160 [label="<l,C,ack,req,error,not_ready> id=0 (0<=x1 & 10<=x2)"]
+n103 -> n160
+n103 -> n65
+n104 -> n114
+n104 -> n20
+n105 -> n118
+n161 [label="<l,C,ack,req,critical,testing> id=0 (x1=0 & x2=10 & x1=x2-10)"]
+n105 -> n161
+n105 -> n16
+n106 -> n119
+n106 -> n133
+n162 [label="<l,C,req,req,not_ready,not_ready> id=1 (20<x1 & 0<=x2)"]
+n106 -> n162
+n163 [label="<l,C,req,req,not_ready,requesting> id=1 (20<=x1 & 0<=x2)"]
+n106 -> n163
+n107 -> n131
+n164 [label="<l,I,req,req,testing,not_ready> id=0 (0<=x1<=10 & 20<x2 & x1-x2<-20)"]
+n107 -> n164
+n108 -> n132
+n108 -> n22
+n109 -> n133
+n109 -> n26
+n109 -> n22
+n109 -> n24
+n109 -> n25
+n110 -> n162
+n165 [label="<l,I,req,req,not_ready,testing> id=0 (20<x1 & 0<=x2<=10 & 20<x1-x2)"]
+n110 -> n165
+n111 -> n163
+n111 -> n25
+n112 -> n88
+n166 [label="<l,C,req,req,not_ready,not_ready> id=2 (0<=x1 & 20<x2)"]
+n112 -> n166
+n167 [label="<l,C,req,req,requesting,not_ready> id=2 (0<=x1 & 20<=x2)"]
+n112 -> n167
+n168 [label="<l,C,req,req,testing,testing> id=2 (0<=x1<=10 & 0<=x2<=10 & x1=x2)"]
+n112 -> n168
+n169 [label="<l,C,req,ack,requesting,critical> id=1 (0<=x1 & 0<=x2<=20 & -20<=x1-x2)"]
+n113 -> n169
+n170 [label="<l,C,req,req,requesting,testing2> id=2 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)"]
+n113 -> n170
+n171 [label="<l,C,req,ack,requesting,error> id=0 (0<=x1 & 0<=x2)"]
+n113 -> n171
+n114 -> n104
+n172 [label="<l,C,req,ack,testing,critical> id=0 (x1=10 & x2=0 & x1=x2+10)"]
+n114 -> n172
+n114 -> n34
+n173 [label="<l,C,req,ack,testing,critical> id=2 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)"]
+n115 -> n173
+n115 -> n116
+n174 [label="<l,C,req,ack,not_ready,critical> id=1 (0<=x1 & 0<=x2<=20 & -10<=x1-x2)"]
+n115 -> n174
+n115 -> n169
+n175 [label="<l,C,req,req,testing,testing2> id=1 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)"]
+n116 -> n175
+n176 [label="<l,C,req,req,not_ready,testing2> id=2 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)"]
+n116 -> n176
+n116 -> n170
+n177 [label="<l,C,req,req,testing,error> id=2 (x1=10 & 0<=x2 & x1-x2<=10)"]
+n116 -> n177
+n178 [label="<l,C,req,req,testing,safe> id=2 (0<=x1<=10 & 0<=x2 & x1-x2<=10)"]
+n116 -> n178
+n117 -> n174
+n117 -> n85
+n117 -> n86
+n179 [label="<l,C,req,ack,not_ready,error> id=0 (10<=x1 & 0<=x2)"]
+n117 -> n179
+n118 -> n105
+n118 -> n30
+n119 -> n106
+n119 -> n168
+n180 [label="<l,C,req,req,not_ready,not_ready> id=2 (20<x1 & 0<=x2)"]
+n119 -> n180
+n181 [label="<l,C,req,req,not_ready,requesting> id=2 (20<=x1 & 0<=x2)"]
+n119 -> n181
+n182 [label="<l,C,req,ack,not_ready,critical> id=1 (10<=x1 & 0<=x2<=20 & 10<=x1-x2)"]
+n120 -> n182
+n183 [label="<l,C,req,req,not_ready,testing2> id=2 (10<=x1 & 0<=x2<=10 & 10<=x1-x2)"]
+n120 -> n183
+n184 [label="<l,C,req,ack,testing,critical> id=0 (0<=x1<=10 & 0<=x2<=20 & -10<=x1-x2<=0)"]
+n120 -> n184
+n185 [label="<l,C,req,ack,not_ready,error> id=0 (20<x1 & 0<=x2)"]
+n120 -> n185
+n121 -> n84
+n121 -> n85
+n186 [label="<l,C,req,ack,testing,critical> id=2 (0<=x1<=10 & 0<=x2<=20 & -20<=x1-x2<=0)"]
+n121 -> n186
+n187 [label="<l,C,req,ack,not_ready,error> id=2 (20<=x1 & 0<=x2)"]
+n121 -> n187
+n122 -> n186
+n122 -> n128
+n188 [label="<l,C,req,ack,not_ready,critical> id=1 (0<=x1 & 10<=x2<=20 & -20<=x1-x2)"]
+n122 -> n188
+n122 -> n169
+n189 [label="<l,C,req,ack,testing,error> id=1 (0<=x1<=10 & 0<=x2 & x1-x2<=10)"]
+n122 -> n189
+n123 -> n187
+n123 -> n189
+n124 -> n85
+n190 [label="<l,C,req,req,testing,testing2> id=1 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)"]
+n124 -> n190
+n191 [label="<l,C,req,req,not_ready,error> id=1 (10<=x1 & 0<=x2)"]
+n124 -> n191
+n192 [label="<l,C,req,req,not_ready,safe> id=1 (0<=x1 & 0<=x2)"]
+n124 -> n192
+n125 -> n190
+n193 [label="<l,C,req,req,not_ready,testing2> id=2 (0<=x1 & x2=10 & -10<=x1-x2)"]
+n125 -> n193
+n125 -> n170
+n194 [label="<l,C,req,req,testing,error> id=2 (0<=x1<=10 & 0<=x2 & x1-x2<=10)"]
+n125 -> n194
+n125 -> n178
+n126 -> n191
+n126 -> n194
+n127 -> n192
+n127 -> n178
+n195 [label="<l,C,req,req,testing,testing2> id=1 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=9)"]
+n128 -> n195
+n196 [label="<l,C,req,req,not_ready,testing2> id=2 (0<=x1 & 1<=x2<=10 & -10<=x1-x2)"]
+n128 -> n196
+n128 -> n170
+n128 -> n177
+n128 -> n178
+n129 -> n188
+n197 [label="<l,C,req,ack,testing,critical> id=0 (0<=x1<=10 & 10<=x2<=20 & -20<=x1-x2<=-10)"]
+n129 -> n197
+n198 [label="<l,C,req,ack,not_ready,error> id=0 (0<=x1 & 0<=x2)"]
+n129 -> n198
+n130 -> n189
+n130 -> n198
+n130 -> n171
+n131 -> n166
+n199 [label="<l,C,req,req,testing,not_ready> id=1 (0<=x1<=10 & 20<x2 & x1-x2<-20)"]
+n131 -> n199
+n132 -> n167
+n200 [label="<l,C,ack,req,critical,not_ready> id=0 (0<=x1<=20 & 20<=x2 & x1-x2<=-20)"]
+n132 -> n200
+n132 -> n37
+n133 -> n168
+n133 -> n41
+n133 -> n37
+n133 -> n39
+n133 -> n40
+n201 [label="<l,C,ack,req,critical,not_ready> id=2 (0<=x1<=20 & 10<=x2 & x1-x2<=-10)"]
+n134 -> n201
+n134 -> n135
+n202 [label="<l,C,ack,req,error,not_ready> id=1 (0<=x1 & 20<x2)"]
+n134 -> n202
+n203 [label="<l,C,ack,req,critical,testing> id=1 (0<=x1<=20 & 0<=x2<=10 & 0<=x1-x2<=10)"]
+n134 -> n203
+n204 [label="<l,C,req,req,testing2,not_ready> id=2 (0<=x1<=10 & 10<=x2 & x1-x2<=-10)"]
+n135 -> n204
+n205 [label="<l,C,req,req,error,not_ready> id=1 (0<=x1 & 20<=x2)"]
+n135 -> n205
+n206 [label="<l,C,req,req,safe,not_ready> id=1 (0<=x1 & 10<=x2)"]
+n135 -> n206
+n135 -> n96
+n136 -> n202
+n137 -> n203
+n137 -> n98
+n207 [label="<l,C,ack,req,error,testing> id=0 (0<=x1 & x2=10 & -10<=x1-x2)"]
+n137 -> n207
+n137 -> n99
+n137 -> n100
+n138 -> n91
+n208 [label="<l,C,ack,req,error,testing> id=2 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)"]
+n138 -> n208
+n139 -> n92
+n139 -> n98
+n139 -> n208
+n209 [label="<l,C,ack,req,critical,not_ready> id=2 (10<=x1<=20 & 0<=x2 & x1-x2<=20)"]
+n139 -> n209
+n210 [label="<l,C,ack,req,critical,requesting> id=2 (0<=x1<=20 & 0<=x2 & x1-x2<=20)"]
+n139 -> n210
+n140 -> n208
+n211 [label="<l,C,ack,req,error,not_ready> id=1 (0<=x1 & 0<=x2)"]
+n140 -> n211
+n212 [label="<l,C,ack,req,error,requesting> id=1 (0<=x1 & 0<=x2)"]
+n140 -> n212
+n141 -> n209
+n141 -> n211
+n213 [label="<l,C,ack,req,critical,testing> id=1 (10<=x1<=20 & 0<=x2<=10 & 10<=x1-x2<=20)"]
+n141 -> n213
+n142 -> n210
+n142 -> n149
+n142 -> n212
+n143 -> n94
+n214 [label="<l,C,req,req,error,testing> id=2 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)"]
+n143 -> n214
+n144 -> n95
+n215 [label="<l,C,req,req,safe,testing> id=2 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)"]
+n144 -> n215
+n145 -> n96
+n145 -> n214
+n145 -> n215
+n216 [label="<l,C,req,req,testing2,not_ready> id=2 (x1=10 & 0<=x2 & x1-x2<=10)"]
+n145 -> n216
+n217 [label="<l,C,req,req,testing2,requesting> id=2 (0<=x1<=10 & 0<=x2 & x1-x2<=10)"]
+n145 -> n217
+n146 -> n214
+n218 [label="<l,C,req,req,error,not_ready> id=1 (0<=x1 & 0<=x2)"]
+n146 -> n218
+n219 [label="<l,C,req,req,error,requesting> id=1 (0<=x1 & 0<=x2)"]
+n146 -> n219
+n147 -> n215
+n147 -> n95
+n220 [label="<l,C,req,req,safe,requesting> id=1 (0<=x1 & 0<=x2)"]
+n147 -> n220
+n148 -> n216
+n148 -> n218
+n221 [label="<l,C,req,req,testing2,testing> id=1 (x1=10 & x2=0 & x1=x2+10)"]
+n148 -> n221
+n149 -> n217
+n149 -> n219
+n149 -> n220
+n150 -> n211
+n150 -> n97
+n151 -> n212
+n152 -> n98
+n222 [label="<l,C,req,req,error,testing> id=2 (0<=x1 & x2=10 & -10<=x1-x2)"]
+n152 -> n222
+n152 -> n215
+n223 [label="<l,C,req,req,testing2,not_ready> id=2 (1<=x1<=10 & 0<=x2 & x1-x2<=10)"]
+n152 -> n223
+n152 -> n217
+n153 -> n222
+n153 -> n218
+n154 -> n223
+n154 -> n218
+n154 -> n95
+n224 [label="<l,C,req,req,testing2,testing> id=1 (1<=x1<=10 & 0<=x2<=9 & 1<=x1-x2<=10)"]
+n154 -> n224
+n155 -> n213
+n155 -> n97
+n225 [label="<l,C,ack,req,critical,not_ready> id=0 (x1=20 & 0<=x2 & x1-x2<=20)"]
+n155 -> n225
+n226 [label="<l,C,ack,req,critical,requesting> id=0 (10<=x1<=20 & 0<=x2 & x1-x2<=20)"]
+n155 -> n226
+n156 -> n101
+n156 -> n102
+n227 [label="<l,C,ack,req,critical,not_ready> id=2 (0<=x1<=20 & 0<=x2 & x1-x2<=10)"]
+n156 -> n227
+n156 -> n210
+n157 -> n227
+n157 -> n63
+n228 [label="<l,C,ack,req,error,not_ready> id=1 (0<=x1 & 10<=x2)"]
+n157 -> n228
+n157 -> n92
+n158 -> n102
+n158 -> n222
+n158 -> n215
+n229 [label="<l,C,req,req,testing2,not_ready> id=2 (0<=x1<=10 & 0<=x2 & x1-x2<=10)"]
+n158 -> n229
+n158 -> n217
+n159 -> n229
+n159 -> n218
+n159 -> n95
+n159 -> n96
+n160 -> n228
+n160 -> n97
+n230 [label="<l,C,ack,req,critical,testing> id=1 (x1=0 & x2=10 & x1=x2-10)"]
+n161 -> n230
+n231 [label="<l,C,req,req,testing2,testing> id=1 (x1=0 & x2=10 & x1=x2-10)"]
+n161 -> n231
+n161 -> n36
+n162 -> n180
+n232 [label="<l,C,req,req,not_ready,testing> id=1 (20<x1 & 0<=x2<=10 & 20<x1-x2)"]
+n162 -> n232
+n163 -> n181
+n163 -> n40
+n164 -> n199
+n164 -> n107
+n233 [label="<l,I,req,req,requesting,not_ready> id=0 (0<=x1 & 20<x2)"]
+n164 -> n233
+n165 -> n232
+n165 -> n110
+n234 [label="<l,I,req,req,not_ready,requesting> id=0 (20<x1 & 0<=x2)"]
+n165 -> n234
+n166 -> n131
+n235 [label="<l,C,req,req,testing,not_ready> id=2 (0<=x1<=10 & 20<x2 & x1-x2<-20)"]
+n166 -> n235
+n167 -> n132
+n167 -> n52
+n168 -> n133
+n168 -> n56
+n168 -> n52
+n168 -> n54
+n168 -> n55
+n236 [label="<l,C,req,ack,requesting,critical> id=2 (0<=x1 & 0<=x2<=20 & -20<=x1-x2)"]
+n169 -> n236
+n237 [label="<l,C,ack,ack,critical,critical> id=0 (0<=x1<=20 & 0<=x2<=20 & -20<=x1-x2<=0)"]
+n169 -> n237
+n169 -> n170
+n238 [label="<l,C,req,ack,requesting,error> id=1 (0<=x1 & 0<=x2)"]
+n169 -> n238
+n239 [label="<l,C,req,req,requesting,testing2> id=1 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)"]
+n170 -> n239
+n240 [label="<l,C,req,req,requesting,error> id=2 (0<=x1 & 0<=x2)"]
+n170 -> n240
+n241 [label="<l,C,req,req,requesting,safe> id=2 (0<=x1 & 0<=x2)"]
+n170 -> n241
+n171 -> n238
+n242 [label="<l,C,req,ack,testing,critical> id=1 (x1=10 & x2=0 & x1=x2+10)"]
+n172 -> n242
+n243 [label="<l,C,req,req,testing,testing2> id=2 (x1=10 & x2=0 & x1=x2+10)"]
+n172 -> n243
+n172 -> n59
+n173 -> n115
+n173 -> n116
+n244 [label="<l,C,req,ack,not_ready,critical> id=2 (0<=x1 & 0<=x2<=20 & -10<=x1-x2)"]
+n173 -> n244
+n173 -> n236
+n174 -> n244
+n174 -> n85
+n174 -> n122
+n245 [label="<l,C,req,ack,not_ready,error> id=1 (10<=x1 & 0<=x2)"]
+n174 -> n245
+n175 -> n116
+n246 [label="<l,C,req,req,not_ready,testing2> id=1 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)"]
+n175 -> n246
+n175 -> n239
+n247 [label="<l,C,req,req,testing,error> id=1 (x1=10 & 0<=x2 & x1-x2<=10)"]
+n175 -> n247
+n248 [label="<l,C,req,req,testing,safe> id=1 (0<=x1<=10 & 0<=x2 & x1-x2<=10)"]
+n175 -> n248
+n176 -> n246
+n176 -> n125
+n249 [label="<l,C,req,req,not_ready,error> id=2 (0<=x1 & 0<=x2)"]
+n176 -> n249
+n176 -> n127
+n177 -> n247
+n177 -> n249
+n178 -> n248
+n178 -> n127
+n178 -> n241
+n179 -> n245
+n179 -> n130
+n180 -> n162
+n250 [label="<l,C,req,req,not_ready,testing> id=2 (20<x1 & 0<=x2<=10 & 20<x1-x2)"]
+n180 -> n250
+n181 -> n163
+n251 [label="<l,C,req,ack,not_ready,critical> id=0 (20<=x1 & 0<=x2<=20 & 20<=x1-x2)"]
+n181 -> n251
+n181 -> n55
+n252 [label="<l,C,req,ack,not_ready,critical> id=2 (10<=x1 & 0<=x2<=20 & 10<=x1-x2)"]
+n182 -> n252
+n182 -> n183
+n253 [label="<l,C,req,ack,testing,critical> id=1 (0<=x1<=10 & 0<=x2<=20 & -10<=x1-x2<=0)"]
+n182 -> n253
+n254 [label="<l,C,req,ack,not_ready,error> id=1 (20<x1 & 0<=x2)"]
+n182 -> n254
+n255 [label="<l,C,req,req,not_ready,testing2> id=1 (10<=x1 & 0<=x2<=10 & 10<=x1-x2)"]
+n183 -> n255
+n183 -> n125
+n256 [label="<l,C,req,req,not_ready,error> id=2 (20<=x1 & 0<=x2)"]
+n183 -> n256
+n257 [label="<l,C,req,req,not_ready,safe> id=2 (10<=x1 & 0<=x2)"]
+n183 -> n257
+n184 -> n253
+n184 -> n128
+n184 -> n129
+n184 -> n113
+n258 [label="<l,C,req,ack,testing,error> id=0 (x1=10 & 0<=x2 & x1-x2<=10)"]
+n184 -> n258
+n185 -> n254
+n186 -> n122
+n186 -> n128
+n259 [label="<l,C,req,ack,not_ready,critical> id=2 (0<=x1 & 10<=x2<=20 & -20<=x1-x2)"]
+n186 -> n259
+n186 -> n236
+n260 [label="<l,C,req,ack,testing,error> id=2 (0<=x1<=10 & 0<=x2 & x1-x2<=10)"]
+n186 -> n260
+n187 -> n123
+n187 -> n260
+n188 -> n259
+n261 [label="<l,C,req,ack,testing,critical> id=1 (0<=x1<=10 & 10<=x2<=20 & -20<=x1-x2<=-10)"]
+n188 -> n261
+n262 [label="<l,C,req,ack,not_ready,error> id=1 (0<=x1 & 0<=x2)"]
+n188 -> n262
+n189 -> n260
+n189 -> n262
+n189 -> n238
+n190 -> n125
+n263 [label="<l,C,req,req,not_ready,testing2> id=1 (0<=x1 & x2=10 & -10<=x1-x2)"]
+n190 -> n263
+n190 -> n239
+n264 [label="<l,C,req,req,testing,error> id=1 (0<=x1<=10 & 0<=x2 & x1-x2<=10)"]
+n190 -> n264
+n190 -> n248
+n191 -> n126
+n191 -> n264
+n192 -> n127
+n192 -> n248
+n193 -> n263
+n265 [label="<l,C,req,req,testing,testing2> id=2 (x1=0 & x2=10 & x1=x2-10)"]
+n193 -> n265
+n193 -> n249
+n194 -> n264
+n194 -> n249
+n194 -> n240
+n195 -> n128
+n266 [label="<l,C,req,req,not_ready,testing2> id=1 (0<=x1 & 1<=x2<=10 & -10<=x1-x2)"]
+n195 -> n266
+n195 -> n239
+n195 -> n247
+n195 -> n248
+n196 -> n266
+n267 [label="<l,C,req,req,testing,testing2> id=2 (0<=x1<=9 & 1<=x2<=10 & -10<=x1-x2<=-1)"]
+n196 -> n267
+n196 -> n249
+n196 -> n127
+n197 -> n261
+n268 [label="<l,C,req,ack,not_ready,critical> id=0 (0<=x1 & x2=20 & -20<=x1-x2)"]
+n197 -> n268
+n269 [label="<l,C,req,ack,requesting,critical> id=0 (0<=x1 & 10<=x2<=20 & -20<=x1-x2)"]
+n197 -> n269
+n197 -> n130
+n198 -> n262
+n198 -> n130
+n199 -> n235
+n199 -> n131
+n270 [label="<l,C,req,req,requesting,not_ready> id=1 (0<=x1 & 20<x2)"]
+n199 -> n270
+n271 [label="<l,C,ack,req,critical,not_ready> id=1 (0<=x1<=20 & 20<=x2 & x1-x2<=-20)"]
+n200 -> n271
+n272 [label="<l,C,req,req,testing2,not_ready> id=1 (0<=x1<=10 & 20<=x2 & x1-x2<=-20)"]
+n200 -> n272
+n200 -> n136
+n273 [label="<l,C,ack,req,critical,testing> id=0 (0<=x1<=10 & 0<=x2<=10 & x1=x2)"]
+n200 -> n273
+n201 -> n134
+n201 -> n135
+n274 [label="<l,C,ack,req,error,not_ready> id=2 (0<=x1 & 20<x2)"]
+n201 -> n274
+n275 [label="<l,C,ack,req,critical,testing> id=2 (0<=x1<=20 & 0<=x2<=10 & 0<=x1-x2<=10)"]
+n201 -> n275
+n202 -> n274
+n203 -> n275
+n203 -> n98
+n276 [label="<l,C,ack,req,error,testing> id=1 (0<=x1 & x2=10 & -10<=x1-x2)"]
+n203 -> n276
+n203 -> n141
+n203 -> n142
+n204 -> n135
+n277 [label="<l,C,req,req,error,not_ready> id=2 (0<=x1 & 20<=x2)"]
+n204 -> n277
+n278 [label="<l,C,req,req,safe,not_ready> id=2 (0<=x1 & 10<=x2)"]
+n204 -> n278
+n204 -> n145
+n205 -> n277
+n205 -> n146
+n206 -> n278
+n206 -> n147
+n207 -> n276
+n207 -> n150
+n208 -> n140
+n279 [label="<l,C,ack,req,error,not_ready> id=2 (0<=x1 & 0<=x2)"]
+n208 -> n279
+n280 [label="<l,C,ack,req,error,requesting> id=2 (0<=x1 & 0<=x2)"]
+n208 -> n280
+n209 -> n141
+n209 -> n279
+n281 [label="<l,C,ack,req,critical,testing> id=2 (10<=x1<=20 & 0<=x2<=10 & 10<=x1-x2<=20)"]
+n209 -> n281
+n210 -> n142
+n210 -> n149
+n282 [label="<l,C,ack,ack,critical,critical> id=0 (0<=x1<=20 & 0<=x2<=20 & 0<=x1-x2<=20)"]
+n210 -> n282
+n210 -> n280
+n211 -> n279
+n211 -> n140
+n212 -> n280
+n213 -> n281
+n213 -> n140
+n283 [label="<l,C,ack,req,critical,not_ready> id=1 (x1=20 & 0<=x2 & x1-x2<=20)"]
+n213 -> n283
+n284 [label="<l,C,ack,req,critical,requesting> id=1 (10<=x1<=20 & 0<=x2 & x1-x2<=20)"]
+n213 -> n284
+n214 -> n146
+n285 [label="<l,C,req,req,error,not_ready> id=2 (0<=x1 & 0<=x2)"]
+n214 -> n285
+n286 [label="<l,C,req,req,error,requesting> id=2 (0<=x1 & 0<=x2)"]
+n214 -> n286
+n215 -> n147
+n215 -> n144
+n287 [label="<l,C,req,req,safe,requesting> id=2 (0<=x1 & 0<=x2)"]
+n215 -> n287
+n216 -> n148
+n216 -> n285
+n288 [label="<l,C,req,req,testing2,testing> id=2 (x1=10 & x2=0 & x1=x2+10)"]
+n216 -> n288
+n217 -> n149
+n289 [label="<l,C,req,ack,testing2,critical> id=0 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)"]
+n217 -> n289
+n217 -> n286
+n217 -> n287
+n218 -> n285
+n218 -> n146
+n219 -> n286
+n220 -> n287
+n221 -> n288
+n221 -> n146
+n290 [label="<l,C,req,req,testing2,requesting> id=1 (x1=10 & 0<=x2 & x1-x2<=10)"]
+n221 -> n290
+n222 -> n153
+n222 -> n285
+n223 -> n154
+n223 -> n285
+n223 -> n144
+n291 [label="<l,C,req,req,testing2,testing> id=2 (1<=x1<=10 & 0<=x2<=9 & 1<=x1-x2<=10)"]
+n223 -> n291
+n224 -> n291
+n224 -> n146
+n224 -> n147
+n292 [label="<l,C,req,req,testing2,requesting> id=1 (1<=x1<=10 & 0<=x2 & x1-x2<=10)"]
+n224 -> n292
+n225 -> n283
+n225 -> n150
+n293 [label="<l,C,ack,req,critical,testing> id=0 (x1=20 & x2=0 & x1=x2+20)"]
+n225 -> n293
+n226 -> n284
+n226 -> n151
+n227 -> n157
+n227 -> n63
+n294 [label="<l,C,ack,req,error,not_ready> id=2 (0<=x1 & 10<=x2)"]
+n227 -> n294
+n227 -> n139
+n228 -> n294
+n228 -> n140
+n229 -> n159
+n229 -> n285
+n229 -> n144
+n229 -> n145
+n295 [label="<l,C,ack,req,critical,testing> id=2 (x1=0 & x2=10 & x1=x2-10)"]
+n230 -> n295
+n230 -> n231
+n230 -> n62
+n296 [label="<l,C,req,req,testing2,testing> id=2 (x1=0 & x2=10 & x1=x2-10)"]
+n231 -> n296
+n297 [label="<l,C,req,req,safe,testing> id=1 (0<=x1 & x2=10 & -10<=x1-x2)"]
+n231 -> n297
+n231 -> n63
+n232 -> n250
+n232 -> n162
+n298 [label="<l,C,req,req,not_ready,requesting> id=1 (20<x1 & 0<=x2)"]
+n232 -> n298
+n233 -> n270
+n234 -> n298
+n235 -> n199
+n235 -> n166
+n299 [label="<l,C,req,req,requesting,not_ready> id=2 (0<=x1 & 20<x2)"]
+n235 -> n299
+n236 -> n169
+n236 -> n170
+n300 [label="<l,C,req,ack,requesting,error> id=2 (0<=x1 & 0<=x2)"]
+n236 -> n300
+n301 [label="<l,C,ack,ack,critical,critical> id=1 (0<=x1<=20 & 0<=x2<=20 & -20<=x1-x2<=0)"]
+n237 -> n301
+n302 [label="<l,C,req,ack,testing2,critical> id=1 (0<=x1<=10 & 0<=x2<=20 & -20<=x1-x2<=0)"]
+n237 -> n302
+n303 [label="<l,C,ack,req,critical,testing2> id=2 (0<=x1<=19 & 0<=x2<=10 & 0<=x1-x2<=9)"]
+n237 -> n303
+n304 [label="<l,C,ack,ack,error,critical> id=0 (0<=x1 & x2=20 & -20<=x1-x2)"]
+n237 -> n304
+n305 [label="<l,C,ack,ack,critical,error> id=0 (0<=x1<=20 & 0<=x2 & x1-x2<=20)"]
+n237 -> n305
+n238 -> n300
+n238 -> n305
+n239 -> n170
+n306 [label="<l,C,ack,req,critical,testing2> id=0 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)"]
+n239 -> n306
+n307 [label="<l,C,req,req,requesting,error> id=1 (0<=x1 & 0<=x2)"]
+n239 -> n307
+n308 [label="<l,C,req,req,requesting,safe> id=1 (0<=x1 & 0<=x2)"]
+n239 -> n308
+n240 -> n307
+n241 -> n308
+n309 [label="<l,C,req,ack,testing,critical> id=2 (x1=10 & x2=0 & x1=x2+10)"]
+n242 -> n309
+n242 -> n243
+n242 -> n84
+n310 [label="<l,C,req,req,testing,testing2> id=1 (x1=10 & x2=0 & x1=x2+10)"]
+n243 -> n310
+n243 -> n85
+n311 [label="<l,C,req,req,testing,safe> id=2 (x1=10 & 0<=x2 & x1-x2<=10)"]
+n243 -> n311
+n244 -> n174
+n244 -> n85
+n244 -> n186
+n312 [label="<l,C,req,ack,not_ready,error> id=2 (10<=x1 & 0<=x2)"]
+n244 -> n312
+n245 -> n312
+n245 -> n189
+n246 -> n176
+n246 -> n190
+n313 [label="<l,C,req,req,not_ready,error> id=1 (0<=x1 & 0<=x2)"]
+n246 -> n313
+n246 -> n192
+n247 -> n177
+n247 -> n313
+n248 -> n178
+n248 -> n192
+n248 -> n308
+n249 -> n313
+n249 -> n194
+n250 -> n232
+n250 -> n180
+n314 [label="<l,C,req,req,not_ready,requesting> id=2 (20<x1 & 0<=x2)"]
+n250 -> n314
+n315 [label="<l,C,req,ack,not_ready,critical> id=1 (20<=x1 & 0<=x2<=20 & 20<=x1-x2)"]
+n251 -> n315
+n316 [label="<l,C,req,req,not_ready,testing2> id=2 (20<=x1 & 0<=x2<=10 & 20<=x1-x2)"]
+n251 -> n316
+n317 [label="<l,C,req,ack,testing,critical> id=0 (0<=x1<=10 & 0<=x2<=10 & x1=x2)"]
+n251 -> n317
+n251 -> n185
+n252 -> n182
+n252 -> n183
+n318 [label="<l,C,req,ack,testing,critical> id=2 (0<=x1<=10 & 0<=x2<=20 & -10<=x1-x2<=0)"]
+n252 -> n318
+n319 [label="<l,C,req,ack,not_ready,error> id=2 (20<x1 & 0<=x2)"]
+n252 -> n319
+n253 -> n318
+n253 -> n128
+n253 -> n188
+n253 -> n169
+n320 [label="<l,C,req,ack,testing,error> id=1 (x1=10 & 0<=x2 & x1-x2<=10)"]
+n253 -> n320
+n254 -> n319
+n255 -> n183
+n255 -> n190
+n321 [label="<l,C,req,req,not_ready,error> id=1 (20<=x1 & 0<=x2)"]
+n255 -> n321
+n322 [label="<l,C,req,req,not_ready,safe> id=1 (10<=x1 & 0<=x2)"]
+n255 -> n322
+n256 -> n321
+n256 -> n194
+n257 -> n322
+n257 -> n178
+n258 -> n320
+n258 -> n198
+n259 -> n188
+n323 [label="<l,C,req,ack,testing,critical> id=2 (0<=x1<=10 & 10<=x2<=20 & -20<=x1-x2<=-10)"]
+n259 -> n323
+n324 [label="<l,C,req,ack,not_ready,error> id=2 (0<=x1 & 0<=x2)"]
+n259 -> n324
+n260 -> n189
+n260 -> n324
+n260 -> n300
+n261 -> n323
+n325 [label="<l,C,req,ack,not_ready,critical> id=1 (0<=x1 & x2=20 & -20<=x1-x2)"]
+n261 -> n325
+n326 [label="<l,C,req,ack,requesting,critical> id=1 (0<=x1 & 10<=x2<=20 & -20<=x1-x2)"]
+n261 -> n326
+n261 -> n189
+n262 -> n324
+n262 -> n189
+n263 -> n193
+n327 [label="<l,C,req,req,testing,testing2> id=1 (x1=0 & x2=10 & x1=x2-10)"]
+n263 -> n327
+n263 -> n313
+n264 -> n194
+n264 -> n313
+n264 -> n307
+n265 -> n327
+n328 [label="<l,C,req,req,requesting,testing2> id=2 (0<=x1 & x2=10 & -10<=x1-x2)"]
+n265 -> n328
+n265 -> n194
+n266 -> n196
+n329 [label="<l,C,req,req,testing,testing2> id=1 (0<=x1<=9 & 1<=x2<=10 & -10<=x1-x2<=-1)"]
+n266 -> n329
+n266 -> n313
+n266 -> n192
+n267 -> n329
+n330 [label="<l,C,req,req,requesting,testing2> id=2 (0<=x1 & 1<=x2<=10 & -10<=x1-x2)"]
+n267 -> n330
+n267 -> n194
+n267 -> n178
+n268 -> n325
+n331 [label="<l,C,req,ack,testing,critical> id=0 (x1=0 & x2=20 & x1=x2-20)"]
+n268 -> n331
+n268 -> n198
+n269 -> n326
+n269 -> n171
+n270 -> n299
+n332 [label="<l,C,ack,req,critical,not_ready> id=0 (0<=x1<=20 & 20<x2 & x1-x2<-20)"]
+n270 -> n332
+n333 [label="<l,C,ack,req,critical,not_ready> id=2 (0<=x1<=20 & 20<=x2 & x1-x2<=-20)"]
+n271 -> n333
+n271 -> n272
+n271 -> n202
+n334 [label="<l,C,ack,req,critical,testing> id=1 (0<=x1<=10 & 0<=x2<=10 & x1=x2)"]
+n271 -> n334
+n335 [label="<l,C,req,req,testing2,not_ready> id=2 (0<=x1<=10 & 20<=x2 & x1-x2<=-20)"]
+n272 -> n335
+n336 [label="<l,C,req,req,error,not_ready> id=1 (0<=x1 & 20<x2)"]
+n272 -> n336
+n337 [label="<l,C,req,req,safe,not_ready> id=1 (0<=x1 & 20<=x2)"]
+n272 -> n337
+n338 [label="<l,C,req,req,testing2,testing> id=1 (0<=x1<=10 & 0<=x2<=10 & x1=x2)"]
+n272 -> n338
+n273 -> n334
+n273 -> n98
+n339 [label="<l,C,ack,req,critical,not_ready> id=0 (10<=x1<=20 & 0<=x2 & x1-x2<=10)"]
+n273 -> n339
+n273 -> n100
+n274 -> n202
+n275 -> n203
+n275 -> n98
+n340 [label="<l,C,ack,req,error,testing> id=2 (0<=x1 & x2=10 & -10<=x1-x2)"]
+n275 -> n340
+n275 -> n209
+n275 -> n210
+n276 -> n340
+n276 -> n211
+n277 -> n205
+n277 -> n214
+n278 -> n206
+n278 -> n215
+n279 -> n211
+n279 -> n208
+n280 -> n212
+n341 [label="<l,C,ack,ack,error,critical> id=0 (0<=x1 & 0<=x2<=20 & -20<=x1-x2)"]
+n280 -> n341
+n281 -> n213
+n281 -> n208
+n342 [label="<l,C,ack,req,critical,not_ready> id=2 (x1=20 & 0<=x2 & x1-x2<=20)"]
+n281 -> n342
+n343 [label="<l,C,ack,req,critical,requesting> id=2 (10<=x1<=20 & 0<=x2 & x1-x2<=20)"]
+n281 -> n343
+n344 [label="<l,C,ack,ack,critical,critical> id=1 (0<=x1<=20 & 0<=x2<=20 & 0<=x1-x2<=20)"]
+n282 -> n344
+n345 [label="<l,C,req,ack,testing2,critical> id=1 (0<=x1<=10 & 0<=x2<=19 & -9<=x1-x2<=0)"]
+n282 -> n345
+n346 [label="<l,C,ack,req,critical,testing2> id=2 (0<=x1<=20 & 0<=x2<=10 & 0<=x1-x2<=20)"]
+n282 -> n346
+n282 -> n341
+n347 [label="<l,C,ack,ack,critical,error> id=0 (x1=20 & 0<=x2 & x1-x2<=20)"]
+n282 -> n347
+n283 -> n342
+n283 -> n211
+n348 [label="<l,C,ack,req,critical,testing> id=1 (x1=20 & x2=0 & x1=x2+20)"]
+n283 -> n348
+n284 -> n343
+n284 -> n212
+n285 -> n218
+n285 -> n214
+n286 -> n219
+n349 [label="<l,C,req,ack,error,critical> id=0 (0<=x1 & 0<=x2<=20 & -20<=x1-x2)"]
+n286 -> n349
+n287 -> n220
+n350 [label="<l,C,req,ack,safe,critical> id=0 (0<=x1 & 0<=x2<=20 & -20<=x1-x2)"]
+n287 -> n350
+n288 -> n221
+n288 -> n214
+n351 [label="<l,C,req,req,testing2,requesting> id=2 (x1=10 & 0<=x2 & x1-x2<=10)"]
+n288 -> n351
+n352 [label="<l,C,req,ack,testing2,critical> id=1 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)"]
+n289 -> n352
+n353 [label="<l,C,req,req,testing2,testing2> id=2 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)"]
+n289 -> n353
+n289 -> n349
+n289 -> n350
+n290 -> n351
+n290 -> n219
+n291 -> n224
+n291 -> n214
+n291 -> n215
+n354 [label="<l,C,req,req,testing2,requesting> id=2 (1<=x1<=10 & 0<=x2 & x1-x2<=10)"]
+n291 -> n354
+n292 -> n354
+n292 -> n219
+n292 -> n220
+n293 -> n348
+n293 -> n97
+n355 [label="<l,C,ack,req,critical,requesting> id=0 (x1=20 & 0<=x2 & x1-x2<=20)"]
+n293 -> n355
+n294 -> n228
+n294 -> n208
+n295 -> n230
+n295 -> n231
+n295 -> n90
+n296 -> n231
+n356 [label="<l,C,req,req,safe,testing> id=2 (0<=x1 & x2=10 & -10<=x1-x2)"]
+n296 -> n356
+n296 -> n93
+n297 -> n356
+n297 -> n95
+n298 -> n314
+n299 -> n270
+n300 -> n238
+n357 [label="<l,C,ack,ack,critical,critical> id=2 (0<=x1<=20 & 0<=x2<=20 & -20<=x1-x2<=0)"]
+n301 -> n357
+n301 -> n302
+n301 -> n303
+n358 [label="<l,C,ack,ack,error,critical> id=1 (0<=x1 & x2=20 & -20<=x1-x2)"]
+n301 -> n358
+n359 [label="<l,C,ack,ack,critical,error> id=1 (0<=x1<=20 & 0<=x2 & x1-x2<=20)"]
+n301 -> n359
+n360 [label="<l,C,req,ack,testing2,critical> id=2 (0<=x1<=10 & 0<=x2<=20 & -20<=x1-x2<=0)"]
+n302 -> n360
+n361 [label="<l,C,req,req,testing2,testing2> id=2 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=9)"]
+n302 -> n361
+n362 [label="<l,C,req,ack,error,critical> id=1 (0<=x1 & 10<=x2<=20 & -20<=x1-x2)"]
+n302 -> n362
+n363 [label="<l,C,req,ack,safe,critical> id=1 (0<=x1 & 0<=x2<=20 & -20<=x1-x2)"]
+n302 -> n363
+n364 [label="<l,C,req,ack,testing2,error> id=1 (0<=x1<=10 & 0<=x2 & x1-x2<=10)"]
+n302 -> n364
+n365 [label="<l,C,ack,req,critical,testing2> id=1 (0<=x1<=19 & 0<=x2<=10 & 0<=x1-x2<=9)"]
+n303 -> n365
+n366 [label="<l,C,req,req,testing2,testing2> id=1 (0<=x1<=10 & 0<=x2<=10 & -9<=x1-x2<=0)"]
+n303 -> n366
+n367 [label="<l,C,ack,req,critical,error> id=2 (10<=x1<=20 & 0<=x2 & x1-x2<=20)"]
+n303 -> n367
+n368 [label="<l,C,ack,req,critical,safe> id=2 (0<=x1<=20 & 0<=x2 & x1-x2<=20)"]
+n303 -> n368
+n304 -> n358
+n369 [label="<l,C,ack,ack,error,error> id=0 (0<=x1 & 0<=x2)"]
+n304 -> n369
+n305 -> n359
+n305 -> n364
+n305 -> n369
+n370 [label="<l,C,ack,req,critical,testing2> id=1 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)"]
+n306 -> n370
+n371 [label="<l,C,req,req,testing2,testing2> id=1 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)"]
+n306 -> n371
+n372 [label="<l,C,ack,req,critical,error> id=0 (0<=x1<=20 & 0<=x2 & x1-x2<=20)"]
+n306 -> n372
+n373 [label="<l,C,ack,req,critical,safe> id=0 (0<=x1<=20 & 0<=x2 & x1-x2<=20)"]
+n306 -> n373
+n307 -> n240
+n307 -> n372
+n308 -> n241
+n308 -> n373
+n309 -> n242
+n309 -> n243
+n309 -> n121
+n310 -> n243
+n310 -> n124
+n374 [label="<l,C,req,req,testing,safe> id=1 (x1=10 & 0<=x2 & x1-x2<=10)"]
+n310 -> n374
+n311 -> n374
+n311 -> n127
+n312 -> n245
+n312 -> n260
+n313 -> n249
+n313 -> n264
+n314 -> n298
+n375 [label="<l,C,req,ack,not_ready,critical> id=0 (20<x1 & 0<=x2<=20 & 20<x1-x2)"]
+n314 -> n375
+n376 [label="<l,C,req,ack,not_ready,critical> id=2 (20<=x1 & 0<=x2<=20 & 20<=x1-x2)"]
+n315 -> n376
+n315 -> n316
+n377 [label="<l,C,req,ack,testing,critical> id=1 (0<=x1<=10 & 0<=x2<=10 & x1=x2)"]
+n315 -> n377
+n315 -> n254
+n378 [label="<l,C,req,req,not_ready,testing2> id=1 (20<=x1 & 0<=x2<=10 & 20<=x1-x2)"]
+n316 -> n378
+n379 [label="<l,C,req,req,testing,testing2> id=2 (0<=x1<=10 & 0<=x2<=10 & x1=x2)"]
+n316 -> n379
+n380 [label="<l,C,req,req,not_ready,error> id=2 (20<x1 & 0<=x2)"]
+n316 -> n380
+n381 [label="<l,C,req,req,not_ready,safe> id=2 (20<=x1 & 0<=x2)"]
+n316 -> n381
+n317 -> n377
+n317 -> n128
+n382 [label="<l,C,req,ack,not_ready,critical> id=0 (0<=x1 & 10<=x2<=20 & -10<=x1-x2)"]
+n317 -> n382
+n317 -> n113
+n318 -> n253
+n318 -> n128
+n318 -> n259
+n318 -> n236
+n383 [label="<l,C,req,ack,testing,error> id=2 (x1=10 & 0<=x2 & x1-x2<=10)"]
+n318 -> n383
+n319 -> n254
+n320 -> n383
+n320 -> n262
+n321 -> n256
+n321 -> n264
+n322 -> n257
+n322 -> n248
+n323 -> n261
+n384 [label="<l,C,req,ack,not_ready,critical> id=2 (0<=x1 & x2=20 & -20<=x1-x2)"]
+n323 -> n384
+n385 [label="<l,C,req,ack,requesting,critical> id=2 (0<=x1 & 10<=x2<=20 & -20<=x1-x2)"]
+n323 -> n385
+n323 -> n260
+n324 -> n262
+n324 -> n260
+n325 -> n384
+n386 [label="<l,C,req,ack,testing,critical> id=1 (x1=0 & x2=20 & x1=x2-20)"]
+n325 -> n386
+n325 -> n262
+n326 -> n385
+n387 [label="<l,C,ack,ack,critical,critical> id=0 (0<=x1<=10 & 10<=x2<=20 & -20<=x1-x2<=-10)"]
+n326 -> n387
+n326 -> n238
+n327 -> n265
+n388 [label="<l,C,req,req,requesting,testing2> id=1 (0<=x1 & x2=10 & -10<=x1-x2)"]
+n327 -> n388
+n327 -> n264
+n328 -> n388
+n328 -> n240
+n329 -> n267
+n389 [label="<l,C,req,req,requesting,testing2> id=1 (0<=x1 & 1<=x2<=10 & -10<=x1-x2)"]
+n329 -> n389
+n329 -> n264
+n329 -> n248
+n330 -> n389
+n330 -> n240
+n330 -> n241
+n331 -> n386
+n390 [label="<l,C,req,ack,requesting,critical> id=0 (0<=x1 & x2=20 & -20<=x1-x2)"]
+n331 -> n390
+n331 -> n130
+n391 [label="<l,C,ack,req,critical,not_ready> id=1 (0<=x1<=20 & 20<x2 & x1-x2<-20)"]
+n332 -> n391
+n392 [label="<l,C,req,req,testing2,not_ready> id=1 (0<=x1<=10 & 20<x2 & x1-x2<-20)"]
+n332 -> n392
+n332 -> n136
+n333 -> n271
+n333 -> n272
+n333 -> n274
+n393 [label="<l,C,ack,req,critical,testing> id=2 (0<=x1<=10 & 0<=x2<=10 & x1=x2)"]
+n333 -> n393
+n334 -> n393
+n334 -> n98
+n394 [label="<l,C,ack,req,critical,not_ready> id=1 (10<=x1<=20 & 0<=x2 & x1-x2<=10)"]
+n334 -> n394
+n334 -> n142
+n335 -> n272
+n395 [label="<l,C,req,req,error,not_ready> id=2 (0<=x1 & 20<x2)"]
+n335 -> n395
+n396 [label="<l,C,req,req,safe,not_ready> id=2 (0<=x1 & 20<=x2)"]
+n335 -> n396
+n397 [label="<l,C,req,req,testing2,testing> id=2 (0<=x1<=10 & 0<=x2<=10 & x1=x2)"]
+n335 -> n397
+n336 -> n395
+n337 -> n396
+n337 -> n147
+n338 -> n397
+n338 -> n153
+n338 -> n147
+n338 -> n148
+n338 -> n149
+n339 -> n394
+n339 -> n160
+n339 -> n155
+n340 -> n276
+n340 -> n279
+n398 [label="<l,C,ack,ack,error,critical> id=1 (0<=x1 & 0<=x2<=20 & -20<=x1-x2)"]
+n341 -> n398
+n399 [label="<l,C,ack,req,error,testing2> id=2 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)"]
+n341 -> n399
+n341 -> n369
+n342 -> n283
+n342 -> n279
+n400 [label="<l,C,ack,req,critical,testing> id=2 (x1=20 & x2=0 & x1=x2+20)"]
+n342 -> n400
+n343 -> n284
+n401 [label="<l,C,ack,ack,critical,critical> id=0 (10<=x1<=20 & 0<=x2<=10 & 10<=x1-x2<=20)"]
+n343 -> n401
+n343 -> n280
+n402 [label="<l,C,ack,ack,critical,critical> id=2 (0<=x1<=20 & 0<=x2<=20 & 0<=x1-x2<=20)"]
+n344 -> n402
+n344 -> n345
+n344 -> n346
+n344 -> n398
+n403 [label="<l,C,ack,ack,critical,error> id=1 (x1=20 & 0<=x2 & x1-x2<=20)"]
+n344 -> n403
+n404 [label="<l,C,req,ack,testing2,critical> id=2 (0<=x1<=10 & 0<=x2<=19 & -9<=x1-x2<=0)"]
+n345 -> n404
+n345 -> n361
+n345 -> n362
+n345 -> n363
+n405 [label="<l,C,ack,req,critical,testing2> id=1 (0<=x1<=20 & 0<=x2<=10 & 0<=x1-x2<=20)"]
+n346 -> n405
+n346 -> n366
+n346 -> n399
+n346 -> n367
+n346 -> n368
+n347 -> n403
+n347 -> n369
+n348 -> n400
+n348 -> n140
+n406 [label="<l,C,ack,req,critical,requesting> id=1 (x1=20 & 0<=x2 & x1-x2<=20)"]
+n348 -> n406
+n407 [label="<l,C,req,ack,error,critical> id=1 (0<=x1 & 0<=x2<=20 & -20<=x1-x2)"]
+n349 -> n407
+n408 [label="<l,C,req,req,error,testing2> id=2 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)"]
+n349 -> n408
+n409 [label="<l,C,req,ack,error,error> id=0 (0<=x1 & 0<=x2)"]
+n349 -> n409
+n350 -> n363
+n410 [label="<l,C,req,req,safe,testing2> id=2 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)"]
+n350 -> n410
+n411 [label="<l,C,req,ack,safe,error> id=0 (0<=x1 & 0<=x2)"]
+n350 -> n411
+n351 -> n290
+n412 [label="<l,C,req,ack,testing2,critical> id=0 (x1=10 & x2=0 & x1=x2+10)"]
+n351 -> n412
+n351 -> n286
+n413 [label="<l,C,req,ack,testing2,critical> id=2 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)"]
+n352 -> n413
+n352 -> n353
+n352 -> n407
+n352 -> n363
+n414 [label="<l,C,req,req,testing2,testing2> id=1 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)"]
+n353 -> n414
+n353 -> n408
+n353 -> n410
+n415 [label="<l,C,req,req,testing2,error> id=2 (x1=10 & 0<=x2 & x1-x2<=10)"]
+n353 -> n415
+n416 [label="<l,C,req,req,testing2,safe> id=2 (0<=x1<=10 & 0<=x2 & x1-x2<=10)"]
+n353 -> n416
+n354 -> n292
+n417 [label="<l,C,req,ack,testing2,critical> id=0 (1<=x1<=10 & 0<=x2<=9 & 1<=x1-x2<=10)"]
+n354 -> n417
+n354 -> n286
+n354 -> n287
+n355 -> n406
+n355 -> n151
+n356 -> n297
+n356 -> n144
+n357 -> n301
+n357 -> n302
+n357 -> n303
+n418 [label="<l,C,ack,ack,error,critical> id=2 (0<=x1 & x2=20 & -20<=x1-x2)"]
+n357 -> n418
+n419 [label="<l,C,ack,ack,critical,error> id=2 (0<=x1<=20 & 0<=x2 & x1-x2<=20)"]
+n357 -> n419
+n358 -> n418
+n420 [label="<l,C,ack,ack,error,error> id=1 (0<=x1 & 0<=x2)"]
+n358 -> n420
+n359 -> n419
+n359 -> n364
+n359 -> n420
+n360 -> n302
+n360 -> n361
+n421 [label="<l,C,req,ack,error,critical> id=2 (0<=x1 & 10<=x2<=20 & -20<=x1-x2)"]
+n360 -> n421
+n422 [label="<l,C,req,ack,safe,critical> id=2 (0<=x1 & 0<=x2<=20 & -20<=x1-x2)"]
+n360 -> n422
+n423 [label="<l,C,req,ack,testing2,error> id=2 (0<=x1<=10 & 0<=x2 & x1-x2<=10)"]
+n360 -> n423
+n424 [label="<l,C,req,req,testing2,testing2> id=1 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=9)"]
+n361 -> n424
+n425 [label="<l,C,req,req,error,testing2> id=2 (0<=x1 & 1<=x2<=10 & -10<=x1-x2)"]
+n361 -> n425
+n361 -> n410
+n361 -> n415
+n361 -> n416
+n362 -> n421
+n426 [label="<l,C,req,ack,error,error> id=1 (0<=x1 & 0<=x2)"]
+n362 -> n426
+n363 -> n422
+n363 -> n410
+n427 [label="<l,C,req,ack,safe,error> id=1 (0<=x1 & 0<=x2)"]
+n363 -> n427
+n364 -> n423
+n364 -> n426
+n364 -> n427
+n365 -> n303
+n365 -> n366
+n428 [label="<l,C,ack,req,critical,error> id=1 (10<=x1<=20 & 0<=x2 & x1-x2<=20)"]
+n365 -> n428
+n429 [label="<l,C,ack,req,critical,safe> id=1 (0<=x1<=20 & 0<=x2 & x1-x2<=20)"]
+n365 -> n429
+n430 [label="<l,C,req,req,testing2,testing2> id=2 (0<=x1<=10 & 0<=x2<=10 & -9<=x1-x2<=0)"]
+n366 -> n430
+n431 [label="<l,C,req,req,error,testing2> id=1 (0<=x1 & x2=10 & -10<=x1-x2)"]
+n366 -> n431
+n432 [label="<l,C,req,req,safe,testing2> id=1 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)"]
+n366 -> n432
+n433 [label="<l,C,req,req,testing2,error> id=1 (1<=x1<=10 & 0<=x2 & x1-x2<=10)"]
+n366 -> n433
+n434 [label="<l,C,req,req,testing2,safe> id=1 (0<=x1<=10 & 0<=x2 & x1-x2<=10)"]
+n366 -> n434
+n367 -> n428
+n435 [label="<l,C,ack,req,error,error> id=2 (0<=x1 & 0<=x2)"]
+n367 -> n435
+n368 -> n429
+n368 -> n434
+n436 [label="<l,C,ack,req,error,safe> id=2 (0<=x1 & 0<=x2)"]
+n368 -> n436
+n369 -> n420
+n437 [label="<l,C,ack,req,critical,testing2> id=2 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)"]
+n370 -> n437
+n370 -> n371
+n438 [label="<l,C,ack,req,critical,error> id=1 (0<=x1<=20 & 0<=x2 & x1-x2<=20)"]
+n370 -> n438
+n370 -> n429
+n439 [label="<l,C,req,req,testing2,testing2> id=2 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)"]
+n371 -> n439
+n371 -> n431
+n371 -> n432
+n440 [label="<l,C,req,req,testing2,error> id=1 (0<=x1<=10 & 0<=x2 & x1-x2<=10)"]
+n371 -> n440
+n371 -> n434
+n372 -> n438
+n372 -> n440
+n441 [label="<l,C,ack,req,error,error> id=0 (0<=x1 & 0<=x2)"]
+n372 -> n441
+n373 -> n429
+n373 -> n434
+n442 [label="<l,C,ack,req,error,safe> id=0 (0<=x1 & 0<=x2)"]
+n373 -> n442
+n374 -> n311
+n374 -> n192
+n443 [label="<l,C,req,ack,not_ready,critical> id=1 (20<x1 & 0<=x2<=20 & 20<x1-x2)"]
+n375 -> n443
+n444 [label="<l,C,req,req,not_ready,testing2> id=2 (20<x1 & 0<=x2<=10 & 20<x1-x2)"]
+n375 -> n444
+n375 -> n185
+n376 -> n315
+n376 -> n316
+n445 [label="<l,C,req,ack,testing,critical> id=2 (0<=x1<=10 & 0<=x2<=10 & x1=x2)"]
+n376 -> n445
+n376 -> n319
+n377 -> n445
+n377 -> n128
+n446 [label="<l,C,req,ack,not_ready,critical> id=1 (0<=x1 & 10<=x2<=20 & -10<=x1-x2)"]
+n377 -> n446
+n377 -> n169
+n378 -> n316
+n447 [label="<l,C,req,req,testing,testing2> id=1 (0<=x1<=10 & 0<=x2<=10 & x1=x2)"]
+n378 -> n447
+n448 [label="<l,C,req,req,not_ready,error> id=1 (20<x1 & 0<=x2)"]
+n378 -> n448
+n449 [label="<l,C,req,req,not_ready,safe> id=1 (20<=x1 & 0<=x2)"]
+n378 -> n449
+n379 -> n447
+n379 -> n193
+n379 -> n170
+n379 -> n177
+n379 -> n178
+n380 -> n448
+n381 -> n449
+n381 -> n178
+n382 -> n446
+n382 -> n197
+n382 -> n179
+n383 -> n320
+n383 -> n324
+n384 -> n325
+n450 [label="<l,C,req,ack,testing,critical> id=2 (x1=0 & x2=20 & x1=x2-20)"]
+n384 -> n450
+n384 -> n324
+n385 -> n326
+n385 -> n300
+n386 -> n450
+n451 [label="<l,C,req,ack,requesting,critical> id=1 (0<=x1 & x2=20 & -20<=x1-x2)"]
+n386 -> n451
+n386 -> n189
+n452 [label="<l,C,ack,ack,critical,critical> id=1 (0<=x1<=10 & 10<=x2<=20 & -20<=x1-x2<=-10)"]
+n387 -> n452
+n453 [label="<l,C,req,ack,testing2,critical> id=1 (0<=x1<=10 & 10<=x2<=20 & -20<=x1-x2<=-10)"]
+n387 -> n453
+n387 -> n305
+n388 -> n328
+n454 [label="<l,C,ack,req,critical,testing2> id=0 (x1=0 & x2=10 & x1=x2-10)"]
+n388 -> n454
+n388 -> n307
+n389 -> n330
+n455 [label="<l,C,ack,req,critical,testing2> id=0 (0<=x1<=9 & 1<=x2<=10 & -10<=x1-x2<=-1)"]
+n389 -> n455
+n389 -> n307
+n389 -> n308
+n390 -> n451
+n390 -> n171
+n456 [label="<l,C,ack,req,critical,not_ready> id=2 (0<=x1<=20 & 20<x2 & x1-x2<-20)"]
+n391 -> n456
+n391 -> n392
+n391 -> n202
+n457 [label="<l,C,req,req,testing2,not_ready> id=2 (0<=x1<=10 & 20<x2 & x1-x2<-20)"]
+n392 -> n457
+n392 -> n336
+n458 [label="<l,C,req,req,safe,not_ready> id=1 (0<=x1 & 20<x2)"]
+n392 -> n458
+n393 -> n334
+n393 -> n98
+n459 [label="<l,C,ack,req,critical,not_ready> id=2 (10<=x1<=20 & 0<=x2 & x1-x2<=10)"]
+n393 -> n459
+n393 -> n210
+n394 -> n459
+n394 -> n228
+n394 -> n213
+n395 -> n336
+n396 -> n337
+n396 -> n215
+n397 -> n338
+n397 -> n222
+n397 -> n215
+n397 -> n216
+n397 -> n217
+n460 [label="<l,C,ack,ack,error,critical> id=2 (0<=x1 & 0<=x2<=20 & -20<=x1-x2)"]
+n398 -> n460
+n398 -> n399
+n398 -> n420
+n461 [label="<l,C,ack,req,error,testing2> id=1 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)"]
+n399 -> n461
+n399 -> n435
+n399 -> n436
+n400 -> n348
+n400 -> n208
+n462 [label="<l,C,ack,req,critical,requesting> id=2 (x1=20 & 0<=x2 & x1-x2<=20)"]
+n400 -> n462
+n463 [label="<l,C,ack,ack,critical,critical> id=1 (10<=x1<=20 & 0<=x2<=10 & 10<=x1-x2<=20)"]
+n401 -> n463
+n464 [label="<l,C,ack,req,critical,testing2> id=2 (10<=x1<=20 & 0<=x2<=10 & 10<=x1-x2<=20)"]
+n401 -> n464
+n401 -> n341
+n402 -> n344
+n402 -> n345
+n402 -> n346
+n402 -> n460
+n465 [label="<l,C,ack,ack,critical,error> id=2 (x1=20 & 0<=x2 & x1-x2<=20)"]
+n402 -> n465
+n403 -> n465
+n403 -> n420
+n404 -> n345
+n404 -> n361
+n404 -> n421
+n404 -> n422
+n405 -> n346
+n405 -> n366
+n405 -> n461
+n405 -> n428
+n405 -> n429
+n406 -> n462
+n406 -> n212
+n466 [label="<l,C,req,ack,error,critical> id=2 (0<=x1 & 0<=x2<=20 & -20<=x1-x2)"]
+n407 -> n466
+n407 -> n408
+n407 -> n426
+n467 [label="<l,C,req,req,error,testing2> id=1 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)"]
+n408 -> n467
+n468 [label="<l,C,req,req,error,error> id=2 (0<=x1 & 0<=x2)"]
+n408 -> n468
+n469 [label="<l,C,req,req,error,safe> id=2 (0<=x1 & 0<=x2)"]
+n408 -> n469
+n409 -> n426
+n410 -> n432
+n470 [label="<l,C,req,req,safe,error> id=2 (0<=x1 & 0<=x2)"]
+n410 -> n470
+n471 [label="<l,C,req,req,safe,safe> id=2 (0<=x1 & 0<=x2)"]
+n410 -> n471
+n411 -> n427
+n472 [label="<l,C,req,ack,testing2,critical> id=1 (x1=10 & x2=0 & x1=x2+10)"]
+n412 -> n472
+n473 [label="<l,C,req,req,testing2,testing2> id=2 (x1=10 & x2=0 & x1=x2+10)"]
+n412 -> n473
+n412 -> n349
+n413 -> n352
+n413 -> n353
+n413 -> n466
+n413 -> n422
+n414 -> n353
+n414 -> n467
+n414 -> n432
+n474 [label="<l,C,req,req,testing2,error> id=1 (x1=10 & 0<=x2 & x1-x2<=10)"]
+n414 -> n474
+n414 -> n434
+n415 -> n474
+n415 -> n468
+n416 -> n434
+n416 -> n469
+n416 -> n471
+n475 [label="<l,C,req,ack,testing2,critical> id=1 (1<=x1<=10 & 0<=x2<=9 & 1<=x1-x2<=10)"]
+n417 -> n475
+n476 [label="<l,C,req,req,testing2,testing2> id=2 (1<=x1<=10 & 0<=x2<=9 & 1<=x1-x2<=10)"]
+n417 -> n476
+n417 -> n349
+n417 -> n350
+n418 -> n358
+n477 [label="<l,C,ack,ack,error,error> id=2 (0<=x1 & 0<=x2)"]
+n418 -> n477
+n419 -> n359
+n419 -> n364
+n419 -> n477
+n420 -> n477
+n421 -> n362
+n478 [label="<l,C,req,ack,error,error> id=2 (0<=x1 & 0<=x2)"]
+n421 -> n478
+n422 -> n363
+n422 -> n410
+n479 [label="<l,C,req,ack,safe,error> id=2 (0<=x1 & 0<=x2)"]
+n422 -> n479
+n423 -> n364
+n423 -> n478
+n423 -> n479
+n424 -> n361
+n480 [label="<l,C,req,req,error,testing2> id=1 (0<=x1 & 1<=x2<=10 & -10<=x1-x2)"]
+n424 -> n480
+n424 -> n432
+n424 -> n474
+n424 -> n434
+n425 -> n480
+n425 -> n468
+n425 -> n469
+n426 -> n478
+n427 -> n479
+n428 -> n367
+n481 [label="<l,C,ack,req,error,error> id=1 (0<=x1 & 0<=x2)"]
+n428 -> n481
+n429 -> n368
+n429 -> n434
+n482 [label="<l,C,ack,req,error,safe> id=1 (0<=x1 & 0<=x2)"]
+n429 -> n482
+n430 -> n366
+n483 [label="<l,C,req,req,error,testing2> id=2 (0<=x1 & x2=10 & -10<=x1-x2)"]
+n430 -> n483
+n430 -> n410
+n484 [label="<l,C,req,req,testing2,error> id=2 (1<=x1<=10 & 0<=x2 & x1-x2<=10)"]
+n430 -> n484
+n430 -> n416
+n431 -> n483
+n485 [label="<l,C,req,req,error,error> id=1 (0<=x1 & 0<=x2)"]
+n431 -> n485
+n432 -> n410
+n486 [label="<l,C,req,req,safe,error> id=1 (0<=x1 & 0<=x2)"]
+n432 -> n486
+n487 [label="<l,C,req,req,safe,safe> id=1 (0<=x1 & 0<=x2)"]
+n432 -> n487
+n433 -> n484
+n433 -> n485
+n433 -> n486
+n434 -> n416
+n488 [label="<l,C,req,req,error,safe> id=1 (0<=x1 & 0<=x2)"]
+n434 -> n488
+n434 -> n487
+n435 -> n481
+n436 -> n482
+n437 -> n370
+n437 -> n371
+n489 [label="<l,C,ack,req,critical,error> id=2 (0<=x1<=20 & 0<=x2 & x1-x2<=20)"]
+n437 -> n489
+n437 -> n368
+n438 -> n489
+n438 -> n440
+n438 -> n481
+n439 -> n371
+n439 -> n483
+n439 -> n410
+n490 [label="<l,C,req,req,testing2,error> id=2 (0<=x1<=10 & 0<=x2 & x1-x2<=10)"]
+n439 -> n490
+n439 -> n416
+n440 -> n490
+n440 -> n485
+n440 -> n486
+n441 -> n481
+n442 -> n482
+n491 [label="<l,C,req,ack,not_ready,critical> id=2 (20<x1 & 0<=x2<=20 & 20<x1-x2)"]
+n443 -> n491
+n443 -> n444
+n443 -> n254
+n492 [label="<l,C,req,req,not_ready,testing2> id=1 (20<x1 & 0<=x2<=10 & 20<x1-x2)"]
+n444 -> n492
+n444 -> n380
+n493 [label="<l,C,req,req,not_ready,safe> id=2 (20<x1 & 0<=x2)"]
+n444 -> n493
+n445 -> n377
+n445 -> n128
+n494 [label="<l,C,req,ack,not_ready,critical> id=2 (0<=x1 & 10<=x2<=20 & -10<=x1-x2)"]
+n445 -> n494
+n445 -> n236
+n446 -> n494
+n446 -> n261
+n446 -> n245
+n447 -> n379
+n447 -> n263
+n447 -> n239
+n447 -> n247
+n447 -> n248
+n448 -> n380
+n449 -> n381
+n449 -> n248
+n450 -> n386
+n495 [label="<l,C,req,ack,requesting,critical> id=2 (0<=x1 & x2=20 & -20<=x1-x2)"]
+n450 -> n495
+n450 -> n260
+n451 -> n495
+n496 [label="<l,C,ack,ack,critical,critical> id=0 (x1=0 & x2=20 & x1=x2-20)"]
+n451 -> n496
+n451 -> n238
+n497 [label="<l,C,ack,ack,critical,critical> id=2 (0<=x1<=10 & 10<=x2<=20 & -20<=x1-x2<=-10)"]
+n452 -> n497
+n452 -> n453
+n452 -> n359
+n498 [label="<l,C,req,ack,testing2,critical> id=2 (0<=x1<=10 & 10<=x2<=20 & -20<=x1-x2<=-10)"]
+n453 -> n498
+n499 [label="<l,C,req,ack,error,critical> id=1 (0<=x1 & x2=20 & -20<=x1-x2)"]
+n453 -> n499
+n500 [label="<l,C,req,ack,safe,critical> id=1 (0<=x1 & 10<=x2<=20 & -20<=x1-x2)"]
+n453 -> n500
+n453 -> n364
+n501 [label="<l,C,ack,req,critical,testing2> id=1 (x1=0 & x2=10 & x1=x2-10)"]
+n454 -> n501
+n502 [label="<l,C,req,req,testing2,testing2> id=1 (x1=0 & x2=10 & x1=x2-10)"]
+n454 -> n502
+n454 -> n372
+n503 [label="<l,C,ack,req,critical,testing2> id=1 (0<=x1<=9 & 1<=x2<=10 & -10<=x1-x2<=-1)"]
+n455 -> n503
+n504 [label="<l,C,req,req,testing2,testing2> id=1 (0<=x1<=9 & 1<=x2<=10 & -10<=x1-x2<=-1)"]
+n455 -> n504
+n455 -> n372
+n455 -> n373
+n456 -> n391
+n456 -> n392
+n456 -> n274
+n457 -> n392
+n457 -> n395
+n505 [label="<l,C,req,req,safe,not_ready> id=2 (0<=x1 & 20<x2)"]
+n457 -> n505
+n458 -> n505
+n459 -> n394
+n459 -> n294
+n459 -> n281
+n460 -> n398
+n460 -> n399
+n460 -> n477
+n461 -> n399
+n461 -> n481
+n461 -> n482
+n462 -> n406
+n506 [label="<l,C,ack,ack,critical,critical> id=0 (x1=20 & x2=0 & x1=x2+20)"]
+n462 -> n506
+n462 -> n280
+n507 [label="<l,C,ack,ack,critical,critical> id=2 (10<=x1<=20 & 0<=x2<=10 & 10<=x1-x2<=20)"]
+n463 -> n507
+n463 -> n464
+n463 -> n398
+n508 [label="<l,C,ack,req,critical,testing2> id=1 (10<=x1<=20 & 0<=x2<=10 & 10<=x1-x2<=20)"]
+n464 -> n508
+n464 -> n399
+n509 [label="<l,C,ack,req,critical,error> id=2 (x1=20 & 0<=x2 & x1-x2<=20)"]
+n464 -> n509
+n510 [label="<l,C,ack,req,critical,safe> id=2 (10<=x1<=20 & 0<=x2 & x1-x2<=20)"]
+n464 -> n510
+n465 -> n403
+n465 -> n477
+n466 -> n407
+n466 -> n408
+n466 -> n478
+n467 -> n408
+n467 -> n485
+n467 -> n488
+n468 -> n485
+n469 -> n488
+n470 -> n486
+n471 -> n487
+n511 [label="<l,C,req,ack,testing2,critical> id=2 (x1=10 & x2=0 & x1=x2+10)"]
+n472 -> n511
+n472 -> n473
+n472 -> n407
+n512 [label="<l,C,req,req,testing2,testing2> id=1 (x1=10 & x2=0 & x1=x2+10)"]
+n473 -> n512
+n473 -> n408
+n513 [label="<l,C,req,req,testing2,safe> id=2 (x1=10 & 0<=x2 & x1-x2<=10)"]
+n473 -> n513
+n474 -> n415
+n474 -> n485
+n514 [label="<l,C,req,ack,testing2,critical> id=2 (1<=x1<=10 & 0<=x2<=9 & 1<=x1-x2<=10)"]
+n475 -> n514
+n475 -> n476
+n475 -> n407
+n475 -> n363
+n515 [label="<l,C,req,req,testing2,testing2> id=1 (1<=x1<=10 & 0<=x2<=9 & 1<=x1-x2<=10)"]
+n476 -> n515
+n476 -> n408
+n476 -> n410
+n516 [label="<l,C,req,req,testing2,safe> id=2 (1<=x1<=10 & 0<=x2 & x1-x2<=10)"]
+n476 -> n516
+n477 -> n420
+n478 -> n426
+n479 -> n427
+n480 -> n425
+n480 -> n485
+n480 -> n488
+n481 -> n435
+n482 -> n436
+n483 -> n431
+n483 -> n468
+n484 -> n433
+n484 -> n468
+n484 -> n470
+n485 -> n468
+n486 -> n470
+n487 -> n471
+n488 -> n469
+n489 -> n438
+n489 -> n440
+n489 -> n435
+n490 -> n440
+n490 -> n468
+n490 -> n470
+n491 -> n443
+n491 -> n444
+n491 -> n319
+n492 -> n444
+n492 -> n448
+n517 [label="<l,C,req,req,not_ready,safe> id=1 (20<x1 & 0<=x2)"]
+n492 -> n517
+n493 -> n517
+n494 -> n446
+n494 -> n323
+n494 -> n312
+n495 -> n451
+n495 -> n300
+n518 [label="<l,C,ack,ack,critical,critical> id=1 (x1=0 & x2=20 & x1=x2-20)"]
+n496 -> n518
+n519 [label="<l,C,req,ack,testing2,critical> id=1 (x1=0 & x2=20 & x1=x2-20)"]
+n496 -> n519
+n496 -> n305
+n497 -> n452
+n497 -> n453
+n497 -> n419
+n498 -> n453
+n520 [label="<l,C,req,ack,error,critical> id=2 (0<=x1 & x2=20 & -20<=x1-x2)"]
+n498 -> n520
+n521 [label="<l,C,req,ack,safe,critical> id=2 (0<=x1 & 10<=x2<=20 & -20<=x1-x2)"]
+n498 -> n521
+n498 -> n423
+n499 -> n520
+n499 -> n426
+n500 -> n521
+n500 -> n427
+n522 [label="<l,C,ack,req,critical,testing2> id=2 (x1=0 & x2=10 & x1=x2-10)"]
+n501 -> n522
+n501 -> n502
+n501 -> n438
+n523 [label="<l,C,req,req,testing2,testing2> id=2 (x1=0 & x2=10 & x1=x2-10)"]
+n502 -> n523
+n524 [label="<l,C,req,req,safe,testing2> id=1 (0<=x1 & x2=10 & -10<=x1-x2)"]
+n502 -> n524
+n502 -> n440
+n525 [label="<l,C,ack,req,critical,testing2> id=2 (0<=x1<=9 & 1<=x2<=10 & -10<=x1-x2<=-1)"]
+n503 -> n525
+n503 -> n504
+n503 -> n438
+n503 -> n429
+n526 [label="<l,C,req,req,testing2,testing2> id=2 (0<=x1<=9 & 1<=x2<=10 & -10<=x1-x2<=-1)"]
+n504 -> n526
+n527 [label="<l,C,req,req,safe,testing2> id=1 (0<=x1 & 1<=x2<=10 & -10<=x1-x2)"]
+n504 -> n527
+n504 -> n440
+n504 -> n434
+n505 -> n458
+n528 [label="<l,C,ack,ack,critical,critical> id=1 (x1=20 & x2=0 & x1=x2+20)"]
+n506 -> n528
+n529 [label="<l,C,ack,req,critical,testing2> id=2 (x1=20 & x2=0 & x1=x2+20)"]
+n506 -> n529
+n506 -> n341
+n507 -> n463
+n507 -> n464
+n507 -> n460
+n508 -> n464
+n508 -> n461
+n530 [label="<l,C,ack,req,critical,error> id=1 (x1=20 & 0<=x2 & x1-x2<=20)"]
+n508 -> n530
+n531 [label="<l,C,ack,req,critical,safe> id=1 (10<=x1<=20 & 0<=x2 & x1-x2<=20)"]
+n508 -> n531
+n509 -> n530
+n509 -> n435
+n510 -> n531
+n510 -> n436
+n511 -> n472
+n511 -> n473
+n511 -> n466
+n512 -> n473
+n512 -> n467
+n532 [label="<l,C,req,req,testing2,safe> id=1 (x1=10 & 0<=x2 & x1-x2<=10)"]
+n512 -> n532
+n513 -> n532
+n513 -> n469
+n514 -> n475
+n514 -> n476
+n514 -> n466
+n514 -> n422
+n515 -> n476
+n515 -> n467
+n515 -> n432
+n533 [label="<l,C,req,req,testing2,safe> id=1 (1<=x1<=10 & 0<=x2 & x1-x2<=10)"]
+n515 -> n533
+n516 -> n533
+n516 -> n469
+n516 -> n471
+n517 -> n493
+n534 [label="<l,C,ack,ack,critical,critical> id=2 (x1=0 & x2=20 & x1=x2-20)"]
+n518 -> n534
+n518 -> n519
+n518 -> n359
+n535 [label="<l,C,req,ack,testing2,critical> id=2 (x1=0 & x2=20 & x1=x2-20)"]
+n519 -> n535
+n536 [label="<l,C,req,ack,safe,critical> id=1 (0<=x1 & x2=20 & -20<=x1-x2)"]
+n519 -> n536
+n519 -> n364
+n520 -> n499
+n520 -> n478
+n521 -> n500
+n521 -> n479
+n522 -> n501
+n522 -> n502
+n522 -> n489
+n523 -> n502
+n537 [label="<l,C,req,req,safe,testing2> id=2 (0<=x1 & x2=10 & -10<=x1-x2)"]
+n523 -> n537
+n523 -> n490
+n524 -> n537
+n524 -> n486
+n525 -> n503
+n525 -> n504
+n525 -> n489
+n525 -> n368
+n526 -> n504
+n538 [label="<l,C,req,req,safe,testing2> id=2 (0<=x1 & 1<=x2<=10 & -10<=x1-x2)"]
+n526 -> n538
+n526 -> n490
+n526 -> n416
+n527 -> n538
+n527 -> n486
+n527 -> n487
+n539 [label="<l,C,ack,ack,critical,critical> id=2 (x1=20 & x2=0 & x1=x2+20)"]
+n528 -> n539
+n528 -> n529
+n528 -> n398
+n540 [label="<l,C,ack,req,critical,testing2> id=1 (x1=20 & x2=0 & x1=x2+20)"]
+n529 -> n540
+n529 -> n399
+n541 [label="<l,C,ack,req,critical,safe> id=2 (x1=20 & 0<=x2 & x1-x2<=20)"]
+n529 -> n541
+n530 -> n509
+n530 -> n481
+n531 -> n510
+n531 -> n482
+n532 -> n513
+n532 -> n488
+n533 -> n516
+n533 -> n488
+n533 -> n487
+n534 -> n518
+n534 -> n519
+n534 -> n419
+n535 -> n519
+n542 [label="<l,C,req,ack,safe,critical> id=2 (0<=x1 & x2=20 & -20<=x1-x2)"]
+n535 -> n542
+n535 -> n423
+n536 -> n542
+n536 -> n427
+n537 -> n524
+n537 -> n470
+n538 -> n527
+n538 -> n470
+n538 -> n471
+n539 -> n528
+n539 -> n529
+n539 -> n460
+n540 -> n529
+n540 -> n461
+n543 [label="<l,C,ack,req,critical,safe> id=1 (x1=20 & 0<=x2 & x1-x2<=20)"]
+n540 -> n543
+n541 -> n543
+n541 -> n436
+n542 -> n536
+n542 -> n479
+n543 -> n541
+n543 -> n482
+}

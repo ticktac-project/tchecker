@@ -1,0 +1,19 @@
+# 
+# This file has been generated automatically with uppaal-to-tchecker
+# 
+system: S
+# a:(channel)
+process:P
+location:P:A{initial:}
+location:P:B{initial:}
+event: a_emit
+edge:P:A:B:a_emit{do:nop:provided:1}
+event: a_recv
+edge:P:B:A:a_recv{do:nop:provided:1}
+
+# dummy process used to block emitted/received events that aren't synchronized.
+process: Stuck
+event: nosync
+location:Stuck:sink{initial:}
+sync:P@a_emit:Stuck@nosync
+sync:P@a_recv:Stuck@nosync

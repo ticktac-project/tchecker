@@ -23,9 +23,9 @@
 # MAKESPAN time units
 
 # Checks command line arguments
-if [ ! $# -eq 4 ];
+if [ $# -lt 4 ] || [ $# -gt 5 ];
 then
-    echo "Usage: $0 <# machines> <# jobs> <job max duration> <makespan>";
+    echo 1>&2 "Usage: $0 <# machines> <# jobs> <job max duration> <makespan> [<seed>]";
     exit 1
 fi
 
@@ -33,6 +33,13 @@ NM=$1
 NJ=$2
 DJ=$3
 MAKESPAN=$4
+
+if test "x$5" != "x"; then
+    RANDOM=$5
+fi
+
+# Labels
+echo "#labels=scheduled"
 
 # Model
 

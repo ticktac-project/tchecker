@@ -1,0 +1,93 @@
+parallel_bis3
+0: <A,A,A,U> 
+1: <B,A,A,U> 
+0 -> 1  reset: x1=0
+2: <A,B,A,U> 
+0 -> 2  reset: x2=0
+3: <A,A,B,U> 
+0 -> 3  reset: x3=0
+4: <A,A,C,L> 
+3 -> 4  guard: x3<1 & y>=1 reset: x3=0 tgt inv: x3<=3
+5: <B,A,B,U> 
+3 -> 5  reset: x1=0
+6: <A,B,B,U> 
+3 -> 6  reset: x2=0
+3 -> 0  guard: x3>=1
+7: <A,C,B,L> 
+6 -> 7  guard: x2<1 & y>=1 reset: x2=0 tgt inv: x2<=3
+8: <A,B,C,L> 
+6 -> 8  guard: x3<1 & y>=1 reset: x3=0 tgt inv: x3<=3
+9: <B,B,B,U> 
+6 -> 9  reset: x1=0
+6 -> 3  guard: x2>=1
+6 -> 2  guard: x3>=1
+10: <C,B,B,L> 
+9 -> 10  guard: x1<1 & y>=1 reset: x1=0 tgt inv: x1<=3
+11: <B,C,B,L> 
+9 -> 11  guard: x2<1 & y>=1 reset: x2=0 tgt inv: x2<=3
+12: <B,B,C,L> 
+9 -> 12  guard: x3<1 & y>=1 reset: x3=0 tgt inv: x3<=3
+9 -> 6  guard: x1>=1
+9 -> 5  guard: x2>=1
+13: <B,B,A,U> 
+9 -> 13  guard: x3>=1
+14: <C,B,A,L> 
+13 -> 14  guard: x1<1 & y>=1 reset: x1=0 tgt inv: x1<=3
+15: <B,C,A,L> 
+13 -> 15  guard: x2<1 & y>=1 reset: x2=0 tgt inv: x2<=3
+13 -> 2  guard: x1>=1
+13 -> 1  guard: x2>=1
+13 -> 9  reset: x3=0
+15 -> 1 src inv: x2<=3 guard: x2>=1 reset: y=0
+16: <A,C,A,L> 
+15 -> 16 src inv: x2<=3 guard: x1>=1 tgt inv: x2<=3
+15 -> 11 src inv: x2<=3 reset: x3=0 tgt inv: x2<=3
+16 -> 0 src inv: x2<=3 guard: x2>=1 reset: y=0
+16 -> 15 src inv: x2<=3 reset: x1=0 tgt inv: x2<=3
+16 -> 7 src inv: x2<=3 reset: x3=0 tgt inv: x2<=3
+14 -> 2 src inv: x1<=3 guard: x1>=1 reset: y=0
+17: <C,A,A,L> 
+14 -> 17 src inv: x1<=3 guard: x2>=1 tgt inv: x1<=3
+14 -> 10 src inv: x1<=3 reset: x3=0 tgt inv: x1<=3
+17 -> 0 src inv: x1<=3 guard: x1>=1 reset: y=0
+17 -> 14 src inv: x1<=3 reset: x2=0 tgt inv: x1<=3
+18: <C,A,B,L> 
+17 -> 18 src inv: x1<=3 reset: x3=0 tgt inv: x1<=3
+18 -> 3 src inv: x1<=3 guard: x1>=1 reset: y=0
+18 -> 10 src inv: x1<=3 reset: x2=0 tgt inv: x1<=3
+18 -> 17 src inv: x1<=3 guard: x3>=1 tgt inv: x1<=3
+12 -> 13 src inv: x3<=3 guard: x3>=1 reset: y=0
+12 -> 8 src inv: x3<=3 guard: x1>=1 tgt inv: x3<=3
+19: <B,A,C,L> 
+12 -> 19 src inv: x3<=3 guard: x2>=1 tgt inv: x3<=3
+19 -> 1 src inv: x3<=3 guard: x3>=1 reset: y=0
+19 -> 4 src inv: x3<=3 guard: x1>=1 tgt inv: x3<=3
+19 -> 12 src inv: x3<=3 reset: x2=0 tgt inv: x3<=3
+11 -> 5 src inv: x2<=3 guard: x2>=1 reset: y=0
+11 -> 7 src inv: x2<=3 guard: x1>=1 tgt inv: x2<=3
+11 -> 15 src inv: x2<=3 guard: x3>=1 tgt inv: x2<=3
+10 -> 6 src inv: x1<=3 guard: x1>=1 reset: y=0
+10 -> 18 src inv: x1<=3 guard: x2>=1 tgt inv: x1<=3
+10 -> 14 src inv: x1<=3 guard: x3>=1 tgt inv: x1<=3
+8 -> 2 src inv: x3<=3 guard: x3>=1 reset: y=0
+8 -> 12 src inv: x3<=3 reset: x1=0 tgt inv: x3<=3
+8 -> 4 src inv: x3<=3 guard: x2>=1 tgt inv: x3<=3
+7 -> 3 src inv: x2<=3 guard: x2>=1 reset: y=0
+7 -> 11 src inv: x2<=3 reset: x1=0 tgt inv: x2<=3
+7 -> 16 src inv: x2<=3 guard: x3>=1 tgt inv: x2<=3
+5 -> 18  guard: x1<1 & y>=1 reset: x1=0 tgt inv: x1<=3
+5 -> 19  guard: x3<1 & y>=1 reset: x3=0 tgt inv: x3<=3
+5 -> 3  guard: x1>=1
+5 -> 9  reset: x2=0
+5 -> 1  guard: x3>=1
+4 -> 0 src inv: x3<=3 guard: x3>=1 reset: y=0
+4 -> 19 src inv: x3<=3 reset: x1=0 tgt inv: x3<=3
+4 -> 8 src inv: x3<=3 reset: x2=0 tgt inv: x3<=3
+2 -> 16  guard: x2<1 & y>=1 reset: x2=0 tgt inv: x2<=3
+2 -> 13  reset: x1=0
+2 -> 0  guard: x2>=1
+2 -> 6  reset: x3=0
+1 -> 17  guard: x1<1 & y>=1 reset: x1=0 tgt inv: x1<=3
+1 -> 0  guard: x1>=1
+1 -> 13  reset: x2=0
+1 -> 5  reset: x3=0

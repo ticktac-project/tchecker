@@ -39,6 +39,12 @@ then
     exit 0
 fi
 
+# Labels
+labels="error1"
+for pid in `seq 2 $NPROCS`; do
+    labels="${labels},error${pid}"
+done
+echo "#labels=${labels}"
 
 # Model
 

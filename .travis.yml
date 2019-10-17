@@ -27,12 +27,19 @@ matrix:
   include:
   - os: linux
     compiler: gcc
+    env: TEST_CONF=""
+  - os: linux
+    compiler: gcc
+    env: TEST_CONF="-DTCK_ENABLE_COVREACH_TESTS=OFF -DTCK_ENABLE_EXPLORE_TESTS=OFF"
   - os: linux
     compiler: clang
+    env: TEST_CONF="-DTCK_ENABLE_COVREACH_TESTS=OFF -DTCK_ENABLE_EXPLORE_TESTS=OFF"
   - os: osx
     compiler: gcc
+    env: TEST_CONF="-DTCK_ENABLE_COVREACH_TESTS=OFF -DTCK_ENABLE_EXPLORE_TESTS=OFF"
   - os: osx
     compiler: clang
+    env: TEST_CONF="-DTCK_ENABLE_COVREACH_TESTS=OFF -DTCK_ENABLE_EXPLORE_TESTS=OFF"
 
 install:
 - . ./ci-scripts/setenv-common.sh

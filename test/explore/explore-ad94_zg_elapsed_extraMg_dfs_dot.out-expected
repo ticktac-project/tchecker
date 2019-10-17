@@ -1,0 +1,18 @@
+digraph ad94_fig10 {
+node [shape="box",style="rounded"];
+n0 [label="<l0>  (0<=x & 0<=y & x=y)"]
+n1 [label="<l1>  (0<=x & 0<=y & 0<=x-y)"]
+n0 -> n1
+n2 [label="<l2>  (1<=x & 1<=y & 0<=x-y)"]
+n1 -> n2
+n3 [label="<l3>  (0<=x & 0<=y & 0<=x-y<1)"]
+n1 -> n3
+n3 -> n1
+n4 [label="<l3>  (1<x & 0<y & 0<=x-y<1)"]
+n3 -> n4
+n5 [label="<l1>  (1<x & 0<=y & 1<x-y)"]
+n4 -> n5
+n4 -> n4
+n6 [label="<l2>  (2<x & 1<=y & 1<x-y)"]
+n5 -> n6
+}

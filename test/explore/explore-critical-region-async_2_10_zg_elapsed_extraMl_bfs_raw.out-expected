@@ -1,0 +1,2413 @@
+critical_region_async_2_10
+0: <l,I,req,req,not_ready,not_ready> id=0 (0<=x1 & 0<=x2 & x1=x2)
+1: <l,C,req,req,not_ready,not_ready> id=1 (0<=x1 & 0<=x2 & x1=x2)
+0 -> 1 
+2: <l,I,req,req,testing,not_ready> id=0 (0<=x1<=10 & 0<=x2<=30 & -20<=x1-x2<=0)
+0 -> 2  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+3: <l,I,req,req,not_ready,testing> id=0 (0<=x1<=30 & 0<=x2<=10 & 0<=x1-x2<=20)
+0 -> 3  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+4: <l,C,req,req,not_ready,not_ready> id=2 (0<=x1 & 0<=x2 & x1=x2)
+1 -> 4 
+5: <l,C,req,req,testing,not_ready> id=1 (0<=x1<=10 & 0<=x2<=30 & -20<=x1-x2<=0)
+1 -> 5  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+6: <l,C,req,req,not_ready,testing> id=1 (0<=x1<=30 & 0<=x2<=10 & 0<=x1-x2<=20)
+1 -> 6  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+2 -> 5 src inv: x1<=10 tgt inv: x1<=10
+7: <l,I,req,req,not_ready,not_ready> id=0 (0<=x1 & 10<=x2 & x1-x2<=-10)
+2 -> 7 src inv: x1<=10 guard: x1>=10 reset: x1=0
+8: <l,I,req,req,requesting,not_ready> id=0 (0<=x1 & 0<=x2)
+2 -> 8 src inv: x1<=10 guard: x1<=9
+9: <l,I,req,req,testing,testing> id=0 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)
+2 -> 9 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+3 -> 6 src inv: x2<=10 tgt inv: x2<=10
+10: <l,I,req,req,testing,testing> id=0 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)
+3 -> 10 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+11: <l,I,req,req,not_ready,not_ready> id=0 (10<=x1 & 0<=x2 & 10<=x1-x2)
+3 -> 11 src inv: x2<=10 guard: x2>=10 reset: x2=0
+12: <l,I,req,req,not_ready,requesting> id=0 (0<=x1 & 0<=x2)
+3 -> 12 src inv: x2<=10 guard: x2<=9
+4 -> 1 
+13: <l,C,req,req,testing,not_ready> id=2 (0<=x1<=10 & 0<=x2<=30 & -20<=x1-x2<=0)
+4 -> 13  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+14: <l,C,req,req,not_ready,testing> id=2 (0<=x1<=30 & 0<=x2<=10 & 0<=x1-x2<=20)
+4 -> 14  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+5 -> 13 src inv: x1<=10 tgt inv: x1<=10
+15: <l,C,req,req,not_ready,not_ready> id=1 (0<=x1 & 10<=x2 & x1-x2<=-10)
+5 -> 15 src inv: x1<=10 guard: x1>=10 reset: x1=0
+16: <l,C,req,req,requesting,not_ready> id=1 (0<=x1 & 0<=x2)
+5 -> 16 src inv: x1<=10 guard: x1<=9
+17: <l,C,req,req,testing,testing> id=1 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)
+5 -> 17 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+6 -> 14 src inv: x2<=10 tgt inv: x2<=10
+18: <l,C,req,req,testing,testing> id=1 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)
+6 -> 18 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+19: <l,C,req,req,not_ready,not_ready> id=1 (10<=x1 & 0<=x2 & 10<=x1-x2)
+6 -> 19 src inv: x2<=10 guard: x2>=10 reset: x2=0
+20: <l,C,req,req,not_ready,requesting> id=1 (0<=x1 & 0<=x2)
+6 -> 20 src inv: x2<=10 guard: x2<=9
+7 -> 15 
+21: <l,I,req,req,testing,not_ready> id=0 (0<=x1<=10 & 10<=x2 & x1-x2<=-10)
+7 -> 21  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+22: <l,I,req,req,not_ready,testing> id=0 (0<=x1<=20 & 0<=x2<=10 & 0<=x1-x2<=10)
+7 -> 22  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+8 -> 16 
+23: <l,I,req,req,requesting,testing> id=0 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)
+8 -> 23  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+9 -> 17 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+24: <l,I,req,req,not_ready,testing> id=0 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)
+9 -> 24 src inv: x1<=10 & x2<=10 guard: x1>=10 reset: x1=0 tgt inv: x2<=10
+9 -> 23 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+25: <l,I,req,req,testing,not_ready> id=0 (x1=10 & x2=0 & x1=x2+10)
+9 -> 25 src inv: x1<=10 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=10
+26: <l,I,req,req,testing,requesting> id=0 (0<=x1<=10 & 0<=x2 & x1-x2<=10)
+9 -> 26 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+10 -> 18 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+27: <l,I,req,req,not_ready,testing> id=0 (x1=0 & x2=10 & x1=x2-10)
+10 -> 27 src inv: x1<=10 & x2<=10 guard: x1>=10 reset: x1=0 tgt inv: x2<=10
+10 -> 23 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+28: <l,I,req,req,testing,not_ready> id=0 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)
+10 -> 28 src inv: x1<=10 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=10
+10 -> 26 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+11 -> 19 
+29: <l,I,req,req,testing,not_ready> id=0 (0<=x1<=10 & 0<=x2<=20 & -10<=x1-x2<=0)
+11 -> 29  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+30: <l,I,req,req,not_ready,testing> id=0 (10<=x1 & 0<=x2<=10 & 10<=x1-x2)
+11 -> 30  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+12 -> 20 
+12 -> 26  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+13 -> 5 src inv: x1<=10 tgt inv: x1<=10
+31: <l,C,req,req,not_ready,not_ready> id=2 (0<=x1 & 10<=x2 & x1-x2<=-10)
+13 -> 31 src inv: x1<=10 guard: x1>=10 reset: x1=0
+32: <l,C,req,req,requesting,not_ready> id=2 (0<=x1 & 0<=x2)
+13 -> 32 src inv: x1<=10 guard: x1<=9
+33: <l,C,req,req,testing,testing> id=2 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)
+13 -> 33 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+14 -> 6 src inv: x2<=10 tgt inv: x2<=10
+34: <l,C,req,req,testing,testing> id=2 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)
+14 -> 34 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+35: <l,C,req,req,not_ready,not_ready> id=2 (10<=x1 & 0<=x2 & 10<=x1-x2)
+14 -> 35 src inv: x2<=10 guard: x2>=10 reset: x2=0
+36: <l,C,req,req,not_ready,requesting> id=2 (0<=x1 & 0<=x2)
+14 -> 36 src inv: x2<=10 guard: x2<=9
+15 -> 31 
+37: <l,C,req,req,testing,not_ready> id=1 (0<=x1<=10 & 10<=x2 & x1-x2<=-10)
+15 -> 37  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+38: <l,C,req,req,not_ready,testing> id=1 (0<=x1<=20 & 0<=x2<=10 & 0<=x1-x2<=10)
+15 -> 38  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+16 -> 32 
+39: <l,C,ack,req,critical,not_ready> id=0 (0<=x1<=20 & 0<=x2 & x1-x2<=0)
+16 -> 39  reset: x1=0 tgt inv: x1<=20
+40: <l,C,req,req,requesting,testing> id=1 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)
+16 -> 40  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+17 -> 33 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+41: <l,C,req,req,not_ready,testing> id=1 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)
+17 -> 41 src inv: x1<=10 & x2<=10 guard: x1>=10 reset: x1=0 tgt inv: x2<=10
+17 -> 40 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+42: <l,C,req,req,testing,not_ready> id=1 (x1=10 & x2=0 & x1=x2+10)
+17 -> 42 src inv: x1<=10 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=10
+43: <l,C,req,req,testing,requesting> id=1 (0<=x1<=10 & 0<=x2 & x1-x2<=10)
+17 -> 43 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+18 -> 34 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+44: <l,C,req,req,not_ready,testing> id=1 (x1=0 & x2=10 & x1=x2-10)
+18 -> 44 src inv: x1<=10 & x2<=10 guard: x1>=10 reset: x1=0 tgt inv: x2<=10
+18 -> 40 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+45: <l,C,req,req,testing,not_ready> id=1 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)
+18 -> 45 src inv: x1<=10 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=10
+18 -> 43 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+19 -> 35 
+46: <l,C,req,req,testing,not_ready> id=1 (0<=x1<=10 & 0<=x2<=20 & -10<=x1-x2<=0)
+19 -> 46  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+47: <l,C,req,req,not_ready,testing> id=1 (10<=x1 & 0<=x2<=10 & 10<=x1-x2)
+19 -> 47  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+20 -> 36 
+20 -> 43  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+21 -> 37 src inv: x1<=10 tgt inv: x1<=10
+48: <l,I,req,req,not_ready,not_ready> id=0 (0<=x1 & 20<=x2 & x1-x2<=-20)
+21 -> 48 src inv: x1<=10 guard: x1>=10 reset: x1=0
+49: <l,I,req,req,requesting,not_ready> id=0 (0<=x1 & 10<=x2)
+21 -> 49 src inv: x1<=10 guard: x1<=9
+21 -> 9 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+22 -> 38 src inv: x2<=10 tgt inv: x2<=10
+22 -> 10 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+50: <l,I,req,req,not_ready,not_ready> id=0 (10<=x1 & 0<=x2 & 10<=x1-x2<=20)
+22 -> 50 src inv: x2<=10 guard: x2>=10 reset: x2=0
+22 -> 12 src inv: x2<=10 guard: x2<=9
+23 -> 40 src inv: x2<=10 tgt inv: x2<=10
+23 -> 8 src inv: x2<=10 guard: x2>=10 reset: x2=0
+51: <l,I,req,req,requesting,requesting> id=0 (0<=x1 & 0<=x2)
+23 -> 51 src inv: x2<=10 guard: x2<=9
+24 -> 41 src inv: x2<=10 tgt inv: x2<=10
+24 -> 10 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+52: <l,I,req,req,not_ready,not_ready> id=0 (0<=x1 & 0<=x2 & 0<=x1-x2<=10)
+24 -> 52 src inv: x2<=10 guard: x2>=10 reset: x2=0
+24 -> 12 src inv: x2<=10 guard: x2<=9
+25 -> 42 src inv: x1<=10 tgt inv: x1<=10
+25 -> 0 src inv: x1<=10 guard: x1>=10 reset: x1=0
+53: <l,I,req,req,testing,testing> id=0 (x1=10 & x2=0 & x1=x2+10)
+25 -> 53 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+26 -> 43 src inv: x1<=10 tgt inv: x1<=10
+26 -> 12 src inv: x1<=10 guard: x1>=10 reset: x1=0
+26 -> 51 src inv: x1<=10 guard: x1<=9
+27 -> 44 src inv: x2<=10 tgt inv: x2<=10
+54: <l,I,req,req,testing,testing> id=0 (x1=0 & x2=10 & x1=x2-10)
+27 -> 54 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+27 -> 0 src inv: x2<=10 guard: x2>=10 reset: x2=0
+28 -> 45 src inv: x1<=10 tgt inv: x1<=10
+55: <l,I,req,req,not_ready,not_ready> id=0 (0<=x1 & 0<=x2 & -10<=x1-x2<=0)
+28 -> 55 src inv: x1<=10 guard: x1>=10 reset: x1=0
+28 -> 8 src inv: x1<=10 guard: x1<=9
+28 -> 9 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+29 -> 46 src inv: x1<=10 tgt inv: x1<=10
+56: <l,I,req,req,not_ready,not_ready> id=0 (0<=x1 & 10<=x2 & -20<=x1-x2<=-10)
+29 -> 56 src inv: x1<=10 guard: x1>=10 reset: x1=0
+29 -> 8 src inv: x1<=10 guard: x1<=9
+29 -> 9 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+30 -> 47 src inv: x2<=10 tgt inv: x2<=10
+30 -> 10 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+57: <l,I,req,req,not_ready,not_ready> id=0 (20<=x1 & 0<=x2 & 20<=x1-x2)
+30 -> 57 src inv: x2<=10 guard: x2>=10 reset: x2=0
+58: <l,I,req,req,not_ready,requesting> id=0 (10<=x1 & 0<=x2)
+30 -> 58 src inv: x2<=10 guard: x2<=9
+31 -> 15 
+59: <l,C,req,req,testing,not_ready> id=2 (0<=x1<=10 & 10<=x2 & x1-x2<=-10)
+31 -> 59  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+60: <l,C,req,req,not_ready,testing> id=2 (0<=x1<=20 & 0<=x2<=10 & 0<=x1-x2<=10)
+31 -> 60  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+32 -> 16 
+61: <l,C,req,req,requesting,testing> id=2 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)
+32 -> 61  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+33 -> 17 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+62: <l,C,req,req,not_ready,testing> id=2 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)
+33 -> 62 src inv: x1<=10 & x2<=10 guard: x1>=10 reset: x1=0 tgt inv: x2<=10
+33 -> 61 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+63: <l,C,req,req,testing,not_ready> id=2 (x1=10 & x2=0 & x1=x2+10)
+33 -> 63 src inv: x1<=10 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=10
+64: <l,C,req,req,testing,requesting> id=2 (0<=x1<=10 & 0<=x2 & x1-x2<=10)
+33 -> 64 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+34 -> 18 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+65: <l,C,req,req,not_ready,testing> id=2 (x1=0 & x2=10 & x1=x2-10)
+34 -> 65 src inv: x1<=10 & x2<=10 guard: x1>=10 reset: x1=0 tgt inv: x2<=10
+34 -> 61 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+66: <l,C,req,req,testing,not_ready> id=2 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)
+34 -> 66 src inv: x1<=10 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=10
+34 -> 64 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+35 -> 19 
+67: <l,C,req,req,testing,not_ready> id=2 (0<=x1<=10 & 0<=x2<=20 & -10<=x1-x2<=0)
+35 -> 67  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+68: <l,C,req,req,not_ready,testing> id=2 (10<=x1 & 0<=x2<=10 & 10<=x1-x2)
+35 -> 68  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+36 -> 20 
+69: <l,C,req,ack,not_ready,critical> id=0 (0<=x1 & 0<=x2<=20 & 0<=x1-x2)
+36 -> 69  reset: x2=0 tgt inv: x2<=20
+36 -> 64  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+37 -> 59 src inv: x1<=10 tgt inv: x1<=10
+70: <l,C,req,req,not_ready,not_ready> id=1 (0<=x1 & 20<=x2 & x1-x2<=-20)
+37 -> 70 src inv: x1<=10 guard: x1>=10 reset: x1=0
+71: <l,C,req,req,requesting,not_ready> id=1 (0<=x1 & 10<=x2)
+37 -> 71 src inv: x1<=10 guard: x1<=9
+37 -> 17 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+38 -> 60 src inv: x2<=10 tgt inv: x2<=10
+38 -> 18 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+72: <l,C,req,req,not_ready,not_ready> id=1 (10<=x1 & 0<=x2 & 10<=x1-x2<=20)
+38 -> 72 src inv: x2<=10 guard: x2>=10 reset: x2=0
+38 -> 20 src inv: x2<=10 guard: x2<=9
+73: <l,C,ack,req,critical,not_ready> id=1 (0<=x1<=20 & 0<=x2 & x1-x2<=0)
+39 -> 73 src inv: x1<=20 tgt inv: x1<=20
+74: <l,C,req,req,testing2,not_ready> id=1 (0<=x1<=10 & 0<=x2 & x1-x2<=0)
+39 -> 74 src inv: x1<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10
+75: <l,C,ack,req,error,not_ready> id=0 (0<=x1 & 20<=x2)
+39 -> 75 src inv: x1<=20 guard: x1>=20
+76: <l,C,ack,req,critical,testing> id=0 (0<=x1<=20 & 0<=x2<=10 & 0<=x1-x2<=20)
+39 -> 76 src inv: x1<=20 guard: x2<=20 reset: x2=0 tgt inv: x1<=20 & x2<=10
+40 -> 61 src inv: x2<=10 tgt inv: x2<=10
+77: <l,C,ack,req,critical,testing> id=0 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)
+40 -> 77 src inv: x2<=10 reset: x1=0 tgt inv: x1<=20 & x2<=10
+40 -> 16 src inv: x2<=10 guard: x2>=10 reset: x2=0
+78: <l,C,req,req,requesting,requesting> id=1 (0<=x1 & 0<=x2)
+40 -> 78 src inv: x2<=10 guard: x2<=9
+41 -> 62 src inv: x2<=10 tgt inv: x2<=10
+41 -> 18 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+79: <l,C,req,req,not_ready,not_ready> id=1 (0<=x1 & 0<=x2 & 0<=x1-x2<=10)
+41 -> 79 src inv: x2<=10 guard: x2>=10 reset: x2=0
+41 -> 20 src inv: x2<=10 guard: x2<=9
+42 -> 63 src inv: x1<=10 tgt inv: x1<=10
+42 -> 1 src inv: x1<=10 guard: x1>=10 reset: x1=0
+80: <l,C,req,req,testing,testing> id=1 (x1=10 & x2=0 & x1=x2+10)
+42 -> 80 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+43 -> 64 src inv: x1<=10 tgt inv: x1<=10
+43 -> 20 src inv: x1<=10 guard: x1>=10 reset: x1=0
+43 -> 78 src inv: x1<=10 guard: x1<=9
+44 -> 65 src inv: x2<=10 tgt inv: x2<=10
+81: <l,C,req,req,testing,testing> id=1 (x1=0 & x2=10 & x1=x2-10)
+44 -> 81 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+44 -> 1 src inv: x2<=10 guard: x2>=10 reset: x2=0
+45 -> 66 src inv: x1<=10 tgt inv: x1<=10
+82: <l,C,req,req,not_ready,not_ready> id=1 (0<=x1 & 0<=x2 & -10<=x1-x2<=0)
+45 -> 82 src inv: x1<=10 guard: x1>=10 reset: x1=0
+45 -> 16 src inv: x1<=10 guard: x1<=9
+45 -> 17 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+46 -> 67 src inv: x1<=10 tgt inv: x1<=10
+83: <l,C,req,req,not_ready,not_ready> id=1 (0<=x1 & 10<=x2 & -20<=x1-x2<=-10)
+46 -> 83 src inv: x1<=10 guard: x1>=10 reset: x1=0
+46 -> 16 src inv: x1<=10 guard: x1<=9
+46 -> 17 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+47 -> 68 src inv: x2<=10 tgt inv: x2<=10
+47 -> 18 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+84: <l,C,req,req,not_ready,not_ready> id=1 (20<=x1 & 0<=x2 & 20<=x1-x2)
+47 -> 84 src inv: x2<=10 guard: x2>=10 reset: x2=0
+85: <l,C,req,req,not_ready,requesting> id=1 (10<=x1 & 0<=x2)
+47 -> 85 src inv: x2<=10 guard: x2<=9
+48 -> 70 
+86: <l,I,req,req,testing,not_ready> id=0 (0<=x1<=10 & 20<=x2 & x1-x2<=-20)
+48 -> 86  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+87: <l,I,req,req,not_ready,testing> id=0 (0<=x1<=10 & 0<=x2<=10 & x1=x2)
+48 -> 87  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+49 -> 71 
+49 -> 23  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+50 -> 72 
+50 -> 29  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+50 -> 30  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+51 -> 78 
+52 -> 79 
+52 -> 2  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+88: <l,I,req,req,not_ready,testing> id=0 (0<=x1 & 0<=x2<=10 & 0<=x1-x2)
+52 -> 88  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+53 -> 80 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+53 -> 87 src inv: x1<=10 & x2<=10 guard: x1>=10 reset: x1=0 tgt inv: x2<=10
+89: <l,I,req,req,testing,requesting> id=0 (x1=10 & 0<=x2 & x1-x2<=10)
+53 -> 89 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+54 -> 81 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+90: <l,I,req,req,requesting,testing> id=0 (0<=x1 & x2=10 & -10<=x1-x2)
+54 -> 90 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+91: <l,I,req,req,testing,not_ready> id=0 (0<=x1<=10 & 0<=x2<=10 & x1=x2)
+54 -> 91 src inv: x1<=10 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=10
+55 -> 82 
+92: <l,I,req,req,testing,not_ready> id=0 (0<=x1<=10 & 0<=x2 & x1-x2<=0)
+55 -> 92  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+55 -> 3  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+56 -> 83 
+56 -> 21  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+56 -> 22  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+57 -> 84 
+57 -> 91  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+93: <l,I,req,req,not_ready,testing> id=0 (20<=x1 & 0<=x2<=10 & 20<=x1-x2)
+57 -> 93  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+58 -> 85 
+58 -> 26  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+59 -> 37 src inv: x1<=10 tgt inv: x1<=10
+94: <l,C,req,req,not_ready,not_ready> id=2 (0<=x1 & 20<=x2 & x1-x2<=-20)
+59 -> 94 src inv: x1<=10 guard: x1>=10 reset: x1=0
+95: <l,C,req,req,requesting,not_ready> id=2 (0<=x1 & 10<=x2)
+59 -> 95 src inv: x1<=10 guard: x1<=9
+59 -> 33 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+60 -> 38 src inv: x2<=10 tgt inv: x2<=10
+60 -> 34 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+96: <l,C,req,req,not_ready,not_ready> id=2 (10<=x1 & 0<=x2 & 10<=x1-x2<=20)
+60 -> 96 src inv: x2<=10 guard: x2>=10 reset: x2=0
+60 -> 36 src inv: x2<=10 guard: x2<=9
+61 -> 40 src inv: x2<=10 tgt inv: x2<=10
+61 -> 32 src inv: x2<=10 guard: x2>=10 reset: x2=0
+97: <l,C,req,req,requesting,requesting> id=2 (0<=x1 & 0<=x2)
+61 -> 97 src inv: x2<=10 guard: x2<=9
+62 -> 41 src inv: x2<=10 tgt inv: x2<=10
+62 -> 34 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+98: <l,C,req,req,not_ready,not_ready> id=2 (0<=x1 & 0<=x2 & 0<=x1-x2<=10)
+62 -> 98 src inv: x2<=10 guard: x2>=10 reset: x2=0
+62 -> 36 src inv: x2<=10 guard: x2<=9
+63 -> 42 src inv: x1<=10 tgt inv: x1<=10
+63 -> 4 src inv: x1<=10 guard: x1>=10 reset: x1=0
+99: <l,C,req,req,testing,testing> id=2 (x1=10 & x2=0 & x1=x2+10)
+63 -> 99 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+64 -> 43 src inv: x1<=10 tgt inv: x1<=10
+100: <l,C,req,ack,testing,critical> id=0 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)
+64 -> 100 src inv: x1<=10 reset: x2=0 tgt inv: x1<=10 & x2<=20
+64 -> 36 src inv: x1<=10 guard: x1>=10 reset: x1=0
+64 -> 97 src inv: x1<=10 guard: x1<=9
+65 -> 44 src inv: x2<=10 tgt inv: x2<=10
+101: <l,C,req,req,testing,testing> id=2 (x1=0 & x2=10 & x1=x2-10)
+65 -> 101 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+65 -> 4 src inv: x2<=10 guard: x2>=10 reset: x2=0
+66 -> 45 src inv: x1<=10 tgt inv: x1<=10
+102: <l,C,req,req,not_ready,not_ready> id=2 (0<=x1 & 0<=x2 & -10<=x1-x2<=0)
+66 -> 102 src inv: x1<=10 guard: x1>=10 reset: x1=0
+66 -> 32 src inv: x1<=10 guard: x1<=9
+66 -> 33 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+67 -> 46 src inv: x1<=10 tgt inv: x1<=10
+103: <l,C,req,req,not_ready,not_ready> id=2 (0<=x1 & 10<=x2 & -20<=x1-x2<=-10)
+67 -> 103 src inv: x1<=10 guard: x1>=10 reset: x1=0
+67 -> 32 src inv: x1<=10 guard: x1<=9
+67 -> 33 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+68 -> 47 src inv: x2<=10 tgt inv: x2<=10
+68 -> 34 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+104: <l,C,req,req,not_ready,not_ready> id=2 (20<=x1 & 0<=x2 & 20<=x1-x2)
+68 -> 104 src inv: x2<=10 guard: x2>=10 reset: x2=0
+105: <l,C,req,req,not_ready,requesting> id=2 (10<=x1 & 0<=x2)
+68 -> 105 src inv: x2<=10 guard: x2<=9
+106: <l,C,req,ack,not_ready,critical> id=1 (0<=x1 & 0<=x2<=20 & 0<=x1-x2)
+69 -> 106 src inv: x2<=20 tgt inv: x2<=20
+107: <l,C,req,req,not_ready,testing2> id=2 (0<=x1 & 0<=x2<=10 & 0<=x1-x2)
+69 -> 107 src inv: x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x2<=10
+108: <l,C,req,ack,testing,critical> id=0 (0<=x1<=10 & 0<=x2<=20 & -20<=x1-x2<=0)
+69 -> 108 src inv: x2<=20 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=20
+109: <l,C,req,ack,not_ready,error> id=0 (20<=x1 & 0<=x2)
+69 -> 109 src inv: x2<=20 guard: x2>=20
+70 -> 94 
+110: <l,C,req,req,testing,not_ready> id=1 (0<=x1<=10 & 20<=x2 & x1-x2<=-20)
+70 -> 110  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+111: <l,C,req,req,not_ready,testing> id=1 (0<=x1<=10 & 0<=x2<=10 & x1=x2)
+70 -> 111  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+71 -> 95 
+112: <l,C,ack,req,critical,not_ready> id=0 (0<=x1<=20 & 10<=x2 & x1-x2<=-10)
+71 -> 112  reset: x1=0 tgt inv: x1<=20
+71 -> 40  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+72 -> 96 
+72 -> 46  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+72 -> 47  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+113: <l,C,ack,req,critical,not_ready> id=2 (0<=x1<=20 & 0<=x2 & x1-x2<=0)
+73 -> 113 src inv: x1<=20 tgt inv: x1<=20
+73 -> 74 src inv: x1<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10
+114: <l,C,ack,req,error,not_ready> id=1 (0<=x1 & 20<=x2)
+73 -> 114 src inv: x1<=20 guard: x1>=20
+115: <l,C,ack,req,critical,testing> id=1 (0<=x1<=20 & 0<=x2<=10 & 0<=x1-x2<=20)
+73 -> 115 src inv: x1<=20 guard: x2<=20 reset: x2=0 tgt inv: x1<=20 & x2<=10
+116: <l,C,req,req,testing2,not_ready> id=2 (0<=x1<=10 & 0<=x2 & x1-x2<=0)
+74 -> 116 src inv: x1<=10 tgt inv: x1<=10
+117: <l,C,req,req,error,not_ready> id=1 (0<=x1 & 10<=x2)
+74 -> 117 src inv: x1<=10 guard: x1>=10
+118: <l,C,req,req,safe,not_ready> id=1 (0<=x1 & 0<=x2)
+74 -> 118 src inv: x1<=10 guard: x1<=9
+119: <l,C,req,req,testing2,testing> id=1 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)
+74 -> 119 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+75 -> 114 
+120: <l,C,ack,req,error,testing> id=0 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)
+75 -> 120  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+76 -> 115 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+121: <l,C,req,req,testing2,testing> id=1 (0<=x1<=10 & 0<=x2<=10 & -9<=x1-x2<=0)
+76 -> 121 src inv: x1<=20 & x2<=10 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=10
+76 -> 120 src inv: x1<=20 & x2<=10 guard: x1>=20 tgt inv: x2<=10
+122: <l,C,ack,req,critical,not_ready> id=0 (10<=x1<=20 & 0<=x2<=10 & 10<=x1-x2<=20)
+76 -> 122 src inv: x1<=20 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=20
+123: <l,C,ack,req,critical,requesting> id=0 (0<=x1<=20 & 0<=x2 & x1-x2<=20)
+76 -> 123 src inv: x1<=20 & x2<=10 guard: x2<=9 tgt inv: x1<=20
+124: <l,C,ack,req,critical,testing> id=1 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)
+77 -> 124 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+125: <l,C,req,req,testing2,testing> id=1 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)
+77 -> 125 src inv: x1<=20 & x2<=10 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=10
+126: <l,C,ack,req,critical,not_ready> id=0 (0<=x1<=20 & 0<=x2<=20 & 0<=x1-x2<=10)
+77 -> 126 src inv: x1<=20 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=20
+77 -> 123 src inv: x1<=20 & x2<=10 guard: x2<=9 tgt inv: x1<=20
+78 -> 97 
+78 -> 123  reset: x1=0 tgt inv: x1<=20
+79 -> 98 
+79 -> 5  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+127: <l,C,req,req,not_ready,testing> id=1 (0<=x1 & 0<=x2<=10 & 0<=x1-x2)
+79 -> 127  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+80 -> 99 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+80 -> 111 src inv: x1<=10 & x2<=10 guard: x1>=10 reset: x1=0 tgt inv: x2<=10
+128: <l,C,req,req,testing,requesting> id=1 (x1=10 & 0<=x2 & x1-x2<=10)
+80 -> 128 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+81 -> 101 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+129: <l,C,req,req,requesting,testing> id=1 (0<=x1 & x2=10 & -10<=x1-x2)
+81 -> 129 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+130: <l,C,req,req,testing,not_ready> id=1 (0<=x1<=10 & 0<=x2<=10 & x1=x2)
+81 -> 130 src inv: x1<=10 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=10
+82 -> 102 
+131: <l,C,req,req,testing,not_ready> id=1 (0<=x1<=10 & 0<=x2 & x1-x2<=0)
+82 -> 131  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+82 -> 6  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+83 -> 103 
+83 -> 37  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+83 -> 38  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+84 -> 104 
+84 -> 130  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+132: <l,C,req,req,not_ready,testing> id=1 (20<=x1 & 0<=x2<=10 & 20<=x1-x2)
+84 -> 132  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+85 -> 105 
+85 -> 43  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+86 -> 110 src inv: x1<=10 tgt inv: x1<=10
+133: <l,I,req,req,not_ready,not_ready> id=0 (0<=x1 & 20<x2 & x1-x2<-20)
+86 -> 133 src inv: x1<=10 guard: x1>=10 reset: x1=0
+134: <l,I,req,req,requesting,not_ready> id=0 (0<=x1 & 20<=x2)
+86 -> 134 src inv: x1<=10 guard: x1<=9
+135: <l,I,req,req,testing,testing> id=0 (0<=x1<=10 & 0<=x2<=10 & x1=x2)
+86 -> 135 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+87 -> 111 src inv: x2<=10 tgt inv: x2<=10
+87 -> 10 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+136: <l,I,req,req,not_ready,not_ready> id=0 (10<=x1 & 0<=x2 & x1=x2+10)
+87 -> 136 src inv: x2<=10 guard: x2>=10 reset: x2=0
+87 -> 12 src inv: x2<=10 guard: x2<=9
+88 -> 127 src inv: x2<=10 tgt inv: x2<=10
+88 -> 10 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+88 -> 11 src inv: x2<=10 guard: x2>=10 reset: x2=0
+88 -> 12 src inv: x2<=10 guard: x2<=9
+89 -> 128 src inv: x1<=10 tgt inv: x1<=10
+89 -> 12 src inv: x1<=10 guard: x1>=10 reset: x1=0
+90 -> 129 src inv: x2<=10 tgt inv: x2<=10
+90 -> 8 src inv: x2<=10 guard: x2>=10 reset: x2=0
+91 -> 130 src inv: x1<=10 tgt inv: x1<=10
+137: <l,I,req,req,not_ready,not_ready> id=0 (0<=x1 & 10<=x2 & x1=x2-10)
+91 -> 137 src inv: x1<=10 guard: x1>=10 reset: x1=0
+91 -> 8 src inv: x1<=10 guard: x1<=9
+91 -> 9 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+92 -> 131 src inv: x1<=10 tgt inv: x1<=10
+92 -> 7 src inv: x1<=10 guard: x1>=10 reset: x1=0
+92 -> 8 src inv: x1<=10 guard: x1<=9
+92 -> 9 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+93 -> 132 src inv: x2<=10 tgt inv: x2<=10
+93 -> 135 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+138: <l,I,req,req,not_ready,not_ready> id=0 (20<x1 & 0<=x2 & 20<x1-x2)
+93 -> 138 src inv: x2<=10 guard: x2>=10 reset: x2=0
+139: <l,I,req,req,not_ready,requesting> id=0 (20<=x1 & 0<=x2)
+93 -> 139 src inv: x2<=10 guard: x2<=9
+94 -> 70 
+140: <l,C,req,req,testing,not_ready> id=2 (0<=x1<=10 & 20<=x2 & x1-x2<=-20)
+94 -> 140  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+141: <l,C,req,req,not_ready,testing> id=2 (0<=x1<=10 & 0<=x2<=10 & x1=x2)
+94 -> 141  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+95 -> 71 
+95 -> 61  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+96 -> 72 
+96 -> 67  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+96 -> 68  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+97 -> 78 
+142: <l,C,req,ack,requesting,critical> id=0 (0<=x1 & 0<=x2<=20 & -20<=x1-x2)
+97 -> 142  reset: x2=0 tgt inv: x2<=20
+98 -> 79 
+98 -> 13  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+143: <l,C,req,req,not_ready,testing> id=2 (0<=x1 & 0<=x2<=10 & 0<=x1-x2)
+98 -> 143  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+99 -> 80 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+99 -> 141 src inv: x1<=10 & x2<=10 guard: x1>=10 reset: x1=0 tgt inv: x2<=10
+144: <l,C,req,req,testing,requesting> id=2 (x1=10 & 0<=x2 & x1-x2<=10)
+99 -> 144 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+145: <l,C,req,ack,testing,critical> id=1 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)
+100 -> 145 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+146: <l,C,req,req,testing,testing2> id=2 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)
+100 -> 146 src inv: x1<=10 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=10 & x2<=10
+147: <l,C,req,ack,not_ready,critical> id=0 (0<=x1<=20 & 0<=x2<=20 & -10<=x1-x2<=0)
+100 -> 147 src inv: x1<=10 & x2<=20 guard: x1>=10 reset: x1=0 tgt inv: x2<=20
+100 -> 142 src inv: x1<=10 & x2<=20 guard: x1<=9 tgt inv: x2<=20
+101 -> 81 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+148: <l,C,req,req,requesting,testing> id=2 (0<=x1 & x2=10 & -10<=x1-x2)
+101 -> 148 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+149: <l,C,req,req,testing,not_ready> id=2 (0<=x1<=10 & 0<=x2<=10 & x1=x2)
+101 -> 149 src inv: x1<=10 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=10
+102 -> 82 
+150: <l,C,req,req,testing,not_ready> id=2 (0<=x1<=10 & 0<=x2 & x1-x2<=0)
+102 -> 150  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+102 -> 14  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+103 -> 83 
+103 -> 59  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+103 -> 60  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+104 -> 84 
+104 -> 149  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+151: <l,C,req,req,not_ready,testing> id=2 (20<=x1 & 0<=x2<=10 & 20<=x1-x2)
+104 -> 151  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+105 -> 85 
+152: <l,C,req,ack,not_ready,critical> id=0 (10<=x1 & 0<=x2<=20 & 10<=x1-x2)
+105 -> 152  reset: x2=0 tgt inv: x2<=20
+105 -> 64  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+153: <l,C,req,ack,not_ready,critical> id=2 (0<=x1 & 0<=x2<=20 & 0<=x1-x2)
+106 -> 153 src inv: x2<=20 tgt inv: x2<=20
+106 -> 107 src inv: x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x2<=10
+154: <l,C,req,ack,testing,critical> id=1 (0<=x1<=10 & 0<=x2<=20 & -20<=x1-x2<=0)
+106 -> 154 src inv: x2<=20 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=20
+155: <l,C,req,ack,not_ready,error> id=1 (20<=x1 & 0<=x2)
+106 -> 155 src inv: x2<=20 guard: x2>=20
+156: <l,C,req,req,not_ready,testing2> id=1 (0<=x1 & 0<=x2<=10 & 0<=x1-x2)
+107 -> 156 src inv: x2<=10 tgt inv: x2<=10
+157: <l,C,req,req,testing,testing2> id=2 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)
+107 -> 157 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+158: <l,C,req,req,not_ready,error> id=2 (10<=x1 & 0<=x2)
+107 -> 158 src inv: x2<=10 guard: x2>=10
+159: <l,C,req,req,not_ready,safe> id=2 (0<=x1 & 0<=x2)
+107 -> 159 src inv: x2<=10 guard: x2<=9
+108 -> 154 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+160: <l,C,req,req,testing,testing2> id=2 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=9)
+108 -> 160 src inv: x1<=10 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=10 & x2<=10
+161: <l,C,req,ack,not_ready,critical> id=0 (0<=x1<=10 & 10<=x2<=20 & -20<=x1-x2<=-10)
+108 -> 161 src inv: x1<=10 & x2<=20 guard: x1>=10 reset: x1=0 tgt inv: x2<=20
+108 -> 142 src inv: x1<=10 & x2<=20 guard: x1<=9 tgt inv: x2<=20
+162: <l,C,req,ack,testing,error> id=0 (0<=x1<=10 & 0<=x2 & x1-x2<=10)
+108 -> 162 src inv: x1<=10 & x2<=20 guard: x2>=20 tgt inv: x1<=10
+109 -> 155 
+109 -> 162  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+110 -> 140 src inv: x1<=10 tgt inv: x1<=10
+163: <l,C,req,req,not_ready,not_ready> id=1 (0<=x1 & 20<x2 & x1-x2<-20)
+110 -> 163 src inv: x1<=10 guard: x1>=10 reset: x1=0
+164: <l,C,req,req,requesting,not_ready> id=1 (0<=x1 & 20<=x2)
+110 -> 164 src inv: x1<=10 guard: x1<=9
+165: <l,C,req,req,testing,testing> id=1 (0<=x1<=10 & 0<=x2<=10 & x1=x2)
+110 -> 165 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+111 -> 141 src inv: x2<=10 tgt inv: x2<=10
+111 -> 18 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+166: <l,C,req,req,not_ready,not_ready> id=1 (10<=x1 & 0<=x2 & x1=x2+10)
+111 -> 166 src inv: x2<=10 guard: x2>=10 reset: x2=0
+111 -> 20 src inv: x2<=10 guard: x2<=9
+167: <l,C,ack,req,critical,not_ready> id=1 (0<=x1<=20 & 10<=x2 & x1-x2<=-10)
+112 -> 167 src inv: x1<=20 tgt inv: x1<=20
+168: <l,C,req,req,testing2,not_ready> id=1 (0<=x1<=10 & 10<=x2 & x1-x2<=-10)
+112 -> 168 src inv: x1<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10
+169: <l,C,ack,req,error,not_ready> id=0 (0<=x1 & 20<x2)
+112 -> 169 src inv: x1<=20 guard: x1>=20
+170: <l,C,ack,req,critical,testing> id=0 (0<=x1<=20 & 0<=x2<=10 & 0<=x1-x2<=10)
+112 -> 170 src inv: x1<=20 guard: x2<=20 reset: x2=0 tgt inv: x1<=20 & x2<=10
+113 -> 73 src inv: x1<=20 tgt inv: x1<=20
+113 -> 74 src inv: x1<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10
+171: <l,C,ack,req,error,not_ready> id=2 (0<=x1 & 20<=x2)
+113 -> 171 src inv: x1<=20 guard: x1>=20
+172: <l,C,ack,req,critical,testing> id=2 (0<=x1<=20 & 0<=x2<=10 & 0<=x1-x2<=20)
+113 -> 172 src inv: x1<=20 guard: x2<=20 reset: x2=0 tgt inv: x1<=20 & x2<=10
+114 -> 171 
+173: <l,C,ack,req,error,testing> id=1 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)
+114 -> 173  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+115 -> 172 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+115 -> 121 src inv: x1<=20 & x2<=10 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=10
+115 -> 173 src inv: x1<=20 & x2<=10 guard: x1>=20 tgt inv: x2<=10
+174: <l,C,ack,req,critical,not_ready> id=1 (10<=x1<=20 & 0<=x2<=10 & 10<=x1-x2<=20)
+115 -> 174 src inv: x1<=20 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=20
+175: <l,C,ack,req,critical,requesting> id=1 (0<=x1<=20 & 0<=x2 & x1-x2<=20)
+115 -> 175 src inv: x1<=20 & x2<=10 guard: x2<=9 tgt inv: x1<=20
+116 -> 74 src inv: x1<=10 tgt inv: x1<=10
+176: <l,C,req,req,error,not_ready> id=2 (0<=x1 & 10<=x2)
+116 -> 176 src inv: x1<=10 guard: x1>=10
+177: <l,C,req,req,safe,not_ready> id=2 (0<=x1 & 0<=x2)
+116 -> 177 src inv: x1<=10 guard: x1<=9
+178: <l,C,req,req,testing2,testing> id=2 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)
+116 -> 178 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+117 -> 176 
+179: <l,C,req,req,error,testing> id=1 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)
+117 -> 179  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+118 -> 177 
+180: <l,C,req,req,safe,testing> id=1 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)
+118 -> 180  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+119 -> 178 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+119 -> 179 src inv: x1<=10 & x2<=10 guard: x1>=10 tgt inv: x2<=10
+119 -> 180 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+181: <l,C,req,req,testing2,not_ready> id=1 (x1=10 & x2=0 & x1=x2+10)
+119 -> 181 src inv: x1<=10 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=10
+182: <l,C,req,req,testing2,requesting> id=1 (0<=x1<=10 & 0<=x2 & x1-x2<=10)
+119 -> 182 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+120 -> 173 src inv: x2<=10 tgt inv: x2<=10
+183: <l,C,ack,req,error,not_ready> id=0 (0<=x1 & 0<=x2)
+120 -> 183 src inv: x2<=10 guard: x2>=10 reset: x2=0
+184: <l,C,ack,req,error,requesting> id=0 (0<=x1 & 0<=x2)
+120 -> 184 src inv: x2<=10 guard: x2<=9
+185: <l,C,req,req,testing2,testing> id=2 (0<=x1<=10 & 0<=x2<=10 & -9<=x1-x2<=0)
+121 -> 185 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+186: <l,C,req,req,error,testing> id=1 (0<=x1 & x2=10 & -10<=x1-x2)
+121 -> 186 src inv: x1<=10 & x2<=10 guard: x1>=10 tgt inv: x2<=10
+121 -> 180 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+187: <l,C,req,req,testing2,not_ready> id=1 (1<=x1<=10 & 0<=x2<=9 & 1<=x1-x2<=10)
+121 -> 187 src inv: x1<=10 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=10
+121 -> 182 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+122 -> 174 src inv: x1<=20 tgt inv: x1<=20
+122 -> 183 src inv: x1<=20 guard: x1>=20
+188: <l,C,ack,req,critical,testing> id=0 (10<=x1<=20 & 0<=x2<=10 & 10<=x1-x2<=20)
+122 -> 188 src inv: x1<=20 guard: x2<=20 reset: x2=0 tgt inv: x1<=20 & x2<=10
+123 -> 175 src inv: x1<=20 tgt inv: x1<=20
+123 -> 182 src inv: x1<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10
+123 -> 184 src inv: x1<=20 guard: x1>=20
+189: <l,C,ack,req,critical,testing> id=2 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)
+124 -> 189 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+124 -> 125 src inv: x1<=20 & x2<=10 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=10
+190: <l,C,ack,req,critical,not_ready> id=1 (0<=x1<=20 & 0<=x2<=20 & 0<=x1-x2<=10)
+124 -> 190 src inv: x1<=20 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=20
+124 -> 175 src inv: x1<=20 & x2<=10 guard: x2<=9 tgt inv: x1<=20
+191: <l,C,req,req,testing2,testing> id=2 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)
+125 -> 191 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+125 -> 186 src inv: x1<=10 & x2<=10 guard: x1>=10 tgt inv: x2<=10
+125 -> 180 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+192: <l,C,req,req,testing2,not_ready> id=1 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)
+125 -> 192 src inv: x1<=10 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=10
+125 -> 182 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+126 -> 190 src inv: x1<=20 tgt inv: x1<=20
+193: <l,C,req,req,testing2,not_ready> id=1 (0<=x1<=10 & 0<=x2<=19 & -9<=x1-x2<=0)
+126 -> 193 src inv: x1<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10
+194: <l,C,ack,req,error,not_ready> id=0 (0<=x1 & 10<=x2)
+126 -> 194 src inv: x1<=20 guard: x1>=20
+126 -> 76 src inv: x1<=20 guard: x2<=20 reset: x2=0 tgt inv: x1<=20 & x2<=10
+127 -> 143 src inv: x2<=10 tgt inv: x2<=10
+127 -> 18 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+127 -> 19 src inv: x2<=10 guard: x2>=10 reset: x2=0
+127 -> 20 src inv: x2<=10 guard: x2<=9
+128 -> 144 src inv: x1<=10 tgt inv: x1<=10
+128 -> 20 src inv: x1<=10 guard: x1>=10 reset: x1=0
+129 -> 148 src inv: x2<=10 tgt inv: x2<=10
+195: <l,C,ack,req,critical,testing> id=0 (x1=0 & x2=10 & x1=x2-10)
+129 -> 195 src inv: x2<=10 reset: x1=0 tgt inv: x1<=20 & x2<=10
+129 -> 16 src inv: x2<=10 guard: x2>=10 reset: x2=0
+130 -> 149 src inv: x1<=10 tgt inv: x1<=10
+196: <l,C,req,req,not_ready,not_ready> id=1 (0<=x1 & 10<=x2 & x1=x2-10)
+130 -> 196 src inv: x1<=10 guard: x1>=10 reset: x1=0
+130 -> 16 src inv: x1<=10 guard: x1<=9
+130 -> 17 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+131 -> 150 src inv: x1<=10 tgt inv: x1<=10
+131 -> 15 src inv: x1<=10 guard: x1>=10 reset: x1=0
+131 -> 16 src inv: x1<=10 guard: x1<=9
+131 -> 17 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+132 -> 151 src inv: x2<=10 tgt inv: x2<=10
+132 -> 165 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+197: <l,C,req,req,not_ready,not_ready> id=1 (20<x1 & 0<=x2 & 20<x1-x2)
+132 -> 197 src inv: x2<=10 guard: x2>=10 reset: x2=0
+198: <l,C,req,req,not_ready,requesting> id=1 (20<=x1 & 0<=x2)
+132 -> 198 src inv: x2<=10 guard: x2<=9
+133 -> 163 
+199: <l,I,req,req,testing,not_ready> id=0 (0<=x1<=10 & 20<x2 & x1-x2<-20)
+133 -> 199  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+134 -> 164 
+134 -> 23  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+135 -> 165 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+135 -> 27 src inv: x1<=10 & x2<=10 guard: x1>=10 reset: x1=0 tgt inv: x2<=10
+135 -> 23 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+135 -> 25 src inv: x1<=10 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=10
+135 -> 26 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+136 -> 166 
+136 -> 29  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+136 -> 30  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+137 -> 196 
+137 -> 21  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+137 -> 22  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+138 -> 197 
+200: <l,I,req,req,not_ready,testing> id=0 (20<x1 & 0<=x2<=10 & 20<x1-x2)
+138 -> 200  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+139 -> 198 
+139 -> 26  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+140 -> 110 src inv: x1<=10 tgt inv: x1<=10
+201: <l,C,req,req,not_ready,not_ready> id=2 (0<=x1 & 20<x2 & x1-x2<-20)
+140 -> 201 src inv: x1<=10 guard: x1>=10 reset: x1=0
+202: <l,C,req,req,requesting,not_ready> id=2 (0<=x1 & 20<=x2)
+140 -> 202 src inv: x1<=10 guard: x1<=9
+203: <l,C,req,req,testing,testing> id=2 (0<=x1<=10 & 0<=x2<=10 & x1=x2)
+140 -> 203 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+141 -> 111 src inv: x2<=10 tgt inv: x2<=10
+141 -> 34 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+204: <l,C,req,req,not_ready,not_ready> id=2 (10<=x1 & 0<=x2 & x1=x2+10)
+141 -> 204 src inv: x2<=10 guard: x2>=10 reset: x2=0
+141 -> 36 src inv: x2<=10 guard: x2<=9
+205: <l,C,req,ack,requesting,critical> id=1 (0<=x1 & 0<=x2<=20 & -20<=x1-x2)
+142 -> 205 src inv: x2<=20 tgt inv: x2<=20
+206: <l,C,req,req,requesting,testing2> id=2 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)
+142 -> 206 src inv: x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x2<=10
+207: <l,C,req,ack,requesting,error> id=0 (0<=x1 & 0<=x2)
+142 -> 207 src inv: x2<=20 guard: x2>=20
+143 -> 127 src inv: x2<=10 tgt inv: x2<=10
+143 -> 34 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+143 -> 35 src inv: x2<=10 guard: x2>=10 reset: x2=0
+143 -> 36 src inv: x2<=10 guard: x2<=9
+144 -> 128 src inv: x1<=10 tgt inv: x1<=10
+208: <l,C,req,ack,testing,critical> id=0 (x1=10 & x2=0 & x1=x2+10)
+144 -> 208 src inv: x1<=10 reset: x2=0 tgt inv: x1<=10 & x2<=20
+144 -> 36 src inv: x1<=10 guard: x1>=10 reset: x1=0
+209: <l,C,req,ack,testing,critical> id=2 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)
+145 -> 209 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+145 -> 146 src inv: x1<=10 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=10 & x2<=10
+210: <l,C,req,ack,not_ready,critical> id=1 (0<=x1<=20 & 0<=x2<=20 & -10<=x1-x2<=0)
+145 -> 210 src inv: x1<=10 & x2<=20 guard: x1>=10 reset: x1=0 tgt inv: x2<=20
+145 -> 205 src inv: x1<=10 & x2<=20 guard: x1<=9 tgt inv: x2<=20
+211: <l,C,req,req,testing,testing2> id=1 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)
+146 -> 211 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+212: <l,C,req,req,not_ready,testing2> id=2 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)
+146 -> 212 src inv: x1<=10 & x2<=10 guard: x1>=10 reset: x1=0 tgt inv: x2<=10
+146 -> 206 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+213: <l,C,req,req,testing,error> id=2 (x1=10 & 0<=x2 & x1-x2<=10)
+146 -> 213 src inv: x1<=10 & x2<=10 guard: x2>=10 tgt inv: x1<=10
+214: <l,C,req,req,testing,safe> id=2 (0<=x1<=10 & 0<=x2 & x1-x2<=10)
+146 -> 214 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+147 -> 210 src inv: x2<=20 tgt inv: x2<=20
+215: <l,C,req,req,not_ready,testing2> id=2 (0<=x1<=19 & 0<=x2<=10 & 0<=x1-x2<=9)
+147 -> 215 src inv: x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x2<=10
+147 -> 108 src inv: x2<=20 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=20
+216: <l,C,req,ack,not_ready,error> id=0 (10<=x1 & 0<=x2)
+147 -> 216 src inv: x2<=20 guard: x2>=20
+148 -> 129 src inv: x2<=10 tgt inv: x2<=10
+148 -> 32 src inv: x2<=10 guard: x2>=10 reset: x2=0
+149 -> 130 src inv: x1<=10 tgt inv: x1<=10
+217: <l,C,req,req,not_ready,not_ready> id=2 (0<=x1 & 10<=x2 & x1=x2-10)
+149 -> 217 src inv: x1<=10 guard: x1>=10 reset: x1=0
+149 -> 32 src inv: x1<=10 guard: x1<=9
+149 -> 33 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+150 -> 131 src inv: x1<=10 tgt inv: x1<=10
+150 -> 31 src inv: x1<=10 guard: x1>=10 reset: x1=0
+150 -> 32 src inv: x1<=10 guard: x1<=9
+150 -> 33 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+151 -> 132 src inv: x2<=10 tgt inv: x2<=10
+151 -> 203 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+218: <l,C,req,req,not_ready,not_ready> id=2 (20<x1 & 0<=x2 & 20<x1-x2)
+151 -> 218 src inv: x2<=10 guard: x2>=10 reset: x2=0
+219: <l,C,req,req,not_ready,requesting> id=2 (20<=x1 & 0<=x2)
+151 -> 219 src inv: x2<=10 guard: x2<=9
+220: <l,C,req,ack,not_ready,critical> id=1 (10<=x1 & 0<=x2<=20 & 10<=x1-x2)
+152 -> 220 src inv: x2<=20 tgt inv: x2<=20
+221: <l,C,req,req,not_ready,testing2> id=2 (10<=x1 & 0<=x2<=10 & 10<=x1-x2)
+152 -> 221 src inv: x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x2<=10
+222: <l,C,req,ack,testing,critical> id=0 (0<=x1<=10 & 0<=x2<=20 & -10<=x1-x2<=0)
+152 -> 222 src inv: x2<=20 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=20
+223: <l,C,req,ack,not_ready,error> id=0 (20<x1 & 0<=x2)
+152 -> 223 src inv: x2<=20 guard: x2>=20
+153 -> 106 src inv: x2<=20 tgt inv: x2<=20
+153 -> 107 src inv: x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x2<=10
+224: <l,C,req,ack,testing,critical> id=2 (0<=x1<=10 & 0<=x2<=20 & -20<=x1-x2<=0)
+153 -> 224 src inv: x2<=20 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=20
+225: <l,C,req,ack,not_ready,error> id=2 (20<=x1 & 0<=x2)
+153 -> 225 src inv: x2<=20 guard: x2>=20
+154 -> 224 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+154 -> 160 src inv: x1<=10 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=10 & x2<=10
+226: <l,C,req,ack,not_ready,critical> id=1 (0<=x1<=10 & 10<=x2<=20 & -20<=x1-x2<=-10)
+154 -> 226 src inv: x1<=10 & x2<=20 guard: x1>=10 reset: x1=0 tgt inv: x2<=20
+154 -> 205 src inv: x1<=10 & x2<=20 guard: x1<=9 tgt inv: x2<=20
+227: <l,C,req,ack,testing,error> id=1 (0<=x1<=10 & 0<=x2 & x1-x2<=10)
+154 -> 227 src inv: x1<=10 & x2<=20 guard: x2>=20 tgt inv: x1<=10
+155 -> 225 
+155 -> 227  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+156 -> 107 src inv: x2<=10 tgt inv: x2<=10
+228: <l,C,req,req,testing,testing2> id=1 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)
+156 -> 228 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+229: <l,C,req,req,not_ready,error> id=1 (10<=x1 & 0<=x2)
+156 -> 229 src inv: x2<=10 guard: x2>=10
+230: <l,C,req,req,not_ready,safe> id=1 (0<=x1 & 0<=x2)
+156 -> 230 src inv: x2<=10 guard: x2<=9
+157 -> 228 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+231: <l,C,req,req,not_ready,testing2> id=2 (x1=0 & x2=10 & x1=x2-10)
+157 -> 231 src inv: x1<=10 & x2<=10 guard: x1>=10 reset: x1=0 tgt inv: x2<=10
+157 -> 206 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+232: <l,C,req,req,testing,error> id=2 (0<=x1<=10 & 0<=x2 & x1-x2<=10)
+157 -> 232 src inv: x1<=10 & x2<=10 guard: x2>=10 tgt inv: x1<=10
+157 -> 214 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+158 -> 229 
+158 -> 232  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+159 -> 230 
+159 -> 214  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+233: <l,C,req,req,testing,testing2> id=1 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=9)
+160 -> 233 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+234: <l,C,req,req,not_ready,testing2> id=2 (0<=x1<=9 & 1<=x2<=10 & -10<=x1-x2<=-1)
+160 -> 234 src inv: x1<=10 & x2<=10 guard: x1>=10 reset: x1=0 tgt inv: x2<=10
+160 -> 206 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+160 -> 213 src inv: x1<=10 & x2<=10 guard: x2>=10 tgt inv: x1<=10
+160 -> 214 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+161 -> 226 src inv: x2<=20 tgt inv: x2<=20
+235: <l,C,req,ack,testing,critical> id=0 (0<=x1<=10 & 10<=x2<=20 & -20<=x1-x2<=-10)
+161 -> 235 src inv: x2<=20 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=20
+236: <l,C,req,ack,not_ready,error> id=0 (0<=x1 & 0<=x2)
+161 -> 236 src inv: x2<=20 guard: x2>=20
+162 -> 227 src inv: x1<=10 tgt inv: x1<=10
+162 -> 236 src inv: x1<=10 guard: x1>=10 reset: x1=0
+162 -> 207 src inv: x1<=10 guard: x1<=9
+163 -> 201 
+237: <l,C,req,req,testing,not_ready> id=1 (0<=x1<=10 & 20<x2 & x1-x2<-20)
+163 -> 237  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+164 -> 202 
+238: <l,C,ack,req,critical,not_ready> id=0 (0<=x1<=20 & 20<=x2 & x1-x2<=-20)
+164 -> 238  reset: x1=0 tgt inv: x1<=20
+164 -> 40  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+165 -> 203 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+165 -> 44 src inv: x1<=10 & x2<=10 guard: x1>=10 reset: x1=0 tgt inv: x2<=10
+165 -> 40 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+165 -> 42 src inv: x1<=10 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=10
+165 -> 43 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+166 -> 204 
+166 -> 46  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+166 -> 47  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+239: <l,C,ack,req,critical,not_ready> id=2 (0<=x1<=20 & 10<=x2 & x1-x2<=-10)
+167 -> 239 src inv: x1<=20 tgt inv: x1<=20
+167 -> 168 src inv: x1<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10
+240: <l,C,ack,req,error,not_ready> id=1 (0<=x1 & 20<x2)
+167 -> 240 src inv: x1<=20 guard: x1>=20
+241: <l,C,ack,req,critical,testing> id=1 (0<=x1<=20 & 0<=x2<=10 & 0<=x1-x2<=10)
+167 -> 241 src inv: x1<=20 guard: x2<=20 reset: x2=0 tgt inv: x1<=20 & x2<=10
+242: <l,C,req,req,testing2,not_ready> id=2 (0<=x1<=10 & 10<=x2 & x1-x2<=-10)
+168 -> 242 src inv: x1<=10 tgt inv: x1<=10
+243: <l,C,req,req,error,not_ready> id=1 (0<=x1 & 20<=x2)
+168 -> 243 src inv: x1<=10 guard: x1>=10
+244: <l,C,req,req,safe,not_ready> id=1 (0<=x1 & 10<=x2)
+168 -> 244 src inv: x1<=10 guard: x1<=9
+168 -> 119 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+169 -> 240 
+170 -> 241 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+170 -> 121 src inv: x1<=20 & x2<=10 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=10
+245: <l,C,ack,req,error,testing> id=0 (0<=x1 & x2=10 & -10<=x1-x2)
+170 -> 245 src inv: x1<=20 & x2<=10 guard: x1>=20 tgt inv: x2<=10
+170 -> 122 src inv: x1<=20 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=20
+170 -> 123 src inv: x1<=20 & x2<=10 guard: x2<=9 tgt inv: x1<=20
+171 -> 114 
+246: <l,C,ack,req,error,testing> id=2 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)
+171 -> 246  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+172 -> 115 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+172 -> 121 src inv: x1<=20 & x2<=10 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=10
+172 -> 246 src inv: x1<=20 & x2<=10 guard: x1>=20 tgt inv: x2<=10
+247: <l,C,ack,req,critical,not_ready> id=2 (10<=x1<=20 & 0<=x2<=10 & 10<=x1-x2<=20)
+172 -> 247 src inv: x1<=20 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=20
+248: <l,C,ack,req,critical,requesting> id=2 (0<=x1<=20 & 0<=x2 & x1-x2<=20)
+172 -> 248 src inv: x1<=20 & x2<=10 guard: x2<=9 tgt inv: x1<=20
+173 -> 246 src inv: x2<=10 tgt inv: x2<=10
+249: <l,C,ack,req,error,not_ready> id=1 (0<=x1 & 0<=x2)
+173 -> 249 src inv: x2<=10 guard: x2>=10 reset: x2=0
+250: <l,C,ack,req,error,requesting> id=1 (0<=x1 & 0<=x2)
+173 -> 250 src inv: x2<=10 guard: x2<=9
+174 -> 247 src inv: x1<=20 tgt inv: x1<=20
+174 -> 249 src inv: x1<=20 guard: x1>=20
+251: <l,C,ack,req,critical,testing> id=1 (10<=x1<=20 & 0<=x2<=10 & 10<=x1-x2<=20)
+174 -> 251 src inv: x1<=20 guard: x2<=20 reset: x2=0 tgt inv: x1<=20 & x2<=10
+175 -> 248 src inv: x1<=20 tgt inv: x1<=20
+175 -> 182 src inv: x1<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10
+175 -> 250 src inv: x1<=20 guard: x1>=20
+176 -> 117 
+252: <l,C,req,req,error,testing> id=2 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)
+176 -> 252  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+177 -> 118 
+253: <l,C,req,req,safe,testing> id=2 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)
+177 -> 253  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+178 -> 119 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+178 -> 252 src inv: x1<=10 & x2<=10 guard: x1>=10 tgt inv: x2<=10
+178 -> 253 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+254: <l,C,req,req,testing2,not_ready> id=2 (x1=10 & x2=0 & x1=x2+10)
+178 -> 254 src inv: x1<=10 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=10
+255: <l,C,req,req,testing2,requesting> id=2 (0<=x1<=10 & 0<=x2 & x1-x2<=10)
+178 -> 255 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+179 -> 252 src inv: x2<=10 tgt inv: x2<=10
+256: <l,C,req,req,error,not_ready> id=1 (0<=x1 & 0<=x2)
+179 -> 256 src inv: x2<=10 guard: x2>=10 reset: x2=0
+257: <l,C,req,req,error,requesting> id=1 (0<=x1 & 0<=x2)
+179 -> 257 src inv: x2<=10 guard: x2<=9
+180 -> 253 src inv: x2<=10 tgt inv: x2<=10
+180 -> 118 src inv: x2<=10 guard: x2>=10 reset: x2=0
+258: <l,C,req,req,safe,requesting> id=1 (0<=x1 & 0<=x2)
+180 -> 258 src inv: x2<=10 guard: x2<=9
+181 -> 254 src inv: x1<=10 tgt inv: x1<=10
+181 -> 256 src inv: x1<=10 guard: x1>=10
+259: <l,C,req,req,testing2,testing> id=1 (x1=10 & x2=0 & x1=x2+10)
+181 -> 259 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+182 -> 255 src inv: x1<=10 tgt inv: x1<=10
+182 -> 257 src inv: x1<=10 guard: x1>=10
+182 -> 258 src inv: x1<=10 guard: x1<=9
+183 -> 249 
+183 -> 120  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+184 -> 250 
+185 -> 121 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+260: <l,C,req,req,error,testing> id=2 (0<=x1 & x2=10 & -10<=x1-x2)
+185 -> 260 src inv: x1<=10 & x2<=10 guard: x1>=10 tgt inv: x2<=10
+185 -> 253 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+261: <l,C,req,req,testing2,not_ready> id=2 (1<=x1<=10 & 0<=x2<=9 & 1<=x1-x2<=10)
+185 -> 261 src inv: x1<=10 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=10
+185 -> 255 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+186 -> 260 src inv: x2<=10 tgt inv: x2<=10
+186 -> 256 src inv: x2<=10 guard: x2>=10 reset: x2=0
+187 -> 261 src inv: x1<=10 tgt inv: x1<=10
+187 -> 256 src inv: x1<=10 guard: x1>=10
+187 -> 118 src inv: x1<=10 guard: x1<=9
+262: <l,C,req,req,testing2,testing> id=1 (1<=x1<=10 & 0<=x2<=9 & 1<=x1-x2<=10)
+187 -> 262 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+188 -> 251 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+188 -> 120 src inv: x1<=20 & x2<=10 guard: x1>=20 tgt inv: x2<=10
+263: <l,C,ack,req,critical,not_ready> id=0 (x1=20 & x2=0 & x1=x2+20)
+188 -> 263 src inv: x1<=20 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=20
+264: <l,C,ack,req,critical,requesting> id=0 (10<=x1<=20 & 0<=x2 & x1-x2<=20)
+188 -> 264 src inv: x1<=20 & x2<=10 guard: x2<=9 tgt inv: x1<=20
+189 -> 124 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+189 -> 125 src inv: x1<=20 & x2<=10 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=10
+265: <l,C,ack,req,critical,not_ready> id=2 (0<=x1<=20 & 0<=x2<=20 & 0<=x1-x2<=10)
+189 -> 265 src inv: x1<=20 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=20
+189 -> 248 src inv: x1<=20 & x2<=10 guard: x2<=9 tgt inv: x1<=20
+190 -> 265 src inv: x1<=20 tgt inv: x1<=20
+190 -> 193 src inv: x1<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10
+266: <l,C,ack,req,error,not_ready> id=1 (0<=x1 & 10<=x2)
+190 -> 266 src inv: x1<=20 guard: x1>=20
+190 -> 115 src inv: x1<=20 guard: x2<=20 reset: x2=0 tgt inv: x1<=20 & x2<=10
+191 -> 125 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+191 -> 260 src inv: x1<=10 & x2<=10 guard: x1>=10 tgt inv: x2<=10
+191 -> 253 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+267: <l,C,req,req,testing2,not_ready> id=2 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)
+191 -> 267 src inv: x1<=10 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=10
+191 -> 255 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+192 -> 267 src inv: x1<=10 tgt inv: x1<=10
+192 -> 256 src inv: x1<=10 guard: x1>=10
+192 -> 118 src inv: x1<=10 guard: x1<=9
+192 -> 119 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+268: <l,C,req,req,testing2,not_ready> id=2 (0<=x1<=10 & 0<=x2<=19 & -9<=x1-x2<=0)
+193 -> 268 src inv: x1<=10 tgt inv: x1<=10
+193 -> 117 src inv: x1<=10 guard: x1>=10
+193 -> 118 src inv: x1<=10 guard: x1<=9
+193 -> 119 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+194 -> 266 
+194 -> 120  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+269: <l,C,ack,req,critical,testing> id=1 (x1=0 & x2=10 & x1=x2-10)
+195 -> 269 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+270: <l,C,req,req,testing2,testing> id=1 (x1=0 & x2=10 & x1=x2-10)
+195 -> 270 src inv: x1<=20 & x2<=10 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=10
+271: <l,C,ack,req,critical,not_ready> id=0 (0<=x1<=20 & 0<=x2<=20 & x1=x2)
+195 -> 271 src inv: x1<=20 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=20
+196 -> 217 
+196 -> 37  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+196 -> 38  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+197 -> 218 
+272: <l,C,req,req,not_ready,testing> id=1 (20<x1 & 0<=x2<=10 & 20<x1-x2)
+197 -> 272  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+198 -> 219 
+198 -> 43  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+199 -> 237 src inv: x1<=10 tgt inv: x1<=10
+199 -> 133 src inv: x1<=10 guard: x1>=10 reset: x1=0
+273: <l,I,req,req,requesting,not_ready> id=0 (0<=x1 & 20<x2)
+199 -> 273 src inv: x1<=10 guard: x1<=9
+200 -> 272 src inv: x2<=10 tgt inv: x2<=10
+200 -> 138 src inv: x2<=10 guard: x2>=10 reset: x2=0
+274: <l,I,req,req,not_ready,requesting> id=0 (20<x1 & 0<=x2)
+200 -> 274 src inv: x2<=10 guard: x2<=9
+201 -> 163 
+275: <l,C,req,req,testing,not_ready> id=2 (0<=x1<=10 & 20<x2 & x1-x2<-20)
+201 -> 275  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+202 -> 164 
+202 -> 61  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+203 -> 165 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+203 -> 65 src inv: x1<=10 & x2<=10 guard: x1>=10 reset: x1=0 tgt inv: x2<=10
+203 -> 61 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+203 -> 63 src inv: x1<=10 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=10
+203 -> 64 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+204 -> 166 
+204 -> 67  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+204 -> 68  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+276: <l,C,req,ack,requesting,critical> id=2 (0<=x1 & 0<=x2<=20 & -20<=x1-x2)
+205 -> 276 src inv: x2<=20 tgt inv: x2<=20
+277: <l,C,ack,ack,critical,critical> id=0 (0<=x1<=20 & 0<=x2<=20 & -20<=x1-x2<=0)
+205 -> 277 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+205 -> 206 src inv: x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x2<=10
+278: <l,C,req,ack,requesting,error> id=1 (0<=x1 & 0<=x2)
+205 -> 278 src inv: x2<=20 guard: x2>=20
+279: <l,C,req,req,requesting,testing2> id=1 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)
+206 -> 279 src inv: x2<=10 tgt inv: x2<=10
+280: <l,C,req,req,requesting,error> id=2 (0<=x1 & 0<=x2)
+206 -> 280 src inv: x2<=10 guard: x2>=10
+281: <l,C,req,req,requesting,safe> id=2 (0<=x1 & 0<=x2)
+206 -> 281 src inv: x2<=10 guard: x2<=9
+207 -> 278 
+282: <l,C,req,ack,testing,critical> id=1 (x1=10 & x2=0 & x1=x2+10)
+208 -> 282 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+283: <l,C,req,req,testing,testing2> id=2 (x1=10 & x2=0 & x1=x2+10)
+208 -> 283 src inv: x1<=10 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=10 & x2<=10
+284: <l,C,req,ack,not_ready,critical> id=0 (0<=x1<=20 & 0<=x2<=20 & x1=x2)
+208 -> 284 src inv: x1<=10 & x2<=20 guard: x1>=10 reset: x1=0 tgt inv: x2<=20
+209 -> 145 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+209 -> 146 src inv: x1<=10 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=10 & x2<=10
+285: <l,C,req,ack,not_ready,critical> id=2 (0<=x1<=20 & 0<=x2<=20 & -10<=x1-x2<=0)
+209 -> 285 src inv: x1<=10 & x2<=20 guard: x1>=10 reset: x1=0 tgt inv: x2<=20
+209 -> 276 src inv: x1<=10 & x2<=20 guard: x1<=9 tgt inv: x2<=20
+210 -> 285 src inv: x2<=20 tgt inv: x2<=20
+210 -> 215 src inv: x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x2<=10
+210 -> 154 src inv: x2<=20 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=20
+286: <l,C,req,ack,not_ready,error> id=1 (10<=x1 & 0<=x2)
+210 -> 286 src inv: x2<=20 guard: x2>=20
+211 -> 146 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+287: <l,C,req,req,not_ready,testing2> id=1 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)
+211 -> 287 src inv: x1<=10 & x2<=10 guard: x1>=10 reset: x1=0 tgt inv: x2<=10
+211 -> 279 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+288: <l,C,req,req,testing,error> id=1 (x1=10 & 0<=x2 & x1-x2<=10)
+211 -> 288 src inv: x1<=10 & x2<=10 guard: x2>=10 tgt inv: x1<=10
+289: <l,C,req,req,testing,safe> id=1 (0<=x1<=10 & 0<=x2 & x1-x2<=10)
+211 -> 289 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+212 -> 287 src inv: x2<=10 tgt inv: x2<=10
+212 -> 157 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+290: <l,C,req,req,not_ready,error> id=2 (0<=x1 & 0<=x2)
+212 -> 290 src inv: x2<=10 guard: x2>=10
+212 -> 159 src inv: x2<=10 guard: x2<=9
+213 -> 288 src inv: x1<=10 tgt inv: x1<=10
+213 -> 290 src inv: x1<=10 guard: x1>=10 reset: x1=0
+214 -> 289 src inv: x1<=10 tgt inv: x1<=10
+214 -> 159 src inv: x1<=10 guard: x1>=10 reset: x1=0
+214 -> 281 src inv: x1<=10 guard: x1<=9
+291: <l,C,req,req,not_ready,testing2> id=1 (0<=x1<=19 & 0<=x2<=10 & 0<=x1-x2<=9)
+215 -> 291 src inv: x2<=10 tgt inv: x2<=10
+215 -> 157 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+215 -> 158 src inv: x2<=10 guard: x2>=10
+215 -> 159 src inv: x2<=10 guard: x2<=9
+216 -> 286 
+216 -> 162  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+217 -> 196 
+217 -> 59  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+217 -> 60  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+218 -> 197 
+292: <l,C,req,req,not_ready,testing> id=2 (20<x1 & 0<=x2<=10 & 20<x1-x2)
+218 -> 292  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+219 -> 198 
+293: <l,C,req,ack,not_ready,critical> id=0 (20<=x1 & 0<=x2<=20 & 20<=x1-x2)
+219 -> 293  reset: x2=0 tgt inv: x2<=20
+219 -> 64  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+294: <l,C,req,ack,not_ready,critical> id=2 (10<=x1 & 0<=x2<=20 & 10<=x1-x2)
+220 -> 294 src inv: x2<=20 tgt inv: x2<=20
+220 -> 221 src inv: x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x2<=10
+295: <l,C,req,ack,testing,critical> id=1 (0<=x1<=10 & 0<=x2<=20 & -10<=x1-x2<=0)
+220 -> 295 src inv: x2<=20 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=20
+296: <l,C,req,ack,not_ready,error> id=1 (20<x1 & 0<=x2)
+220 -> 296 src inv: x2<=20 guard: x2>=20
+297: <l,C,req,req,not_ready,testing2> id=1 (10<=x1 & 0<=x2<=10 & 10<=x1-x2)
+221 -> 297 src inv: x2<=10 tgt inv: x2<=10
+221 -> 157 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+298: <l,C,req,req,not_ready,error> id=2 (20<=x1 & 0<=x2)
+221 -> 298 src inv: x2<=10 guard: x2>=10
+299: <l,C,req,req,not_ready,safe> id=2 (10<=x1 & 0<=x2)
+221 -> 299 src inv: x2<=10 guard: x2<=9
+222 -> 295 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+222 -> 160 src inv: x1<=10 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=10 & x2<=10
+222 -> 161 src inv: x1<=10 & x2<=20 guard: x1>=10 reset: x1=0 tgt inv: x2<=20
+222 -> 142 src inv: x1<=10 & x2<=20 guard: x1<=9 tgt inv: x2<=20
+300: <l,C,req,ack,testing,error> id=0 (x1=10 & 0<=x2 & x1-x2<=10)
+222 -> 300 src inv: x1<=10 & x2<=20 guard: x2>=20 tgt inv: x1<=10
+223 -> 296 
+224 -> 154 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+224 -> 160 src inv: x1<=10 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=10 & x2<=10
+301: <l,C,req,ack,not_ready,critical> id=2 (0<=x1<=10 & 10<=x2<=20 & -20<=x1-x2<=-10)
+224 -> 301 src inv: x1<=10 & x2<=20 guard: x1>=10 reset: x1=0 tgt inv: x2<=20
+224 -> 276 src inv: x1<=10 & x2<=20 guard: x1<=9 tgt inv: x2<=20
+302: <l,C,req,ack,testing,error> id=2 (0<=x1<=10 & 0<=x2 & x1-x2<=10)
+224 -> 302 src inv: x1<=10 & x2<=20 guard: x2>=20 tgt inv: x1<=10
+225 -> 155 
+225 -> 302  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+226 -> 301 src inv: x2<=20 tgt inv: x2<=20
+303: <l,C,req,ack,testing,critical> id=1 (0<=x1<=10 & 10<=x2<=20 & -20<=x1-x2<=-10)
+226 -> 303 src inv: x2<=20 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=20
+304: <l,C,req,ack,not_ready,error> id=1 (0<=x1 & 0<=x2)
+226 -> 304 src inv: x2<=20 guard: x2>=20
+227 -> 302 src inv: x1<=10 tgt inv: x1<=10
+227 -> 304 src inv: x1<=10 guard: x1>=10 reset: x1=0
+227 -> 278 src inv: x1<=10 guard: x1<=9
+228 -> 157 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+305: <l,C,req,req,not_ready,testing2> id=1 (x1=0 & x2=10 & x1=x2-10)
+228 -> 305 src inv: x1<=10 & x2<=10 guard: x1>=10 reset: x1=0 tgt inv: x2<=10
+228 -> 279 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+306: <l,C,req,req,testing,error> id=1 (0<=x1<=10 & 0<=x2 & x1-x2<=10)
+228 -> 306 src inv: x1<=10 & x2<=10 guard: x2>=10 tgt inv: x1<=10
+228 -> 289 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+229 -> 158 
+229 -> 306  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+230 -> 159 
+230 -> 289  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+231 -> 305 src inv: x2<=10 tgt inv: x2<=10
+307: <l,C,req,req,testing,testing2> id=2 (x1=0 & x2=10 & x1=x2-10)
+231 -> 307 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+231 -> 290 src inv: x2<=10 guard: x2>=10
+232 -> 306 src inv: x1<=10 tgt inv: x1<=10
+232 -> 290 src inv: x1<=10 guard: x1>=10 reset: x1=0
+232 -> 280 src inv: x1<=10 guard: x1<=9
+233 -> 160 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+308: <l,C,req,req,not_ready,testing2> id=1 (0<=x1<=9 & 1<=x2<=10 & -10<=x1-x2<=-1)
+233 -> 308 src inv: x1<=10 & x2<=10 guard: x1>=10 reset: x1=0 tgt inv: x2<=10
+233 -> 279 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+233 -> 288 src inv: x1<=10 & x2<=10 guard: x2>=10 tgt inv: x1<=10
+233 -> 289 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+234 -> 308 src inv: x2<=10 tgt inv: x2<=10
+309: <l,C,req,req,testing,testing2> id=2 (0<=x1<=9 & 1<=x2<=10 & -10<=x1-x2<=-1)
+234 -> 309 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+234 -> 290 src inv: x2<=10 guard: x2>=10
+234 -> 159 src inv: x2<=10 guard: x2<=9
+235 -> 303 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+310: <l,C,req,ack,not_ready,critical> id=0 (x1=0 & x2=20 & x1=x2-20)
+235 -> 310 src inv: x1<=10 & x2<=20 guard: x1>=10 reset: x1=0 tgt inv: x2<=20
+311: <l,C,req,ack,requesting,critical> id=0 (0<=x1 & 10<=x2<=20 & -20<=x1-x2)
+235 -> 311 src inv: x1<=10 & x2<=20 guard: x1<=9 tgt inv: x2<=20
+235 -> 162 src inv: x1<=10 & x2<=20 guard: x2>=20 tgt inv: x1<=10
+236 -> 304 
+236 -> 162  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+237 -> 275 src inv: x1<=10 tgt inv: x1<=10
+237 -> 163 src inv: x1<=10 guard: x1>=10 reset: x1=0
+312: <l,C,req,req,requesting,not_ready> id=1 (0<=x1 & 20<x2)
+237 -> 312 src inv: x1<=10 guard: x1<=9
+313: <l,C,ack,req,critical,not_ready> id=1 (0<=x1<=20 & 20<=x2 & x1-x2<=-20)
+238 -> 313 src inv: x1<=20 tgt inv: x1<=20
+314: <l,C,req,req,testing2,not_ready> id=1 (0<=x1<=10 & 20<=x2 & x1-x2<=-20)
+238 -> 314 src inv: x1<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10
+238 -> 169 src inv: x1<=20 guard: x1>=20
+315: <l,C,ack,req,critical,testing> id=0 (0<=x1<=10 & 0<=x2<=10 & x1=x2)
+238 -> 315 src inv: x1<=20 guard: x2<=20 reset: x2=0 tgt inv: x1<=20 & x2<=10
+239 -> 167 src inv: x1<=20 tgt inv: x1<=20
+239 -> 168 src inv: x1<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10
+316: <l,C,ack,req,error,not_ready> id=2 (0<=x1 & 20<x2)
+239 -> 316 src inv: x1<=20 guard: x1>=20
+317: <l,C,ack,req,critical,testing> id=2 (0<=x1<=20 & 0<=x2<=10 & 0<=x1-x2<=10)
+239 -> 317 src inv: x1<=20 guard: x2<=20 reset: x2=0 tgt inv: x1<=20 & x2<=10
+240 -> 316 
+241 -> 317 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+241 -> 121 src inv: x1<=20 & x2<=10 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=10
+318: <l,C,ack,req,error,testing> id=1 (0<=x1 & x2=10 & -10<=x1-x2)
+241 -> 318 src inv: x1<=20 & x2<=10 guard: x1>=20 tgt inv: x2<=10
+241 -> 174 src inv: x1<=20 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=20
+241 -> 175 src inv: x1<=20 & x2<=10 guard: x2<=9 tgt inv: x1<=20
+242 -> 168 src inv: x1<=10 tgt inv: x1<=10
+319: <l,C,req,req,error,not_ready> id=2 (0<=x1 & 20<=x2)
+242 -> 319 src inv: x1<=10 guard: x1>=10
+320: <l,C,req,req,safe,not_ready> id=2 (0<=x1 & 10<=x2)
+242 -> 320 src inv: x1<=10 guard: x1<=9
+242 -> 178 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+243 -> 319 
+243 -> 179  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+244 -> 320 
+244 -> 180  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+245 -> 318 src inv: x2<=10 tgt inv: x2<=10
+245 -> 183 src inv: x2<=10 guard: x2>=10 reset: x2=0
+246 -> 173 src inv: x2<=10 tgt inv: x2<=10
+321: <l,C,ack,req,error,not_ready> id=2 (0<=x1 & 0<=x2)
+246 -> 321 src inv: x2<=10 guard: x2>=10 reset: x2=0
+322: <l,C,ack,req,error,requesting> id=2 (0<=x1 & 0<=x2)
+246 -> 322 src inv: x2<=10 guard: x2<=9
+247 -> 174 src inv: x1<=20 tgt inv: x1<=20
+247 -> 321 src inv: x1<=20 guard: x1>=20
+323: <l,C,ack,req,critical,testing> id=2 (10<=x1<=20 & 0<=x2<=10 & 10<=x1-x2<=20)
+247 -> 323 src inv: x1<=20 guard: x2<=20 reset: x2=0 tgt inv: x1<=20 & x2<=10
+248 -> 175 src inv: x1<=20 tgt inv: x1<=20
+248 -> 182 src inv: x1<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10
+324: <l,C,ack,ack,critical,critical> id=0 (0<=x1<=20 & 0<=x2<=20 & 0<=x1-x2<=20)
+248 -> 324 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+248 -> 322 src inv: x1<=20 guard: x1>=20
+249 -> 321 
+249 -> 173  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+250 -> 322 
+251 -> 323 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+251 -> 173 src inv: x1<=20 & x2<=10 guard: x1>=20 tgt inv: x2<=10
+325: <l,C,ack,req,critical,not_ready> id=1 (x1=20 & x2=0 & x1=x2+20)
+251 -> 325 src inv: x1<=20 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=20
+326: <l,C,ack,req,critical,requesting> id=1 (10<=x1<=20 & 0<=x2 & x1-x2<=20)
+251 -> 326 src inv: x1<=20 & x2<=10 guard: x2<=9 tgt inv: x1<=20
+252 -> 179 src inv: x2<=10 tgt inv: x2<=10
+327: <l,C,req,req,error,not_ready> id=2 (0<=x1 & 0<=x2)
+252 -> 327 src inv: x2<=10 guard: x2>=10 reset: x2=0
+328: <l,C,req,req,error,requesting> id=2 (0<=x1 & 0<=x2)
+252 -> 328 src inv: x2<=10 guard: x2<=9
+253 -> 180 src inv: x2<=10 tgt inv: x2<=10
+253 -> 177 src inv: x2<=10 guard: x2>=10 reset: x2=0
+329: <l,C,req,req,safe,requesting> id=2 (0<=x1 & 0<=x2)
+253 -> 329 src inv: x2<=10 guard: x2<=9
+254 -> 181 src inv: x1<=10 tgt inv: x1<=10
+254 -> 327 src inv: x1<=10 guard: x1>=10
+330: <l,C,req,req,testing2,testing> id=2 (x1=10 & x2=0 & x1=x2+10)
+254 -> 330 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+255 -> 182 src inv: x1<=10 tgt inv: x1<=10
+331: <l,C,req,ack,testing2,critical> id=0 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)
+255 -> 331 src inv: x1<=10 reset: x2=0 tgt inv: x1<=10 & x2<=20
+255 -> 328 src inv: x1<=10 guard: x1>=10
+255 -> 329 src inv: x1<=10 guard: x1<=9
+256 -> 327 
+256 -> 179  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+257 -> 328 
+258 -> 329 
+259 -> 330 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+259 -> 179 src inv: x1<=10 & x2<=10 guard: x1>=10 tgt inv: x2<=10
+332: <l,C,req,req,testing2,requesting> id=1 (x1=10 & 0<=x2 & x1-x2<=10)
+259 -> 332 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+260 -> 186 src inv: x2<=10 tgt inv: x2<=10
+260 -> 327 src inv: x2<=10 guard: x2>=10 reset: x2=0
+261 -> 187 src inv: x1<=10 tgt inv: x1<=10
+261 -> 327 src inv: x1<=10 guard: x1>=10
+261 -> 177 src inv: x1<=10 guard: x1<=9
+333: <l,C,req,req,testing2,testing> id=2 (1<=x1<=10 & 0<=x2<=9 & 1<=x1-x2<=10)
+261 -> 333 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+262 -> 333 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+262 -> 179 src inv: x1<=10 & x2<=10 guard: x1>=10 tgt inv: x2<=10
+262 -> 180 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+334: <l,C,req,req,testing2,requesting> id=1 (1<=x1<=10 & 0<=x2 & x1-x2<=10)
+262 -> 334 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+263 -> 325 src inv: x1<=20 tgt inv: x1<=20
+263 -> 183 src inv: x1<=20 guard: x1>=20
+335: <l,C,ack,req,critical,testing> id=0 (x1=20 & x2=0 & x1=x2+20)
+263 -> 335 src inv: x1<=20 guard: x2<=20 reset: x2=0 tgt inv: x1<=20 & x2<=10
+264 -> 326 src inv: x1<=20 tgt inv: x1<=20
+264 -> 184 src inv: x1<=20 guard: x1>=20
+265 -> 190 src inv: x1<=20 tgt inv: x1<=20
+265 -> 193 src inv: x1<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10
+336: <l,C,ack,req,error,not_ready> id=2 (0<=x1 & 10<=x2)
+265 -> 336 src inv: x1<=20 guard: x1>=20
+265 -> 172 src inv: x1<=20 guard: x2<=20 reset: x2=0 tgt inv: x1<=20 & x2<=10
+266 -> 336 
+266 -> 173  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+267 -> 192 src inv: x1<=10 tgt inv: x1<=10
+267 -> 327 src inv: x1<=10 guard: x1>=10
+267 -> 177 src inv: x1<=10 guard: x1<=9
+267 -> 178 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+268 -> 193 src inv: x1<=10 tgt inv: x1<=10
+268 -> 176 src inv: x1<=10 guard: x1>=10
+268 -> 177 src inv: x1<=10 guard: x1<=9
+268 -> 178 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+337: <l,C,ack,req,critical,testing> id=2 (x1=0 & x2=10 & x1=x2-10)
+269 -> 337 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+269 -> 270 src inv: x1<=20 & x2<=10 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=10
+338: <l,C,ack,req,critical,not_ready> id=1 (0<=x1<=20 & 0<=x2<=20 & x1=x2)
+269 -> 338 src inv: x1<=20 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=20
+339: <l,C,req,req,testing2,testing> id=2 (x1=0 & x2=10 & x1=x2-10)
+270 -> 339 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+340: <l,C,req,req,safe,testing> id=1 (0<=x1 & x2=10 & -10<=x1-x2)
+270 -> 340 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+341: <l,C,req,req,testing2,not_ready> id=1 (0<=x1<=10 & 0<=x2<=10 & x1=x2)
+270 -> 341 src inv: x1<=10 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=10
+271 -> 338 src inv: x1<=20 tgt inv: x1<=20
+271 -> 193 src inv: x1<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10
+271 -> 75 src inv: x1<=20 guard: x1>=20
+271 -> 76 src inv: x1<=20 guard: x2<=20 reset: x2=0 tgt inv: x1<=20 & x2<=10
+272 -> 292 src inv: x2<=10 tgt inv: x2<=10
+272 -> 197 src inv: x2<=10 guard: x2>=10 reset: x2=0
+342: <l,C,req,req,not_ready,requesting> id=1 (20<x1 & 0<=x2)
+272 -> 342 src inv: x2<=10 guard: x2<=9
+273 -> 312 
+274 -> 342 
+275 -> 237 src inv: x1<=10 tgt inv: x1<=10
+275 -> 201 src inv: x1<=10 guard: x1>=10 reset: x1=0
+343: <l,C,req,req,requesting,not_ready> id=2 (0<=x1 & 20<x2)
+275 -> 343 src inv: x1<=10 guard: x1<=9
+276 -> 205 src inv: x2<=20 tgt inv: x2<=20
+276 -> 206 src inv: x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x2<=10
+344: <l,C,req,ack,requesting,error> id=2 (0<=x1 & 0<=x2)
+276 -> 344 src inv: x2<=20 guard: x2>=20
+345: <l,C,ack,ack,critical,critical> id=1 (0<=x1<=20 & 0<=x2<=20 & -20<=x1-x2<=0)
+277 -> 345 src inv: x1<=20 & x2<=20 tgt inv: x1<=20 & x2<=20
+346: <l,C,req,ack,testing2,critical> id=1 (0<=x1<=10 & 0<=x2<=20 & -20<=x1-x2<=0)
+277 -> 346 src inv: x1<=20 & x2<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=20
+347: <l,C,ack,req,critical,testing2> id=2 (0<=x1<=19 & 0<=x2<=10 & 0<=x1-x2<=9)
+277 -> 347 src inv: x1<=20 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=20 & x2<=10
+348: <l,C,ack,ack,error,critical> id=0 (0<=x1 & x2=20 & -20<=x1-x2)
+277 -> 348 src inv: x1<=20 & x2<=20 guard: x1>=20 tgt inv: x2<=20
+349: <l,C,ack,ack,critical,error> id=0 (0<=x1<=20 & 0<=x2 & x1-x2<=20)
+277 -> 349 src inv: x1<=20 & x2<=20 guard: x2>=20 tgt inv: x1<=20
+278 -> 344 
+278 -> 349  reset: x1=0 tgt inv: x1<=20
+279 -> 206 src inv: x2<=10 tgt inv: x2<=10
+350: <l,C,ack,req,critical,testing2> id=0 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)
+279 -> 350 src inv: x2<=10 reset: x1=0 tgt inv: x1<=20 & x2<=10
+351: <l,C,req,req,requesting,error> id=1 (0<=x1 & 0<=x2)
+279 -> 351 src inv: x2<=10 guard: x2>=10
+352: <l,C,req,req,requesting,safe> id=1 (0<=x1 & 0<=x2)
+279 -> 352 src inv: x2<=10 guard: x2<=9
+280 -> 351 
+281 -> 352 
+353: <l,C,req,ack,testing,critical> id=2 (x1=10 & x2=0 & x1=x2+10)
+282 -> 353 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+282 -> 283 src inv: x1<=10 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=10 & x2<=10
+354: <l,C,req,ack,not_ready,critical> id=1 (0<=x1<=20 & 0<=x2<=20 & x1=x2)
+282 -> 354 src inv: x1<=10 & x2<=20 guard: x1>=10 reset: x1=0 tgt inv: x2<=20
+355: <l,C,req,req,testing,testing2> id=1 (x1=10 & x2=0 & x1=x2+10)
+283 -> 355 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+356: <l,C,req,req,not_ready,testing2> id=2 (0<=x1<=10 & 0<=x2<=10 & x1=x2)
+283 -> 356 src inv: x1<=10 & x2<=10 guard: x1>=10 reset: x1=0 tgt inv: x2<=10
+357: <l,C,req,req,testing,safe> id=2 (x1=10 & 0<=x2 & x1-x2<=10)
+283 -> 357 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+284 -> 354 src inv: x2<=20 tgt inv: x2<=20
+284 -> 215 src inv: x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x2<=10
+284 -> 108 src inv: x2<=20 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=20
+284 -> 109 src inv: x2<=20 guard: x2>=20
+285 -> 210 src inv: x2<=20 tgt inv: x2<=20
+285 -> 215 src inv: x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x2<=10
+285 -> 224 src inv: x2<=20 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=20
+358: <l,C,req,ack,not_ready,error> id=2 (10<=x1 & 0<=x2)
+285 -> 358 src inv: x2<=20 guard: x2>=20
+286 -> 358 
+286 -> 227  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+287 -> 212 src inv: x2<=10 tgt inv: x2<=10
+287 -> 228 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+359: <l,C,req,req,not_ready,error> id=1 (0<=x1 & 0<=x2)
+287 -> 359 src inv: x2<=10 guard: x2>=10
+287 -> 230 src inv: x2<=10 guard: x2<=9
+288 -> 213 src inv: x1<=10 tgt inv: x1<=10
+288 -> 359 src inv: x1<=10 guard: x1>=10 reset: x1=0
+289 -> 214 src inv: x1<=10 tgt inv: x1<=10
+289 -> 230 src inv: x1<=10 guard: x1>=10 reset: x1=0
+289 -> 352 src inv: x1<=10 guard: x1<=9
+290 -> 359 
+290 -> 232  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+291 -> 215 src inv: x2<=10 tgt inv: x2<=10
+291 -> 228 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+291 -> 229 src inv: x2<=10 guard: x2>=10
+291 -> 230 src inv: x2<=10 guard: x2<=9
+292 -> 272 src inv: x2<=10 tgt inv: x2<=10
+292 -> 218 src inv: x2<=10 guard: x2>=10 reset: x2=0
+360: <l,C,req,req,not_ready,requesting> id=2 (20<x1 & 0<=x2)
+292 -> 360 src inv: x2<=10 guard: x2<=9
+361: <l,C,req,ack,not_ready,critical> id=1 (20<=x1 & 0<=x2<=20 & 20<=x1-x2)
+293 -> 361 src inv: x2<=20 tgt inv: x2<=20
+362: <l,C,req,req,not_ready,testing2> id=2 (20<=x1 & 0<=x2<=10 & 20<=x1-x2)
+293 -> 362 src inv: x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x2<=10
+363: <l,C,req,ack,testing,critical> id=0 (0<=x1<=10 & 0<=x2<=10 & x1=x2)
+293 -> 363 src inv: x2<=20 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=20
+293 -> 223 src inv: x2<=20 guard: x2>=20
+294 -> 220 src inv: x2<=20 tgt inv: x2<=20
+294 -> 221 src inv: x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x2<=10
+364: <l,C,req,ack,testing,critical> id=2 (0<=x1<=10 & 0<=x2<=20 & -10<=x1-x2<=0)
+294 -> 364 src inv: x2<=20 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=20
+365: <l,C,req,ack,not_ready,error> id=2 (20<x1 & 0<=x2)
+294 -> 365 src inv: x2<=20 guard: x2>=20
+295 -> 364 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+295 -> 160 src inv: x1<=10 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=10 & x2<=10
+295 -> 226 src inv: x1<=10 & x2<=20 guard: x1>=10 reset: x1=0 tgt inv: x2<=20
+295 -> 205 src inv: x1<=10 & x2<=20 guard: x1<=9 tgt inv: x2<=20
+366: <l,C,req,ack,testing,error> id=1 (x1=10 & 0<=x2 & x1-x2<=10)
+295 -> 366 src inv: x1<=10 & x2<=20 guard: x2>=20 tgt inv: x1<=10
+296 -> 365 
+297 -> 221 src inv: x2<=10 tgt inv: x2<=10
+297 -> 228 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+367: <l,C,req,req,not_ready,error> id=1 (20<=x1 & 0<=x2)
+297 -> 367 src inv: x2<=10 guard: x2>=10
+368: <l,C,req,req,not_ready,safe> id=1 (10<=x1 & 0<=x2)
+297 -> 368 src inv: x2<=10 guard: x2<=9
+298 -> 367 
+298 -> 232  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+299 -> 368 
+299 -> 214  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+300 -> 366 src inv: x1<=10 tgt inv: x1<=10
+300 -> 236 src inv: x1<=10 guard: x1>=10 reset: x1=0
+301 -> 226 src inv: x2<=20 tgt inv: x2<=20
+369: <l,C,req,ack,testing,critical> id=2 (0<=x1<=10 & 10<=x2<=20 & -20<=x1-x2<=-10)
+301 -> 369 src inv: x2<=20 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=20
+370: <l,C,req,ack,not_ready,error> id=2 (0<=x1 & 0<=x2)
+301 -> 370 src inv: x2<=20 guard: x2>=20
+302 -> 227 src inv: x1<=10 tgt inv: x1<=10
+302 -> 370 src inv: x1<=10 guard: x1>=10 reset: x1=0
+302 -> 344 src inv: x1<=10 guard: x1<=9
+303 -> 369 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+371: <l,C,req,ack,not_ready,critical> id=1 (x1=0 & x2=20 & x1=x2-20)
+303 -> 371 src inv: x1<=10 & x2<=20 guard: x1>=10 reset: x1=0 tgt inv: x2<=20
+372: <l,C,req,ack,requesting,critical> id=1 (0<=x1 & 10<=x2<=20 & -20<=x1-x2)
+303 -> 372 src inv: x1<=10 & x2<=20 guard: x1<=9 tgt inv: x2<=20
+303 -> 227 src inv: x1<=10 & x2<=20 guard: x2>=20 tgt inv: x1<=10
+304 -> 370 
+304 -> 227  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+305 -> 231 src inv: x2<=10 tgt inv: x2<=10
+373: <l,C,req,req,testing,testing2> id=1 (x1=0 & x2=10 & x1=x2-10)
+305 -> 373 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+305 -> 359 src inv: x2<=10 guard: x2>=10
+306 -> 232 src inv: x1<=10 tgt inv: x1<=10
+306 -> 359 src inv: x1<=10 guard: x1>=10 reset: x1=0
+306 -> 351 src inv: x1<=10 guard: x1<=9
+307 -> 373 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+374: <l,C,req,req,requesting,testing2> id=2 (0<=x1 & x2=10 & -10<=x1-x2)
+307 -> 374 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+307 -> 232 src inv: x1<=10 & x2<=10 guard: x2>=10 tgt inv: x1<=10
+308 -> 234 src inv: x2<=10 tgt inv: x2<=10
+375: <l,C,req,req,testing,testing2> id=1 (0<=x1<=9 & 1<=x2<=10 & -10<=x1-x2<=-1)
+308 -> 375 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+308 -> 359 src inv: x2<=10 guard: x2>=10
+308 -> 230 src inv: x2<=10 guard: x2<=9
+309 -> 375 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+376: <l,C,req,req,requesting,testing2> id=2 (0<=x1 & 1<=x2<=10 & -10<=x1-x2)
+309 -> 376 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+309 -> 232 src inv: x1<=10 & x2<=10 guard: x2>=10 tgt inv: x1<=10
+309 -> 214 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+310 -> 371 src inv: x2<=20 tgt inv: x2<=20
+377: <l,C,req,ack,testing,critical> id=0 (x1=0 & x2=20 & x1=x2-20)
+310 -> 377 src inv: x2<=20 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=20
+310 -> 236 src inv: x2<=20 guard: x2>=20
+311 -> 372 src inv: x2<=20 tgt inv: x2<=20
+311 -> 207 src inv: x2<=20 guard: x2>=20
+312 -> 343 
+378: <l,C,ack,req,critical,not_ready> id=0 (0<=x1<=20 & 20<x2 & x1-x2<-20)
+312 -> 378  reset: x1=0 tgt inv: x1<=20
+379: <l,C,ack,req,critical,not_ready> id=2 (0<=x1<=20 & 20<=x2 & x1-x2<=-20)
+313 -> 379 src inv: x1<=20 tgt inv: x1<=20
+313 -> 314 src inv: x1<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10
+313 -> 240 src inv: x1<=20 guard: x1>=20
+380: <l,C,ack,req,critical,testing> id=1 (0<=x1<=10 & 0<=x2<=10 & x1=x2)
+313 -> 380 src inv: x1<=20 guard: x2<=20 reset: x2=0 tgt inv: x1<=20 & x2<=10
+381: <l,C,req,req,testing2,not_ready> id=2 (0<=x1<=10 & 20<=x2 & x1-x2<=-20)
+314 -> 381 src inv: x1<=10 tgt inv: x1<=10
+382: <l,C,req,req,error,not_ready> id=1 (0<=x1 & 20<x2)
+314 -> 382 src inv: x1<=10 guard: x1>=10
+383: <l,C,req,req,safe,not_ready> id=1 (0<=x1 & 20<=x2)
+314 -> 383 src inv: x1<=10 guard: x1<=9
+384: <l,C,req,req,testing2,testing> id=1 (0<=x1<=10 & 0<=x2<=10 & x1=x2)
+314 -> 384 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+315 -> 380 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+315 -> 121 src inv: x1<=20 & x2<=10 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=10
+385: <l,C,ack,req,critical,not_ready> id=0 (10<=x1<=20 & 0<=x2<=10 & x1=x2+10)
+315 -> 385 src inv: x1<=20 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=20
+315 -> 123 src inv: x1<=20 & x2<=10 guard: x2<=9 tgt inv: x1<=20
+316 -> 240 
+317 -> 241 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+317 -> 121 src inv: x1<=20 & x2<=10 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=10
+386: <l,C,ack,req,error,testing> id=2 (0<=x1 & x2=10 & -10<=x1-x2)
+317 -> 386 src inv: x1<=20 & x2<=10 guard: x1>=20 tgt inv: x2<=10
+317 -> 247 src inv: x1<=20 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=20
+317 -> 248 src inv: x1<=20 & x2<=10 guard: x2<=9 tgt inv: x1<=20
+318 -> 386 src inv: x2<=10 tgt inv: x2<=10
+318 -> 249 src inv: x2<=10 guard: x2>=10 reset: x2=0
+319 -> 243 
+319 -> 252  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+320 -> 244 
+320 -> 253  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+321 -> 249 
+321 -> 246  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+322 -> 250 
+387: <l,C,ack,ack,error,critical> id=0 (0<=x1 & 0<=x2<=20 & -20<=x1-x2)
+322 -> 387  reset: x2=0 tgt inv: x2<=20
+323 -> 251 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+323 -> 246 src inv: x1<=20 & x2<=10 guard: x1>=20 tgt inv: x2<=10
+388: <l,C,ack,req,critical,not_ready> id=2 (x1=20 & x2=0 & x1=x2+20)
+323 -> 388 src inv: x1<=20 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=20
+389: <l,C,ack,req,critical,requesting> id=2 (10<=x1<=20 & 0<=x2 & x1-x2<=20)
+323 -> 389 src inv: x1<=20 & x2<=10 guard: x2<=9 tgt inv: x1<=20
+390: <l,C,ack,ack,critical,critical> id=1 (0<=x1<=20 & 0<=x2<=20 & 0<=x1-x2<=20)
+324 -> 390 src inv: x1<=20 & x2<=20 tgt inv: x1<=20 & x2<=20
+391: <l,C,req,ack,testing2,critical> id=1 (0<=x1<=10 & 0<=x2<=19 & -9<=x1-x2<=0)
+324 -> 391 src inv: x1<=20 & x2<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=20
+392: <l,C,ack,req,critical,testing2> id=2 (0<=x1<=20 & 0<=x2<=10 & 0<=x1-x2<=20)
+324 -> 392 src inv: x1<=20 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=20 & x2<=10
+324 -> 387 src inv: x1<=20 & x2<=20 guard: x1>=20 tgt inv: x2<=20
+393: <l,C,ack,ack,critical,error> id=0 (x1=20 & 0<=x2 & x1-x2<=20)
+324 -> 393 src inv: x1<=20 & x2<=20 guard: x2>=20 tgt inv: x1<=20
+325 -> 388 src inv: x1<=20 tgt inv: x1<=20
+325 -> 249 src inv: x1<=20 guard: x1>=20
+394: <l,C,ack,req,critical,testing> id=1 (x1=20 & x2=0 & x1=x2+20)
+325 -> 394 src inv: x1<=20 guard: x2<=20 reset: x2=0 tgt inv: x1<=20 & x2<=10
+326 -> 389 src inv: x1<=20 tgt inv: x1<=20
+326 -> 250 src inv: x1<=20 guard: x1>=20
+327 -> 256 
+327 -> 252  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+328 -> 257 
+395: <l,C,req,ack,error,critical> id=0 (0<=x1 & 0<=x2<=20 & -20<=x1-x2)
+328 -> 395  reset: x2=0 tgt inv: x2<=20
+329 -> 258 
+396: <l,C,req,ack,safe,critical> id=0 (0<=x1 & 0<=x2<=20 & -20<=x1-x2)
+329 -> 396  reset: x2=0 tgt inv: x2<=20
+330 -> 259 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+330 -> 252 src inv: x1<=10 & x2<=10 guard: x1>=10 tgt inv: x2<=10
+397: <l,C,req,req,testing2,requesting> id=2 (x1=10 & 0<=x2 & x1-x2<=10)
+330 -> 397 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+398: <l,C,req,ack,testing2,critical> id=1 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)
+331 -> 398 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+399: <l,C,req,req,testing2,testing2> id=2 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)
+331 -> 399 src inv: x1<=10 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=10 & x2<=10
+331 -> 395 src inv: x1<=10 & x2<=20 guard: x1>=10 tgt inv: x2<=20
+331 -> 396 src inv: x1<=10 & x2<=20 guard: x1<=9 tgt inv: x2<=20
+332 -> 397 src inv: x1<=10 tgt inv: x1<=10
+332 -> 257 src inv: x1<=10 guard: x1>=10
+333 -> 262 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+333 -> 252 src inv: x1<=10 & x2<=10 guard: x1>=10 tgt inv: x2<=10
+333 -> 253 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+400: <l,C,req,req,testing2,requesting> id=2 (1<=x1<=10 & 0<=x2 & x1-x2<=10)
+333 -> 400 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+334 -> 400 src inv: x1<=10 tgt inv: x1<=10
+334 -> 257 src inv: x1<=10 guard: x1>=10
+334 -> 258 src inv: x1<=10 guard: x1<=9
+335 -> 394 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+335 -> 120 src inv: x1<=20 & x2<=10 guard: x1>=20 tgt inv: x2<=10
+401: <l,C,ack,req,critical,requesting> id=0 (x1=20 & 0<=x2 & x1-x2<=20)
+335 -> 401 src inv: x1<=20 & x2<=10 guard: x2<=9 tgt inv: x1<=20
+336 -> 266 
+336 -> 246  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+337 -> 269 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+337 -> 270 src inv: x1<=20 & x2<=10 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=10
+402: <l,C,ack,req,critical,not_ready> id=2 (0<=x1<=20 & 0<=x2<=20 & x1=x2)
+337 -> 402 src inv: x1<=20 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=20
+338 -> 402 src inv: x1<=20 tgt inv: x1<=20
+338 -> 193 src inv: x1<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10
+338 -> 114 src inv: x1<=20 guard: x1>=20
+338 -> 115 src inv: x1<=20 guard: x2<=20 reset: x2=0 tgt inv: x1<=20 & x2<=10
+339 -> 270 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+403: <l,C,req,req,safe,testing> id=2 (0<=x1 & x2=10 & -10<=x1-x2)
+339 -> 403 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+404: <l,C,req,req,testing2,not_ready> id=2 (0<=x1<=10 & 0<=x2<=10 & x1=x2)
+339 -> 404 src inv: x1<=10 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=10
+340 -> 403 src inv: x2<=10 tgt inv: x2<=10
+340 -> 118 src inv: x2<=10 guard: x2>=10 reset: x2=0
+341 -> 404 src inv: x1<=10 tgt inv: x1<=10
+341 -> 117 src inv: x1<=10 guard: x1>=10
+341 -> 118 src inv: x1<=10 guard: x1<=9
+341 -> 119 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+342 -> 360 
+343 -> 312 
+344 -> 278 
+405: <l,C,ack,ack,critical,critical> id=2 (0<=x1<=20 & 0<=x2<=20 & -20<=x1-x2<=0)
+345 -> 405 src inv: x1<=20 & x2<=20 tgt inv: x1<=20 & x2<=20
+345 -> 346 src inv: x1<=20 & x2<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=20
+345 -> 347 src inv: x1<=20 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=20 & x2<=10
+406: <l,C,ack,ack,error,critical> id=1 (0<=x1 & x2=20 & -20<=x1-x2)
+345 -> 406 src inv: x1<=20 & x2<=20 guard: x1>=20 tgt inv: x2<=20
+407: <l,C,ack,ack,critical,error> id=1 (0<=x1<=20 & 0<=x2 & x1-x2<=20)
+345 -> 407 src inv: x1<=20 & x2<=20 guard: x2>=20 tgt inv: x1<=20
+408: <l,C,req,ack,testing2,critical> id=2 (0<=x1<=10 & 0<=x2<=20 & -20<=x1-x2<=0)
+346 -> 408 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+409: <l,C,req,req,testing2,testing2> id=2 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=9)
+346 -> 409 src inv: x1<=10 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=10 & x2<=10
+410: <l,C,req,ack,error,critical> id=1 (0<=x1 & 10<=x2<=20 & -20<=x1-x2)
+346 -> 410 src inv: x1<=10 & x2<=20 guard: x1>=10 tgt inv: x2<=20
+411: <l,C,req,ack,safe,critical> id=1 (0<=x1 & 0<=x2<=20 & -20<=x1-x2)
+346 -> 411 src inv: x1<=10 & x2<=20 guard: x1<=9 tgt inv: x2<=20
+412: <l,C,req,ack,testing2,error> id=1 (0<=x1<=10 & 0<=x2 & x1-x2<=10)
+346 -> 412 src inv: x1<=10 & x2<=20 guard: x2>=20 tgt inv: x1<=10
+413: <l,C,ack,req,critical,testing2> id=1 (0<=x1<=19 & 0<=x2<=10 & 0<=x1-x2<=9)
+347 -> 413 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+414: <l,C,req,req,testing2,testing2> id=1 (0<=x1<=10 & 0<=x2<=10 & -9<=x1-x2<=0)
+347 -> 414 src inv: x1<=20 & x2<=10 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=10
+415: <l,C,ack,req,critical,error> id=2 (10<=x1<=20 & 0<=x2 & x1-x2<=20)
+347 -> 415 src inv: x1<=20 & x2<=10 guard: x2>=10 tgt inv: x1<=20
+416: <l,C,ack,req,critical,safe> id=2 (0<=x1<=20 & 0<=x2 & x1-x2<=20)
+347 -> 416 src inv: x1<=20 & x2<=10 guard: x2<=9 tgt inv: x1<=20
+348 -> 406 src inv: x2<=20 tgt inv: x2<=20
+417: <l,C,ack,ack,error,error> id=0 (0<=x1 & 0<=x2)
+348 -> 417 src inv: x2<=20 guard: x2>=20
+349 -> 407 src inv: x1<=20 tgt inv: x1<=20
+349 -> 412 src inv: x1<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10
+349 -> 417 src inv: x1<=20 guard: x1>=20
+418: <l,C,ack,req,critical,testing2> id=1 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)
+350 -> 418 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+419: <l,C,req,req,testing2,testing2> id=1 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)
+350 -> 419 src inv: x1<=20 & x2<=10 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=10
+420: <l,C,ack,req,critical,error> id=0 (0<=x1<=20 & 0<=x2 & x1-x2<=20)
+350 -> 420 src inv: x1<=20 & x2<=10 guard: x2>=10 tgt inv: x1<=20
+421: <l,C,ack,req,critical,safe> id=0 (0<=x1<=20 & 0<=x2 & x1-x2<=20)
+350 -> 421 src inv: x1<=20 & x2<=10 guard: x2<=9 tgt inv: x1<=20
+351 -> 280 
+351 -> 420  reset: x1=0 tgt inv: x1<=20
+352 -> 281 
+352 -> 421  reset: x1=0 tgt inv: x1<=20
+353 -> 282 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+353 -> 283 src inv: x1<=10 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=10 & x2<=10
+422: <l,C,req,ack,not_ready,critical> id=2 (0<=x1<=20 & 0<=x2<=20 & x1=x2)
+353 -> 422 src inv: x1<=10 & x2<=20 guard: x1>=10 reset: x1=0 tgt inv: x2<=20
+354 -> 422 src inv: x2<=20 tgt inv: x2<=20
+354 -> 215 src inv: x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x2<=10
+354 -> 154 src inv: x2<=20 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=20
+354 -> 155 src inv: x2<=20 guard: x2>=20
+355 -> 283 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+423: <l,C,req,req,not_ready,testing2> id=1 (0<=x1<=10 & 0<=x2<=10 & x1=x2)
+355 -> 423 src inv: x1<=10 & x2<=10 guard: x1>=10 reset: x1=0 tgt inv: x2<=10
+424: <l,C,req,req,testing,safe> id=1 (x1=10 & 0<=x2 & x1-x2<=10)
+355 -> 424 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+356 -> 423 src inv: x2<=10 tgt inv: x2<=10
+356 -> 157 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+356 -> 158 src inv: x2<=10 guard: x2>=10
+356 -> 159 src inv: x2<=10 guard: x2<=9
+357 -> 424 src inv: x1<=10 tgt inv: x1<=10
+357 -> 159 src inv: x1<=10 guard: x1>=10 reset: x1=0
+358 -> 286 
+358 -> 302  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+359 -> 290 
+359 -> 306  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+360 -> 342 
+425: <l,C,req,ack,not_ready,critical> id=0 (20<x1 & 0<=x2<=20 & 20<x1-x2)
+360 -> 425  reset: x2=0 tgt inv: x2<=20
+426: <l,C,req,ack,not_ready,critical> id=2 (20<=x1 & 0<=x2<=20 & 20<=x1-x2)
+361 -> 426 src inv: x2<=20 tgt inv: x2<=20
+361 -> 362 src inv: x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x2<=10
+427: <l,C,req,ack,testing,critical> id=1 (0<=x1<=10 & 0<=x2<=10 & x1=x2)
+361 -> 427 src inv: x2<=20 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=20
+361 -> 296 src inv: x2<=20 guard: x2>=20
+428: <l,C,req,req,not_ready,testing2> id=1 (20<=x1 & 0<=x2<=10 & 20<=x1-x2)
+362 -> 428 src inv: x2<=10 tgt inv: x2<=10
+429: <l,C,req,req,testing,testing2> id=2 (0<=x1<=10 & 0<=x2<=10 & x1=x2)
+362 -> 429 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+430: <l,C,req,req,not_ready,error> id=2 (20<x1 & 0<=x2)
+362 -> 430 src inv: x2<=10 guard: x2>=10
+431: <l,C,req,req,not_ready,safe> id=2 (20<=x1 & 0<=x2)
+362 -> 431 src inv: x2<=10 guard: x2<=9
+363 -> 427 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+363 -> 160 src inv: x1<=10 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=10 & x2<=10
+432: <l,C,req,ack,not_ready,critical> id=0 (0<=x1<=10 & 10<=x2<=20 & x1=x2-10)
+363 -> 432 src inv: x1<=10 & x2<=20 guard: x1>=10 reset: x1=0 tgt inv: x2<=20
+363 -> 142 src inv: x1<=10 & x2<=20 guard: x1<=9 tgt inv: x2<=20
+364 -> 295 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+364 -> 160 src inv: x1<=10 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=10 & x2<=10
+364 -> 301 src inv: x1<=10 & x2<=20 guard: x1>=10 reset: x1=0 tgt inv: x2<=20
+364 -> 276 src inv: x1<=10 & x2<=20 guard: x1<=9 tgt inv: x2<=20
+433: <l,C,req,ack,testing,error> id=2 (x1=10 & 0<=x2 & x1-x2<=10)
+364 -> 433 src inv: x1<=10 & x2<=20 guard: x2>=20 tgt inv: x1<=10
+365 -> 296 
+366 -> 433 src inv: x1<=10 tgt inv: x1<=10
+366 -> 304 src inv: x1<=10 guard: x1>=10 reset: x1=0
+367 -> 298 
+367 -> 306  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+368 -> 299 
+368 -> 289  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+369 -> 303 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+434: <l,C,req,ack,not_ready,critical> id=2 (x1=0 & x2=20 & x1=x2-20)
+369 -> 434 src inv: x1<=10 & x2<=20 guard: x1>=10 reset: x1=0 tgt inv: x2<=20
+435: <l,C,req,ack,requesting,critical> id=2 (0<=x1 & 10<=x2<=20 & -20<=x1-x2)
+369 -> 435 src inv: x1<=10 & x2<=20 guard: x1<=9 tgt inv: x2<=20
+369 -> 302 src inv: x1<=10 & x2<=20 guard: x2>=20 tgt inv: x1<=10
+370 -> 304 
+370 -> 302  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+371 -> 434 src inv: x2<=20 tgt inv: x2<=20
+436: <l,C,req,ack,testing,critical> id=1 (x1=0 & x2=20 & x1=x2-20)
+371 -> 436 src inv: x2<=20 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=20
+371 -> 304 src inv: x2<=20 guard: x2>=20
+372 -> 435 src inv: x2<=20 tgt inv: x2<=20
+437: <l,C,ack,ack,critical,critical> id=0 (0<=x1<=10 & 10<=x2<=20 & -20<=x1-x2<=-10)
+372 -> 437 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+372 -> 278 src inv: x2<=20 guard: x2>=20
+373 -> 307 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+438: <l,C,req,req,requesting,testing2> id=1 (0<=x1 & x2=10 & -10<=x1-x2)
+373 -> 438 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+373 -> 306 src inv: x1<=10 & x2<=10 guard: x2>=10 tgt inv: x1<=10
+374 -> 438 src inv: x2<=10 tgt inv: x2<=10
+374 -> 280 src inv: x2<=10 guard: x2>=10
+375 -> 309 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+439: <l,C,req,req,requesting,testing2> id=1 (0<=x1 & 1<=x2<=10 & -10<=x1-x2)
+375 -> 439 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+375 -> 306 src inv: x1<=10 & x2<=10 guard: x2>=10 tgt inv: x1<=10
+375 -> 289 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+376 -> 439 src inv: x2<=10 tgt inv: x2<=10
+376 -> 280 src inv: x2<=10 guard: x2>=10
+376 -> 281 src inv: x2<=10 guard: x2<=9
+377 -> 436 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+440: <l,C,req,ack,requesting,critical> id=0 (0<=x1 & x2=20 & -20<=x1-x2)
+377 -> 440 src inv: x1<=10 & x2<=20 guard: x1<=9 tgt inv: x2<=20
+377 -> 162 src inv: x1<=10 & x2<=20 guard: x2>=20 tgt inv: x1<=10
+441: <l,C,ack,req,critical,not_ready> id=1 (0<=x1<=20 & 20<x2 & x1-x2<-20)
+378 -> 441 src inv: x1<=20 tgt inv: x1<=20
+442: <l,C,req,req,testing2,not_ready> id=1 (0<=x1<=10 & 20<x2 & x1-x2<-20)
+378 -> 442 src inv: x1<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10
+378 -> 169 src inv: x1<=20 guard: x1>=20
+379 -> 313 src inv: x1<=20 tgt inv: x1<=20
+379 -> 314 src inv: x1<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10
+379 -> 316 src inv: x1<=20 guard: x1>=20
+443: <l,C,ack,req,critical,testing> id=2 (0<=x1<=10 & 0<=x2<=10 & x1=x2)
+379 -> 443 src inv: x1<=20 guard: x2<=20 reset: x2=0 tgt inv: x1<=20 & x2<=10
+380 -> 443 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+380 -> 121 src inv: x1<=20 & x2<=10 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=10
+444: <l,C,ack,req,critical,not_ready> id=1 (10<=x1<=20 & 0<=x2<=10 & x1=x2+10)
+380 -> 444 src inv: x1<=20 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=20
+380 -> 175 src inv: x1<=20 & x2<=10 guard: x2<=9 tgt inv: x1<=20
+381 -> 314 src inv: x1<=10 tgt inv: x1<=10
+445: <l,C,req,req,error,not_ready> id=2 (0<=x1 & 20<x2)
+381 -> 445 src inv: x1<=10 guard: x1>=10
+446: <l,C,req,req,safe,not_ready> id=2 (0<=x1 & 20<=x2)
+381 -> 446 src inv: x1<=10 guard: x1<=9
+447: <l,C,req,req,testing2,testing> id=2 (0<=x1<=10 & 0<=x2<=10 & x1=x2)
+381 -> 447 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+382 -> 445 
+383 -> 446 
+383 -> 180  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+384 -> 447 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+384 -> 186 src inv: x1<=10 & x2<=10 guard: x1>=10 tgt inv: x2<=10
+384 -> 180 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+384 -> 181 src inv: x1<=10 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=10
+384 -> 182 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+385 -> 444 src inv: x1<=20 tgt inv: x1<=20
+385 -> 194 src inv: x1<=20 guard: x1>=20
+385 -> 188 src inv: x1<=20 guard: x2<=20 reset: x2=0 tgt inv: x1<=20 & x2<=10
+386 -> 318 src inv: x2<=10 tgt inv: x2<=10
+386 -> 321 src inv: x2<=10 guard: x2>=10 reset: x2=0
+448: <l,C,ack,ack,error,critical> id=1 (0<=x1 & 0<=x2<=20 & -20<=x1-x2)
+387 -> 448 src inv: x2<=20 tgt inv: x2<=20
+449: <l,C,ack,req,error,testing2> id=2 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)
+387 -> 449 src inv: x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x2<=10
+387 -> 417 src inv: x2<=20 guard: x2>=20
+388 -> 325 src inv: x1<=20 tgt inv: x1<=20
+388 -> 321 src inv: x1<=20 guard: x1>=20
+450: <l,C,ack,req,critical,testing> id=2 (x1=20 & x2=0 & x1=x2+20)
+388 -> 450 src inv: x1<=20 guard: x2<=20 reset: x2=0 tgt inv: x1<=20 & x2<=10
+389 -> 326 src inv: x1<=20 tgt inv: x1<=20
+451: <l,C,ack,ack,critical,critical> id=0 (10<=x1<=20 & 0<=x2<=10 & 10<=x1-x2<=20)
+389 -> 451 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+389 -> 322 src inv: x1<=20 guard: x1>=20
+452: <l,C,ack,ack,critical,critical> id=2 (0<=x1<=20 & 0<=x2<=20 & 0<=x1-x2<=20)
+390 -> 452 src inv: x1<=20 & x2<=20 tgt inv: x1<=20 & x2<=20
+390 -> 391 src inv: x1<=20 & x2<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=20
+390 -> 392 src inv: x1<=20 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=20 & x2<=10
+390 -> 448 src inv: x1<=20 & x2<=20 guard: x1>=20 tgt inv: x2<=20
+453: <l,C,ack,ack,critical,error> id=1 (x1=20 & 0<=x2 & x1-x2<=20)
+390 -> 453 src inv: x1<=20 & x2<=20 guard: x2>=20 tgt inv: x1<=20
+454: <l,C,req,ack,testing2,critical> id=2 (0<=x1<=10 & 0<=x2<=19 & -9<=x1-x2<=0)
+391 -> 454 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+391 -> 409 src inv: x1<=10 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=10 & x2<=10
+391 -> 410 src inv: x1<=10 & x2<=20 guard: x1>=10 tgt inv: x2<=20
+391 -> 411 src inv: x1<=10 & x2<=20 guard: x1<=9 tgt inv: x2<=20
+455: <l,C,ack,req,critical,testing2> id=1 (0<=x1<=20 & 0<=x2<=10 & 0<=x1-x2<=20)
+392 -> 455 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+392 -> 414 src inv: x1<=20 & x2<=10 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=10
+392 -> 449 src inv: x1<=20 & x2<=10 guard: x1>=20 tgt inv: x2<=10
+392 -> 415 src inv: x1<=20 & x2<=10 guard: x2>=10 tgt inv: x1<=20
+392 -> 416 src inv: x1<=20 & x2<=10 guard: x2<=9 tgt inv: x1<=20
+393 -> 453 src inv: x1<=20 tgt inv: x1<=20
+393 -> 417 src inv: x1<=20 guard: x1>=20
+394 -> 450 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+394 -> 173 src inv: x1<=20 & x2<=10 guard: x1>=20 tgt inv: x2<=10
+456: <l,C,ack,req,critical,requesting> id=1 (x1=20 & 0<=x2 & x1-x2<=20)
+394 -> 456 src inv: x1<=20 & x2<=10 guard: x2<=9 tgt inv: x1<=20
+457: <l,C,req,ack,error,critical> id=1 (0<=x1 & 0<=x2<=20 & -20<=x1-x2)
+395 -> 457 src inv: x2<=20 tgt inv: x2<=20
+458: <l,C,req,req,error,testing2> id=2 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)
+395 -> 458 src inv: x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x2<=10
+459: <l,C,req,ack,error,error> id=0 (0<=x1 & 0<=x2)
+395 -> 459 src inv: x2<=20 guard: x2>=20
+396 -> 411 src inv: x2<=20 tgt inv: x2<=20
+460: <l,C,req,req,safe,testing2> id=2 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)
+396 -> 460 src inv: x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x2<=10
+461: <l,C,req,ack,safe,error> id=0 (0<=x1 & 0<=x2)
+396 -> 461 src inv: x2<=20 guard: x2>=20
+397 -> 332 src inv: x1<=10 tgt inv: x1<=10
+462: <l,C,req,ack,testing2,critical> id=0 (x1=10 & x2=0 & x1=x2+10)
+397 -> 462 src inv: x1<=10 reset: x2=0 tgt inv: x1<=10 & x2<=20
+397 -> 328 src inv: x1<=10 guard: x1>=10
+463: <l,C,req,ack,testing2,critical> id=2 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)
+398 -> 463 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+398 -> 399 src inv: x1<=10 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=10 & x2<=10
+398 -> 457 src inv: x1<=10 & x2<=20 guard: x1>=10 tgt inv: x2<=20
+398 -> 411 src inv: x1<=10 & x2<=20 guard: x1<=9 tgt inv: x2<=20
+464: <l,C,req,req,testing2,testing2> id=1 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)
+399 -> 464 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+399 -> 458 src inv: x1<=10 & x2<=10 guard: x1>=10 tgt inv: x2<=10
+399 -> 460 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+465: <l,C,req,req,testing2,error> id=2 (x1=10 & 0<=x2 & x1-x2<=10)
+399 -> 465 src inv: x1<=10 & x2<=10 guard: x2>=10 tgt inv: x1<=10
+466: <l,C,req,req,testing2,safe> id=2 (0<=x1<=10 & 0<=x2 & x1-x2<=10)
+399 -> 466 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+400 -> 334 src inv: x1<=10 tgt inv: x1<=10
+467: <l,C,req,ack,testing2,critical> id=0 (1<=x1<=10 & 0<=x2<=9 & 1<=x1-x2<=10)
+400 -> 467 src inv: x1<=10 reset: x2=0 tgt inv: x1<=10 & x2<=20
+400 -> 328 src inv: x1<=10 guard: x1>=10
+400 -> 329 src inv: x1<=10 guard: x1<=9
+401 -> 456 src inv: x1<=20 tgt inv: x1<=20
+401 -> 184 src inv: x1<=20 guard: x1>=20
+402 -> 338 src inv: x1<=20 tgt inv: x1<=20
+402 -> 193 src inv: x1<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10
+402 -> 171 src inv: x1<=20 guard: x1>=20
+402 -> 172 src inv: x1<=20 guard: x2<=20 reset: x2=0 tgt inv: x1<=20 & x2<=10
+403 -> 340 src inv: x2<=10 tgt inv: x2<=10
+403 -> 177 src inv: x2<=10 guard: x2>=10 reset: x2=0
+404 -> 341 src inv: x1<=10 tgt inv: x1<=10
+404 -> 176 src inv: x1<=10 guard: x1>=10
+404 -> 177 src inv: x1<=10 guard: x1<=9
+404 -> 178 src inv: x1<=10 guard: x2<=20 reset: x2=0 tgt inv: x1<=10 & x2<=10
+405 -> 345 src inv: x1<=20 & x2<=20 tgt inv: x1<=20 & x2<=20
+405 -> 346 src inv: x1<=20 & x2<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=20
+405 -> 347 src inv: x1<=20 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=20 & x2<=10
+468: <l,C,ack,ack,error,critical> id=2 (0<=x1 & x2=20 & -20<=x1-x2)
+405 -> 468 src inv: x1<=20 & x2<=20 guard: x1>=20 tgt inv: x2<=20
+469: <l,C,ack,ack,critical,error> id=2 (0<=x1<=20 & 0<=x2 & x1-x2<=20)
+405 -> 469 src inv: x1<=20 & x2<=20 guard: x2>=20 tgt inv: x1<=20
+406 -> 468 src inv: x2<=20 tgt inv: x2<=20
+470: <l,C,ack,ack,error,error> id=1 (0<=x1 & 0<=x2)
+406 -> 470 src inv: x2<=20 guard: x2>=20
+407 -> 469 src inv: x1<=20 tgt inv: x1<=20
+407 -> 412 src inv: x1<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10
+407 -> 470 src inv: x1<=20 guard: x1>=20
+408 -> 346 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+408 -> 409 src inv: x1<=10 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=10 & x2<=10
+471: <l,C,req,ack,error,critical> id=2 (0<=x1 & 10<=x2<=20 & -20<=x1-x2)
+408 -> 471 src inv: x1<=10 & x2<=20 guard: x1>=10 tgt inv: x2<=20
+472: <l,C,req,ack,safe,critical> id=2 (0<=x1 & 0<=x2<=20 & -20<=x1-x2)
+408 -> 472 src inv: x1<=10 & x2<=20 guard: x1<=9 tgt inv: x2<=20
+473: <l,C,req,ack,testing2,error> id=2 (0<=x1<=10 & 0<=x2 & x1-x2<=10)
+408 -> 473 src inv: x1<=10 & x2<=20 guard: x2>=20 tgt inv: x1<=10
+474: <l,C,req,req,testing2,testing2> id=1 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=9)
+409 -> 474 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+475: <l,C,req,req,error,testing2> id=2 (0<=x1 & 1<=x2<=10 & -10<=x1-x2)
+409 -> 475 src inv: x1<=10 & x2<=10 guard: x1>=10 tgt inv: x2<=10
+409 -> 460 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+409 -> 465 src inv: x1<=10 & x2<=10 guard: x2>=10 tgt inv: x1<=10
+409 -> 466 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+410 -> 471 src inv: x2<=20 tgt inv: x2<=20
+476: <l,C,req,ack,error,error> id=1 (0<=x1 & 0<=x2)
+410 -> 476 src inv: x2<=20 guard: x2>=20
+411 -> 472 src inv: x2<=20 tgt inv: x2<=20
+411 -> 460 src inv: x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x2<=10
+477: <l,C,req,ack,safe,error> id=1 (0<=x1 & 0<=x2)
+411 -> 477 src inv: x2<=20 guard: x2>=20
+412 -> 473 src inv: x1<=10 tgt inv: x1<=10
+412 -> 476 src inv: x1<=10 guard: x1>=10
+412 -> 477 src inv: x1<=10 guard: x1<=9
+413 -> 347 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+413 -> 414 src inv: x1<=20 & x2<=10 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=10
+478: <l,C,ack,req,critical,error> id=1 (10<=x1<=20 & 0<=x2 & x1-x2<=20)
+413 -> 478 src inv: x1<=20 & x2<=10 guard: x2>=10 tgt inv: x1<=20
+479: <l,C,ack,req,critical,safe> id=1 (0<=x1<=20 & 0<=x2 & x1-x2<=20)
+413 -> 479 src inv: x1<=20 & x2<=10 guard: x2<=9 tgt inv: x1<=20
+480: <l,C,req,req,testing2,testing2> id=2 (0<=x1<=10 & 0<=x2<=10 & -9<=x1-x2<=0)
+414 -> 480 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+481: <l,C,req,req,error,testing2> id=1 (0<=x1 & x2=10 & -10<=x1-x2)
+414 -> 481 src inv: x1<=10 & x2<=10 guard: x1>=10 tgt inv: x2<=10
+482: <l,C,req,req,safe,testing2> id=1 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)
+414 -> 482 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+483: <l,C,req,req,testing2,error> id=1 (1<=x1<=10 & 0<=x2 & x1-x2<=10)
+414 -> 483 src inv: x1<=10 & x2<=10 guard: x2>=10 tgt inv: x1<=10
+484: <l,C,req,req,testing2,safe> id=1 (0<=x1<=10 & 0<=x2 & x1-x2<=10)
+414 -> 484 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+415 -> 478 src inv: x1<=20 tgt inv: x1<=20
+485: <l,C,ack,req,error,error> id=2 (0<=x1 & 0<=x2)
+415 -> 485 src inv: x1<=20 guard: x1>=20
+416 -> 479 src inv: x1<=20 tgt inv: x1<=20
+416 -> 484 src inv: x1<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10
+486: <l,C,ack,req,error,safe> id=2 (0<=x1 & 0<=x2)
+416 -> 486 src inv: x1<=20 guard: x1>=20
+417 -> 470 
+487: <l,C,ack,req,critical,testing2> id=2 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)
+418 -> 487 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+418 -> 419 src inv: x1<=20 & x2<=10 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=10
+488: <l,C,ack,req,critical,error> id=1 (0<=x1<=20 & 0<=x2 & x1-x2<=20)
+418 -> 488 src inv: x1<=20 & x2<=10 guard: x2>=10 tgt inv: x1<=20
+418 -> 479 src inv: x1<=20 & x2<=10 guard: x2<=9 tgt inv: x1<=20
+489: <l,C,req,req,testing2,testing2> id=2 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)
+419 -> 489 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+419 -> 481 src inv: x1<=10 & x2<=10 guard: x1>=10 tgt inv: x2<=10
+419 -> 482 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+490: <l,C,req,req,testing2,error> id=1 (0<=x1<=10 & 0<=x2 & x1-x2<=10)
+419 -> 490 src inv: x1<=10 & x2<=10 guard: x2>=10 tgt inv: x1<=10
+419 -> 484 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+420 -> 488 src inv: x1<=20 tgt inv: x1<=20
+420 -> 490 src inv: x1<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10
+491: <l,C,ack,req,error,error> id=0 (0<=x1 & 0<=x2)
+420 -> 491 src inv: x1<=20 guard: x1>=20
+421 -> 479 src inv: x1<=20 tgt inv: x1<=20
+421 -> 484 src inv: x1<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10
+492: <l,C,ack,req,error,safe> id=0 (0<=x1 & 0<=x2)
+421 -> 492 src inv: x1<=20 guard: x1>=20
+422 -> 354 src inv: x2<=20 tgt inv: x2<=20
+422 -> 215 src inv: x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x2<=10
+422 -> 224 src inv: x2<=20 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=20
+422 -> 225 src inv: x2<=20 guard: x2>=20
+423 -> 356 src inv: x2<=10 tgt inv: x2<=10
+423 -> 228 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+423 -> 229 src inv: x2<=10 guard: x2>=10
+423 -> 230 src inv: x2<=10 guard: x2<=9
+424 -> 357 src inv: x1<=10 tgt inv: x1<=10
+424 -> 230 src inv: x1<=10 guard: x1>=10 reset: x1=0
+493: <l,C,req,ack,not_ready,critical> id=1 (20<x1 & 0<=x2<=20 & 20<x1-x2)
+425 -> 493 src inv: x2<=20 tgt inv: x2<=20
+494: <l,C,req,req,not_ready,testing2> id=2 (20<x1 & 0<=x2<=10 & 20<x1-x2)
+425 -> 494 src inv: x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x2<=10
+425 -> 223 src inv: x2<=20 guard: x2>=20
+426 -> 361 src inv: x2<=20 tgt inv: x2<=20
+426 -> 362 src inv: x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x2<=10
+495: <l,C,req,ack,testing,critical> id=2 (0<=x1<=10 & 0<=x2<=10 & x1=x2)
+426 -> 495 src inv: x2<=20 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=20
+426 -> 365 src inv: x2<=20 guard: x2>=20
+427 -> 495 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+427 -> 160 src inv: x1<=10 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=10 & x2<=10
+496: <l,C,req,ack,not_ready,critical> id=1 (0<=x1<=10 & 10<=x2<=20 & x1=x2-10)
+427 -> 496 src inv: x1<=10 & x2<=20 guard: x1>=10 reset: x1=0 tgt inv: x2<=20
+427 -> 205 src inv: x1<=10 & x2<=20 guard: x1<=9 tgt inv: x2<=20
+428 -> 362 src inv: x2<=10 tgt inv: x2<=10
+497: <l,C,req,req,testing,testing2> id=1 (0<=x1<=10 & 0<=x2<=10 & x1=x2)
+428 -> 497 src inv: x2<=10 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=10
+498: <l,C,req,req,not_ready,error> id=1 (20<x1 & 0<=x2)
+428 -> 498 src inv: x2<=10 guard: x2>=10
+499: <l,C,req,req,not_ready,safe> id=1 (20<=x1 & 0<=x2)
+428 -> 499 src inv: x2<=10 guard: x2<=9
+429 -> 497 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+429 -> 231 src inv: x1<=10 & x2<=10 guard: x1>=10 reset: x1=0 tgt inv: x2<=10
+429 -> 206 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+429 -> 213 src inv: x1<=10 & x2<=10 guard: x2>=10 tgt inv: x1<=10
+429 -> 214 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+430 -> 498 
+431 -> 499 
+431 -> 214  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+432 -> 496 src inv: x2<=20 tgt inv: x2<=20
+432 -> 235 src inv: x2<=20 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=20
+432 -> 216 src inv: x2<=20 guard: x2>=20
+433 -> 366 src inv: x1<=10 tgt inv: x1<=10
+433 -> 370 src inv: x1<=10 guard: x1>=10 reset: x1=0
+434 -> 371 src inv: x2<=20 tgt inv: x2<=20
+500: <l,C,req,ack,testing,critical> id=2 (x1=0 & x2=20 & x1=x2-20)
+434 -> 500 src inv: x2<=20 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=20
+434 -> 370 src inv: x2<=20 guard: x2>=20
+435 -> 372 src inv: x2<=20 tgt inv: x2<=20
+435 -> 344 src inv: x2<=20 guard: x2>=20
+436 -> 500 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+501: <l,C,req,ack,requesting,critical> id=1 (0<=x1 & x2=20 & -20<=x1-x2)
+436 -> 501 src inv: x1<=10 & x2<=20 guard: x1<=9 tgt inv: x2<=20
+436 -> 227 src inv: x1<=10 & x2<=20 guard: x2>=20 tgt inv: x1<=10
+502: <l,C,ack,ack,critical,critical> id=1 (0<=x1<=10 & 10<=x2<=20 & -20<=x1-x2<=-10)
+437 -> 502 src inv: x1<=20 & x2<=20 tgt inv: x1<=20 & x2<=20
+503: <l,C,req,ack,testing2,critical> id=1 (0<=x1<=10 & 10<=x2<=20 & -20<=x1-x2<=-10)
+437 -> 503 src inv: x1<=20 & x2<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=20
+437 -> 349 src inv: x1<=20 & x2<=20 guard: x2>=20 tgt inv: x1<=20
+438 -> 374 src inv: x2<=10 tgt inv: x2<=10
+504: <l,C,ack,req,critical,testing2> id=0 (x1=0 & x2=10 & x1=x2-10)
+438 -> 504 src inv: x2<=10 reset: x1=0 tgt inv: x1<=20 & x2<=10
+438 -> 351 src inv: x2<=10 guard: x2>=10
+439 -> 376 src inv: x2<=10 tgt inv: x2<=10
+505: <l,C,ack,req,critical,testing2> id=0 (0<=x1<=9 & 1<=x2<=10 & -10<=x1-x2<=-1)
+439 -> 505 src inv: x2<=10 reset: x1=0 tgt inv: x1<=20 & x2<=10
+439 -> 351 src inv: x2<=10 guard: x2>=10
+439 -> 352 src inv: x2<=10 guard: x2<=9
+440 -> 501 src inv: x2<=20 tgt inv: x2<=20
+440 -> 207 src inv: x2<=20 guard: x2>=20
+506: <l,C,ack,req,critical,not_ready> id=2 (0<=x1<=20 & 20<x2 & x1-x2<-20)
+441 -> 506 src inv: x1<=20 tgt inv: x1<=20
+441 -> 442 src inv: x1<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10
+441 -> 240 src inv: x1<=20 guard: x1>=20
+507: <l,C,req,req,testing2,not_ready> id=2 (0<=x1<=10 & 20<x2 & x1-x2<-20)
+442 -> 507 src inv: x1<=10 tgt inv: x1<=10
+442 -> 382 src inv: x1<=10 guard: x1>=10
+508: <l,C,req,req,safe,not_ready> id=1 (0<=x1 & 20<x2)
+442 -> 508 src inv: x1<=10 guard: x1<=9
+443 -> 380 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+443 -> 121 src inv: x1<=20 & x2<=10 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=10
+509: <l,C,ack,req,critical,not_ready> id=2 (10<=x1<=20 & 0<=x2<=10 & x1=x2+10)
+443 -> 509 src inv: x1<=20 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=20
+443 -> 248 src inv: x1<=20 & x2<=10 guard: x2<=9 tgt inv: x1<=20
+444 -> 509 src inv: x1<=20 tgt inv: x1<=20
+444 -> 266 src inv: x1<=20 guard: x1>=20
+444 -> 251 src inv: x1<=20 guard: x2<=20 reset: x2=0 tgt inv: x1<=20 & x2<=10
+445 -> 382 
+446 -> 383 
+446 -> 253  guard: x2<=20 reset: x2=0 tgt inv: x2<=10
+447 -> 384 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+447 -> 260 src inv: x1<=10 & x2<=10 guard: x1>=10 tgt inv: x2<=10
+447 -> 253 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+447 -> 254 src inv: x1<=10 & x2<=10 guard: x2>=10 reset: x2=0 tgt inv: x1<=10
+447 -> 255 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+510: <l,C,ack,ack,error,critical> id=2 (0<=x1 & 0<=x2<=20 & -20<=x1-x2)
+448 -> 510 src inv: x2<=20 tgt inv: x2<=20
+448 -> 449 src inv: x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x2<=10
+448 -> 470 src inv: x2<=20 guard: x2>=20
+511: <l,C,ack,req,error,testing2> id=1 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)
+449 -> 511 src inv: x2<=10 tgt inv: x2<=10
+449 -> 485 src inv: x2<=10 guard: x2>=10
+449 -> 486 src inv: x2<=10 guard: x2<=9
+450 -> 394 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+450 -> 246 src inv: x1<=20 & x2<=10 guard: x1>=20 tgt inv: x2<=10
+512: <l,C,ack,req,critical,requesting> id=2 (x1=20 & 0<=x2 & x1-x2<=20)
+450 -> 512 src inv: x1<=20 & x2<=10 guard: x2<=9 tgt inv: x1<=20
+513: <l,C,ack,ack,critical,critical> id=1 (10<=x1<=20 & 0<=x2<=10 & 10<=x1-x2<=20)
+451 -> 513 src inv: x1<=20 & x2<=20 tgt inv: x1<=20 & x2<=20
+514: <l,C,ack,req,critical,testing2> id=2 (10<=x1<=20 & 0<=x2<=10 & 10<=x1-x2<=20)
+451 -> 514 src inv: x1<=20 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=20 & x2<=10
+451 -> 387 src inv: x1<=20 & x2<=20 guard: x1>=20 tgt inv: x2<=20
+452 -> 390 src inv: x1<=20 & x2<=20 tgt inv: x1<=20 & x2<=20
+452 -> 391 src inv: x1<=20 & x2<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=20
+452 -> 392 src inv: x1<=20 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=20 & x2<=10
+452 -> 510 src inv: x1<=20 & x2<=20 guard: x1>=20 tgt inv: x2<=20
+515: <l,C,ack,ack,critical,error> id=2 (x1=20 & 0<=x2 & x1-x2<=20)
+452 -> 515 src inv: x1<=20 & x2<=20 guard: x2>=20 tgt inv: x1<=20
+453 -> 515 src inv: x1<=20 tgt inv: x1<=20
+453 -> 470 src inv: x1<=20 guard: x1>=20
+454 -> 391 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+454 -> 409 src inv: x1<=10 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=10 & x2<=10
+454 -> 471 src inv: x1<=10 & x2<=20 guard: x1>=10 tgt inv: x2<=20
+454 -> 472 src inv: x1<=10 & x2<=20 guard: x1<=9 tgt inv: x2<=20
+455 -> 392 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+455 -> 414 src inv: x1<=20 & x2<=10 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=10
+455 -> 511 src inv: x1<=20 & x2<=10 guard: x1>=20 tgt inv: x2<=10
+455 -> 478 src inv: x1<=20 & x2<=10 guard: x2>=10 tgt inv: x1<=20
+455 -> 479 src inv: x1<=20 & x2<=10 guard: x2<=9 tgt inv: x1<=20
+456 -> 512 src inv: x1<=20 tgt inv: x1<=20
+456 -> 250 src inv: x1<=20 guard: x1>=20
+516: <l,C,req,ack,error,critical> id=2 (0<=x1 & 0<=x2<=20 & -20<=x1-x2)
+457 -> 516 src inv: x2<=20 tgt inv: x2<=20
+457 -> 458 src inv: x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x2<=10
+457 -> 476 src inv: x2<=20 guard: x2>=20
+517: <l,C,req,req,error,testing2> id=1 (0<=x1 & 0<=x2<=10 & -10<=x1-x2)
+458 -> 517 src inv: x2<=10 tgt inv: x2<=10
+518: <l,C,req,req,error,error> id=2 (0<=x1 & 0<=x2)
+458 -> 518 src inv: x2<=10 guard: x2>=10
+519: <l,C,req,req,error,safe> id=2 (0<=x1 & 0<=x2)
+458 -> 519 src inv: x2<=10 guard: x2<=9
+459 -> 476 
+460 -> 482 src inv: x2<=10 tgt inv: x2<=10
+520: <l,C,req,req,safe,error> id=2 (0<=x1 & 0<=x2)
+460 -> 520 src inv: x2<=10 guard: x2>=10
+521: <l,C,req,req,safe,safe> id=2 (0<=x1 & 0<=x2)
+460 -> 521 src inv: x2<=10 guard: x2<=9
+461 -> 477 
+522: <l,C,req,ack,testing2,critical> id=1 (x1=10 & x2=0 & x1=x2+10)
+462 -> 522 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+523: <l,C,req,req,testing2,testing2> id=2 (x1=10 & x2=0 & x1=x2+10)
+462 -> 523 src inv: x1<=10 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=10 & x2<=10
+462 -> 395 src inv: x1<=10 & x2<=20 guard: x1>=10 tgt inv: x2<=20
+463 -> 398 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+463 -> 399 src inv: x1<=10 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=10 & x2<=10
+463 -> 516 src inv: x1<=10 & x2<=20 guard: x1>=10 tgt inv: x2<=20
+463 -> 472 src inv: x1<=10 & x2<=20 guard: x1<=9 tgt inv: x2<=20
+464 -> 399 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+464 -> 517 src inv: x1<=10 & x2<=10 guard: x1>=10 tgt inv: x2<=10
+464 -> 482 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+524: <l,C,req,req,testing2,error> id=1 (x1=10 & 0<=x2 & x1-x2<=10)
+464 -> 524 src inv: x1<=10 & x2<=10 guard: x2>=10 tgt inv: x1<=10
+464 -> 484 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+465 -> 524 src inv: x1<=10 tgt inv: x1<=10
+465 -> 518 src inv: x1<=10 guard: x1>=10
+466 -> 484 src inv: x1<=10 tgt inv: x1<=10
+466 -> 519 src inv: x1<=10 guard: x1>=10
+466 -> 521 src inv: x1<=10 guard: x1<=9
+525: <l,C,req,ack,testing2,critical> id=1 (1<=x1<=10 & 0<=x2<=9 & 1<=x1-x2<=10)
+467 -> 525 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+526: <l,C,req,req,testing2,testing2> id=2 (1<=x1<=10 & 0<=x2<=9 & 1<=x1-x2<=10)
+467 -> 526 src inv: x1<=10 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=10 & x2<=10
+467 -> 395 src inv: x1<=10 & x2<=20 guard: x1>=10 tgt inv: x2<=20
+467 -> 396 src inv: x1<=10 & x2<=20 guard: x1<=9 tgt inv: x2<=20
+468 -> 406 src inv: x2<=20 tgt inv: x2<=20
+527: <l,C,ack,ack,error,error> id=2 (0<=x1 & 0<=x2)
+468 -> 527 src inv: x2<=20 guard: x2>=20
+469 -> 407 src inv: x1<=20 tgt inv: x1<=20
+469 -> 412 src inv: x1<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10
+469 -> 527 src inv: x1<=20 guard: x1>=20
+470 -> 527 
+471 -> 410 src inv: x2<=20 tgt inv: x2<=20
+528: <l,C,req,ack,error,error> id=2 (0<=x1 & 0<=x2)
+471 -> 528 src inv: x2<=20 guard: x2>=20
+472 -> 411 src inv: x2<=20 tgt inv: x2<=20
+472 -> 460 src inv: x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x2<=10
+529: <l,C,req,ack,safe,error> id=2 (0<=x1 & 0<=x2)
+472 -> 529 src inv: x2<=20 guard: x2>=20
+473 -> 412 src inv: x1<=10 tgt inv: x1<=10
+473 -> 528 src inv: x1<=10 guard: x1>=10
+473 -> 529 src inv: x1<=10 guard: x1<=9
+474 -> 409 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+530: <l,C,req,req,error,testing2> id=1 (0<=x1 & 1<=x2<=10 & -10<=x1-x2)
+474 -> 530 src inv: x1<=10 & x2<=10 guard: x1>=10 tgt inv: x2<=10
+474 -> 482 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+474 -> 524 src inv: x1<=10 & x2<=10 guard: x2>=10 tgt inv: x1<=10
+474 -> 484 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+475 -> 530 src inv: x2<=10 tgt inv: x2<=10
+475 -> 518 src inv: x2<=10 guard: x2>=10
+475 -> 519 src inv: x2<=10 guard: x2<=9
+476 -> 528 
+477 -> 529 
+478 -> 415 src inv: x1<=20 tgt inv: x1<=20
+531: <l,C,ack,req,error,error> id=1 (0<=x1 & 0<=x2)
+478 -> 531 src inv: x1<=20 guard: x1>=20
+479 -> 416 src inv: x1<=20 tgt inv: x1<=20
+479 -> 484 src inv: x1<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10
+532: <l,C,ack,req,error,safe> id=1 (0<=x1 & 0<=x2)
+479 -> 532 src inv: x1<=20 guard: x1>=20
+480 -> 414 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+533: <l,C,req,req,error,testing2> id=2 (0<=x1 & x2=10 & -10<=x1-x2)
+480 -> 533 src inv: x1<=10 & x2<=10 guard: x1>=10 tgt inv: x2<=10
+480 -> 460 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+534: <l,C,req,req,testing2,error> id=2 (1<=x1<=10 & 0<=x2 & x1-x2<=10)
+480 -> 534 src inv: x1<=10 & x2<=10 guard: x2>=10 tgt inv: x1<=10
+480 -> 466 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+481 -> 533 src inv: x2<=10 tgt inv: x2<=10
+535: <l,C,req,req,error,error> id=1 (0<=x1 & 0<=x2)
+481 -> 535 src inv: x2<=10 guard: x2>=10
+482 -> 460 src inv: x2<=10 tgt inv: x2<=10
+536: <l,C,req,req,safe,error> id=1 (0<=x1 & 0<=x2)
+482 -> 536 src inv: x2<=10 guard: x2>=10
+537: <l,C,req,req,safe,safe> id=1 (0<=x1 & 0<=x2)
+482 -> 537 src inv: x2<=10 guard: x2<=9
+483 -> 534 src inv: x1<=10 tgt inv: x1<=10
+483 -> 535 src inv: x1<=10 guard: x1>=10
+483 -> 536 src inv: x1<=10 guard: x1<=9
+484 -> 466 src inv: x1<=10 tgt inv: x1<=10
+538: <l,C,req,req,error,safe> id=1 (0<=x1 & 0<=x2)
+484 -> 538 src inv: x1<=10 guard: x1>=10
+484 -> 537 src inv: x1<=10 guard: x1<=9
+485 -> 531 
+486 -> 532 
+487 -> 418 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+487 -> 419 src inv: x1<=20 & x2<=10 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=10
+539: <l,C,ack,req,critical,error> id=2 (0<=x1<=20 & 0<=x2 & x1-x2<=20)
+487 -> 539 src inv: x1<=20 & x2<=10 guard: x2>=10 tgt inv: x1<=20
+487 -> 416 src inv: x1<=20 & x2<=10 guard: x2<=9 tgt inv: x1<=20
+488 -> 539 src inv: x1<=20 tgt inv: x1<=20
+488 -> 490 src inv: x1<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10
+488 -> 531 src inv: x1<=20 guard: x1>=20
+489 -> 419 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+489 -> 533 src inv: x1<=10 & x2<=10 guard: x1>=10 tgt inv: x2<=10
+489 -> 460 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+540: <l,C,req,req,testing2,error> id=2 (0<=x1<=10 & 0<=x2 & x1-x2<=10)
+489 -> 540 src inv: x1<=10 & x2<=10 guard: x2>=10 tgt inv: x1<=10
+489 -> 466 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+490 -> 540 src inv: x1<=10 tgt inv: x1<=10
+490 -> 535 src inv: x1<=10 guard: x1>=10
+490 -> 536 src inv: x1<=10 guard: x1<=9
+491 -> 531 
+492 -> 532 
+541: <l,C,req,ack,not_ready,critical> id=2 (20<x1 & 0<=x2<=20 & 20<x1-x2)
+493 -> 541 src inv: x2<=20 tgt inv: x2<=20
+493 -> 494 src inv: x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x2<=10
+493 -> 296 src inv: x2<=20 guard: x2>=20
+542: <l,C,req,req,not_ready,testing2> id=1 (20<x1 & 0<=x2<=10 & 20<x1-x2)
+494 -> 542 src inv: x2<=10 tgt inv: x2<=10
+494 -> 430 src inv: x2<=10 guard: x2>=10
+543: <l,C,req,req,not_ready,safe> id=2 (20<x1 & 0<=x2)
+494 -> 543 src inv: x2<=10 guard: x2<=9
+495 -> 427 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+495 -> 160 src inv: x1<=10 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=10 & x2<=10
+544: <l,C,req,ack,not_ready,critical> id=2 (0<=x1<=10 & 10<=x2<=20 & x1=x2-10)
+495 -> 544 src inv: x1<=10 & x2<=20 guard: x1>=10 reset: x1=0 tgt inv: x2<=20
+495 -> 276 src inv: x1<=10 & x2<=20 guard: x1<=9 tgt inv: x2<=20
+496 -> 544 src inv: x2<=20 tgt inv: x2<=20
+496 -> 303 src inv: x2<=20 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=20
+496 -> 286 src inv: x2<=20 guard: x2>=20
+497 -> 429 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+497 -> 305 src inv: x1<=10 & x2<=10 guard: x1>=10 reset: x1=0 tgt inv: x2<=10
+497 -> 279 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+497 -> 288 src inv: x1<=10 & x2<=10 guard: x2>=10 tgt inv: x1<=10
+497 -> 289 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+498 -> 430 
+499 -> 431 
+499 -> 289  guard: x1<=20 reset: x1=0 tgt inv: x1<=10
+500 -> 436 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+545: <l,C,req,ack,requesting,critical> id=2 (0<=x1 & x2=20 & -20<=x1-x2)
+500 -> 545 src inv: x1<=10 & x2<=20 guard: x1<=9 tgt inv: x2<=20
+500 -> 302 src inv: x1<=10 & x2<=20 guard: x2>=20 tgt inv: x1<=10
+501 -> 545 src inv: x2<=20 tgt inv: x2<=20
+546: <l,C,ack,ack,critical,critical> id=0 (x1=0 & x2=20 & x1=x2-20)
+501 -> 546 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+501 -> 278 src inv: x2<=20 guard: x2>=20
+547: <l,C,ack,ack,critical,critical> id=2 (0<=x1<=10 & 10<=x2<=20 & -20<=x1-x2<=-10)
+502 -> 547 src inv: x1<=20 & x2<=20 tgt inv: x1<=20 & x2<=20
+502 -> 503 src inv: x1<=20 & x2<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=20
+502 -> 407 src inv: x1<=20 & x2<=20 guard: x2>=20 tgt inv: x1<=20
+548: <l,C,req,ack,testing2,critical> id=2 (0<=x1<=10 & 10<=x2<=20 & -20<=x1-x2<=-10)
+503 -> 548 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+549: <l,C,req,ack,error,critical> id=1 (0<=x1 & x2=20 & -20<=x1-x2)
+503 -> 549 src inv: x1<=10 & x2<=20 guard: x1>=10 tgt inv: x2<=20
+550: <l,C,req,ack,safe,critical> id=1 (0<=x1 & 10<=x2<=20 & -20<=x1-x2)
+503 -> 550 src inv: x1<=10 & x2<=20 guard: x1<=9 tgt inv: x2<=20
+503 -> 412 src inv: x1<=10 & x2<=20 guard: x2>=20 tgt inv: x1<=10
+551: <l,C,ack,req,critical,testing2> id=1 (x1=0 & x2=10 & x1=x2-10)
+504 -> 551 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+552: <l,C,req,req,testing2,testing2> id=1 (x1=0 & x2=10 & x1=x2-10)
+504 -> 552 src inv: x1<=20 & x2<=10 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=10
+504 -> 420 src inv: x1<=20 & x2<=10 guard: x2>=10 tgt inv: x1<=20
+553: <l,C,ack,req,critical,testing2> id=1 (0<=x1<=9 & 1<=x2<=10 & -10<=x1-x2<=-1)
+505 -> 553 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+554: <l,C,req,req,testing2,testing2> id=1 (0<=x1<=9 & 1<=x2<=10 & -10<=x1-x2<=-1)
+505 -> 554 src inv: x1<=20 & x2<=10 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=10
+505 -> 420 src inv: x1<=20 & x2<=10 guard: x2>=10 tgt inv: x1<=20
+505 -> 421 src inv: x1<=20 & x2<=10 guard: x2<=9 tgt inv: x1<=20
+506 -> 441 src inv: x1<=20 tgt inv: x1<=20
+506 -> 442 src inv: x1<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10
+506 -> 316 src inv: x1<=20 guard: x1>=20
+507 -> 442 src inv: x1<=10 tgt inv: x1<=10
+507 -> 445 src inv: x1<=10 guard: x1>=10
+555: <l,C,req,req,safe,not_ready> id=2 (0<=x1 & 20<x2)
+507 -> 555 src inv: x1<=10 guard: x1<=9
+508 -> 555 
+509 -> 444 src inv: x1<=20 tgt inv: x1<=20
+509 -> 336 src inv: x1<=20 guard: x1>=20
+509 -> 323 src inv: x1<=20 guard: x2<=20 reset: x2=0 tgt inv: x1<=20 & x2<=10
+510 -> 448 src inv: x2<=20 tgt inv: x2<=20
+510 -> 449 src inv: x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x2<=10
+510 -> 527 src inv: x2<=20 guard: x2>=20
+511 -> 449 src inv: x2<=10 tgt inv: x2<=10
+511 -> 531 src inv: x2<=10 guard: x2>=10
+511 -> 532 src inv: x2<=10 guard: x2<=9
+512 -> 456 src inv: x1<=20 tgt inv: x1<=20
+556: <l,C,ack,ack,critical,critical> id=0 (x1=20 & x2=0 & x1=x2+20)
+512 -> 556 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+512 -> 322 src inv: x1<=20 guard: x1>=20
+557: <l,C,ack,ack,critical,critical> id=2 (10<=x1<=20 & 0<=x2<=10 & 10<=x1-x2<=20)
+513 -> 557 src inv: x1<=20 & x2<=20 tgt inv: x1<=20 & x2<=20
+513 -> 514 src inv: x1<=20 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=20 & x2<=10
+513 -> 448 src inv: x1<=20 & x2<=20 guard: x1>=20 tgt inv: x2<=20
+558: <l,C,ack,req,critical,testing2> id=1 (10<=x1<=20 & 0<=x2<=10 & 10<=x1-x2<=20)
+514 -> 558 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+514 -> 449 src inv: x1<=20 & x2<=10 guard: x1>=20 tgt inv: x2<=10
+559: <l,C,ack,req,critical,error> id=2 (x1=20 & 0<=x2 & x1-x2<=20)
+514 -> 559 src inv: x1<=20 & x2<=10 guard: x2>=10 tgt inv: x1<=20
+560: <l,C,ack,req,critical,safe> id=2 (10<=x1<=20 & 0<=x2 & x1-x2<=20)
+514 -> 560 src inv: x1<=20 & x2<=10 guard: x2<=9 tgt inv: x1<=20
+515 -> 453 src inv: x1<=20 tgt inv: x1<=20
+515 -> 527 src inv: x1<=20 guard: x1>=20
+516 -> 457 src inv: x2<=20 tgt inv: x2<=20
+516 -> 458 src inv: x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x2<=10
+516 -> 528 src inv: x2<=20 guard: x2>=20
+517 -> 458 src inv: x2<=10 tgt inv: x2<=10
+517 -> 535 src inv: x2<=10 guard: x2>=10
+517 -> 538 src inv: x2<=10 guard: x2<=9
+518 -> 535 
+519 -> 538 
+520 -> 536 
+521 -> 537 
+561: <l,C,req,ack,testing2,critical> id=2 (x1=10 & x2=0 & x1=x2+10)
+522 -> 561 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+522 -> 523 src inv: x1<=10 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=10 & x2<=10
+522 -> 457 src inv: x1<=10 & x2<=20 guard: x1>=10 tgt inv: x2<=20
+562: <l,C,req,req,testing2,testing2> id=1 (x1=10 & x2=0 & x1=x2+10)
+523 -> 562 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+523 -> 458 src inv: x1<=10 & x2<=10 guard: x1>=10 tgt inv: x2<=10
+563: <l,C,req,req,testing2,safe> id=2 (x1=10 & 0<=x2 & x1-x2<=10)
+523 -> 563 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+524 -> 465 src inv: x1<=10 tgt inv: x1<=10
+524 -> 535 src inv: x1<=10 guard: x1>=10
+564: <l,C,req,ack,testing2,critical> id=2 (1<=x1<=10 & 0<=x2<=9 & 1<=x1-x2<=10)
+525 -> 564 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+525 -> 526 src inv: x1<=10 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=10 & x2<=10
+525 -> 457 src inv: x1<=10 & x2<=20 guard: x1>=10 tgt inv: x2<=20
+525 -> 411 src inv: x1<=10 & x2<=20 guard: x1<=9 tgt inv: x2<=20
+565: <l,C,req,req,testing2,testing2> id=1 (1<=x1<=10 & 0<=x2<=9 & 1<=x1-x2<=10)
+526 -> 565 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+526 -> 458 src inv: x1<=10 & x2<=10 guard: x1>=10 tgt inv: x2<=10
+526 -> 460 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+566: <l,C,req,req,testing2,safe> id=2 (1<=x1<=10 & 0<=x2 & x1-x2<=10)
+526 -> 566 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+527 -> 470 
+528 -> 476 
+529 -> 477 
+530 -> 475 src inv: x2<=10 tgt inv: x2<=10
+530 -> 535 src inv: x2<=10 guard: x2>=10
+530 -> 538 src inv: x2<=10 guard: x2<=9
+531 -> 485 
+532 -> 486 
+533 -> 481 src inv: x2<=10 tgt inv: x2<=10
+533 -> 518 src inv: x2<=10 guard: x2>=10
+534 -> 483 src inv: x1<=10 tgt inv: x1<=10
+534 -> 518 src inv: x1<=10 guard: x1>=10
+534 -> 520 src inv: x1<=10 guard: x1<=9
+535 -> 518 
+536 -> 520 
+537 -> 521 
+538 -> 519 
+539 -> 488 src inv: x1<=20 tgt inv: x1<=20
+539 -> 490 src inv: x1<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10
+539 -> 485 src inv: x1<=20 guard: x1>=20
+540 -> 490 src inv: x1<=10 tgt inv: x1<=10
+540 -> 518 src inv: x1<=10 guard: x1>=10
+540 -> 520 src inv: x1<=10 guard: x1<=9
+541 -> 493 src inv: x2<=20 tgt inv: x2<=20
+541 -> 494 src inv: x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x2<=10
+541 -> 365 src inv: x2<=20 guard: x2>=20
+542 -> 494 src inv: x2<=10 tgt inv: x2<=10
+542 -> 498 src inv: x2<=10 guard: x2>=10
+567: <l,C,req,req,not_ready,safe> id=1 (20<x1 & 0<=x2)
+542 -> 567 src inv: x2<=10 guard: x2<=9
+543 -> 567 
+544 -> 496 src inv: x2<=20 tgt inv: x2<=20
+544 -> 369 src inv: x2<=20 guard: x1<=20 reset: x1=0 tgt inv: x1<=10 & x2<=20
+544 -> 358 src inv: x2<=20 guard: x2>=20
+545 -> 501 src inv: x2<=20 tgt inv: x2<=20
+545 -> 344 src inv: x2<=20 guard: x2>=20
+568: <l,C,ack,ack,critical,critical> id=1 (x1=0 & x2=20 & x1=x2-20)
+546 -> 568 src inv: x1<=20 & x2<=20 tgt inv: x1<=20 & x2<=20
+569: <l,C,req,ack,testing2,critical> id=1 (x1=0 & x2=20 & x1=x2-20)
+546 -> 569 src inv: x1<=20 & x2<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=20
+546 -> 349 src inv: x1<=20 & x2<=20 guard: x2>=20 tgt inv: x1<=20
+547 -> 502 src inv: x1<=20 & x2<=20 tgt inv: x1<=20 & x2<=20
+547 -> 503 src inv: x1<=20 & x2<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=20
+547 -> 469 src inv: x1<=20 & x2<=20 guard: x2>=20 tgt inv: x1<=20
+548 -> 503 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+570: <l,C,req,ack,error,critical> id=2 (0<=x1 & x2=20 & -20<=x1-x2)
+548 -> 570 src inv: x1<=10 & x2<=20 guard: x1>=10 tgt inv: x2<=20
+571: <l,C,req,ack,safe,critical> id=2 (0<=x1 & 10<=x2<=20 & -20<=x1-x2)
+548 -> 571 src inv: x1<=10 & x2<=20 guard: x1<=9 tgt inv: x2<=20
+548 -> 473 src inv: x1<=10 & x2<=20 guard: x2>=20 tgt inv: x1<=10
+549 -> 570 src inv: x2<=20 tgt inv: x2<=20
+549 -> 476 src inv: x2<=20 guard: x2>=20
+550 -> 571 src inv: x2<=20 tgt inv: x2<=20
+550 -> 477 src inv: x2<=20 guard: x2>=20
+572: <l,C,ack,req,critical,testing2> id=2 (x1=0 & x2=10 & x1=x2-10)
+551 -> 572 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+551 -> 552 src inv: x1<=20 & x2<=10 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=10
+551 -> 488 src inv: x1<=20 & x2<=10 guard: x2>=10 tgt inv: x1<=20
+573: <l,C,req,req,testing2,testing2> id=2 (x1=0 & x2=10 & x1=x2-10)
+552 -> 573 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+574: <l,C,req,req,safe,testing2> id=1 (0<=x1 & x2=10 & -10<=x1-x2)
+552 -> 574 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+552 -> 490 src inv: x1<=10 & x2<=10 guard: x2>=10 tgt inv: x1<=10
+575: <l,C,ack,req,critical,testing2> id=2 (0<=x1<=9 & 1<=x2<=10 & -10<=x1-x2<=-1)
+553 -> 575 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+553 -> 554 src inv: x1<=20 & x2<=10 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=10
+553 -> 488 src inv: x1<=20 & x2<=10 guard: x2>=10 tgt inv: x1<=20
+553 -> 479 src inv: x1<=20 & x2<=10 guard: x2<=9 tgt inv: x1<=20
+576: <l,C,req,req,testing2,testing2> id=2 (0<=x1<=9 & 1<=x2<=10 & -10<=x1-x2<=-1)
+554 -> 576 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+577: <l,C,req,req,safe,testing2> id=1 (0<=x1 & 1<=x2<=10 & -10<=x1-x2)
+554 -> 577 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+554 -> 490 src inv: x1<=10 & x2<=10 guard: x2>=10 tgt inv: x1<=10
+554 -> 484 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+555 -> 508 
+578: <l,C,ack,ack,critical,critical> id=1 (x1=20 & x2=0 & x1=x2+20)
+556 -> 578 src inv: x1<=20 & x2<=20 tgt inv: x1<=20 & x2<=20
+579: <l,C,ack,req,critical,testing2> id=2 (x1=20 & x2=0 & x1=x2+20)
+556 -> 579 src inv: x1<=20 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=20 & x2<=10
+556 -> 387 src inv: x1<=20 & x2<=20 guard: x1>=20 tgt inv: x2<=20
+557 -> 513 src inv: x1<=20 & x2<=20 tgt inv: x1<=20 & x2<=20
+557 -> 514 src inv: x1<=20 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=20 & x2<=10
+557 -> 510 src inv: x1<=20 & x2<=20 guard: x1>=20 tgt inv: x2<=20
+558 -> 514 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+558 -> 511 src inv: x1<=20 & x2<=10 guard: x1>=20 tgt inv: x2<=10
+580: <l,C,ack,req,critical,error> id=1 (x1=20 & 0<=x2 & x1-x2<=20)
+558 -> 580 src inv: x1<=20 & x2<=10 guard: x2>=10 tgt inv: x1<=20
+581: <l,C,ack,req,critical,safe> id=1 (10<=x1<=20 & 0<=x2 & x1-x2<=20)
+558 -> 581 src inv: x1<=20 & x2<=10 guard: x2<=9 tgt inv: x1<=20
+559 -> 580 src inv: x1<=20 tgt inv: x1<=20
+559 -> 485 src inv: x1<=20 guard: x1>=20
+560 -> 581 src inv: x1<=20 tgt inv: x1<=20
+560 -> 486 src inv: x1<=20 guard: x1>=20
+561 -> 522 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+561 -> 523 src inv: x1<=10 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=10 & x2<=10
+561 -> 516 src inv: x1<=10 & x2<=20 guard: x1>=10 tgt inv: x2<=20
+562 -> 523 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+562 -> 517 src inv: x1<=10 & x2<=10 guard: x1>=10 tgt inv: x2<=10
+582: <l,C,req,req,testing2,safe> id=1 (x1=10 & 0<=x2 & x1-x2<=10)
+562 -> 582 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+563 -> 582 src inv: x1<=10 tgt inv: x1<=10
+563 -> 519 src inv: x1<=10 guard: x1>=10
+564 -> 525 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+564 -> 526 src inv: x1<=10 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=10 & x2<=10
+564 -> 516 src inv: x1<=10 & x2<=20 guard: x1>=10 tgt inv: x2<=20
+564 -> 472 src inv: x1<=10 & x2<=20 guard: x1<=9 tgt inv: x2<=20
+565 -> 526 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+565 -> 517 src inv: x1<=10 & x2<=10 guard: x1>=10 tgt inv: x2<=10
+565 -> 482 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+583: <l,C,req,req,testing2,safe> id=1 (1<=x1<=10 & 0<=x2 & x1-x2<=10)
+565 -> 583 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+566 -> 583 src inv: x1<=10 tgt inv: x1<=10
+566 -> 519 src inv: x1<=10 guard: x1>=10
+566 -> 521 src inv: x1<=10 guard: x1<=9
+567 -> 543 
+584: <l,C,ack,ack,critical,critical> id=2 (x1=0 & x2=20 & x1=x2-20)
+568 -> 584 src inv: x1<=20 & x2<=20 tgt inv: x1<=20 & x2<=20
+568 -> 569 src inv: x1<=20 & x2<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=20
+568 -> 407 src inv: x1<=20 & x2<=20 guard: x2>=20 tgt inv: x1<=20
+585: <l,C,req,ack,testing2,critical> id=2 (x1=0 & x2=20 & x1=x2-20)
+569 -> 585 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+586: <l,C,req,ack,safe,critical> id=1 (0<=x1 & x2=20 & -20<=x1-x2)
+569 -> 586 src inv: x1<=10 & x2<=20 guard: x1<=9 tgt inv: x2<=20
+569 -> 412 src inv: x1<=10 & x2<=20 guard: x2>=20 tgt inv: x1<=10
+570 -> 549 src inv: x2<=20 tgt inv: x2<=20
+570 -> 528 src inv: x2<=20 guard: x2>=20
+571 -> 550 src inv: x2<=20 tgt inv: x2<=20
+571 -> 529 src inv: x2<=20 guard: x2>=20
+572 -> 551 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+572 -> 552 src inv: x1<=20 & x2<=10 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=10
+572 -> 539 src inv: x1<=20 & x2<=10 guard: x2>=10 tgt inv: x1<=20
+573 -> 552 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+587: <l,C,req,req,safe,testing2> id=2 (0<=x1 & x2=10 & -10<=x1-x2)
+573 -> 587 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+573 -> 540 src inv: x1<=10 & x2<=10 guard: x2>=10 tgt inv: x1<=10
+574 -> 587 src inv: x2<=10 tgt inv: x2<=10
+574 -> 536 src inv: x2<=10 guard: x2>=10
+575 -> 553 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+575 -> 554 src inv: x1<=20 & x2<=10 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=10
+575 -> 539 src inv: x1<=20 & x2<=10 guard: x2>=10 tgt inv: x1<=20
+575 -> 416 src inv: x1<=20 & x2<=10 guard: x2<=9 tgt inv: x1<=20
+576 -> 554 src inv: x1<=10 & x2<=10 tgt inv: x1<=10 & x2<=10
+588: <l,C,req,req,safe,testing2> id=2 (0<=x1 & 1<=x2<=10 & -10<=x1-x2)
+576 -> 588 src inv: x1<=10 & x2<=10 guard: x1<=9 tgt inv: x2<=10
+576 -> 540 src inv: x1<=10 & x2<=10 guard: x2>=10 tgt inv: x1<=10
+576 -> 466 src inv: x1<=10 & x2<=10 guard: x2<=9 tgt inv: x1<=10
+577 -> 588 src inv: x2<=10 tgt inv: x2<=10
+577 -> 536 src inv: x2<=10 guard: x2>=10
+577 -> 537 src inv: x2<=10 guard: x2<=9
+589: <l,C,ack,ack,critical,critical> id=2 (x1=20 & x2=0 & x1=x2+20)
+578 -> 589 src inv: x1<=20 & x2<=20 tgt inv: x1<=20 & x2<=20
+578 -> 579 src inv: x1<=20 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=20 & x2<=10
+578 -> 448 src inv: x1<=20 & x2<=20 guard: x1>=20 tgt inv: x2<=20
+590: <l,C,ack,req,critical,testing2> id=1 (x1=20 & x2=0 & x1=x2+20)
+579 -> 590 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+579 -> 449 src inv: x1<=20 & x2<=10 guard: x1>=20 tgt inv: x2<=10
+591: <l,C,ack,req,critical,safe> id=2 (x1=20 & 0<=x2 & x1-x2<=20)
+579 -> 591 src inv: x1<=20 & x2<=10 guard: x2<=9 tgt inv: x1<=20
+580 -> 559 src inv: x1<=20 tgt inv: x1<=20
+580 -> 531 src inv: x1<=20 guard: x1>=20
+581 -> 560 src inv: x1<=20 tgt inv: x1<=20
+581 -> 532 src inv: x1<=20 guard: x1>=20
+582 -> 563 src inv: x1<=10 tgt inv: x1<=10
+582 -> 538 src inv: x1<=10 guard: x1>=10
+583 -> 566 src inv: x1<=10 tgt inv: x1<=10
+583 -> 538 src inv: x1<=10 guard: x1>=10
+583 -> 537 src inv: x1<=10 guard: x1<=9
+584 -> 568 src inv: x1<=20 & x2<=20 tgt inv: x1<=20 & x2<=20
+584 -> 569 src inv: x1<=20 & x2<=20 guard: x1<=9 reset: x1=0 tgt inv: x1<=10 & x2<=20
+584 -> 469 src inv: x1<=20 & x2<=20 guard: x2>=20 tgt inv: x1<=20
+585 -> 569 src inv: x1<=10 & x2<=20 tgt inv: x1<=10 & x2<=20
+592: <l,C,req,ack,safe,critical> id=2 (0<=x1 & x2=20 & -20<=x1-x2)
+585 -> 592 src inv: x1<=10 & x2<=20 guard: x1<=9 tgt inv: x2<=20
+585 -> 473 src inv: x1<=10 & x2<=20 guard: x2>=20 tgt inv: x1<=10
+586 -> 592 src inv: x2<=20 tgt inv: x2<=20
+586 -> 477 src inv: x2<=20 guard: x2>=20
+587 -> 574 src inv: x2<=10 tgt inv: x2<=10
+587 -> 520 src inv: x2<=10 guard: x2>=10
+588 -> 577 src inv: x2<=10 tgt inv: x2<=10
+588 -> 520 src inv: x2<=10 guard: x2>=10
+588 -> 521 src inv: x2<=10 guard: x2<=9
+589 -> 578 src inv: x1<=20 & x2<=20 tgt inv: x1<=20 & x2<=20
+589 -> 579 src inv: x1<=20 & x2<=20 guard: x2<=9 reset: x2=0 tgt inv: x1<=20 & x2<=10
+589 -> 510 src inv: x1<=20 & x2<=20 guard: x1>=20 tgt inv: x2<=20
+590 -> 579 src inv: x1<=20 & x2<=10 tgt inv: x1<=20 & x2<=10
+590 -> 511 src inv: x1<=20 & x2<=10 guard: x1>=20 tgt inv: x2<=10
+593: <l,C,ack,req,critical,safe> id=1 (x1=20 & 0<=x2 & x1-x2<=20)
+590 -> 593 src inv: x1<=20 & x2<=10 guard: x2<=9 tgt inv: x1<=20
+591 -> 593 src inv: x1<=20 tgt inv: x1<=20
+591 -> 486 src inv: x1<=20 guard: x1>=20
+592 -> 586 src inv: x2<=20 tgt inv: x2<=20
+592 -> 529 src inv: x2<=20 guard: x2>=20
+593 -> 591 src inv: x1<=20 tgt inv: x1<=20
+593 -> 532 src inv: x1<=20 guard: x1>=20

@@ -25,6 +25,9 @@ then
     exit 0;
 fi
 
+# Labels
+echo "#labels=error"
+
 # Model
 
 echo "#clock:size:name

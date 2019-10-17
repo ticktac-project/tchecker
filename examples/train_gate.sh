@@ -18,6 +18,13 @@ else
     exit 1
 fi
 
+# Labels
+labels="cross1"
+for pid in `seq 2 $N`; do
+    labels="${labels},cross${pid}"
+done
+echo "#labels=${labels}"
+
 # Model
 
 echo "#clock:size:name
@@ -60,7 +67,7 @@ int:1:0:$((N-1)):0:head
 int:1:0:$N:0:length
 location:Gate:Free{initial:}
 location:Gate:Occ{}
-location:Gate:Transient:{committed:}"
+location:Gate:Transient{committed:}"
 
 for pid in `seq 1 $N`; do
     echo "edge:Gate:Free:Occ:go$pid{provided:length>0&&buffer[head]==$pid}

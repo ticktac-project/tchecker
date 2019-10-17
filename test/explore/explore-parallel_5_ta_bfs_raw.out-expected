@@ -1,0 +1,115 @@
+parallel_5
+0: <A,A,A,A,A> 
+1: <B,A,A,A,A> 
+0 -> 1  reset: x1=0
+2: <A,B,A,A,A> 
+0 -> 2  reset: x2=0
+3: <A,A,B,A,A> 
+0 -> 3  reset: x3=0
+4: <A,A,A,B,A> 
+0 -> 4  reset: x4=0
+5: <A,A,A,A,B> 
+0 -> 5  reset: x5=0
+6: <B,B,A,A,A> 
+1 -> 6  reset: x2=0
+7: <B,A,B,A,A> 
+1 -> 7  reset: x3=0
+8: <B,A,A,B,A> 
+1 -> 8  reset: x4=0
+9: <B,A,A,A,B> 
+1 -> 9  reset: x5=0
+2 -> 6  reset: x1=0
+10: <A,B,B,A,A> 
+2 -> 10  reset: x3=0
+11: <A,B,A,B,A> 
+2 -> 11  reset: x4=0
+12: <A,B,A,A,B> 
+2 -> 12  reset: x5=0
+3 -> 7  reset: x1=0
+3 -> 10  reset: x2=0
+13: <A,A,B,B,A> 
+3 -> 13  reset: x4=0
+14: <A,A,B,A,B> 
+3 -> 14  reset: x5=0
+4 -> 8  reset: x1=0
+4 -> 11  reset: x2=0
+4 -> 13  reset: x3=0
+15: <A,A,A,B,B> 
+4 -> 15  reset: x5=0
+5 -> 9  reset: x1=0
+5 -> 12  reset: x2=0
+5 -> 14  reset: x3=0
+5 -> 15  reset: x4=0
+16: <B,B,B,A,A> 
+6 -> 16  reset: x3=0
+17: <B,B,A,B,A> 
+6 -> 17  reset: x4=0
+18: <B,B,A,A,B> 
+6 -> 18  reset: x5=0
+7 -> 16  reset: x2=0
+19: <B,A,B,B,A> 
+7 -> 19  reset: x4=0
+20: <B,A,B,A,B> 
+7 -> 20  reset: x5=0
+8 -> 17  reset: x2=0
+8 -> 19  reset: x3=0
+21: <B,A,A,B,B> 
+8 -> 21  reset: x5=0
+9 -> 18  reset: x2=0
+9 -> 20  reset: x3=0
+9 -> 21  reset: x4=0
+10 -> 16  reset: x1=0
+22: <A,B,B,B,A> 
+10 -> 22  reset: x4=0
+23: <A,B,B,A,B> 
+10 -> 23  reset: x5=0
+11 -> 17  reset: x1=0
+11 -> 22  reset: x3=0
+24: <A,B,A,B,B> 
+11 -> 24  reset: x5=0
+12 -> 18  reset: x1=0
+12 -> 23  reset: x3=0
+12 -> 24  reset: x4=0
+13 -> 19  reset: x1=0
+13 -> 22  reset: x2=0
+25: <A,A,B,B,B> 
+13 -> 25  reset: x5=0
+14 -> 20  reset: x1=0
+14 -> 23  reset: x2=0
+14 -> 25  reset: x4=0
+15 -> 21  reset: x1=0
+15 -> 24  reset: x2=0
+15 -> 25  reset: x3=0
+26: <B,B,B,B,A> 
+16 -> 26  reset: x4=0
+27: <B,B,B,A,B> 
+16 -> 27  reset: x5=0
+17 -> 26  reset: x3=0
+28: <B,B,A,B,B> 
+17 -> 28  reset: x5=0
+18 -> 27  reset: x3=0
+18 -> 28  reset: x4=0
+19 -> 26  reset: x2=0
+29: <B,A,B,B,B> 
+19 -> 29  reset: x5=0
+20 -> 27  reset: x2=0
+20 -> 29  reset: x4=0
+21 -> 28  reset: x2=0
+21 -> 29  reset: x3=0
+22 -> 26  reset: x1=0
+30: <A,B,B,B,B> 
+22 -> 30  reset: x5=0
+23 -> 27  reset: x1=0
+23 -> 30  reset: x4=0
+24 -> 28  reset: x1=0
+24 -> 30  reset: x3=0
+25 -> 29  reset: x1=0
+25 -> 30  reset: x2=0
+31: <B,B,B,B,B> 
+26 -> 31  reset: x5=0
+27 -> 31  reset: x4=0
+28 -> 31  reset: x3=0
+29 -> 31  reset: x2=0
+30 -> 31  reset: x1=0
+32: <C,C,C,C,C> 
+31 -> 32  guard: x1<=1 & x2<=1 & x3<=1 & x4<=1 & x5<=1

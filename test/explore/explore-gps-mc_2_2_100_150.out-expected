@@ -1,0 +1,100 @@
+#labels=error
+#clock:size:name
+#int:size:min:max:init:name
+#process:name
+#event:name
+#location:process:name{attributes}
+#edge:process:source:target:event:{attributes}
+#sync:events
+#   where
+#   attributes is a colon-separated list of key:value
+#   events is a colon-separated list of process@event
+
+system:gps_mc_2_2_100_150
+
+# Events
+event:tau
+event:finished0
+event:finished1
+event:finished2
+event:start1
+event:start2
+event:start3
+
+# Station 1
+process:S1
+location:S1:idle{initial:}
+location:S1:start{committed:}
+location:S1:processing{}
+location:S1:done{committed:}
+edge:S1:idle:start:finished0{}
+edge:S1:start:processing:start1{}
+edge:S1:processing:done:start3{}
+edge:S1:done:idle:finished1{}
+
+# Station 2
+process:S2
+location:S2:idle{initial:}
+location:S2:start{committed:}
+location:S2:processing{}
+location:S2:done{committed:}
+edge:S2:idle:start:finished1{}
+edge:S2:start:processing:start1{}
+edge:S2:processing:done:start3{}
+edge:S2:done:idle:finished2{}
+
+# Substation 1 1
+process:Sub1_1
+clock:1:x1_1
+location:Sub1_1:idle{initial:}
+location:Sub1_1:processing{invariant: x1_1<=100}
+edge:Sub1_1:idle:processing:start1{do: x1_1=0}
+edge:Sub1_1:processing:idle:start2{provided: x1_1<=100}
+
+# Substation 1 2
+process:Sub1_2
+clock:1:x1_2
+location:Sub1_2:idle{initial:}
+location:Sub1_2:processing{invariant: x1_2<=100}
+edge:Sub1_2:idle:processing:start2{do: x1_2=0}
+edge:Sub1_2:processing:idle:start3{provided: x1_2<=100}
+
+# Substation 2 1
+process:Sub2_1
+clock:1:x2_1
+location:Sub2_1:idle{initial:}
+location:Sub2_1:processing{invariant: x2_1<=100}
+edge:Sub2_1:idle:processing:start1{do: x2_1=0}
+edge:Sub2_1:processing:idle:start2{provided: x2_1<=100}
+
+# Substation 2 2
+process:Sub2_2
+clock:1:x2_2
+location:Sub2_2:idle{initial:}
+location:Sub2_2:processing{invariant: x2_2<=100}
+edge:Sub2_2:idle:processing:start2{do: x2_2=0}
+edge:Sub2_2:processing:idle:start3{provided: x2_2<=100}
+
+# Property
+process:P
+clock:1:z
+location:P:idle{initial:}
+location:P:error{labels: error}
+location:P:finished
+location:P:ok
+edge:P:idle:finished:finished0{do: z=0}
+edge:P:finished:error:tau{provided: z>150}
+edge:P:finished:ok:finished2{provided: z<=150}
+edge:P:ok:idle:tau{}
+
+# Synchronizations
+sync:P@finished0:S1@finished0
+sync:S2@finished2:P@finished2
+sync:S1@finished1:S2@finished1
+sync:S1@start1:Sub1_1@start1
+sync:S1@start3:Sub1_2@start3
+sync:S2@start1:Sub2_1@start1
+sync:S2@start3:Sub2_2@start3
+sync:Sub1_1@start2:Sub1_2@start2
+sync:Sub2_1@start2:Sub2_2@start2
+

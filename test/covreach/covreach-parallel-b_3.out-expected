@@ -1,0 +1,49 @@
+#labels=access1,access2,access3
+#clock:size:name
+#int:size:min:max:init:name
+#process:name
+#event:name
+#location:process:name{attributes}
+#edge:process:source:target:event:{attributes}
+#sync:events
+#   where
+#   attributes is a colon-separated list of key:value
+#   events is a colon-separated list of process@event
+
+system:parallel_bis3
+
+event:tau
+
+# Process 1
+process:P1
+clock:1:x1
+location:P1:A{initial:}	
+location:P1:B{}
+location:P1:C{invariant:x1<=3 : labels: access1}
+edge:P1:A:B:tau{do:x1=0}
+edge:P1:B:A:tau{provided:x1>=1}
+edge:P1:B:C:tau{provided:x1<1 : do:x1=0}
+edge:P1:C:A:tau{provided:x1>=1}
+
+# Process 2
+process:P2
+clock:1:x2
+location:P2:A{initial:}	
+location:P2:B{}
+location:P2:C{invariant:x2<=3 : labels: access2}
+edge:P2:A:B:tau{do:x2=0}
+edge:P2:B:A:tau{provided:x2>=1}
+edge:P2:B:C:tau{provided:x2<1 : do:x2=0}
+edge:P2:C:A:tau{provided:x2>=1}
+
+# Process 3
+process:P3
+clock:1:x3
+location:P3:A{initial:}	
+location:P3:B{}
+location:P3:C{invariant:x3<=3 : labels: access3}
+edge:P3:A:B:tau{do:x3=0}
+edge:P3:B:A:tau{provided:x3>=1}
+edge:P3:B:C:tau{provided:x3<1 : do:x3=0}
+edge:P3:C:A:tau{provided:x3>=1}
+
