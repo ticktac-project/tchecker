@@ -781,9 +781,7 @@ TEST_CASE( "variable access map computation - 3 processes, array, shared variabl
   
   SECTION( "integer variables WRITE-accessed by process P3" ) {
     auto range = map.accessed_variables(P3, tchecker::VTYPE_INTVAR, tchecker::VACCESS_WRITE);
-    
-    std::size_t t_size = model.system_integer_variables().info(t).size();
-    
+        
     REQUIRE( std::distance(range.begin(), range.end()) == 1 );
     REQUIRE( *range.begin() == i );
   }
