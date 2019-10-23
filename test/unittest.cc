@@ -10,6 +10,7 @@
 
 #include "test-db.hh"
 #include "test-dbm.hh"
+#include "test-extract_variables.hh"
 #include "test-guard_weak_sync.hh"
 #include "test-offset_dbm.hh"
 #include "test-variables-access.hh"

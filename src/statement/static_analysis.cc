@@ -61,6 +61,7 @@ namespace tchecker {
 			virtual void visit(tchecker::typed_assign_statement_t const & stmt)
 			{
 				tchecker::extract_variables(stmt.rvalue(), _clocks, _intvars);
+        tchecker::extract_lvalue_offset_variable_ids(stmt.lvalue(), _clocks, _intvars);
 			}
 			
 			/*!
@@ -69,6 +70,7 @@ namespace tchecker {
 			virtual void visit(tchecker::typed_int_to_clock_assign_statement_t const & stmt)
 			{
 				tchecker::extract_variables(stmt.value(), _clocks, _intvars);
+        tchecker::extract_lvalue_offset_variable_ids(stmt.clock(), _clocks, _intvars);
 			}
 			
 			/*!
@@ -77,6 +79,7 @@ namespace tchecker {
 			virtual void visit(tchecker::typed_clock_to_clock_assign_statement_t const & stmt)
 			{
 				tchecker::extract_variables(stmt.rclock(), _clocks, _intvars);
+        tchecker::extract_lvalue_offset_variable_ids(stmt.lclock(), _clocks, _intvars);
 			}
 			
 			/*!
@@ -86,6 +89,7 @@ namespace tchecker {
 			{
 				tchecker::extract_variables(stmt.rclock(), _clocks, _intvars);
 				tchecker::extract_variables(stmt.value(), _clocks, _intvars);
+        tchecker::extract_lvalue_offset_variable_ids(stmt.lclock(), _clocks, _intvars);
 			}
 			
 			/* other visitors */
@@ -166,7 +170,7 @@ namespace tchecker {
 			 */
 			virtual void visit(tchecker::typed_assign_statement_t const & stmt)
 			{
-				tchecker::extract_variables(stmt.lvalue(), _clocks, _intvars);
+				tchecker::extract_lvalue_base_variable_ids(stmt.lvalue(), _clocks, _intvars);
 			}
 			
 			/*!
@@ -174,7 +178,7 @@ namespace tchecker {
 			 */
 			virtual void visit(tchecker::typed_int_to_clock_assign_statement_t const & stmt)
 			{
-				tchecker::extract_variables(stmt.clock(), _clocks, _intvars);
+				tchecker::extract_lvalue_base_variable_ids(stmt.clock(), _clocks, _intvars);
 			}
 			
 			/*!
@@ -182,7 +186,7 @@ namespace tchecker {
 			 */
 			virtual void visit(tchecker::typed_clock_to_clock_assign_statement_t const & stmt)
 			{
-				tchecker::extract_variables(stmt.lclock(), _clocks, _intvars);
+				tchecker::extract_lvalue_base_variable_ids(stmt.lclock(), _clocks, _intvars);
 			}
 			
 			/*!
@@ -190,7 +194,7 @@ namespace tchecker {
 			 */
 			virtual void visit(tchecker::typed_sum_to_clock_assign_statement_t const & stmt)
 			{
-				tchecker::extract_variables(stmt.lclock(), _clocks, _intvars);
+				tchecker::extract_lvalue_base_variable_ids(stmt.lclock(), _clocks, _intvars);
 			}
 			
 			/* other visitors */

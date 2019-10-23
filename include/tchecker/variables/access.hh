@@ -27,11 +27,9 @@ namespace tchecker {
  \brief Type of variable access
  */
 enum variable_access_t {
-  READ,
-  WRITE,
-  ANY,
-  LAST_VARIABLE_ACCESS,
-  FIRST_VARIABLE_ACCESS = READ,
+  VACCESS_READ,
+  VACCESS_WRITE,
+  VACCESS_ANY,
 };
 
 
@@ -39,10 +37,8 @@ enum variable_access_t {
  \brief Type of variable
  */
 enum variable_type_t {
-  CLOCK,
-  INTVAR,
-  LAST_VARIABLE_TYPE,
-  FIRST_VARIABLE_TYPE = CLOCK,
+  VTYPE_CLOCK,
+  VTYPE_INTVAR,
 };
 
 
@@ -53,10 +49,10 @@ enum variable_type_t {
 class variable_access_map_t {
   using v2p_key_t = std::tuple<tchecker::variable_id_t, enum tchecker::variable_type_t, enum tchecker::variable_access_t>;
   using p2v_key_t = std::tuple<tchecker::process_id_t, enum tchecker::variable_type_t, enum tchecker::variable_access_t>;
-  using v2p_map_t = boost::container::flat_multimap<v2p_key_t, process_id_t>;
-  using p2v_map_t = boost::container::flat_multimap<p2v_key_t, variable_id_t>;
-  using variables_t = boost::container::flat_set<std::tuple<tchecker::variable_id_t, enum tchecker::variable_type_t>>;
-  using processes_t = boost::container::flat_set<tchecker::process_id_t>;
+  using pid_set_t = boost::container::flat_set<tchecker::process_id_t>;
+  using vid_set_t = boost::container::flat_set<tchecker::variable_id_t>;
+  using v2p_map_t = boost::container::flat_map<v2p_key_t, pid_set_t>;
+  using p2v_map_t = boost::container::flat_map<p2v_key_t, vid_set_t>;
 public:
   /*!
    \brief Clear
@@ -86,21 +82,25 @@ public:
   /*!
    \brief Type of iterator over process identifiers
    */
-  class process_id_iterator_t : public v2p_map_t::const_iterator {
+  using process_id_iterator_t = pid_set_t::const_iterator;
+  
+  /*
+  class process_id_iterator_t : public pid_set_t::const_iterator {
   public:
-    process_id_iterator_t(v2p_map_t::const_iterator const & it) : v2p_map_t::const_iterator(it)
+    process_id_iterator_t(pid_set_t::const_iterator const & it) : pid_set_t::const_iterator(it)
     {}
     
-    process_id_iterator_t(v2p_map_t::const_iterator && it) : v2p_map_t::const_iterator(std::move(it))
+    process_id_iterator_t(pid_set_t::const_iterator && it) : pid_set_t::const_iterator(std::move(it))
     {}
     
-    using v2p_map_t::const_iterator::const_iterator;
+    using pid_set_t::const_iterator::const_iterator;
     
     inline constexpr tchecker::process_id_t operator* () const
     {
       return v2p_map_t::const_iterator::operator*().second;
     }
   };
+   */
   
   
   /*!
@@ -130,6 +130,9 @@ public:
   /*!
    \brief Type of iterator over variable identifiers
    */
+  using variable_id_iterator_t = vid_set_t::const_iterator;
+  
+  /*
   class variable_id_iterator_t : public p2v_map_t::const_iterator {
   public:
     variable_id_iterator_t(p2v_map_t::const_iterator const & it) : p2v_map_t::const_iterator(it)
@@ -145,6 +148,7 @@ public:
       return p2v_map_t::const_iterator::operator*().second;
     }
   };
+   */
   
   //using variable_id_iterator_t = p2v_map_t::const_iterator;
   
@@ -161,8 +165,8 @@ public:
 private:
   v2p_map_t _v2p_map;        /*!< Map : variable ID -> accessing process IDs */
   p2v_map_t _p2v_map;        /*!< Map : process ID -> accessed variable IDs */
-  variables_t _variables;    /*!< Set of variables (ID + type) */
-  processes_t _processes;    /*!< Set of processes (ID) */
+  pid_set_t _empty_pid_set;  /*!< Empty process ID set */
+  vid_set_t _empty_vid_set;  /*!< Empty variable ID set */
 };
 
 } // end of namespace tchecker

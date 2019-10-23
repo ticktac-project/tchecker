@@ -61,10 +61,38 @@ namespace tchecker {
   
   
   /*!
+   \brief Extract variable IDs from base of an array expression
+   \param expr : an lvalue expression
+   \param clocks : a set fo clock IDs
+   \param intvars : a set of integer variable IDs
+   \post if expr is an array expression base[offset], the identifiers of base have been added to clocks or intvars depending on the type of the variable.
+   In particular, if offset can be statically evaluated, then base+offset is added to the set corresponding to the type of base, otherwise, all base+k for k in
+   the domain of base have been added to clocks or intvars depending on the type of base If expr is not an array expression, this function does nothing
+   */
+  void extract_lvalue_base_variable_ids(tchecker::typed_lvalue_expression_t const & expr,
+                                        std::unordered_set<tchecker::clock_id_t> & clocks,
+                                        std::unordered_set<tchecker::intvar_id_t> & intvars);
+  
+  /*!
+   \brief Extract variables IDs from offset of an array expression
+   \param expr : an lvalue expression
+   \param clocks : a set of clock IDs
+   \param intvars : a set of integer variable IDs
+   \post if expr is an array expression base[offset], the identifiers of every variable appearing in offset have been added to clocks or intvars depending
+   on the type of the variable. In particular, if an expression of the form x[e] appears in offset, then if e can be statically evaluated, then x+e is added to the
+   set corresponding to the type of x, otherwise, all x+k for k in the domain of x is added to the corresponding set of identifiers. If expr is not an array
+   expression, this function does nothing.
+   */
+  void extract_lvalue_offset_variable_ids(tchecker::typed_lvalue_expression_t const & expr,
+                                          std::unordered_set<tchecker::clock_id_t> & clocks,
+                                          std::unordered_set<tchecker::intvar_id_t> & intvars);
+  
+  
+  /*!
    \brief Extract typed variables IDs from an expression
    \param expr : expression
    \param clocks : a set of clock IDs
-   \param intvars : a set of integer variable
+   \param intvars : a set of integer variable IDs
    \post for every occurrence of a variable x in expr, x has been added to clocks if x is a clock, and to
    intvars if x is an integer variable. For expressions of type tchecker::typed_array_expression_t (i.e. x[e]),
    if e can be statically evaluated then x[e] is added to the set according to the type of x. Otherwise,

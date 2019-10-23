@@ -11,12 +11,27 @@
 
 namespace tchecker {
 
+namespace details {
+
+template <class ID_SET, class MAP, class KEY, class ID>
+static void add(MAP & m, KEY && k, ID id)
+{
+  auto it = m.find(k);
+  if (it == m.end())
+    m.insert(std::make_pair(k, ID_SET{id}));
+  else
+    (*it).second.insert(id);
+}
+
+} // end of namespace details
+
+
 void variable_access_map_t::clear()
 {
   _v2p_map.clear();
   _p2v_map.clear();
-  _variables.clear();
-  _processes.clear();
+  assert(_empty_pid_set.empty());
+  assert(_empty_vid_set.empty());
 }
 
 
@@ -25,29 +40,24 @@ void variable_access_map_t::add(tchecker::variable_id_t vid,
                                 enum tchecker::variable_access_t vaccess,
                                 tchecker::process_id_t pid)
 {
-  if ((vtype != tchecker::CLOCK) && (vtype != tchecker::INTVAR))
+  if ((vtype != tchecker::VTYPE_CLOCK) && (vtype != tchecker::VTYPE_INTVAR))
     throw std::invalid_argument("Invalid type of variable");
-  if ((vaccess != tchecker::READ) && (vaccess != tchecker::WRITE))
+  if ((vaccess != tchecker::VACCESS_READ) && (vaccess != tchecker::VACCESS_WRITE))
     throw std::invalid_argument("Invalid type of variable access");
   
-  _variables.insert({vid, vtype});
-  _processes.insert(pid);
+  tchecker::details::add<pid_set_t>(_v2p_map, v2p_key_t{vid, vtype, vaccess}, pid);
+  tchecker::details::add<pid_set_t>(_v2p_map, v2p_key_t{vid, vtype, tchecker::VACCESS_ANY}, pid);
   
-  _v2p_map.insert(std::make_pair(v2p_key_t{vid, vtype, vaccess}, pid));
-  _v2p_map.insert(std::make_pair(v2p_key_t{vid, vtype, tchecker::ANY}, pid));
-  
-  _p2v_map.insert(std::make_pair(p2v_key_t{pid, vtype, vaccess}, vid));
-  _p2v_map.insert(std::make_pair(p2v_key_t{pid, vtype, tchecker::ANY}, vid));
+  tchecker::details::add<vid_set_t>(_p2v_map, p2v_key_t{pid, vtype, vaccess}, vid);
+  tchecker::details::add<vid_set_t>(_p2v_map, p2v_key_t{pid, vtype, tchecker::VACCESS_ANY}, vid);
 }
 
 
 bool variable_access_map_t::has_shared_variable() const
 {
-  for (auto && [vid, vtype] : _variables) {
-    auto range = _v2p_map.equal_range({vid, vtype, tchecker::ANY});
-    if (std::distance(range.first, range.second) > 1)
+  for (auto && [k, pid_set] : _v2p_map)
+    if (pid_set.size() > 1)
       return true;
-  }
   return false;
 }
 
@@ -57,8 +67,10 @@ variable_access_map_t::accessing_processes(tchecker::variable_id_t vid,
                                            enum tchecker::variable_type_t vtype,
                                            enum tchecker::variable_access_t vaccess) const
 {
-  auto p = _v2p_map.equal_range({vid, vtype, vaccess});
-  return {p.first, p.second};
+  auto it = _v2p_map.find(v2p_key_t{vid, vtype, vaccess});
+  if (it == _v2p_map.end())
+    return {_empty_pid_set.begin(), _empty_pid_set.end()};
+  return {(*it).second.begin(), (*it).second.end()};
 }
 
 
@@ -81,8 +93,10 @@ variable_access_map_t::accessed_variables(tchecker::process_id_t pid,
                                           enum tchecker::variable_type_t vtype,
                                           enum tchecker::variable_access_t vaccess) const
 {
-  auto p = _p2v_map.equal_range({pid, vtype, vaccess});
-  return {p.first, p.second};
+  auto it = _p2v_map.find(p2v_key_t{pid, vtype, vaccess});
+  if (it == _p2v_map.end())
+    return {_empty_vid_set.begin(), _empty_vid_set.end()};
+  return {(*it).second.begin(), (*it).second.end()};
 }
 
 } // end of namespace tchecker

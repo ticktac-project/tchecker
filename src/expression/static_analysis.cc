@@ -230,21 +230,21 @@ namespace tchecker {
        \brief Constructor
        */
       base_variable_ids_extractor_t()
-      : _first(0), _size(0)
+      : _first(0), _size(0), _variable_type(tchecker::EXPR_TYPE_BAD)
       {}
       
       /*!
        \brief Copy constructor
        */
       base_variable_ids_extractor_t(tchecker::details::base_variable_ids_extractor_t const & extractor)
-      : _first(extractor._first), _size(extractor._size)
+      : _first(extractor._first), _size(extractor._size), _variable_type(extractor._variable_type)
       {}
       
       /*!
        \brief Move constructor
        */
       base_variable_ids_extractor_t(tchecker::details::base_variable_ids_extractor_t && extractor)
-      : _first(std::move(extractor._first)), _size(std::move(extractor._size))
+      : _first(std::move(extractor._first)), _size(std::move(extractor._size)), _variable_type(std::move(extractor._variable_type))
       {}
       
       /*!
@@ -263,6 +263,7 @@ namespace tchecker {
         if (this != &extractor) {
           _first = extractor._first;
           _size = extractor._size;
+          _variable_type = extractor._variable_type;
         }
         return *this;
       }
@@ -277,6 +278,7 @@ namespace tchecker {
         if (this != &extractor) {
           _first = std::move(extractor._first);
           _size = std::move(extractor._size);
+          _variable_type = std::move(extractor._variable_type);
         }
         return *this;
       }
@@ -291,6 +293,15 @@ namespace tchecker {
       }
       
       /*!
+       \brief Accessor
+       \return the type of the base variable
+       */
+      enum tchecker::expression_type_t variable_type() const
+      {
+        return _variable_type;
+      }
+      
+      /*!
        \brief Visitor
        \post first and size have been set to the range of IDs in expr
        */
@@ -298,6 +309,7 @@ namespace tchecker {
       {
         _first = expr.id();
         _size = expr.size();
+        _variable_type = expr.type();
       }
       
       /*!
@@ -308,6 +320,7 @@ namespace tchecker {
       {
         _first = expr.id();
         _size = expr.size();
+        _variable_type = expr.type();
       }
       
       /*!
@@ -327,6 +340,7 @@ namespace tchecker {
         }
         catch (...)
         {}
+        _variable_type = expr.variable().type();
       }
       
       // Other visitors
@@ -360,8 +374,9 @@ namespace tchecker {
         throw std::invalid_argument("not an lvalue expression");
       }
     protected:
-      tchecker::variable_id_t _first;   /*!< ID of first variable */
-      tchecker::variable_id_t _size;    /*!< Number of variables */
+      tchecker::variable_id_t _first;                   /*!< ID of first variable */
+      tchecker::variable_id_t _size;                    /*!< Number of variables */
+      enum tchecker::expression_type_t _variable_type;  /*!< Type of base variable */
     };
     
   } // end of namespace details
@@ -380,6 +395,148 @@ namespace tchecker {
     catch (...) {
       throw;
     }
+  }
+  
+  
+  
+  
+  /* extract_lvalue_base_variable_ids */
+  
+  void extract_lvalue_base_variable_ids(tchecker::typed_lvalue_expression_t const & expr,
+                                        std::unordered_set<tchecker::clock_id_t> & clocks,
+                                        std::unordered_set<tchecker::intvar_id_t> & intvars)
+  {
+    tchecker::details::base_variable_ids_extractor_t extractor;
+    try {
+      expr.visit(extractor);
+      tchecker::range_t<tchecker::variable_id_t> ids = extractor.range();
+      enum tchecker::expression_type_t type = extractor.variable_type();
+      
+      if ((type == tchecker::EXPR_TYPE_CLKVAR) || (type == tchecker::EXPR_TYPE_CLKARRAY))
+        for (tchecker::clock_id_t id = ids.begin(); id != ids.end(); ++id)
+          clocks.insert(id);
+      else if ((type == tchecker::EXPR_TYPE_INTVAR) || (type == tchecker::EXPR_TYPE_INTARRAY))
+        for (tchecker::intvar_id_t id = ids.begin(); id != ids.end(); ++id)
+          intvars.insert(id);
+    }
+    catch (...) {
+      throw;
+    }
+  }
+
+
+
+
+  /* extract_lvalue_offset_variable_ids */
+
+  namespace details {
+
+    /*!
+     \class extract_offset_variables_visitor_t
+     \brief Visitor of typed expressions for extraction of variable IDs from the offset of array expressions
+     \note does nothing if the visited expression is not of type tchecker::typed_array_expression_t
+     */
+    class extract_offset_variables_visitor_t : public tchecker::typed_expression_visitor_t {
+    public:
+      /*!
+       \brief Constructor
+       \param clocks : set of clock IDs
+       \param intvars : set of integer variable IDs
+       */
+      extract_offset_variables_visitor_t(std::unordered_set<tchecker::clock_id_t> & clocks,
+                                         std::unordered_set<tchecker::intvar_id_t> & intvars)
+      : _clocks(clocks), _intvars(intvars)
+      {}
+      
+      /*!
+       \brief Copy constructor
+       */
+      extract_offset_variables_visitor_t(tchecker::details::extract_offset_variables_visitor_t const &) = default;
+      
+      /*!
+       \brief Destructor
+       */
+      virtual ~extract_offset_variables_visitor_t() = default;
+      
+      /*!
+       \brief Assignment operator (deleted)
+       */
+      tchecker::details::extract_offset_variables_visitor_t &
+      operator= (tchecker::details::extract_offset_variables_visitor_t const &) = delete;
+      
+      /*!
+       \brief Move assignment operator (deleted)
+       */
+      tchecker::details::extract_offset_variables_visitor_t &
+      operator= (tchecker::details::extract_offset_variables_visitor_t &&) = delete;
+      
+      
+      /*!
+       \brief Nothing to do (not an array)
+       */
+      virtual void visit(tchecker::typed_var_expression_t const & expr)
+      {}
+      
+      /*!
+       \brief Nothing to do (not an array)
+       */
+      virtual void visit(tchecker::typed_bounded_var_expression_t const & expr)
+      {}
+      
+      /*!
+       \brief extract variable IDs from array offset
+       */
+      virtual void visit(tchecker::typed_array_expression_t const & expr)
+      {
+        tchecker::extract_variables(expr.offset(), _clocks, _intvars);
+      }
+      
+      /* Other visitors (throw: not an lvalue expression) */
+      
+      virtual void visit(tchecker::typed_int_expression_t const &)
+      {
+        throw std::invalid_argument("not an lvalue expression");
+      }
+      
+      virtual void visit(tchecker::typed_par_expression_t const & expr)
+      {
+        throw std::invalid_argument("not an lvalue expression");
+      }
+      
+      virtual void visit(tchecker::typed_binary_expression_t const & expr)
+      {
+        throw std::invalid_argument("not an lvalue expression");
+      }
+      
+      virtual void visit(tchecker::typed_unary_expression_t const & expr)
+      {
+        throw std::invalid_argument("not an lvalue expression");
+      }
+      
+      virtual void visit(tchecker::typed_simple_clkconstr_expression_t const & expr)
+      {
+        throw std::invalid_argument("not an lvalue expression");
+      }
+      
+      virtual void visit(tchecker::typed_diagonal_clkconstr_expression_t const & expr)
+      {
+        throw std::invalid_argument("not an lvalue expression");
+      }
+    private:
+      std::unordered_set<tchecker::clock_id_t> & _clocks;    /*!< Set of clock IDs */
+      std::unordered_set<tchecker::intvar_id_t> & _intvars;  /*!< Set of integer variable IDs */
+    };
+
+
+  } // end of namespace details
+  
+  
+  void extract_lvalue_offset_variable_ids(tchecker::typed_lvalue_expression_t const & expr,
+                                          std::unordered_set<tchecker::clock_id_t> & clocks,
+                                          std::unordered_set<tchecker::intvar_id_t> & intvars)
+  {
+   tchecker::details::extract_offset_variables_visitor_t v(clocks, intvars);
+    expr.visit(v);
   }
   
   
@@ -450,14 +607,20 @@ namespace tchecker {
        */
       virtual void visit(tchecker::typed_array_expression_t const & expr)
       {
+        // add variables from offset
+        expr.offset().visit(*this);
+        
+        // add base variables depending on const evaluation of offset
+        tchecker::integer_t offset;
         try {
-          tchecker::integer_t offset = tchecker::const_evaluate(expr.offset());
-          extract_variable_with_type(expr.variable().id() + offset, expr.variable().type());
+          offset = tchecker::const_evaluate(expr.offset());
         }
         catch (...) {
-          for (tchecker::integer_t offset = 0; offset < (tchecker::integer_t) expr.variable().size (); ++offset)
+          for (offset = 0; offset < (tchecker::integer_t) expr.variable().size (); ++offset)
             extract_variable_with_type(expr.variable().id() + offset, expr.variable().type());
+          return;
         }
+        extract_variable_with_type(expr.variable().id() + offset, expr.variable().type());
       }
       
       /* Other visitors (recursion) */
@@ -497,9 +660,9 @@ namespace tchecker {
        */
       void extract_variable_with_type(tchecker::variable_id_t id, enum tchecker::expression_type_t type)
       {
-        if (type == tchecker::EXPR_TYPE_INTVAR)
+        if ( (type == tchecker::EXPR_TYPE_INTVAR) || (type == tchecker::EXPR_TYPE_INTARRAY) )
           _intvars.insert(id);
-        else if (type == tchecker::EXPR_TYPE_CLKVAR)
+        else if ( (type == tchecker::EXPR_TYPE_CLKVAR) || (type == tchecker::EXPR_TYPE_CLKARRAY) )
           _clocks.insert(id);
         else
           throw std::invalid_argument("typed expression is not well-typed");
