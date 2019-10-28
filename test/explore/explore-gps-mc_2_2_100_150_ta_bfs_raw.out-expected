@@ -1,0 +1,44 @@
+gps_mc_2_2_100_150
+0: <idle,idle,idle,idle,idle,idle,idle> 
+1: <start,idle,idle,idle,idle,idle,finished> 
+0 -> 1  reset: z=0
+2: <processing,idle,processing,idle,idle,idle,finished> 
+1 -> 2  reset: x1_1=0 tgt inv: x1_1<=100
+3: <start,idle,idle,idle,idle,idle,error> 
+1 -> 3  guard: z>150
+4: <processing,idle,idle,processing,idle,idle,finished> 
+2 -> 4 src inv: x1_1<=100 guard: x1_1<=100 reset: x1_2=0 tgt inv: x1_2<=100
+5: <processing,idle,processing,idle,idle,idle,error> 
+2 -> 5 src inv: x1_1<=100 guard: z>150 tgt inv: x1_1<=100
+3 -> 5  reset: x1_1=0 tgt inv: x1_1<=100
+6: <done,idle,idle,idle,idle,idle,finished> 
+4 -> 6 src inv: x1_2<=100 guard: x1_2<=100
+7: <processing,idle,idle,processing,idle,idle,error> 
+4 -> 7 src inv: x1_2<=100 guard: z>150 tgt inv: x1_2<=100
+5 -> 7 src inv: x1_1<=100 guard: x1_1<=100 reset: x1_2=0 tgt inv: x1_2<=100
+8: <idle,start,idle,idle,idle,idle,finished> 
+6 -> 8 
+9: <done,idle,idle,idle,idle,idle,error> 
+6 -> 9  guard: z>150
+7 -> 9 src inv: x1_2<=100 guard: x1_2<=100
+10: <idle,processing,idle,idle,processing,idle,finished> 
+8 -> 10  reset: x2_1=0 tgt inv: x2_1<=100
+11: <idle,start,idle,idle,idle,idle,error> 
+8 -> 11  guard: z>150
+9 -> 11 
+12: <idle,processing,idle,idle,idle,processing,finished> 
+10 -> 12 src inv: x2_1<=100 guard: x2_1<=100 reset: x2_2=0 tgt inv: x2_2<=100
+13: <idle,processing,idle,idle,processing,idle,error> 
+10 -> 13 src inv: x2_1<=100 guard: z>150 tgt inv: x2_1<=100
+11 -> 13  reset: x2_1=0 tgt inv: x2_1<=100
+14: <idle,done,idle,idle,idle,idle,finished> 
+12 -> 14 src inv: x2_2<=100 guard: x2_2<=100
+15: <idle,processing,idle,idle,idle,processing,error> 
+12 -> 15 src inv: x2_2<=100 guard: z>150 tgt inv: x2_2<=100
+13 -> 15 src inv: x2_1<=100 guard: x2_1<=100 reset: x2_2=0 tgt inv: x2_2<=100
+16: <idle,idle,idle,idle,idle,idle,ok> 
+14 -> 16  guard: z<=150
+17: <idle,done,idle,idle,idle,idle,error> 
+14 -> 17  guard: z>150
+15 -> 17 src inv: x2_2<=100 guard: x2_2<=100
+16 -> 0 

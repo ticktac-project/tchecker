@@ -1,0 +1,62 @@
+#clock:size:name
+#int:size:min:max:init:name
+#process:name
+#event:name
+#location:process:name{attributes}
+#edge:process:source:target:event:{attributes}
+#sync:events
+#   where
+#   attributes is a colon-separated list of key:value
+#   events is a colon-separated list of process@event
+
+system:parallel_5
+
+event:tau
+event:s
+
+# Process 1
+process:P1
+clock:1:x1
+location:P1:A{initial:}	
+location:P1:B{}
+location:P1:C{}
+edge:P1:A:B:tau{do:x1=0}
+edge:P1:B:C:s{provided:x1<=1}
+
+# Process 2
+process:P2
+clock:1:x2
+location:P2:A{initial:}	
+location:P2:B{}
+location:P2:C{}
+edge:P2:A:B:tau{do:x2=0}
+edge:P2:B:C:s{provided:x2<=1}
+
+# Process 3
+process:P3
+clock:1:x3
+location:P3:A{initial:}	
+location:P3:B{}
+location:P3:C{}
+edge:P3:A:B:tau{do:x3=0}
+edge:P3:B:C:s{provided:x3<=1}
+
+# Process 4
+process:P4
+clock:1:x4
+location:P4:A{initial:}	
+location:P4:B{}
+location:P4:C{}
+edge:P4:A:B:tau{do:x4=0}
+edge:P4:B:C:s{provided:x4<=1}
+
+# Process 5
+process:P5
+clock:1:x5
+location:P5:A{initial:}	
+location:P5:B{}
+location:P5:C{}
+edge:P5:A:B:tau{do:x5=0}
+edge:P5:B:C:s{provided:x5<=1}
+
+sync:P1@s:P2@s:P3@s:P4@s:P5@s

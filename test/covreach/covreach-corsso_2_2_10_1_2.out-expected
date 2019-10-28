@@ -1,0 +1,46 @@
+#labels=access1,access2
+#clock:size:name
+#int:size:min:max:init:name
+#process:name
+#event:name
+#location:process:name{attributes}
+#edge:process:source:target:event:{attributes}
+#sync:events
+#   where
+#   attributes is a colon-separated list of key:value
+#   events is a colon-separated list of process@event
+
+system:CorSSO_2_2_10_1_2
+
+event:tau
+
+# Process 1
+process:P1
+clock:1:x1
+clock:1:y1
+int:1:0:3:0:a1
+int:1:0:3:0:p1
+location:P1:auth{initial:}
+location:P1:access{labels: access1}
+edge:P1:auth:auth:tau{provided: p1>0 && x1>2 && a1<2 : do: a1=a1+1; x1=0}
+edge:P1:auth:auth:tau{provided: p1==0 : do: p1=1; a1=0; x1=0; y1=0}
+edge:P1:auth:access:tau{provided: y1<10 && p1==1 && a1 >= 1}
+edge:P1:auth:auth:tau{provided: p1==0 : do: p1=2; a1=0; x1=0; y1=0}
+edge:P1:auth:access:tau{provided: y1<10 && p1==2 && a1 >= 2}
+edge:P1:access:auth:tau{do: p1=0}
+
+# Process 2
+process:P2
+clock:1:x2
+clock:1:y2
+int:1:0:3:0:a2
+int:1:0:3:0:p2
+location:P2:auth{initial:}
+location:P2:access{labels: access2}
+edge:P2:auth:auth:tau{provided: p2>0 && x2>2 && a2<2 : do: a2=a2+1; x2=0}
+edge:P2:auth:auth:tau{provided: p2==0 : do: p2=1; a2=0; x2=0; y2=0}
+edge:P2:auth:access:tau{provided: y2<10 && p2==1 && a2 >= 1}
+edge:P2:auth:auth:tau{provided: p2==0 : do: p2=2; a2=0; x2=0; y2=0}
+edge:P2:auth:access:tau{provided: y2<10 && p2==2 && a2 >= 2}
+edge:P2:access:auth:tau{do: p2=0}
+

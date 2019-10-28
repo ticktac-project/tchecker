@@ -1,0 +1,57 @@
+#labels=cs1,cs2,cs3
+#clock:size:name
+#int:size:min:max:init:name
+#process:name
+#event:name
+#location:process:name{attributes}
+#edge:process:source:target:event:{attributes}
+#sync:events
+#   where
+#   attributes is a colon-separated list of key:value
+#   events is a colon-separated list of process@event
+
+system:fischer_3_10
+
+event:tau
+
+int:1:0:3:0:id
+
+# Process 1
+process:P1
+clock:1:x1
+location:P1:A{initial:}	
+location:P1:req{invariant:x1<=10}
+location:P1:wait{}
+location:P1:cs{labels:cs1}
+edge:P1:A:req:tau{provided:id==0 : do:x1=0}
+edge:P1:req:wait:tau{provided:x1<=10 : do:x1=0;id=1}
+edge:P1:wait:req:tau{provided:id==0 : do:x1=0}
+edge:P1:wait:cs:tau{provided:x1>10&&id==1}
+edge:P1:cs:A:tau{do:id=0}
+
+# Process 2
+process:P2
+clock:1:x2
+location:P2:A{initial:}	
+location:P2:req{invariant:x2<=10}
+location:P2:wait{}
+location:P2:cs{labels:cs2}
+edge:P2:A:req:tau{provided:id==0 : do:x2=0}
+edge:P2:req:wait:tau{provided:x2<=10 : do:x2=0;id=2}
+edge:P2:wait:req:tau{provided:id==0 : do:x2=0}
+edge:P2:wait:cs:tau{provided:x2>10&&id==2}
+edge:P2:cs:A:tau{do:id=0}
+
+# Process 3
+process:P3
+clock:1:x3
+location:P3:A{initial:}	
+location:P3:req{invariant:x3<=10}
+location:P3:wait{}
+location:P3:cs{labels:cs3}
+edge:P3:A:req:tau{provided:id==0 : do:x3=0}
+edge:P3:req:wait:tau{provided:x3<=10 : do:x3=0;id=3}
+edge:P3:wait:req:tau{provided:id==0 : do:x3=0}
+edge:P3:wait:cs:tau{provided:x3>10&&id==3}
+edge:P3:cs:A:tau{do:id=0}
+

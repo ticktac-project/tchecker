@@ -1,0 +1,97 @@
+#labels=eating1,eating2,eating3
+#clock:size:name
+#int:size:min:max:init:name
+#process:name
+#event:name
+#location:process:name{attributes}
+#edge:process:source:target:event:{attributes}
+#sync:events
+#   where
+#   attributes is a colon-separated list of key:value
+#   events is a colon-separated list of process@event
+
+system:dining_philosophers_3_3_10_0
+
+# events
+event:tau
+event:take1
+event:release1
+event:take2
+event:release2
+event:take3
+event:release3
+
+# Philosopher 1
+process:P1
+clock:1:x1
+location:P1:idle{initial:}
+location:P1:acq{invariant: x1<=3}
+location:P1:eat{invariant: x1<=10 : labels: eating1}
+location:P1:rel{invariant: x1<=0}
+edge:P1:idle:acq:take3{do: x1=0}
+edge:P1:acq:idle:release3{provided: x1>=3}
+edge:P1:acq:eat:take1{provided: x1<=3 : do: x1=0}
+edge:P1:eat:rel:release1{provided: x1>=10 : do: x1=0}
+edge:P1:rel:idle:release3
+
+# Philosopher 2
+process:P2
+clock:1:x2
+location:P2:idle{initial:}
+location:P2:acq{invariant: x2<=3}
+location:P2:eat{invariant: x2<=10 : labels: eating2}
+location:P2:rel{invariant: x2<=0}
+edge:P2:idle:acq:take1{do: x2=0}
+edge:P2:acq:idle:release1{provided: x2>=3}
+edge:P2:acq:eat:take2{provided: x2<=3 : do: x2=0}
+edge:P2:eat:rel:release2{provided: x2>=10 : do: x2=0}
+edge:P2:rel:idle:release1
+
+# Philosopher 3
+process:P3
+clock:1:x3
+location:P3:idle{initial:}
+location:P3:acq{invariant: x3<=3}
+location:P3:eat{invariant: x3<=10 : labels: eating3}
+location:P3:rel{invariant: x3<=0}
+edge:P3:idle:acq:take2{do: x3=0}
+edge:P3:acq:idle:release2{provided: x3>=3}
+edge:P3:acq:eat:take3{provided: x3<=3 : do: x3=0}
+edge:P3:eat:rel:release3{provided: x3>=10 : do: x3=0}
+edge:P3:rel:idle:release2
+
+# Fork 1
+process:F1
+location:F1:free{initial:}
+location:F1:taken
+edge:F1:free:taken:take1
+edge:F1:taken:free:release1
+
+# Fork 2
+process:F2
+location:F2:free{initial:}
+location:F2:taken
+edge:F2:free:taken:take2
+edge:F2:taken:free:release2
+
+# Fork 3
+process:F3
+location:F3:free{initial:}
+location:F3:taken
+edge:F3:free:taken:take3
+edge:F3:taken:free:release3
+
+# Synchronizations
+sync:P1@take3:F3@take3
+sync:P1@take1:F1@take1
+sync:P1@release3:F3@release3
+sync:P1@release1:F1@release1
+sync:P2@take1:F1@take1
+sync:P2@take2:F2@take2
+sync:P2@release1:F1@release1
+sync:P2@release2:F2@release2
+sync:P3@take2:F2@take2
+sync:P3@take3:F3@take3
+sync:P3@release2:F2@release2
+sync:P3@release3:F3@release3
+

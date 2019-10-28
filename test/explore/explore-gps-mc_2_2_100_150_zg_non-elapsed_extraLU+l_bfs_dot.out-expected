@@ -1,0 +1,40 @@
+digraph gps_mc_2_2_100_150 {
+node [shape="box",style="rounded"];
+n0 [label="<idle,idle,idle,idle,idle,idle,idle>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & 0<=z)"]
+n1 [label="<start,idle,idle,idle,idle,idle,finished>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & z=0 & 0<=x1_1-z & 0<=x1_2-z & 0<=x2_1-z & 0<=x2_2-z)"]
+n0 -> n1
+n2 [label="<processing,idle,processing,idle,idle,idle,finished>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & z=0 & 0<=x1_1-z & 0<=x1_2-z & 0<=x2_1-z & 0<=x2_2-z)"]
+n1 -> n2
+n3 [label="<processing,idle,idle,processing,idle,idle,finished>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & 0<=z<=100 & -100<=x1_1-z & -100<=x1_2-z & -100<=x2_1-z & -100<=x2_2-z)"]
+n2 -> n3
+n4 [label="<done,idle,idle,idle,idle,idle,finished>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & 0<=z)"]
+n3 -> n4
+n5 [label="<processing,idle,idle,processing,idle,idle,error>  (0<=x1_1 & 50<x1_2 & 0<=x2_1 & 0<=x2_2 & 0<=z)"]
+n3 -> n5
+n6 [label="<idle,start,idle,idle,idle,idle,finished>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & 0<=z)"]
+n4 -> n6
+n7 [label="<done,idle,idle,idle,idle,idle,error>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & 0<=z)"]
+n4 -> n7
+n5 -> n7
+n8 [label="<idle,processing,idle,idle,processing,idle,finished>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & 0<=z)"]
+n6 -> n8
+n9 [label="<idle,start,idle,idle,idle,idle,error>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & 0<=z)"]
+n6 -> n9
+n7 -> n9
+n10 [label="<idle,processing,idle,idle,idle,processing,finished>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & 0<=z)"]
+n8 -> n10
+n11 [label="<idle,processing,idle,idle,processing,idle,error>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & 0<=z)"]
+n8 -> n11
+n9 -> n11
+n12 [label="<idle,done,idle,idle,idle,idle,finished>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & 0<=z)"]
+n10 -> n12
+n13 [label="<idle,processing,idle,idle,idle,processing,error>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & 0<=z)"]
+n10 -> n13
+n11 -> n13
+n14 [label="<idle,idle,idle,idle,idle,idle,ok>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & 0<=z)"]
+n12 -> n14
+n15 [label="<idle,done,idle,idle,idle,idle,error>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & 0<=z)"]
+n12 -> n15
+n13 -> n15
+n14 -> n0
+}

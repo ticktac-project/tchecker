@@ -1,0 +1,25 @@
+# 
+# This file has been generated automatically with uppaal-to-tchecker
+# 
+system:S
+# N:(const (int))
+int:1:1:1:1:N
+# a:(channel)
+# global event: a
+# no iodecl
+# compilation of process Processes
+# instantiation as Processes_pid_1
+process:Processes_pid_1
+location:Processes_pid_1:A{initial:}
+location:Processes_pid_1:B{}
+event:a_emit
+edge:Processes_pid_1:A:A:a_emit{}
+event:a_recv
+edge:Processes_pid_1:A:A:a_recv{}
+
+# dummy process used to block emitted/received events that aren't synchronized.
+process:Stuck
+event:nosync
+location:Stuck:sink{initial:}
+sync:Processes_pid_1@a_emit:Stuck@nosync
+sync:Processes_pid_1@a_recv:Stuck@nosync

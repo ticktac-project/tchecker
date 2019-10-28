@@ -20,6 +20,9 @@ NSUBSTATIONS=$2
 PROCTIME=$3
 TIMEOUT=$4
 
+# Labels
+echo "#labels=error"
+
 # Model
 
 echo "#clock:size:name

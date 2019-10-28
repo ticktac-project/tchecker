@@ -1,0 +1,49 @@
+gps_mc_2_2_100_150
+0: <idle,idle,idle,idle,idle,idle,idle>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & z=0 & 0<=x1_1-z & 0<=x1_2-z & 0<=x2_1-z & 0<=x2_2-z)
+1: <start,idle,idle,idle,idle,idle,finished>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & z=0 & 0<=x1_1-z & 0<=x1_2-z & 0<=x2_1-z & 0<=x2_2-z)
+0 -> 1  reset: z=0
+2: <processing,idle,processing,idle,idle,idle,finished>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & z=0 & 0<=x1_1-z & 0<=x1_2-z & 0<=x2_1-z & 0<=x2_2-z)
+1 -> 2  reset: x1_1=0 tgt inv: x1_1<=100
+3: <processing,idle,idle,processing,idle,idle,finished>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & 0<=z<=100 & 0<=x1_1-z & -100<=x1_2-z & 0<=x2_1-z & 0<=x2_2-z)
+2 -> 3 src inv: x1_1<=100 guard: x1_1<=100 reset: x1_2=0 tgt inv: x1_2<=100
+4: <done,idle,idle,idle,idle,idle,finished>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & 0<=z & 0<=x1_1-z & -100<=x1_2-z & 0<=x2_1-z & 0<=x2_2-z)
+3 -> 4 src inv: x1_2<=100 guard: x1_2<=100
+5: <processing,idle,idle,processing,idle,idle,error>  (100<x1_1 & 50<x1_2 & 100<x2_1 & 100<x2_2 & 150<z & -100<=x1_2-z)
+3 -> 5 src inv: x1_2<=100 guard: z>150 tgt inv: x1_2<=100
+6: <done,idle,idle,idle,idle,idle,error>  (100<x1_1 & 50<x1_2 & 100<x2_1 & 100<x2_2 & 150<z & -100<x1_1-z & -100<=x1_2-z & -100<x2_1-z & -100<x2_2-z)
+5 -> 6 src inv: x1_2<=100 guard: x1_2<=100
+7: <idle,start,idle,idle,idle,idle,error>  (100<x1_1 & 50<x1_2 & 100<x2_1 & 100<x2_2 & 150<z & -100<x1_1-z & -100<=x1_2-z & -100<x2_1-z & -100<x2_2-z)
+6 -> 7 
+8: <idle,processing,idle,idle,processing,idle,error>  (100<x1_1 & 50<x1_2 & 0<=x2_1 & 100<x2_2 & 150<z & -100<x1_1-z & -100<=x1_2-z & -100<x2_2-z)
+7 -> 8  reset: x2_1=0 tgt inv: x2_1<=100
+9: <idle,processing,idle,idle,idle,processing,error>  (100<x1_1 & 50<x1_2 & 0<=x2_1 & 0<=x2_2 & 150<z & -100<x1_1-z & -100<=x1_2-z)
+8 -> 9 src inv: x2_1<=100 guard: x2_1<=100 reset: x2_2=0 tgt inv: x2_2<=100
+10: <idle,done,idle,idle,idle,idle,error>  (100<x1_1 & 50<x1_2 & 0<=x2_1 & 0<=x2_2 & 150<z & -100<x1_1-z & -100<=x1_2-z)
+9 -> 10 src inv: x2_2<=100 guard: x2_2<=100
+11: <idle,start,idle,idle,idle,idle,finished>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & 0<=z & 0<=x1_1-z & -100<=x1_2-z & 0<=x2_1-z & 0<=x2_2-z)
+4 -> 11 
+12: <done,idle,idle,idle,idle,idle,error>  (100<x1_1 & 50<x1_2 & 100<x2_1 & 100<x2_2 & 150<z & -100<=x1_2-z)
+4 -> 12  guard: z>150
+13: <idle,start,idle,idle,idle,idle,error>  (100<x1_1 & 50<x1_2 & 100<x2_1 & 100<x2_2 & 150<z & -100<=x1_2-z)
+12 -> 13 
+14: <idle,processing,idle,idle,processing,idle,error>  (100<x1_1 & 50<x1_2 & 0<=x2_1 & 100<x2_2 & 150<z & -100<=x1_2-z)
+13 -> 14  reset: x2_1=0 tgt inv: x2_1<=100
+15: <idle,processing,idle,idle,idle,processing,error>  (100<x1_1 & 50<x1_2 & 0<=x2_1 & 0<=x2_2 & 150<z & -100<=x1_2-z)
+14 -> 15 src inv: x2_1<=100 guard: x2_1<=100 reset: x2_2=0 tgt inv: x2_2<=100
+16: <idle,done,idle,idle,idle,idle,error>  (100<x1_1 & 50<x1_2 & 0<=x2_1 & 0<=x2_2 & 150<z & -100<=x1_2-z)
+15 -> 16 src inv: x2_2<=100 guard: x2_2<=100
+17: <idle,processing,idle,idle,processing,idle,finished>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & 0<=z & 0<=x1_1-z & -100<=x1_2-z & 0<=x2_2-z)
+11 -> 17  reset: x2_1=0 tgt inv: x2_1<=100
+11 -> 13  guard: z>150
+18: <idle,processing,idle,idle,idle,processing,finished>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & 0<=z & 0<=x1_1-z & -100<=x1_2-z)
+17 -> 18 src inv: x2_1<=100 guard: x2_1<=100 reset: x2_2=0 tgt inv: x2_2<=100
+17 -> 14 src inv: x2_1<=100 guard: z>150 tgt inv: x2_1<=100
+19: <idle,done,idle,idle,idle,idle,finished>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & 0<=z & 0<=x1_1-z & -100<=x1_2-z)
+18 -> 19 src inv: x2_2<=100 guard: x2_2<=100
+18 -> 15 src inv: x2_2<=100 guard: z>150 tgt inv: x2_2<=100
+20: <idle,idle,idle,idle,idle,idle,ok>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & 0<=z<=150 & 0<=x1_1-z & -100<=x1_2-z & -150<=x2_1-z & -150<=x2_2-z)
+19 -> 20  guard: z<=150
+19 -> 16  guard: z>150
+21: <idle,idle,idle,idle,idle,idle,idle>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & 0<=z & 0<=x1_1-z & -100<=x1_2-z & -150<=x2_1-z & -150<=x2_2-z)
+20 -> 21 
+21 -> 1  reset: z=0

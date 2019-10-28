@@ -58,6 +58,13 @@ for th in $LTH; do
     i=$(($i+1))
 done
 
+# Labels
+labels="access1"
+for pid in `seq 2 $N`; do
+    labels="${labels},access${pid}"
+done
+echo "#labels=${labels}"
+
 # Model
 
 echo "#clock:size:name

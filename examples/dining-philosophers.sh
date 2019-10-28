@@ -58,6 +58,13 @@ if [ "$SLOW" -lt 0 ]; then
     exit 1;
 fi
 
+# Labels
+labels="eating1"
+for pid in `seq 2 $N`; do
+    labels="${labels},eating${pid}"
+done
+echo "#labels=${labels}"
+
 # Model
 
 echo "#clock:size:name

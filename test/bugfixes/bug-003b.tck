@@ -1,0 +1,5 @@
+system:small
+
+process:P1
+location:P1:l0{initial:}
+

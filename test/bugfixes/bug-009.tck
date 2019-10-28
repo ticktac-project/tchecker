@@ -1,0 +1,21 @@
+system:ad94_fig10
+
+clock:1:x
+clock:1:y
+
+event:a
+event:b
+event:c
+event:d
+
+process:P
+location:P:l0{initial:}
+location:P:l1{}
+location:P:l2{}
+location:P:l3{labels: green}
+edge:P:l0:l1:a{do:y=10}
+edge:P:l1:l2:b{provided: y==1}
+edge:P:l1:l3:c{provided: x<1}
+edge:P:l2:l3:c{provided: x<1}
+edge:P:l3:l1:a{provided: y<1 : do:y=10}
+edge:P:l3:l3:d{provided: x>1}
