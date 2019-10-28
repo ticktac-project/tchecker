@@ -139,4 +139,4 @@ endforeach ()
 
 message(STATUS "${nb_tests} generated tests in ${here}.")
 
-tck_add_savelist(save ${savelist})
+tck_add_savelist(save-covreach ${savelist})
