@@ -42,6 +42,12 @@ then
 	    diff ${OUTPUT_FILE} ${EXPECTED_OUTPUT_FILE} | head -n ${DIFF_HEAD_SIZE} 1>&2
         echo 1>&2 "Get more details with:"
 	    echo 1>&2 "diff ${OUTPUT_FILE} ${EXPECTED_OUTPUT_FILE}"
+
+	    if test -f "${ERROR_FILE}";
+	    then
+	        echo 1>&2 "${ERROR_FILE} contains:"
+	        cat 1>&2 "${ERROR_FILE}"
+	    fi
 	    exit 1
 	fi
 fi
