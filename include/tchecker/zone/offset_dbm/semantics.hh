@@ -167,11 +167,14 @@ namespace tchecker {
        */
       template <class MODEL>
       explicit elapsed_semantics_t(MODEL const & model)
-      : EXTRAPOLATION(model), _offset_dim(model.offset_dimension()), _refcount(model.refcount()), _refmap(nullptr),
+      : EXTRAPOLATION(model),
+      _offset_dim(model.flattened_offset_clock_variables().size()),
+      _refcount(model.flattened_offset_clock_variables().refcount()),
+      _refmap(nullptr),
       _sync_zone_computer(nullptr)
       {
         _refmap = new tchecker::clock_id_t[_offset_dim];
-        std::memcpy(_refmap, model.refmap(), _offset_dim * sizeof(*_refmap));
+        std::memcpy(_refmap, model.flattened_offset_clock_variables().refmap(), _offset_dim * sizeof(*_refmap));
         _sync_zone_computer = new tchecker::offset_dbm::details::sync_zone_computer_t(_offset_dim, _refcount, _refmap);
       }
       
@@ -473,11 +476,14 @@ namespace tchecker {
        */
       template <class MODEL>
       explicit non_elapsed_semantics_t(MODEL const & model)
-      : EXTRAPOLATION(model), _offset_dim(model.offset_dimension()), _refcount(model.refcount()), _refmap(nullptr),
+      : EXTRAPOLATION(model),
+      _offset_dim(model.flattened_offset_clock_variables().size()),
+      _refcount(model.flattened_offset_clock_variables().refcount()),
+      _refmap(nullptr),
       _sync_zone_computer(nullptr)
       {
         _refmap = new tchecker::clock_id_t[_offset_dim];
-        std::memcpy(_refmap, model.refmap(), _offset_dim * sizeof(*_refmap));
+        std::memcpy(_refmap, model.flattened_offset_clock_variables().refmap(), _offset_dim * sizeof(*_refmap));
         _sync_zone_computer = new tchecker::offset_dbm::details::sync_zone_computer_t(_offset_dim, _refcount, _refmap);
       }
       

@@ -159,7 +159,7 @@ namespace tchecker {
             {
               return std::tuple<tchecker::intvar_index_t const &, tchecker::clock_index_t const &, tchecker::clock_index_t const &>
               (model.flattened_integer_variables().index(),
-               model.offset_clock_index(),
+               model.flattened_offset_clock_variables().index(),
                model.flattened_clock_variables().index());
             }
             

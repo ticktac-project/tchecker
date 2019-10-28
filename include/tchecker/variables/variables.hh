@@ -421,6 +421,24 @@ namespace tchecker {
     {
       return tchecker::make_range(_first_id, _next_id);
     }
+    
+    /*!
+     \brief Accessor
+     \return Number of declared variables
+     */
+    inline constexpr std::size_t size() const
+    {
+      return tchecker::variables_t<ID, INFO, INDEX>::size();
+    }
+    
+    /*!
+     \brief Accessor
+     \return Number of flat variables (i.e. number of flat variables obtained after all declared variables have been flattened)
+     */
+    inline constexpr std::size_t flattened_size() const
+    {
+      return _next_id;
+    }
   protected:
     using tchecker::variables_t<ID, INFO, INDEX>::declare;
     

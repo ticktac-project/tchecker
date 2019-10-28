@@ -66,7 +66,10 @@ namespace tchecker {
          */
         template <class ASYNC_MODEL>
         explicit zg_t(ASYNC_MODEL & model)
-        : _ta(model), _async_zone_semantics(model), _refcount(model.refcount()), _refmap(model.refmap())
+        : _ta(model),
+        _async_zone_semantics(model),
+        _refcount(model.flattened_offset_clock_variables().refcount()),
+        _refmap(model.flattened_offset_clock_variables().refmap())
         {}
         
         /*!
