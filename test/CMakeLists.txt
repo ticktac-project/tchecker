@@ -4,8 +4,6 @@
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/TestUtils.cmake)
 
-set_property(GLOBAL PROPERTY ALLOW_DUPLICATE_CUSTOM_TARGETS 1)
-
 set(TCHECKER "$<TARGET_FILE:tchecker>")
 
 set(TEST_DRIVER "${CMAKE_CURRENT_SOURCE_DIR}/test-driver.sh")
@@ -51,16 +49,21 @@ add_test(NAME build-tchecker
 
 set_tests_properties(build-tchecker PROPERTIES FIXTURES_SETUP BUILD_TCHECKER)
 
-add_custom_target(save
-                  COMMAND ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_BINARY_DIR}/covreach --target save --config "$<CONFIG>"
-                  COMMAND ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_BINARY_DIR}/explore --target save --config "$<CONFIG>"
-                  COMMENT "Recursive 'save' target"
-                  )
 
 set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "Testing")
 
+set(save_commands "")
 foreach(dir unit-tests bugfixes simple-nr covreach explore)
     add_subdirectory(${dir})
+    if(TARGET save-${dir})
+        list(APPEND save_commands
+             COMMAND ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_BINARY_DIR}/${dir} --target save-${dir} --config "$<CONFIG>")
+    endif()
     set_property(DIRECTORY ${dir}
                  APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "Testing")
 endforeach()
+
+add_custom_target(save
+                  ${save_commands}
+                  COMMENT "Recursive 'save' target"
+                  )

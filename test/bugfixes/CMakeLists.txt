@@ -26,4 +26,4 @@ foreach(testfile ${BUGFIX_TESTS})
     tck_add_nr_test(${testfile} test_name savelist)
 endforeach()
 
-tck_add_savelist(save ${savelist})
+tck_add_savelist(save-bugfixes ${savelist})
