@@ -1,0 +1,89 @@
+#labels=error1,error2
+#clock:size:name
+#int:size:min:max:init:name
+#process:name
+#event:name
+#location:process:name{attributes}
+#edge:process:source:target:event:{attributes}
+#sync:events
+#   where
+#   attributes is a colon-separated list of key:value
+#   events is a colon-separated list of process@event
+
+system:critical_region_2_10
+
+# Events
+event:tau
+event:enter1
+event:exit1
+event:enter2
+event:exit2
+
+# Global variables
+int:1:0:2:0:id
+
+# Counter
+process:counter
+location:counter:I{initial:}
+location:counter:C{}
+edge:counter:I:C:tau{provided: id==0 : do: id=1}
+edge:counter:C:C:tau{provided: id<2 : do: id=id+1}
+edge:counter:C:C:tau{provided: id==2 : do: id=1}
+
+# Arbiter 1
+process:arbiter1
+location:arbiter1:req{initial:}
+location:arbiter1:ack{}
+edge:arbiter1:req:ack:enter1{provided: id==1 : do: id=0}
+edge:arbiter1:ack:req:exit1{do: id=1}
+
+# Arbiter 2
+process:arbiter2
+location:arbiter2:req{initial:}
+location:arbiter2:ack{}
+edge:arbiter2:req:ack:enter2{provided: id==2 : do: id=0}
+edge:arbiter2:ack:req:exit2{do: id=2}
+
+# Prod cell 1
+process:prodcell1
+clock:1:x1
+location:prodcell1:not_ready{initial:}
+location:prodcell1:testing{invariant: x1<=10}
+location:prodcell1:requesting{}
+location:prodcell1:critical{invariant: x1<=20}
+location:prodcell1:testing2{invariant: x1<=10}
+location:prodcell1:safe{labels: safe1}
+location:prodcell1:error{labels: error1}
+edge:prodcell1:not_ready:testing:tau{provided: x1<=20 : do: x1=0}
+edge:prodcell1:testing:not_ready:tau{provided: x1>=10 : do: x1=0}
+edge:prodcell1:testing:requesting:tau{provided: x1<=9}
+edge:prodcell1:requesting:critical:enter1{do: x1=0}
+edge:prodcell1:critical:error:tau{provided: x1>=20}
+edge:prodcell1:critical:testing2:exit1{provided: x1<=9 : do: x1=0}
+edge:prodcell1:testing2:error:tau{provided: x1>=10}
+edge:prodcell1:testing2:safe:tau{provided: x1<=9}
+
+# Prod cell 2
+process:prodcell2
+clock:1:x2
+location:prodcell2:not_ready{initial:}
+location:prodcell2:testing{invariant: x2<=10}
+location:prodcell2:requesting{}
+location:prodcell2:critical{invariant: x2<=20}
+location:prodcell2:testing2{invariant: x2<=10}
+location:prodcell2:safe{labels: safe2}
+location:prodcell2:error{labels: error2}
+edge:prodcell2:not_ready:testing:tau{provided: x2<=20 : do: x2=0}
+edge:prodcell2:testing:not_ready:tau{provided: x2>=10 : do: x2=0}
+edge:prodcell2:testing:requesting:tau{provided: x2<=9}
+edge:prodcell2:requesting:critical:enter2{do: x2=0}
+edge:prodcell2:critical:error:tau{provided: x2>=20}
+edge:prodcell2:critical:testing2:exit2{provided: x2<=9 : do: x2=0}
+edge:prodcell2:testing2:error:tau{provided: x2>=10}
+edge:prodcell2:testing2:safe:tau{provided: x2<=9}
+
+# Synchronizations
+sync:arbiter1@enter1:prodcell1@enter1
+sync:arbiter1@exit1:prodcell1@exit1
+sync:arbiter2@enter2:prodcell2@enter2
+sync:arbiter2@exit2:prodcell2@exit2

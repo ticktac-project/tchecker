@@ -17,7 +17,7 @@ set(PARSE_LABELS_SH "${CMAKE_CURRENT_SOURCE_DIR}/parse-labels.sh")
 set(INPUTS
     ad94.sh:
     corsso.sh:2:2:10:1:2
-    critical-region.sh:3:10
+    critical-region.sh:2:10
     critical-region-async.sh:2:10
     csmacd.sh:3
     dining-philosophers.sh:3:3:10:0
@@ -89,13 +89,6 @@ tck_register_testcases("covreach-" CHECK_TESTCASES_ savelist COVREACH_INPUT_FILE
 set(nb_tests 0)
 foreach (inputfile ${COVREACH_INPUT_FILES})
     get_filename_component(testname ${inputfile} NAME_WE)
-
-#    set(regex "^# *labels *= *\([a-zA-Z0-9_,]*\) *\$")
-#    file(STRINGS "${inputfile}" labels REGEX "${regex}" LIMIT_COUNT 1)
-#    if (labels)
-#        string(REGEX REPLACE ${regex} "\\1" labels "${labels}")
-#        set(labels "-l ${labels}")
-#    endif ()
 
     foreach (zonegraph ${COVREACH_ZONE_GRAPHS})
         if (zonegraph STREQUAL "zg")

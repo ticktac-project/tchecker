@@ -1,3 +1,4 @@
+#labels=error1,error2
 #clock:size:name
 #int:size:min:max:init:name
 #process:name
@@ -51,8 +52,8 @@ location:prodcell1:testing{invariant: x1<=5}
 location:prodcell1:requesting{}
 location:prodcell1:critical{invariant: x1<=10}
 location:prodcell1:testing2{invariant: x1<=5}
-location:prodcell1:safe{}
-location:prodcell1:error{}
+location:prodcell1:safe{labels: safe1}
+location:prodcell1:error{labels: error1}
 edge:prodcell1:not_ready:testing:tau{provided: x1<=10 : do: x1=0}
 edge:prodcell1:testing:not_ready:tau{provided: x1>=5 : do: x1=0}
 edge:prodcell1:testing:requesting:tau{provided: x1<=4}
@@ -70,8 +71,8 @@ location:prodcell2:testing{invariant: x2<=5}
 location:prodcell2:requesting{}
 location:prodcell2:critical{invariant: x2<=10}
 location:prodcell2:testing2{invariant: x2<=5}
-location:prodcell2:safe{}
-location:prodcell2:error{}
+location:prodcell2:safe{labels: safe2}
+location:prodcell2:error{labels: error2}
 edge:prodcell2:not_ready:testing:tau{provided: x2<=10 : do: x2=0}
 edge:prodcell2:testing:not_ready:tau{provided: x2>=5 : do: x2=0}
 edge:prodcell2:testing:requesting:tau{provided: x2<=4}

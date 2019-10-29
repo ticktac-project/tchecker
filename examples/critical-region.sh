@@ -38,6 +38,12 @@ then
     exit 0
 fi
 
+# Labels
+labels="error1"
+for pid in `seq 2 $NPROCS`; do
+    labels="${labels},error${pid}"
+done
+echo "#labels=${labels}"
 
 # Model
 
@@ -102,8 +108,8 @@ location:prodcell${pid}:testing{invariant: x${pid}<=$T}
 location:prodcell${pid}:requesting{}
 location:prodcell${pid}:critical{invariant: x${pid}<=$((2*T))}
 location:prodcell${pid}:testing2{invariant: x${pid}<=$T}
-location:prodcell${pid}:safe{}
-location:prodcell${pid}:error{}
+location:prodcell${pid}:safe{labels: safe${pid}}
+location:prodcell${pid}:error{labels: error${pid}}
 edge:prodcell${pid}:not_ready:testing:tau{provided: x${pid}<=$((2*T)) : do: x${pid}=0}
 edge:prodcell${pid}:testing:not_ready:tau{provided: x${pid}>=$T : do: x${pid}=0}
 edge:prodcell${pid}:testing:requesting:tau{provided: x${pid}<=$((T-1))}

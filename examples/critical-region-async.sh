@@ -85,9 +85,9 @@ echo "# ID process (shared variable access through synchronized events)
 process:ID
 int:1:0:${NPROCS}:0:id
 location:ID:l{initial:}
-edge:ID:l:l:id_eq_0{provided: id==0}
-edge:ID:l:l:id_lt_${NPROCS}{provided: id<$NPROCS}
-edge:ID:l:l:id_eq_${NPROCS}{provided: id==$NPROCS}"
+edge:ID:l:l:id_eq_0{provided: id==0 : do: id=1}
+edge:ID:l:l:id_lt_${NPROCS}{provided: id<$NPROCS : do: id=id+1}
+edge:ID:l:l:id_eq_${NPROCS}{provided: id==$NPROCS: do: id=1}"
 
 for pid in `seq 1 $NPROCS`; do
     echo "edge:ID:l:l:enter${pid}{provided: id==${pid} : do: id=0}
@@ -100,9 +100,9 @@ echo "# Counter
 process:counter
 location:counter:I{initial:}
 location:counter:C{}
-edge:counter:I:C:id_eq_0{do: id=1}
-edge:counter:C:C:id_lt_${NPROCS}{do: id=id+1}
-edge:counter:C:C:id_eq_${NPROCS}{do: id=1}
+edge:counter:I:C:id_eq_0{}
+edge:counter:C:C:id_lt_${NPROCS}{}
+edge:counter:C:C:id_eq_${NPROCS}{}
 "
 
 # Arbiter processes
