@@ -1,0 +1,113 @@
+#labels=cross1,cross2,cross3
+#clock:size:name
+#int:size:min:max:init:name
+#process:name
+#event:name
+#location:process:name{attributes}
+#edge:process:source:target:event:{attributes}
+#sync:events
+#   where
+#   attributes is a colon-separated list of key:value
+#   events is a colon-separated list of process@event
+
+system:train_gate_3
+
+event:tau
+event:go
+event:appr
+event:leave
+event:stop
+event:go1
+event:appr1
+event:leave1
+event:stop1
+event:go2
+event:appr2
+event:leave2
+event:stop2
+event:go3
+event:appr3
+event:leave3
+event:stop3
+
+# Gate
+process:Gate
+int:3:1:3:1:buffer
+int:1:0:2:0:head
+int:1:0:3:0:length
+location:Gate:Free{initial:}
+location:Gate:Occ{}
+location:Gate:Transient{committed:}
+edge:Gate:Free:Occ:go1{provided:length>0&&buffer[head]==1}
+edge:Gate:Free:Occ:appr1{provided:length==0 : do:buffer[(head+length)%3]=1;length=length+1}
+edge:Gate:Occ:Transient:appr1{do:buffer[(head+length)%3]=1;length=length+1}
+edge:Gate:Occ:Free:leave1{provided:length>0&&buffer[head]==1 : do:head=(head+1)%3;length=length-1}
+edge:Gate:Transient:Occ:stop1{provided:length>0&&buffer[(head+length-1)%3]==1}
+edge:Gate:Free:Occ:go2{provided:length>0&&buffer[head]==2}
+edge:Gate:Free:Occ:appr2{provided:length==0 : do:buffer[(head+length)%3]=2;length=length+1}
+edge:Gate:Occ:Transient:appr2{do:buffer[(head+length)%3]=2;length=length+1}
+edge:Gate:Occ:Free:leave2{provided:length>0&&buffer[head]==2 : do:head=(head+1)%3;length=length-1}
+edge:Gate:Transient:Occ:stop2{provided:length>0&&buffer[(head+length-1)%3]==2}
+edge:Gate:Free:Occ:go3{provided:length>0&&buffer[head]==3}
+edge:Gate:Free:Occ:appr3{provided:length==0 : do:buffer[(head+length)%3]=3;length=length+1}
+edge:Gate:Occ:Transient:appr3{do:buffer[(head+length)%3]=3;length=length+1}
+edge:Gate:Occ:Free:leave3{provided:length>0&&buffer[head]==3 : do:head=(head+1)%3;length=length-1}
+edge:Gate:Transient:Occ:stop3{provided:length>0&&buffer[(head+length-1)%3]==3}
+
+# Train 1
+process:Train1
+clock:1:x1
+location:Train1:Safe{initial:}
+location:Train1:Appr{invariant:x1<=20}
+location:Train1:Stop{}
+location:Train1:Start{invariant:x1<=15}
+location:Train1:Cross{invariant:x1<=5 : labels:cross1}
+edge:Train1:Safe:Appr:appr{do:x1=0}
+edge:Train1:Appr:Cross:tau{provided:x1>=10 : do:x1=0}
+edge:Train1:Appr:Stop:stop{provided:x1<=10}
+edge:Train1:Stop:Start:go{do:x1=0}
+edge:Train1:Start:Cross:tau{provided:x1>=7 : do:x1=0}
+edge:Train1:Cross:Safe:leave{provided:x1>=3}
+sync:Train1@appr:Gate@appr1
+sync:Train1@stop:Gate@stop1
+sync:Train1@go:Gate@go1
+sync:Train1@leave:Gate@leave1
+
+# Train 2
+process:Train2
+clock:1:x2
+location:Train2:Safe{initial:}
+location:Train2:Appr{invariant:x2<=20}
+location:Train2:Stop{}
+location:Train2:Start{invariant:x2<=15}
+location:Train2:Cross{invariant:x2<=5 : labels:cross2}
+edge:Train2:Safe:Appr:appr{do:x2=0}
+edge:Train2:Appr:Cross:tau{provided:x2>=10 : do:x2=0}
+edge:Train2:Appr:Stop:stop{provided:x2<=10}
+edge:Train2:Stop:Start:go{do:x2=0}
+edge:Train2:Start:Cross:tau{provided:x2>=7 : do:x2=0}
+edge:Train2:Cross:Safe:leave{provided:x2>=3}
+sync:Train2@appr:Gate@appr2
+sync:Train2@stop:Gate@stop2
+sync:Train2@go:Gate@go2
+sync:Train2@leave:Gate@leave2
+
+# Train 3
+process:Train3
+clock:1:x3
+location:Train3:Safe{initial:}
+location:Train3:Appr{invariant:x3<=20}
+location:Train3:Stop{}
+location:Train3:Start{invariant:x3<=15}
+location:Train3:Cross{invariant:x3<=5 : labels:cross3}
+edge:Train3:Safe:Appr:appr{do:x3=0}
+edge:Train3:Appr:Cross:tau{provided:x3>=10 : do:x3=0}
+edge:Train3:Appr:Stop:stop{provided:x3<=10}
+edge:Train3:Stop:Start:go{do:x3=0}
+edge:Train3:Start:Cross:tau{provided:x3>=7 : do:x3=0}
+edge:Train3:Cross:Safe:leave{provided:x3>=3}
+sync:Train3@appr:Gate@appr3
+sync:Train3@stop:Gate@stop3
+sync:Train3@go:Gate@go3
+sync:Train3@leave:Gate@leave3
+

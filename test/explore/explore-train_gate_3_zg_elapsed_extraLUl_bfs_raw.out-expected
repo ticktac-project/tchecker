@@ -1,0 +1,2539 @@
+train_gate_3
+0: <Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=1,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+1: <Occ,Appr,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+0 -> 1  reset: x1=0 tgt inv: x1<=20
+2: <Occ,Safe,Appr,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+0 -> 2  reset: x2=0 tgt inv: x2<=20
+3: <Occ,Safe,Safe,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+0 -> 3  reset: x3=0 tgt inv: x3<=20
+4: <Transient,Appr,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=0,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+1 -> 4 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+5: <Transient,Appr,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+1 -> 5 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+6: <Occ,Cross,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+1 -> 6 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+7: <Transient,Appr,Appr,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=0,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+2 -> 7 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+8: <Transient,Safe,Appr,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+2 -> 8 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+9: <Occ,Safe,Cross,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+2 -> 9 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+10: <Transient,Appr,Safe,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=0,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+3 -> 10 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+11: <Transient,Safe,Appr,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+3 -> 11 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+12: <Occ,Safe,Safe,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+3 -> 12 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+13: <Occ,Appr,Stop,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+4 -> 13 src inv: x1<=20 & x2<=20 guard: x2<=10 tgt inv: x1<=20
+14: <Transient,Cross,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=0,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)
+4 -> 14 src inv: x1<=20 & x2<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5 & x2<=20
+15: <Occ,Appr,Safe,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+5 -> 15 src inv: x1<=20 & x3<=20 guard: x3<=10 tgt inv: x1<=20
+16: <Transient,Cross,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=0,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)
+5 -> 16 src inv: x1<=20 & x3<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5 & x3<=20
+17: <Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=1,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+6 -> 17 src inv: x1<=5 guard: x1>=3
+18: <Transient,Cross,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=0,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+6 -> 18 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+19: <Transient,Cross,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+6 -> 19 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+20: <Occ,Stop,Appr,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+7 -> 20 src inv: x1<=20 & x2<=20 guard: x1<=10 tgt inv: x2<=20
+21: <Transient,Appr,Cross,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=0,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)
+7 -> 21 src inv: x1<=20 & x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x1<=20 & x2<=5
+22: <Occ,Safe,Appr,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+8 -> 22 src inv: x2<=20 & x3<=20 guard: x3<=10 tgt inv: x2<=20
+23: <Transient,Safe,Cross,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)
+8 -> 23 src inv: x2<=20 & x3<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5 & x3<=20
+24: <Transient,Appr,Cross,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=0,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+9 -> 24 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+25: <Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+9 -> 25 src inv: x2<=5 guard: x2>=3
+26: <Transient,Safe,Cross,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+9 -> 26 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+27: <Occ,Stop,Safe,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+10 -> 27 src inv: x1<=20 & x3<=20 guard: x1<=10 tgt inv: x3<=20
+28: <Transient,Appr,Safe,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=0,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)
+10 -> 28 src inv: x1<=20 & x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x1<=20 & x3<=5
+29: <Occ,Safe,Stop,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+11 -> 29 src inv: x2<=20 & x3<=20 guard: x2<=10 tgt inv: x3<=20
+30: <Transient,Safe,Appr,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)
+11 -> 30 src inv: x2<=20 & x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x2<=20 & x3<=5
+31: <Transient,Appr,Safe,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=0,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+12 -> 31 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+32: <Transient,Safe,Appr,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+12 -> 32 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+33: <Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+12 -> 33 src inv: x3<=5 guard: x3>=3
+34: <Transient,Appr,Stop,Appr> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=3 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+13 -> 34 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+35: <Occ,Cross,Stop,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+13 -> 35 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+14 -> 35 src inv: x1<=5 & x2<=20 guard: x2<=10 tgt inv: x1<=5
+36: <Transient,Appr,Appr,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=3 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+15 -> 36 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+37: <Occ,Cross,Safe,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+15 -> 37 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+16 -> 37 src inv: x1<=5 & x3<=20 guard: x3<=10 tgt inv: x1<=5
+38: <Occ,Appr,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+17 -> 38  reset: x1=0 tgt inv: x1<=20
+39: <Occ,Safe,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+17 -> 39  reset: x2=0 tgt inv: x2<=20
+40: <Occ,Safe,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+17 -> 40  reset: x3=0 tgt inv: x3<=20
+18 -> 35 src inv: x1<=5 & x2<=20 guard: x2<=10 tgt inv: x1<=5
+19 -> 37 src inv: x1<=5 & x3<=20 guard: x3<=10 tgt inv: x1<=5
+41: <Transient,Stop,Appr,Appr> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=3 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+20 -> 41 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+42: <Occ,Stop,Cross,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+20 -> 42 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+21 -> 42 src inv: x1<=20 & x2<=5 guard: x1<=10 tgt inv: x2<=5
+43: <Transient,Appr,Appr,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=3 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+22 -> 43 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+44: <Occ,Safe,Cross,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+22 -> 44 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+23 -> 44 src inv: x2<=5 & x3<=20 guard: x3<=10 tgt inv: x2<=5
+24 -> 42 src inv: x1<=20 & x2<=5 guard: x1<=10 tgt inv: x2<=5
+45: <Occ,Appr,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+25 -> 45  reset: x1=0 tgt inv: x1<=20
+46: <Occ,Safe,Appr,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+25 -> 46  reset: x2=0 tgt inv: x2<=20
+47: <Occ,Safe,Safe,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+25 -> 47  reset: x3=0 tgt inv: x3<=20
+26 -> 44 src inv: x2<=5 & x3<=20 guard: x3<=10 tgt inv: x2<=5
+48: <Transient,Stop,Appr,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=3 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+27 -> 48 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+49: <Occ,Stop,Safe,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+27 -> 49 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+28 -> 49 src inv: x1<=20 & x3<=5 guard: x1<=10 tgt inv: x3<=5
+50: <Transient,Appr,Stop,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=3 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+29 -> 50 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+51: <Occ,Safe,Stop,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+29 -> 51 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+30 -> 51 src inv: x2<=20 & x3<=5 guard: x2<=10 tgt inv: x3<=5
+31 -> 49 src inv: x1<=20 & x3<=5 guard: x1<=10 tgt inv: x3<=5
+32 -> 51 src inv: x2<=20 & x3<=5 guard: x2<=10 tgt inv: x3<=5
+52: <Occ,Appr,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+33 -> 52  reset: x1=0 tgt inv: x1<=20
+53: <Occ,Safe,Appr,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+33 -> 53  reset: x2=0 tgt inv: x2<=20
+54: <Occ,Safe,Safe,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+33 -> 54  reset: x3=0 tgt inv: x3<=20
+55: <Occ,Appr,Stop,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+34 -> 55 src inv: x1<=20 & x3<=20 guard: x3<=10 tgt inv: x1<=20
+56: <Transient,Cross,Stop,Appr> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=3 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)
+34 -> 56 src inv: x1<=20 & x3<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5 & x3<=20
+57: <Free,Safe,Stop,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+35 -> 57 src inv: x1<=5 guard: x1>=3
+58: <Transient,Cross,Stop,Appr> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=3 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+35 -> 58 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+59: <Occ,Appr,Stop,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+36 -> 59 src inv: x1<=20 & x2<=20 guard: x2<=10 tgt inv: x1<=20
+60: <Transient,Cross,Appr,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=3 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)
+36 -> 60 src inv: x1<=20 & x2<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5 & x2<=20
+61: <Free,Safe,Safe,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+37 -> 61 src inv: x1<=5 guard: x1>=3
+62: <Transient,Cross,Appr,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=3 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+37 -> 62 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+63: <Transient,Appr,Appr,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=1,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+38 -> 63 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+64: <Transient,Appr,Safe,Appr> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+38 -> 64 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+65: <Occ,Cross,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+38 -> 65 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+66: <Transient,Appr,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+39 -> 66 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+67: <Transient,Safe,Appr,Appr> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+39 -> 67 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+68: <Occ,Safe,Cross,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+39 -> 68 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+69: <Transient,Appr,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+40 -> 69 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+70: <Transient,Safe,Appr,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+40 -> 70 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+71: <Occ,Safe,Safe,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+40 -> 71 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+72: <Occ,Stop,Appr,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+41 -> 72 src inv: x2<=20 & x3<=20 guard: x3<=10 tgt inv: x2<=20
+73: <Transient,Stop,Cross,Appr> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=3 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)
+41 -> 73 src inv: x2<=20 & x3<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5 & x3<=20
+74: <Free,Stop,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+42 -> 74 src inv: x2<=5 guard: x2>=3
+75: <Transient,Stop,Cross,Appr> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=3 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+42 -> 75 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+76: <Occ,Stop,Appr,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+43 -> 76 src inv: x1<=20 & x2<=20 guard: x1<=10 tgt inv: x2<=20
+77: <Transient,Appr,Cross,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=3 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)
+43 -> 77 src inv: x1<=20 & x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x1<=20 & x2<=5
+78: <Transient,Appr,Cross,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=3 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+44 -> 78 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+79: <Free,Safe,Safe,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+44 -> 79 src inv: x2<=5 guard: x2>=3
+80: <Transient,Appr,Appr,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=1,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+45 -> 80 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+81: <Transient,Appr,Safe,Appr> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+45 -> 81 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+82: <Occ,Cross,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+45 -> 82 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+83: <Transient,Appr,Appr,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+46 -> 83 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+84: <Transient,Safe,Appr,Appr> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+46 -> 84 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+85: <Occ,Safe,Cross,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+46 -> 85 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+86: <Transient,Appr,Safe,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+47 -> 86 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+87: <Transient,Safe,Appr,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+47 -> 87 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+88: <Occ,Safe,Safe,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+47 -> 88 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+89: <Occ,Stop,Stop,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+48 -> 89 src inv: x2<=20 & x3<=20 guard: x2<=10 tgt inv: x3<=20
+90: <Transient,Stop,Appr,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=3 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)
+48 -> 90 src inv: x2<=20 & x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x2<=20 & x3<=5
+91: <Transient,Stop,Appr,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=3 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+49 -> 91 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+92: <Free,Stop,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+49 -> 92 src inv: x3<=5 guard: x3>=3
+93: <Occ,Stop,Stop,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+50 -> 93 src inv: x1<=20 & x3<=20 guard: x1<=10 tgt inv: x3<=20
+94: <Transient,Appr,Stop,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=3 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)
+50 -> 94 src inv: x1<=20 & x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x1<=20 & x3<=5
+95: <Transient,Appr,Stop,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=3 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+51 -> 95 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+96: <Free,Safe,Stop,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+51 -> 96 src inv: x3<=5 guard: x3>=3
+97: <Transient,Appr,Appr,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+52 -> 97 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+98: <Transient,Appr,Safe,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+52 -> 98 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+99: <Occ,Cross,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+52 -> 99 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+100: <Transient,Appr,Appr,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+53 -> 100 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+101: <Transient,Safe,Appr,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+53 -> 101 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+102: <Occ,Safe,Cross,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+53 -> 102 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+103: <Transient,Appr,Safe,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+54 -> 103 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+104: <Transient,Safe,Appr,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+54 -> 104 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+105: <Occ,Safe,Safe,Cross> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+54 -> 105 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+106: <Occ,Cross,Stop,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+55 -> 106 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+56 -> 106 src inv: x1<=5 & x3<=20 guard: x3<=10 tgt inv: x1<=5
+107: <Occ,Safe,Start,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+57 -> 107  reset: x2=0 tgt inv: x2<=15
+58 -> 106 src inv: x1<=5 & x3<=20 guard: x3<=10 tgt inv: x1<=5
+108: <Occ,Cross,Stop,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+59 -> 108 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+60 -> 108 src inv: x1<=5 & x2<=20 guard: x2<=10 tgt inv: x1<=5
+109: <Occ,Safe,Safe,Start> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+61 -> 109  reset: x3=0 tgt inv: x3<=15
+62 -> 108 src inv: x1<=5 & x2<=20 guard: x2<=10 tgt inv: x1<=5
+110: <Occ,Appr,Stop,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+63 -> 110 src inv: x1<=20 & x2<=20 guard: x2<=10 tgt inv: x1<=20
+111: <Transient,Cross,Appr,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=1,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)
+63 -> 111 src inv: x1<=20 & x2<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5 & x2<=20
+112: <Occ,Appr,Safe,Stop> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+64 -> 112 src inv: x1<=20 & x3<=20 guard: x3<=10 tgt inv: x1<=20
+113: <Transient,Cross,Safe,Appr> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=1,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)
+64 -> 113 src inv: x1<=20 & x3<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5 & x3<=20
+114: <Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=1,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+65 -> 114 src inv: x1<=5 guard: x1>=3
+115: <Transient,Cross,Appr,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=1,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+65 -> 115 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+116: <Transient,Cross,Safe,Appr> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+65 -> 116 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+117: <Occ,Stop,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+66 -> 117 src inv: x1<=20 & x2<=20 guard: x1<=10 tgt inv: x2<=20
+118: <Transient,Appr,Cross,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=1,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)
+66 -> 118 src inv: x1<=20 & x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x1<=20 & x2<=5
+119: <Occ,Safe,Appr,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+67 -> 119 src inv: x2<=20 & x3<=20 guard: x3<=10 tgt inv: x2<=20
+120: <Transient,Safe,Cross,Appr> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)
+67 -> 120 src inv: x2<=20 & x3<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5 & x3<=20
+121: <Transient,Appr,Cross,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+68 -> 121 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+122: <Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+68 -> 122 src inv: x2<=5 guard: x2>=3
+123: <Transient,Safe,Cross,Appr> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+68 -> 123 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+124: <Occ,Stop,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+69 -> 124 src inv: x1<=20 & x3<=20 guard: x1<=10 tgt inv: x3<=20
+125: <Transient,Appr,Safe,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)
+69 -> 125 src inv: x1<=20 & x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x1<=20 & x3<=5
+126: <Occ,Safe,Stop,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+70 -> 126 src inv: x2<=20 & x3<=20 guard: x2<=10 tgt inv: x3<=20
+127: <Transient,Safe,Appr,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)
+70 -> 127 src inv: x2<=20 & x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x2<=20 & x3<=5
+128: <Transient,Appr,Safe,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+71 -> 128 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+129: <Transient,Safe,Appr,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+71 -> 129 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+130: <Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+71 -> 130 src inv: x3<=5 guard: x3>=3
+131: <Occ,Stop,Cross,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+72 -> 131 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+73 -> 131 src inv: x2<=5 & x3<=20 guard: x3<=10 tgt inv: x2<=5
+132: <Occ,Start,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+74 -> 132  reset: x1=0 tgt inv: x1<=15
+75 -> 131 src inv: x2<=5 & x3<=20 guard: x3<=10 tgt inv: x2<=5
+133: <Occ,Stop,Cross,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+76 -> 133 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+77 -> 133 src inv: x1<=20 & x2<=5 guard: x1<=10 tgt inv: x2<=5
+78 -> 133 src inv: x1<=20 & x2<=5 guard: x1<=10 tgt inv: x2<=5
+134: <Occ,Safe,Safe,Start> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+79 -> 134  reset: x3=0 tgt inv: x3<=15
+135: <Occ,Appr,Stop,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+80 -> 135 src inv: x1<=20 & x2<=20 guard: x2<=10 tgt inv: x1<=20
+136: <Transient,Cross,Appr,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=1,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)
+80 -> 136 src inv: x1<=20 & x2<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5 & x2<=20
+137: <Occ,Appr,Safe,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+81 -> 137 src inv: x1<=20 & x3<=20 guard: x3<=10 tgt inv: x1<=20
+138: <Transient,Cross,Safe,Appr> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)
+81 -> 138 src inv: x1<=20 & x3<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5 & x3<=20
+139: <Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+82 -> 139 src inv: x1<=5 guard: x1>=3
+140: <Transient,Cross,Appr,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=1,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+82 -> 140 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+141: <Transient,Cross,Safe,Appr> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+82 -> 141 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+142: <Occ,Stop,Appr,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+83 -> 142 src inv: x1<=20 & x2<=20 guard: x1<=10 tgt inv: x2<=20
+143: <Transient,Appr,Cross,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=1,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)
+83 -> 143 src inv: x1<=20 & x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x1<=20 & x2<=5
+144: <Occ,Safe,Appr,Stop> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+84 -> 144 src inv: x2<=20 & x3<=20 guard: x3<=10 tgt inv: x2<=20
+145: <Transient,Safe,Cross,Appr> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)
+84 -> 145 src inv: x2<=20 & x3<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5 & x3<=20
+146: <Transient,Appr,Cross,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+85 -> 146 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+147: <Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+85 -> 147 src inv: x2<=5 guard: x2>=3
+148: <Transient,Safe,Cross,Appr> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+85 -> 148 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+149: <Occ,Stop,Safe,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+86 -> 149 src inv: x1<=20 & x3<=20 guard: x1<=10 tgt inv: x3<=20
+150: <Transient,Appr,Safe,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)
+86 -> 150 src inv: x1<=20 & x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x1<=20 & x3<=5
+151: <Occ,Safe,Stop,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+87 -> 151 src inv: x2<=20 & x3<=20 guard: x2<=10 tgt inv: x3<=20
+152: <Transient,Safe,Appr,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)
+87 -> 152 src inv: x2<=20 & x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x2<=20 & x3<=5
+153: <Transient,Appr,Safe,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+88 -> 153 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+154: <Transient,Safe,Appr,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+88 -> 154 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+155: <Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+88 -> 155 src inv: x3<=5 guard: x3>=3
+156: <Occ,Stop,Stop,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+89 -> 156 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+90 -> 156 src inv: x2<=20 & x3<=5 guard: x2<=10 tgt inv: x3<=5
+91 -> 156 src inv: x2<=20 & x3<=5 guard: x2<=10 tgt inv: x3<=5
+157: <Occ,Start,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+92 -> 157  reset: x1=0 tgt inv: x1<=15
+158: <Occ,Stop,Stop,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+93 -> 158 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+94 -> 158 src inv: x1<=20 & x3<=5 guard: x1<=10 tgt inv: x3<=5
+95 -> 158 src inv: x1<=20 & x3<=5 guard: x1<=10 tgt inv: x3<=5
+159: <Occ,Safe,Start,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+96 -> 159  reset: x2=0 tgt inv: x2<=15
+160: <Occ,Appr,Stop,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+97 -> 160 src inv: x1<=20 & x2<=20 guard: x2<=10 tgt inv: x1<=20
+161: <Transient,Cross,Appr,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)
+97 -> 161 src inv: x1<=20 & x2<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5 & x2<=20
+162: <Occ,Appr,Safe,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+98 -> 162 src inv: x1<=20 & x3<=20 guard: x3<=10 tgt inv: x1<=20
+163: <Transient,Cross,Safe,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=1,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)
+98 -> 163 src inv: x1<=20 & x3<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5 & x3<=20
+164: <Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+99 -> 164 src inv: x1<=5 guard: x1>=3
+165: <Transient,Cross,Appr,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+99 -> 165 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+166: <Transient,Cross,Safe,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+99 -> 166 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+167: <Occ,Stop,Appr,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+100 -> 167 src inv: x1<=20 & x2<=20 guard: x1<=10 tgt inv: x2<=20
+168: <Transient,Appr,Cross,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)
+100 -> 168 src inv: x1<=20 & x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x1<=20 & x2<=5
+169: <Occ,Safe,Appr,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+101 -> 169 src inv: x2<=20 & x3<=20 guard: x3<=10 tgt inv: x2<=20
+170: <Transient,Safe,Cross,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)
+101 -> 170 src inv: x2<=20 & x3<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5 & x3<=20
+171: <Transient,Appr,Cross,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+102 -> 171 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+172: <Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+102 -> 172 src inv: x2<=5 guard: x2>=3
+173: <Transient,Safe,Cross,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+102 -> 173 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+174: <Occ,Stop,Safe,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+103 -> 174 src inv: x1<=20 & x3<=20 guard: x1<=10 tgt inv: x3<=20
+175: <Transient,Appr,Safe,Cross> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)
+103 -> 175 src inv: x1<=20 & x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x1<=20 & x3<=5
+176: <Occ,Safe,Stop,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+104 -> 176 src inv: x2<=20 & x3<=20 guard: x2<=10 tgt inv: x3<=20
+177: <Transient,Safe,Appr,Cross> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)
+104 -> 177 src inv: x2<=20 & x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x2<=20 & x3<=5
+178: <Transient,Appr,Safe,Cross> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+105 -> 178 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+179: <Transient,Safe,Appr,Cross> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+105 -> 179 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+180: <Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+105 -> 180 src inv: x3<=5 guard: x3>=3
+181: <Free,Safe,Stop,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+106 -> 181 src inv: x1<=5 guard: x1>=3
+182: <Transient,Appr,Start,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+107 -> 182 src inv: x2<=15 reset: x1=0 tgt inv: x1<=20 & x2<=15
+183: <Transient,Safe,Start,Appr> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+107 -> 183 src inv: x2<=15 reset: x3=0 tgt inv: x2<=15 & x3<=20
+107 -> 68 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+184: <Free,Safe,Stop,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+108 -> 184 src inv: x1<=5 guard: x1>=3
+185: <Transient,Appr,Safe,Start> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+109 -> 185 src inv: x3<=15 reset: x1=0 tgt inv: x1<=20 & x3<=15
+186: <Transient,Safe,Appr,Start> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+109 -> 186 src inv: x3<=15 reset: x2=0 tgt inv: x2<=20 & x3<=15
+109 -> 71 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+187: <Transient,Appr,Stop,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=3 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+110 -> 187 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+188: <Occ,Cross,Stop,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+110 -> 188 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+111 -> 188 src inv: x1<=5 & x2<=20 guard: x2<=10 tgt inv: x1<=5
+189: <Transient,Appr,Appr,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=3 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+112 -> 189 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+190: <Occ,Cross,Safe,Stop> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+112 -> 190 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+113 -> 190 src inv: x1<=5 & x3<=20 guard: x3<=10 tgt inv: x1<=5
+191: <Occ,Appr,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+114 -> 191  reset: x1=0 tgt inv: x1<=20
+192: <Occ,Safe,Appr,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+114 -> 192  reset: x2=0 tgt inv: x2<=20
+193: <Occ,Safe,Safe,Appr> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+114 -> 193  reset: x3=0 tgt inv: x3<=20
+115 -> 188 src inv: x1<=5 & x2<=20 guard: x2<=10 tgt inv: x1<=5
+116 -> 190 src inv: x1<=5 & x3<=20 guard: x3<=10 tgt inv: x1<=5
+194: <Transient,Stop,Appr,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=3 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+117 -> 194 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+195: <Occ,Stop,Cross,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+117 -> 195 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+118 -> 195 src inv: x1<=20 & x2<=5 guard: x1<=10 tgt inv: x2<=5
+196: <Transient,Appr,Appr,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=3 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+119 -> 196 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+197: <Occ,Safe,Cross,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+119 -> 197 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+120 -> 197 src inv: x2<=5 & x3<=20 guard: x3<=10 tgt inv: x2<=5
+121 -> 195 src inv: x1<=20 & x2<=5 guard: x1<=10 tgt inv: x2<=5
+198: <Occ,Appr,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+122 -> 198  reset: x1=0 tgt inv: x1<=20
+199: <Occ,Safe,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+122 -> 199  reset: x2=0 tgt inv: x2<=20
+200: <Occ,Safe,Safe,Appr> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+122 -> 200  reset: x3=0 tgt inv: x3<=20
+123 -> 197 src inv: x2<=5 & x3<=20 guard: x3<=10 tgt inv: x2<=5
+201: <Transient,Stop,Appr,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=3 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+124 -> 201 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+202: <Occ,Stop,Safe,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+124 -> 202 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+125 -> 202 src inv: x1<=20 & x3<=5 guard: x1<=10 tgt inv: x3<=5
+203: <Transient,Appr,Stop,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=3 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+126 -> 203 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+204: <Occ,Safe,Stop,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+126 -> 204 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+127 -> 204 src inv: x2<=20 & x3<=5 guard: x2<=10 tgt inv: x3<=5
+128 -> 202 src inv: x1<=20 & x3<=5 guard: x1<=10 tgt inv: x3<=5
+129 -> 204 src inv: x2<=20 & x3<=5 guard: x2<=10 tgt inv: x3<=5
+205: <Occ,Appr,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+130 -> 205  reset: x1=0 tgt inv: x1<=20
+206: <Occ,Safe,Appr,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+130 -> 206  reset: x2=0 tgt inv: x2<=20
+207: <Occ,Safe,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+130 -> 207  reset: x3=0 tgt inv: x3<=20
+208: <Free,Stop,Safe,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+131 -> 208 src inv: x2<=5 guard: x2>=3
+209: <Transient,Start,Appr,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=1,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+132 -> 209 src inv: x1<=15 reset: x2=0 tgt inv: x1<=15 & x2<=20
+210: <Transient,Start,Safe,Appr> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+132 -> 210 src inv: x1<=15 reset: x3=0 tgt inv: x1<=15 & x3<=20
+132 -> 82 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+211: <Free,Stop,Safe,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+133 -> 211 src inv: x2<=5 guard: x2>=3
+212: <Transient,Appr,Safe,Start> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+134 -> 212 src inv: x3<=15 reset: x1=0 tgt inv: x1<=20 & x3<=15
+213: <Transient,Safe,Appr,Start> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+134 -> 213 src inv: x3<=15 reset: x2=0 tgt inv: x2<=20 & x3<=15
+134 -> 88 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+135 -> 187 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+214: <Occ,Cross,Stop,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+135 -> 214 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+136 -> 214 src inv: x1<=5 & x2<=20 guard: x2<=10 tgt inv: x1<=5
+137 -> 189 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+215: <Occ,Cross,Safe,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+137 -> 215 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+138 -> 215 src inv: x1<=5 & x3<=20 guard: x3<=10 tgt inv: x1<=5
+216: <Occ,Appr,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+139 -> 216  reset: x1=0 tgt inv: x1<=20
+217: <Occ,Safe,Appr,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+139 -> 217  reset: x2=0 tgt inv: x2<=20
+218: <Occ,Safe,Safe,Appr> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+139 -> 218  reset: x3=0 tgt inv: x3<=20
+140 -> 214 src inv: x1<=5 & x2<=20 guard: x2<=10 tgt inv: x1<=5
+141 -> 215 src inv: x1<=5 & x3<=20 guard: x3<=10 tgt inv: x1<=5
+142 -> 194 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+219: <Occ,Stop,Cross,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+142 -> 219 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+143 -> 219 src inv: x1<=20 & x2<=5 guard: x1<=10 tgt inv: x2<=5
+144 -> 196 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+220: <Occ,Safe,Cross,Stop> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+144 -> 220 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+145 -> 220 src inv: x2<=5 & x3<=20 guard: x3<=10 tgt inv: x2<=5
+146 -> 219 src inv: x1<=20 & x2<=5 guard: x1<=10 tgt inv: x2<=5
+221: <Occ,Appr,Safe,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+147 -> 221  reset: x1=0 tgt inv: x1<=20
+222: <Occ,Safe,Appr,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+147 -> 222  reset: x2=0 tgt inv: x2<=20
+223: <Occ,Safe,Safe,Appr> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+147 -> 223  reset: x3=0 tgt inv: x3<=20
+148 -> 220 src inv: x2<=5 & x3<=20 guard: x3<=10 tgt inv: x2<=5
+149 -> 201 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+224: <Occ,Stop,Safe,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+149 -> 224 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+150 -> 224 src inv: x1<=20 & x3<=5 guard: x1<=10 tgt inv: x3<=5
+151 -> 203 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+225: <Occ,Safe,Stop,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+151 -> 225 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+152 -> 225 src inv: x2<=20 & x3<=5 guard: x2<=10 tgt inv: x3<=5
+153 -> 224 src inv: x1<=20 & x3<=5 guard: x1<=10 tgt inv: x3<=5
+154 -> 225 src inv: x2<=20 & x3<=5 guard: x2<=10 tgt inv: x3<=5
+226: <Occ,Appr,Safe,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+155 -> 226  reset: x1=0 tgt inv: x1<=20
+227: <Occ,Safe,Appr,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+155 -> 227  reset: x2=0 tgt inv: x2<=20
+228: <Occ,Safe,Safe,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+155 -> 228  reset: x3=0 tgt inv: x3<=20
+229: <Free,Stop,Stop,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+156 -> 229 src inv: x3<=5 guard: x3>=3
+230: <Transient,Start,Appr,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+157 -> 230 src inv: x1<=15 reset: x2=0 tgt inv: x1<=15 & x2<=20
+231: <Transient,Start,Safe,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+157 -> 231 src inv: x1<=15 reset: x3=0 tgt inv: x1<=15 & x3<=20
+157 -> 99 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+232: <Free,Stop,Stop,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+158 -> 232 src inv: x3<=5 guard: x3>=3
+233: <Transient,Appr,Start,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+159 -> 233 src inv: x2<=15 reset: x1=0 tgt inv: x1<=20 & x2<=15
+234: <Transient,Safe,Start,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+159 -> 234 src inv: x2<=15 reset: x3=0 tgt inv: x2<=15 & x3<=20
+159 -> 102 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+160 -> 187 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+235: <Occ,Cross,Stop,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+160 -> 235 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+161 -> 235 src inv: x1<=5 & x2<=20 guard: x2<=10 tgt inv: x1<=5
+162 -> 189 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+236: <Occ,Cross,Safe,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+162 -> 236 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+163 -> 236 src inv: x1<=5 & x3<=20 guard: x3<=10 tgt inv: x1<=5
+237: <Occ,Appr,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+164 -> 237  reset: x1=0 tgt inv: x1<=20
+238: <Occ,Safe,Appr,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+164 -> 238  reset: x2=0 tgt inv: x2<=20
+239: <Occ,Safe,Safe,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+164 -> 239  reset: x3=0 tgt inv: x3<=20
+165 -> 235 src inv: x1<=5 & x2<=20 guard: x2<=10 tgt inv: x1<=5
+166 -> 236 src inv: x1<=5 & x3<=20 guard: x3<=10 tgt inv: x1<=5
+167 -> 194 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+240: <Occ,Stop,Cross,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+167 -> 240 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+168 -> 240 src inv: x1<=20 & x2<=5 guard: x1<=10 tgt inv: x2<=5
+169 -> 196 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+241: <Occ,Safe,Cross,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+169 -> 241 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+170 -> 241 src inv: x2<=5 & x3<=20 guard: x3<=10 tgt inv: x2<=5
+171 -> 240 src inv: x1<=20 & x2<=5 guard: x1<=10 tgt inv: x2<=5
+242: <Occ,Appr,Safe,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+172 -> 242  reset: x1=0 tgt inv: x1<=20
+243: <Occ,Safe,Appr,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+172 -> 243  reset: x2=0 tgt inv: x2<=20
+244: <Occ,Safe,Safe,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+172 -> 244  reset: x3=0 tgt inv: x3<=20
+173 -> 241 src inv: x2<=5 & x3<=20 guard: x3<=10 tgt inv: x2<=5
+174 -> 201 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+245: <Occ,Stop,Safe,Cross> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+174 -> 245 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+175 -> 245 src inv: x1<=20 & x3<=5 guard: x1<=10 tgt inv: x3<=5
+176 -> 203 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+246: <Occ,Safe,Stop,Cross> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+176 -> 246 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+177 -> 246 src inv: x2<=20 & x3<=5 guard: x2<=10 tgt inv: x3<=5
+178 -> 245 src inv: x1<=20 & x3<=5 guard: x1<=10 tgt inv: x3<=5
+179 -> 246 src inv: x2<=20 & x3<=5 guard: x2<=10 tgt inv: x3<=5
+247: <Occ,Appr,Safe,Safe> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+180 -> 247  reset: x1=0 tgt inv: x1<=20
+248: <Occ,Safe,Appr,Safe> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+180 -> 248  reset: x2=0 tgt inv: x2<=20
+249: <Occ,Safe,Safe,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+180 -> 249  reset: x3=0 tgt inv: x3<=20
+250: <Occ,Safe,Start,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+181 -> 250  reset: x2=0 tgt inv: x2<=15
+251: <Occ,Stop,Start,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+182 -> 251 src inv: x1<=20 & x2<=15 guard: x1<=10 tgt inv: x2<=15
+182 -> 118 src inv: x1<=20 & x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x1<=20 & x2<=5
+183 -> 250 src inv: x2<=15 & x3<=20 guard: x3<=10 tgt inv: x2<=15
+183 -> 120 src inv: x2<=15 & x3<=20 guard: x2>=7 reset: x2=0 tgt inv: x2<=5 & x3<=20
+252: <Occ,Safe,Stop,Start> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+184 -> 252  reset: x3=0 tgt inv: x3<=15
+253: <Occ,Stop,Safe,Start> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+185 -> 253 src inv: x1<=20 & x3<=15 guard: x1<=10 tgt inv: x3<=15
+185 -> 125 src inv: x1<=20 & x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x1<=20 & x3<=5
+186 -> 252 src inv: x2<=20 & x3<=15 guard: x2<=10 tgt inv: x3<=15
+186 -> 127 src inv: x2<=20 & x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x2<=20 & x3<=5
+254: <Occ,Appr,Stop,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+187 -> 254 src inv: x1<=20 & x3<=20 guard: x3<=10 tgt inv: x1<=20
+255: <Transient,Cross,Stop,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=3 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)
+187 -> 255 src inv: x1<=20 & x3<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5 & x3<=20
+256: <Free,Safe,Stop,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+188 -> 256 src inv: x1<=5 guard: x1>=3
+257: <Transient,Cross,Stop,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=3 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+188 -> 257 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+258: <Occ,Appr,Stop,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+189 -> 258 src inv: x1<=20 & x2<=20 guard: x2<=10 tgt inv: x1<=20
+259: <Transient,Cross,Appr,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=3 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)
+189 -> 259 src inv: x1<=20 & x2<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5 & x2<=20
+260: <Free,Safe,Safe,Stop> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+190 -> 260 src inv: x1<=5 guard: x1>=3
+261: <Transient,Cross,Appr,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=3 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+190 -> 261 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+262: <Transient,Appr,Appr,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=2,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+191 -> 262 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+263: <Transient,Appr,Safe,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=2,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+191 -> 263 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+264: <Occ,Cross,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+191 -> 264 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+265: <Transient,Appr,Appr,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=2,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+192 -> 265 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+266: <Transient,Safe,Appr,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+192 -> 266 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+267: <Occ,Safe,Cross,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+192 -> 267 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+268: <Transient,Appr,Safe,Appr> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=2,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+193 -> 268 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+269: <Transient,Safe,Appr,Appr> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+193 -> 269 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+270: <Occ,Safe,Safe,Cross> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+193 -> 270 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+271: <Occ,Stop,Appr,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+194 -> 271 src inv: x2<=20 & x3<=20 guard: x3<=10 tgt inv: x2<=20
+272: <Transient,Stop,Cross,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=3 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)
+194 -> 272 src inv: x2<=20 & x3<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5 & x3<=20
+273: <Free,Stop,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+195 -> 273 src inv: x2<=5 guard: x2>=3
+274: <Transient,Stop,Cross,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=3 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+195 -> 274 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+275: <Occ,Stop,Appr,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+196 -> 275 src inv: x1<=20 & x2<=20 guard: x1<=10 tgt inv: x2<=20
+276: <Transient,Appr,Cross,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=3 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)
+196 -> 276 src inv: x1<=20 & x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x1<=20 & x2<=5
+277: <Transient,Appr,Cross,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=3 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+197 -> 277 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+278: <Free,Safe,Safe,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+197 -> 278 src inv: x2<=5 guard: x2>=3
+279: <Transient,Appr,Appr,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=2,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+198 -> 279 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+280: <Transient,Appr,Safe,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+198 -> 280 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+281: <Occ,Cross,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+198 -> 281 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+282: <Transient,Appr,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=2,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+199 -> 282 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+283: <Transient,Safe,Appr,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+199 -> 283 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+284: <Occ,Safe,Cross,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+199 -> 284 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+285: <Transient,Appr,Safe,Appr> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+200 -> 285 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+286: <Transient,Safe,Appr,Appr> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=2,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+200 -> 286 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+287: <Occ,Safe,Safe,Cross> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+200 -> 287 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+288: <Occ,Stop,Stop,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+201 -> 288 src inv: x2<=20 & x3<=20 guard: x2<=10 tgt inv: x3<=20
+289: <Transient,Stop,Appr,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=3 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)
+201 -> 289 src inv: x2<=20 & x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x2<=20 & x3<=5
+290: <Transient,Stop,Appr,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=3 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+202 -> 290 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+291: <Free,Stop,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+202 -> 291 src inv: x3<=5 guard: x3>=3
+292: <Occ,Stop,Stop,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+203 -> 292 src inv: x1<=20 & x3<=20 guard: x1<=10 tgt inv: x3<=20
+293: <Transient,Appr,Stop,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=3 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)
+203 -> 293 src inv: x1<=20 & x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x1<=20 & x3<=5
+294: <Transient,Appr,Stop,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=3 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+204 -> 294 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+295: <Free,Safe,Stop,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+204 -> 295 src inv: x3<=5 guard: x3>=3
+296: <Transient,Appr,Appr,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+205 -> 296 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+297: <Transient,Appr,Safe,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=2,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+205 -> 297 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+298: <Occ,Cross,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+205 -> 298 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+299: <Transient,Appr,Appr,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+206 -> 299 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+300: <Transient,Safe,Appr,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+206 -> 300 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+301: <Occ,Safe,Cross,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+206 -> 301 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+302: <Transient,Appr,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=2,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+207 -> 302 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+303: <Transient,Safe,Appr,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=2,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+207 -> 303 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+304: <Occ,Safe,Safe,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+207 -> 304 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+305: <Occ,Start,Safe,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+208 -> 305  reset: x1=0 tgt inv: x1<=15
+306: <Occ,Start,Stop,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+209 -> 306 src inv: x1<=15 & x2<=20 guard: x2<=10 tgt inv: x1<=15
+209 -> 136 src inv: x1<=15 & x2<=20 guard: x1>=7 reset: x1=0 tgt inv: x1<=5 & x2<=20
+210 -> 305 src inv: x1<=15 & x3<=20 guard: x3<=10 tgt inv: x1<=15
+210 -> 138 src inv: x1<=15 & x3<=20 guard: x1>=7 reset: x1=0 tgt inv: x1<=5 & x3<=20
+307: <Occ,Stop,Safe,Start> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+211 -> 307  reset: x3=0 tgt inv: x3<=15
+212 -> 307 src inv: x1<=20 & x3<=15 guard: x1<=10 tgt inv: x3<=15
+212 -> 150 src inv: x1<=20 & x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x1<=20 & x3<=5
+308: <Occ,Safe,Stop,Start> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+213 -> 308 src inv: x2<=20 & x3<=15 guard: x2<=10 tgt inv: x3<=15
+213 -> 152 src inv: x2<=20 & x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x2<=20 & x3<=5
+309: <Free,Safe,Stop,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+214 -> 309 src inv: x1<=5 guard: x1>=3
+214 -> 257 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+310: <Free,Safe,Safe,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+215 -> 310 src inv: x1<=5 guard: x1>=3
+215 -> 261 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+216 -> 262 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+216 -> 263 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+311: <Occ,Cross,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+216 -> 311 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+217 -> 265 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+217 -> 266 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+312: <Occ,Safe,Cross,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+217 -> 312 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+218 -> 268 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+218 -> 269 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+313: <Occ,Safe,Safe,Cross> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+218 -> 313 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+314: <Free,Stop,Safe,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+219 -> 314 src inv: x2<=5 guard: x2>=3
+219 -> 274 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+220 -> 277 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+315: <Free,Safe,Safe,Stop> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+220 -> 315 src inv: x2<=5 guard: x2>=3
+221 -> 279 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+221 -> 280 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+316: <Occ,Cross,Safe,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+221 -> 316 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+222 -> 282 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+222 -> 283 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+317: <Occ,Safe,Cross,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+222 -> 317 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+223 -> 285 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+223 -> 286 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+318: <Occ,Safe,Safe,Cross> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+223 -> 318 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+224 -> 290 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+319: <Free,Stop,Safe,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+224 -> 319 src inv: x3<=5 guard: x3>=3
+225 -> 294 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+320: <Free,Safe,Stop,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+225 -> 320 src inv: x3<=5 guard: x3>=3
+226 -> 296 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+226 -> 297 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+321: <Occ,Cross,Safe,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+226 -> 321 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+227 -> 299 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+227 -> 300 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+322: <Occ,Safe,Cross,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+227 -> 322 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+228 -> 302 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+228 -> 303 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+323: <Occ,Safe,Safe,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+228 -> 323 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+324: <Occ,Start,Stop,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+229 -> 324  reset: x1=0 tgt inv: x1<=15
+230 -> 324 src inv: x1<=15 & x2<=20 guard: x2<=10 tgt inv: x1<=15
+230 -> 161 src inv: x1<=15 & x2<=20 guard: x1>=7 reset: x1=0 tgt inv: x1<=5 & x2<=20
+325: <Occ,Start,Safe,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+231 -> 325 src inv: x1<=15 & x3<=20 guard: x3<=10 tgt inv: x1<=15
+231 -> 163 src inv: x1<=15 & x3<=20 guard: x1>=7 reset: x1=0 tgt inv: x1<=5 & x3<=20
+326: <Occ,Stop,Start,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+232 -> 326  reset: x2=0 tgt inv: x2<=15
+233 -> 326 src inv: x1<=20 & x2<=15 guard: x1<=10 tgt inv: x2<=15
+233 -> 168 src inv: x1<=20 & x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x1<=20 & x2<=5
+327: <Occ,Safe,Start,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+234 -> 327 src inv: x2<=15 & x3<=20 guard: x3<=10 tgt inv: x2<=15
+234 -> 170 src inv: x2<=15 & x3<=20 guard: x2>=7 reset: x2=0 tgt inv: x2<=5 & x3<=20
+328: <Free,Safe,Stop,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+235 -> 328 src inv: x1<=5 guard: x1>=3
+235 -> 257 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+329: <Free,Safe,Safe,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+236 -> 329 src inv: x1<=5 guard: x1>=3
+236 -> 261 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+237 -> 262 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+237 -> 263 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+330: <Occ,Cross,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+237 -> 330 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+238 -> 265 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+238 -> 266 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+331: <Occ,Safe,Cross,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+238 -> 331 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+239 -> 268 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+239 -> 269 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+332: <Occ,Safe,Safe,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+239 -> 332 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+333: <Free,Stop,Safe,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+240 -> 333 src inv: x2<=5 guard: x2>=3
+240 -> 274 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+241 -> 277 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+334: <Free,Safe,Safe,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+241 -> 334 src inv: x2<=5 guard: x2>=3
+242 -> 279 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+242 -> 280 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+335: <Occ,Cross,Safe,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+242 -> 335 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+243 -> 282 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+243 -> 283 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+336: <Occ,Safe,Cross,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+243 -> 336 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+244 -> 285 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+244 -> 286 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+337: <Occ,Safe,Safe,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+244 -> 337 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+245 -> 290 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+338: <Free,Stop,Safe,Safe> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+245 -> 338 src inv: x3<=5 guard: x3>=3
+246 -> 294 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+339: <Free,Safe,Stop,Safe> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+246 -> 339 src inv: x3<=5 guard: x3>=3
+247 -> 296 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+247 -> 297 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+340: <Occ,Cross,Safe,Safe> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+247 -> 340 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+248 -> 299 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+248 -> 300 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+341: <Occ,Safe,Cross,Safe> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+248 -> 341 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+249 -> 302 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+249 -> 303 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+342: <Occ,Safe,Safe,Cross> buffer[0]=3,buffer[1]=3,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+249 -> 342 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+343: <Transient,Appr,Start,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=3 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+250 -> 343 src inv: x2<=15 reset: x1=0 tgt inv: x1<=20 & x2<=15
+250 -> 197 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+344: <Transient,Stop,Start,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=3 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+251 -> 344 src inv: x2<=15 reset: x3=0 tgt inv: x2<=15 & x3<=20
+251 -> 195 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+345: <Transient,Appr,Stop,Start> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=3 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+252 -> 345 src inv: x3<=15 reset: x1=0 tgt inv: x1<=20 & x3<=15
+252 -> 204 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+346: <Transient,Stop,Appr,Start> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=3 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+253 -> 346 src inv: x3<=15 reset: x2=0 tgt inv: x2<=20 & x3<=15
+253 -> 202 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+347: <Occ,Cross,Stop,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+254 -> 347 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+255 -> 347 src inv: x1<=5 & x3<=20 guard: x3<=10 tgt inv: x1<=5
+348: <Occ,Safe,Start,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+256 -> 348  reset: x2=0 tgt inv: x2<=15
+257 -> 347 src inv: x1<=5 & x3<=20 guard: x3<=10 tgt inv: x1<=5
+349: <Occ,Cross,Stop,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+258 -> 349 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+259 -> 349 src inv: x1<=5 & x2<=20 guard: x2<=10 tgt inv: x1<=5
+350: <Occ,Safe,Safe,Start> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+260 -> 350  reset: x3=0 tgt inv: x3<=15
+261 -> 349 src inv: x1<=5 & x2<=20 guard: x2<=10 tgt inv: x1<=5
+351: <Occ,Appr,Stop,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+262 -> 351 src inv: x1<=20 & x2<=20 guard: x2<=10 tgt inv: x1<=20
+352: <Transient,Cross,Appr,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=2,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)
+262 -> 352 src inv: x1<=20 & x2<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5 & x2<=20
+353: <Occ,Appr,Safe,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+263 -> 353 src inv: x1<=20 & x3<=20 guard: x3<=10 tgt inv: x1<=20
+354: <Transient,Cross,Safe,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=2,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)
+263 -> 354 src inv: x1<=20 & x3<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5 & x3<=20
+264 -> 0 src inv: x1<=5 guard: x1>=3
+355: <Transient,Cross,Appr,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=2,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+264 -> 355 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+356: <Transient,Cross,Safe,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=2,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+264 -> 356 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+357: <Occ,Stop,Appr,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+265 -> 357 src inv: x1<=20 & x2<=20 guard: x1<=10 tgt inv: x2<=20
+358: <Transient,Appr,Cross,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=2,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)
+265 -> 358 src inv: x1<=20 & x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x1<=20 & x2<=5
+359: <Occ,Safe,Appr,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+266 -> 359 src inv: x2<=20 & x3<=20 guard: x3<=10 tgt inv: x2<=20
+360: <Transient,Safe,Cross,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)
+266 -> 360 src inv: x2<=20 & x3<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5 & x3<=20
+361: <Transient,Appr,Cross,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=2,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+267 -> 361 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+362: <Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+267 -> 362 src inv: x2<=5 guard: x2>=3
+363: <Transient,Safe,Cross,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+267 -> 363 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+364: <Occ,Stop,Safe,Appr> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+268 -> 364 src inv: x1<=20 & x3<=20 guard: x1<=10 tgt inv: x3<=20
+365: <Transient,Appr,Safe,Cross> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=2,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)
+268 -> 365 src inv: x1<=20 & x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x1<=20 & x3<=5
+366: <Occ,Safe,Stop,Appr> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+269 -> 366 src inv: x2<=20 & x3<=20 guard: x2<=10 tgt inv: x3<=20
+367: <Transient,Safe,Appr,Cross> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)
+269 -> 367 src inv: x2<=20 & x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x2<=20 & x3<=5
+368: <Transient,Appr,Safe,Cross> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=2,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+270 -> 368 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+369: <Transient,Safe,Appr,Cross> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+270 -> 369 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+370: <Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+270 -> 370 src inv: x3<=5 guard: x3>=3
+371: <Occ,Stop,Cross,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+271 -> 371 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+272 -> 371 src inv: x2<=5 & x3<=20 guard: x3<=10 tgt inv: x2<=5
+372: <Occ,Start,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+273 -> 372  reset: x1=0 tgt inv: x1<=15
+274 -> 371 src inv: x2<=5 & x3<=20 guard: x3<=10 tgt inv: x2<=5
+373: <Occ,Stop,Cross,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+275 -> 373 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+276 -> 373 src inv: x1<=20 & x2<=5 guard: x1<=10 tgt inv: x2<=5
+277 -> 373 src inv: x1<=20 & x2<=5 guard: x1<=10 tgt inv: x2<=5
+374: <Occ,Safe,Safe,Start> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+278 -> 374  reset: x3=0 tgt inv: x3<=15
+375: <Occ,Appr,Stop,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+279 -> 375 src inv: x1<=20 & x2<=20 guard: x2<=10 tgt inv: x1<=20
+376: <Transient,Cross,Appr,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=2,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)
+279 -> 376 src inv: x1<=20 & x2<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5 & x2<=20
+377: <Occ,Appr,Safe,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+280 -> 377 src inv: x1<=20 & x3<=20 guard: x3<=10 tgt inv: x1<=20
+378: <Transient,Cross,Safe,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)
+280 -> 378 src inv: x1<=20 & x3<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5 & x3<=20
+379: <Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+281 -> 379 src inv: x1<=5 guard: x1>=3
+380: <Transient,Cross,Appr,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=2,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+281 -> 380 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+381: <Transient,Cross,Safe,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+281 -> 381 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+382: <Occ,Stop,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+282 -> 382 src inv: x1<=20 & x2<=20 guard: x1<=10 tgt inv: x2<=20
+383: <Transient,Appr,Cross,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=2,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)
+282 -> 383 src inv: x1<=20 & x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x1<=20 & x2<=5
+384: <Occ,Safe,Appr,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+283 -> 384 src inv: x2<=20 & x3<=20 guard: x3<=10 tgt inv: x2<=20
+385: <Transient,Safe,Cross,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=2,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)
+283 -> 385 src inv: x2<=20 & x3<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5 & x3<=20
+386: <Transient,Appr,Cross,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=2,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+284 -> 386 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+387: <Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+284 -> 387 src inv: x2<=5 guard: x2>=3
+388: <Transient,Safe,Cross,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+284 -> 388 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+389: <Occ,Stop,Safe,Appr> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+285 -> 389 src inv: x1<=20 & x3<=20 guard: x1<=10 tgt inv: x3<=20
+390: <Transient,Appr,Safe,Cross> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)
+285 -> 390 src inv: x1<=20 & x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x1<=20 & x3<=5
+391: <Occ,Safe,Stop,Appr> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+286 -> 391 src inv: x2<=20 & x3<=20 guard: x2<=10 tgt inv: x3<=20
+392: <Transient,Safe,Appr,Cross> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=2,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)
+286 -> 392 src inv: x2<=20 & x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x2<=20 & x3<=5
+393: <Transient,Appr,Safe,Cross> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+287 -> 393 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+394: <Transient,Safe,Appr,Cross> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=2,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+287 -> 394 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+395: <Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+287 -> 395 src inv: x3<=5 guard: x3>=3
+396: <Occ,Stop,Stop,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+288 -> 396 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+289 -> 396 src inv: x2<=20 & x3<=5 guard: x2<=10 tgt inv: x3<=5
+290 -> 396 src inv: x2<=20 & x3<=5 guard: x2<=10 tgt inv: x3<=5
+397: <Occ,Start,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+291 -> 397  reset: x1=0 tgt inv: x1<=15
+398: <Occ,Stop,Stop,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+292 -> 398 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+293 -> 398 src inv: x1<=20 & x3<=5 guard: x1<=10 tgt inv: x3<=5
+294 -> 398 src inv: x1<=20 & x3<=5 guard: x1<=10 tgt inv: x3<=5
+399: <Occ,Safe,Start,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+295 -> 399  reset: x2=0 tgt inv: x2<=15
+400: <Occ,Appr,Stop,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+296 -> 400 src inv: x1<=20 & x2<=20 guard: x2<=10 tgt inv: x1<=20
+401: <Transient,Cross,Appr,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)
+296 -> 401 src inv: x1<=20 & x2<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5 & x2<=20
+402: <Occ,Appr,Safe,Stop> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+297 -> 402 src inv: x1<=20 & x3<=20 guard: x3<=10 tgt inv: x1<=20
+403: <Transient,Cross,Safe,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=2,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)
+297 -> 403 src inv: x1<=20 & x3<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5 & x3<=20
+404: <Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+298 -> 404 src inv: x1<=5 guard: x1>=3
+405: <Transient,Cross,Appr,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+298 -> 405 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+406: <Transient,Cross,Safe,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=2,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+298 -> 406 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+407: <Occ,Stop,Appr,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+299 -> 407 src inv: x1<=20 & x2<=20 guard: x1<=10 tgt inv: x2<=20
+408: <Transient,Appr,Cross,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)
+299 -> 408 src inv: x1<=20 & x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x1<=20 & x2<=5
+409: <Occ,Safe,Appr,Stop> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+300 -> 409 src inv: x2<=20 & x3<=20 guard: x3<=10 tgt inv: x2<=20
+410: <Transient,Safe,Cross,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=2,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)
+300 -> 410 src inv: x2<=20 & x3<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5 & x3<=20
+411: <Transient,Appr,Cross,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+301 -> 411 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+412: <Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+301 -> 412 src inv: x2<=5 guard: x2>=3
+413: <Transient,Safe,Cross,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+301 -> 413 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+414: <Occ,Stop,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+302 -> 414 src inv: x1<=20 & x3<=20 guard: x1<=10 tgt inv: x3<=20
+415: <Transient,Appr,Safe,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=2,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)
+302 -> 415 src inv: x1<=20 & x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x1<=20 & x3<=5
+416: <Occ,Safe,Stop,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+303 -> 416 src inv: x2<=20 & x3<=20 guard: x2<=10 tgt inv: x3<=20
+417: <Transient,Safe,Appr,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=2,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)
+303 -> 417 src inv: x2<=20 & x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x2<=20 & x3<=5
+418: <Transient,Appr,Safe,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=2,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+304 -> 418 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+419: <Transient,Safe,Appr,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=2,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+304 -> 419 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+420: <Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+304 -> 420 src inv: x3<=5 guard: x3>=3
+421: <Transient,Start,Appr,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=3 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+305 -> 421 src inv: x1<=15 reset: x2=0 tgt inv: x1<=15 & x2<=20
+305 -> 215 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+422: <Transient,Start,Stop,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=3 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+306 -> 422 src inv: x1<=15 reset: x3=0 tgt inv: x1<=15 & x3<=20
+306 -> 214 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+307 -> 346 src inv: x3<=15 reset: x2=0 tgt inv: x2<=20 & x3<=15
+307 -> 224 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+308 -> 345 src inv: x3<=15 reset: x1=0 tgt inv: x1<=20 & x3<=15
+308 -> 225 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+423: <Occ,Safe,Start,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+309 -> 423  reset: x2=0 tgt inv: x2<=15
+424: <Occ,Safe,Safe,Start> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+310 -> 424  reset: x3=0 tgt inv: x3<=15
+425: <Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+311 -> 425 src inv: x1<=5 guard: x1>=3
+311 -> 355 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+311 -> 356 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+312 -> 361 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+426: <Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+312 -> 426 src inv: x2<=5 guard: x2>=3
+312 -> 363 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+313 -> 368 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+313 -> 369 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+427: <Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+313 -> 427 src inv: x3<=5 guard: x3>=3
+428: <Occ,Start,Safe,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+314 -> 428  reset: x1=0 tgt inv: x1<=15
+429: <Occ,Safe,Safe,Start> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+315 -> 429  reset: x3=0 tgt inv: x3<=15
+430: <Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+316 -> 430 src inv: x1<=5 guard: x1>=3
+316 -> 380 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+316 -> 381 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+317 -> 386 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+431: <Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=2,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+317 -> 431 src inv: x2<=5 guard: x2>=3
+317 -> 388 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+318 -> 393 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+318 -> 394 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+432: <Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+318 -> 432 src inv: x3<=5 guard: x3>=3
+433: <Occ,Start,Safe,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+319 -> 433  reset: x1=0 tgt inv: x1<=15
+434: <Occ,Safe,Start,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+320 -> 434  reset: x2=0 tgt inv: x2<=15
+435: <Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+321 -> 435 src inv: x1<=5 guard: x1>=3
+321 -> 405 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+321 -> 406 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+322 -> 411 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+436: <Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+322 -> 436 src inv: x2<=5 guard: x2>=3
+322 -> 413 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+323 -> 418 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+323 -> 419 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+437: <Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+323 -> 437 src inv: x3<=5 guard: x3>=3
+324 -> 422 src inv: x1<=15 reset: x3=0 tgt inv: x1<=15 & x3<=20
+324 -> 235 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+325 -> 421 src inv: x1<=15 reset: x2=0 tgt inv: x1<=15 & x2<=20
+325 -> 236 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+326 -> 344 src inv: x2<=15 reset: x3=0 tgt inv: x2<=15 & x3<=20
+326 -> 240 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+327 -> 343 src inv: x2<=15 reset: x1=0 tgt inv: x1<=20 & x2<=15
+327 -> 241 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+438: <Occ,Safe,Start,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+328 -> 438  reset: x2=0 tgt inv: x2<=15
+439: <Occ,Safe,Safe,Start> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+329 -> 439  reset: x3=0 tgt inv: x3<=15
+440: <Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+330 -> 440 src inv: x1<=5 guard: x1>=3
+330 -> 355 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+330 -> 356 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+331 -> 361 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+441: <Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+331 -> 441 src inv: x2<=5 guard: x2>=3
+331 -> 363 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+332 -> 368 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+332 -> 369 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+442: <Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+332 -> 442 src inv: x3<=5 guard: x3>=3
+443: <Occ,Start,Safe,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+333 -> 443  reset: x1=0 tgt inv: x1<=15
+444: <Occ,Safe,Safe,Start> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+334 -> 444  reset: x3=0 tgt inv: x3<=15
+445: <Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+335 -> 445 src inv: x1<=5 guard: x1>=3
+335 -> 380 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+335 -> 381 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+336 -> 386 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+446: <Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+336 -> 446 src inv: x2<=5 guard: x2>=3
+336 -> 388 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+337 -> 393 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+337 -> 394 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+447: <Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+337 -> 447 src inv: x3<=5 guard: x3>=3
+448: <Occ,Start,Safe,Safe> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+338 -> 448  reset: x1=0 tgt inv: x1<=15
+449: <Occ,Safe,Start,Safe> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+339 -> 449  reset: x2=0 tgt inv: x2<=15
+450: <Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+340 -> 450 src inv: x1<=5 guard: x1>=3
+340 -> 405 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+340 -> 406 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+341 -> 411 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+451: <Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+341 -> 451 src inv: x2<=5 guard: x2>=3
+341 -> 413 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+342 -> 418 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+342 -> 419 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+452: <Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=3,buffer[2]=3,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+342 -> 452 src inv: x3<=5 guard: x3>=3
+453: <Occ,Stop,Start,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+343 -> 453 src inv: x1<=20 & x2<=15 guard: x1<=10 tgt inv: x2<=15
+343 -> 276 src inv: x1<=20 & x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x1<=20 & x2<=5
+454: <Occ,Stop,Start,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+344 -> 454 src inv: x2<=15 & x3<=20 guard: x3<=10 tgt inv: x2<=15
+344 -> 272 src inv: x2<=15 & x3<=20 guard: x2>=7 reset: x2=0 tgt inv: x2<=5 & x3<=20
+455: <Occ,Stop,Stop,Start> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+345 -> 455 src inv: x1<=20 & x3<=15 guard: x1<=10 tgt inv: x3<=15
+345 -> 293 src inv: x1<=20 & x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x1<=20 & x3<=5
+456: <Occ,Stop,Stop,Start> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+346 -> 456 src inv: x2<=20 & x3<=15 guard: x2<=10 tgt inv: x3<=15
+346 -> 289 src inv: x2<=20 & x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x2<=20 & x3<=5
+457: <Free,Safe,Stop,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+347 -> 457 src inv: x1<=5 guard: x1>=3
+458: <Transient,Appr,Start,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=2,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+348 -> 458 src inv: x2<=15 reset: x1=0 tgt inv: x1<=20 & x2<=15
+459: <Transient,Safe,Start,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+348 -> 459 src inv: x2<=15 reset: x3=0 tgt inv: x2<=15 & x3<=20
+348 -> 267 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+460: <Free,Safe,Stop,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+349 -> 460 src inv: x1<=5 guard: x1>=3
+461: <Transient,Appr,Safe,Start> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=2,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+350 -> 461 src inv: x3<=15 reset: x1=0 tgt inv: x1<=20 & x3<=15
+462: <Transient,Safe,Appr,Start> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+350 -> 462 src inv: x3<=15 reset: x2=0 tgt inv: x2<=20 & x3<=15
+350 -> 270 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+463: <Transient,Appr,Stop,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=3 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+351 -> 463 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+464: <Occ,Cross,Stop,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+351 -> 464 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+352 -> 464 src inv: x1<=5 & x2<=20 guard: x2<=10 tgt inv: x1<=5
+465: <Transient,Appr,Appr,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=3 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+353 -> 465 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+466: <Occ,Cross,Safe,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+353 -> 466 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+354 -> 466 src inv: x1<=5 & x3<=20 guard: x3<=10 tgt inv: x1<=5
+355 -> 464 src inv: x1<=5 & x2<=20 guard: x2<=10 tgt inv: x1<=5
+356 -> 466 src inv: x1<=5 & x3<=20 guard: x3<=10 tgt inv: x1<=5
+467: <Transient,Stop,Appr,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=3 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+357 -> 467 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+468: <Occ,Stop,Cross,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+357 -> 468 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+358 -> 468 src inv: x1<=20 & x2<=5 guard: x1<=10 tgt inv: x2<=5
+469: <Transient,Appr,Appr,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=3 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+359 -> 469 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+470: <Occ,Safe,Cross,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+359 -> 470 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+360 -> 470 src inv: x2<=5 & x3<=20 guard: x3<=10 tgt inv: x2<=5
+361 -> 468 src inv: x1<=20 & x2<=5 guard: x1<=10 tgt inv: x2<=5
+471: <Occ,Appr,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+362 -> 471  reset: x1=0 tgt inv: x1<=20
+472: <Occ,Safe,Appr,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+362 -> 472  reset: x2=0 tgt inv: x2<=20
+473: <Occ,Safe,Safe,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+362 -> 473  reset: x3=0 tgt inv: x3<=20
+363 -> 470 src inv: x2<=5 & x3<=20 guard: x3<=10 tgt inv: x2<=5
+474: <Transient,Stop,Appr,Appr> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=3 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+364 -> 474 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+475: <Occ,Stop,Safe,Cross> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+364 -> 475 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+365 -> 475 src inv: x1<=20 & x3<=5 guard: x1<=10 tgt inv: x3<=5
+476: <Transient,Appr,Stop,Appr> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=3 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+366 -> 476 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+477: <Occ,Safe,Stop,Cross> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+366 -> 477 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+367 -> 477 src inv: x2<=20 & x3<=5 guard: x2<=10 tgt inv: x3<=5
+368 -> 475 src inv: x1<=20 & x3<=5 guard: x1<=10 tgt inv: x3<=5
+369 -> 477 src inv: x2<=20 & x3<=5 guard: x2<=10 tgt inv: x3<=5
+478: <Occ,Appr,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+370 -> 478  reset: x1=0 tgt inv: x1<=20
+479: <Occ,Safe,Appr,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+370 -> 479  reset: x2=0 tgt inv: x2<=20
+480: <Occ,Safe,Safe,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+370 -> 480  reset: x3=0 tgt inv: x3<=20
+481: <Free,Stop,Safe,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+371 -> 481 src inv: x2<=5 guard: x2>=3
+482: <Transient,Start,Appr,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=2,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+372 -> 482 src inv: x1<=15 reset: x2=0 tgt inv: x1<=15 & x2<=20
+483: <Transient,Start,Safe,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+372 -> 483 src inv: x1<=15 reset: x3=0 tgt inv: x1<=15 & x3<=20
+372 -> 281 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+484: <Free,Stop,Safe,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+373 -> 484 src inv: x2<=5 guard: x2>=3
+485: <Transient,Appr,Safe,Start> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+374 -> 485 src inv: x3<=15 reset: x1=0 tgt inv: x1<=20 & x3<=15
+486: <Transient,Safe,Appr,Start> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=2,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+374 -> 486 src inv: x3<=15 reset: x2=0 tgt inv: x2<=20 & x3<=15
+374 -> 287 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+375 -> 463 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+487: <Occ,Cross,Stop,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+375 -> 487 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+376 -> 487 src inv: x1<=5 & x2<=20 guard: x2<=10 tgt inv: x1<=5
+377 -> 465 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+488: <Occ,Cross,Safe,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+377 -> 488 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+378 -> 488 src inv: x1<=5 & x3<=20 guard: x3<=10 tgt inv: x1<=5
+489: <Occ,Appr,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+379 -> 489  reset: x1=0 tgt inv: x1<=20
+490: <Occ,Safe,Appr,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+379 -> 490  reset: x2=0 tgt inv: x2<=20
+491: <Occ,Safe,Safe,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+379 -> 491  reset: x3=0 tgt inv: x3<=20
+380 -> 487 src inv: x1<=5 & x2<=20 guard: x2<=10 tgt inv: x1<=5
+381 -> 488 src inv: x1<=5 & x3<=20 guard: x3<=10 tgt inv: x1<=5
+382 -> 467 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+492: <Occ,Stop,Cross,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+382 -> 492 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+383 -> 492 src inv: x1<=20 & x2<=5 guard: x1<=10 tgt inv: x2<=5
+384 -> 469 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+493: <Occ,Safe,Cross,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+384 -> 493 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+385 -> 493 src inv: x2<=5 & x3<=20 guard: x3<=10 tgt inv: x2<=5
+386 -> 492 src inv: x1<=20 & x2<=5 guard: x1<=10 tgt inv: x2<=5
+494: <Occ,Appr,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+387 -> 494  reset: x1=0 tgt inv: x1<=20
+495: <Occ,Safe,Appr,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+387 -> 495  reset: x2=0 tgt inv: x2<=20
+496: <Occ,Safe,Safe,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+387 -> 496  reset: x3=0 tgt inv: x3<=20
+388 -> 493 src inv: x2<=5 & x3<=20 guard: x3<=10 tgt inv: x2<=5
+389 -> 474 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+497: <Occ,Stop,Safe,Cross> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+389 -> 497 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+390 -> 497 src inv: x1<=20 & x3<=5 guard: x1<=10 tgt inv: x3<=5
+391 -> 476 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+498: <Occ,Safe,Stop,Cross> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+391 -> 498 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+392 -> 498 src inv: x2<=20 & x3<=5 guard: x2<=10 tgt inv: x3<=5
+393 -> 497 src inv: x1<=20 & x3<=5 guard: x1<=10 tgt inv: x3<=5
+394 -> 498 src inv: x2<=20 & x3<=5 guard: x2<=10 tgt inv: x3<=5
+499: <Occ,Appr,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+395 -> 499  reset: x1=0 tgt inv: x1<=20
+500: <Occ,Safe,Appr,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+395 -> 500  reset: x2=0 tgt inv: x2<=20
+501: <Occ,Safe,Safe,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+395 -> 501  reset: x3=0 tgt inv: x3<=20
+502: <Free,Stop,Stop,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+396 -> 502 src inv: x3<=5 guard: x3>=3
+503: <Transient,Start,Appr,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+397 -> 503 src inv: x1<=15 reset: x2=0 tgt inv: x1<=15 & x2<=20
+504: <Transient,Start,Safe,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=2,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+397 -> 504 src inv: x1<=15 reset: x3=0 tgt inv: x1<=15 & x3<=20
+397 -> 298 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+505: <Free,Stop,Stop,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+398 -> 505 src inv: x3<=5 guard: x3>=3
+506: <Transient,Appr,Start,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+399 -> 506 src inv: x2<=15 reset: x1=0 tgt inv: x1<=20 & x2<=15
+507: <Transient,Safe,Start,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+399 -> 507 src inv: x2<=15 reset: x3=0 tgt inv: x2<=15 & x3<=20
+399 -> 301 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+400 -> 463 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+508: <Occ,Cross,Stop,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+400 -> 508 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+401 -> 508 src inv: x1<=5 & x2<=20 guard: x2<=10 tgt inv: x1<=5
+402 -> 465 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+509: <Occ,Cross,Safe,Stop> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+402 -> 509 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+403 -> 509 src inv: x1<=5 & x3<=20 guard: x3<=10 tgt inv: x1<=5
+510: <Occ,Appr,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+404 -> 510  reset: x1=0 tgt inv: x1<=20
+511: <Occ,Safe,Appr,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+404 -> 511  reset: x2=0 tgt inv: x2<=20
+512: <Occ,Safe,Safe,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+404 -> 512  reset: x3=0 tgt inv: x3<=20
+405 -> 508 src inv: x1<=5 & x2<=20 guard: x2<=10 tgt inv: x1<=5
+406 -> 509 src inv: x1<=5 & x3<=20 guard: x3<=10 tgt inv: x1<=5
+407 -> 467 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+513: <Occ,Stop,Cross,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+407 -> 513 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+408 -> 513 src inv: x1<=20 & x2<=5 guard: x1<=10 tgt inv: x2<=5
+409 -> 469 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+514: <Occ,Safe,Cross,Stop> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+409 -> 514 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+410 -> 514 src inv: x2<=5 & x3<=20 guard: x3<=10 tgt inv: x2<=5
+411 -> 513 src inv: x1<=20 & x2<=5 guard: x1<=10 tgt inv: x2<=5
+515: <Occ,Appr,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+412 -> 515  reset: x1=0 tgt inv: x1<=20
+516: <Occ,Safe,Appr,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+412 -> 516  reset: x2=0 tgt inv: x2<=20
+517: <Occ,Safe,Safe,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+412 -> 517  reset: x3=0 tgt inv: x3<=20
+413 -> 514 src inv: x2<=5 & x3<=20 guard: x3<=10 tgt inv: x2<=5
+414 -> 474 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+518: <Occ,Stop,Safe,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+414 -> 518 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+415 -> 518 src inv: x1<=20 & x3<=5 guard: x1<=10 tgt inv: x3<=5
+416 -> 476 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+519: <Occ,Safe,Stop,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+416 -> 519 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+417 -> 519 src inv: x2<=20 & x3<=5 guard: x2<=10 tgt inv: x3<=5
+418 -> 518 src inv: x1<=20 & x3<=5 guard: x1<=10 tgt inv: x3<=5
+419 -> 519 src inv: x2<=20 & x3<=5 guard: x2<=10 tgt inv: x3<=5
+520: <Occ,Appr,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+420 -> 520  reset: x1=0 tgt inv: x1<=20
+521: <Occ,Safe,Appr,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+420 -> 521  reset: x2=0 tgt inv: x2<=20
+522: <Occ,Safe,Safe,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+420 -> 522  reset: x3=0 tgt inv: x3<=20
+523: <Occ,Start,Stop,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+421 -> 523 src inv: x1<=15 & x2<=20 guard: x2<=10 tgt inv: x1<=15
+421 -> 259 src inv: x1<=15 & x2<=20 guard: x1>=7 reset: x1=0 tgt inv: x1<=5 & x2<=20
+524: <Occ,Start,Stop,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+422 -> 524 src inv: x1<=15 & x3<=20 guard: x3<=10 tgt inv: x1<=15
+422 -> 255 src inv: x1<=15 & x3<=20 guard: x1>=7 reset: x1=0 tgt inv: x1<=5 & x3<=20
+423 -> 458 src inv: x2<=15 reset: x1=0 tgt inv: x1<=20 & x2<=15
+423 -> 459 src inv: x2<=15 reset: x3=0 tgt inv: x2<=15 & x3<=20
+423 -> 312 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+424 -> 461 src inv: x3<=15 reset: x1=0 tgt inv: x1<=20 & x3<=15
+424 -> 462 src inv: x3<=15 reset: x2=0 tgt inv: x2<=20 & x3<=15
+424 -> 313 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+425 -> 1  reset: x1=0 tgt inv: x1<=20
+425 -> 2  reset: x2=0 tgt inv: x2<=20
+425 -> 3  reset: x3=0 tgt inv: x3<=20
+426 -> 471  reset: x1=0 tgt inv: x1<=20
+426 -> 472  reset: x2=0 tgt inv: x2<=20
+426 -> 473  reset: x3=0 tgt inv: x3<=20
+427 -> 478  reset: x1=0 tgt inv: x1<=20
+427 -> 479  reset: x2=0 tgt inv: x2<=20
+427 -> 480  reset: x3=0 tgt inv: x3<=20
+428 -> 482 src inv: x1<=15 reset: x2=0 tgt inv: x1<=15 & x2<=20
+428 -> 483 src inv: x1<=15 reset: x3=0 tgt inv: x1<=15 & x3<=20
+428 -> 316 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+429 -> 485 src inv: x3<=15 reset: x1=0 tgt inv: x1<=20 & x3<=15
+429 -> 486 src inv: x3<=15 reset: x2=0 tgt inv: x2<=20 & x3<=15
+429 -> 318 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+430 -> 489  reset: x1=0 tgt inv: x1<=20
+430 -> 490  reset: x2=0 tgt inv: x2<=20
+430 -> 491  reset: x3=0 tgt inv: x3<=20
+431 -> 494  reset: x1=0 tgt inv: x1<=20
+431 -> 495  reset: x2=0 tgt inv: x2<=20
+431 -> 496  reset: x3=0 tgt inv: x3<=20
+432 -> 499  reset: x1=0 tgt inv: x1<=20
+432 -> 500  reset: x2=0 tgt inv: x2<=20
+432 -> 501  reset: x3=0 tgt inv: x3<=20
+433 -> 503 src inv: x1<=15 reset: x2=0 tgt inv: x1<=15 & x2<=20
+433 -> 504 src inv: x1<=15 reset: x3=0 tgt inv: x1<=15 & x3<=20
+433 -> 321 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+434 -> 506 src inv: x2<=15 reset: x1=0 tgt inv: x1<=20 & x2<=15
+434 -> 507 src inv: x2<=15 reset: x3=0 tgt inv: x2<=15 & x3<=20
+434 -> 322 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+435 -> 510  reset: x1=0 tgt inv: x1<=20
+435 -> 511  reset: x2=0 tgt inv: x2<=20
+435 -> 512  reset: x3=0 tgt inv: x3<=20
+436 -> 515  reset: x1=0 tgt inv: x1<=20
+436 -> 516  reset: x2=0 tgt inv: x2<=20
+436 -> 517  reset: x3=0 tgt inv: x3<=20
+437 -> 520  reset: x1=0 tgt inv: x1<=20
+437 -> 521  reset: x2=0 tgt inv: x2<=20
+437 -> 522  reset: x3=0 tgt inv: x3<=20
+438 -> 458 src inv: x2<=15 reset: x1=0 tgt inv: x1<=20 & x2<=15
+438 -> 459 src inv: x2<=15 reset: x3=0 tgt inv: x2<=15 & x3<=20
+438 -> 331 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+439 -> 461 src inv: x3<=15 reset: x1=0 tgt inv: x1<=20 & x3<=15
+439 -> 462 src inv: x3<=15 reset: x2=0 tgt inv: x2<=20 & x3<=15
+439 -> 332 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+440 -> 1  reset: x1=0 tgt inv: x1<=20
+440 -> 2  reset: x2=0 tgt inv: x2<=20
+440 -> 3  reset: x3=0 tgt inv: x3<=20
+441 -> 471  reset: x1=0 tgt inv: x1<=20
+441 -> 472  reset: x2=0 tgt inv: x2<=20
+441 -> 473  reset: x3=0 tgt inv: x3<=20
+442 -> 478  reset: x1=0 tgt inv: x1<=20
+442 -> 479  reset: x2=0 tgt inv: x2<=20
+442 -> 480  reset: x3=0 tgt inv: x3<=20
+443 -> 482 src inv: x1<=15 reset: x2=0 tgt inv: x1<=15 & x2<=20
+443 -> 483 src inv: x1<=15 reset: x3=0 tgt inv: x1<=15 & x3<=20
+443 -> 335 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+444 -> 485 src inv: x3<=15 reset: x1=0 tgt inv: x1<=20 & x3<=15
+444 -> 486 src inv: x3<=15 reset: x2=0 tgt inv: x2<=20 & x3<=15
+444 -> 337 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+445 -> 489  reset: x1=0 tgt inv: x1<=20
+445 -> 490  reset: x2=0 tgt inv: x2<=20
+445 -> 491  reset: x3=0 tgt inv: x3<=20
+446 -> 494  reset: x1=0 tgt inv: x1<=20
+446 -> 495  reset: x2=0 tgt inv: x2<=20
+446 -> 496  reset: x3=0 tgt inv: x3<=20
+447 -> 499  reset: x1=0 tgt inv: x1<=20
+447 -> 500  reset: x2=0 tgt inv: x2<=20
+447 -> 501  reset: x3=0 tgt inv: x3<=20
+448 -> 503 src inv: x1<=15 reset: x2=0 tgt inv: x1<=15 & x2<=20
+448 -> 504 src inv: x1<=15 reset: x3=0 tgt inv: x1<=15 & x3<=20
+448 -> 340 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+449 -> 506 src inv: x2<=15 reset: x1=0 tgt inv: x1<=20 & x2<=15
+449 -> 507 src inv: x2<=15 reset: x3=0 tgt inv: x2<=15 & x3<=20
+449 -> 341 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+450 -> 510  reset: x1=0 tgt inv: x1<=20
+450 -> 511  reset: x2=0 tgt inv: x2<=20
+450 -> 512  reset: x3=0 tgt inv: x3<=20
+451 -> 515  reset: x1=0 tgt inv: x1<=20
+451 -> 516  reset: x2=0 tgt inv: x2<=20
+451 -> 517  reset: x3=0 tgt inv: x3<=20
+452 -> 520  reset: x1=0 tgt inv: x1<=20
+452 -> 521  reset: x2=0 tgt inv: x2<=20
+452 -> 522  reset: x3=0 tgt inv: x3<=20
+453 -> 373 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+454 -> 371 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+455 -> 398 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+456 -> 396 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+525: <Occ,Safe,Start,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+457 -> 525  reset: x2=0 tgt inv: x2<=15
+526: <Occ,Stop,Start,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+458 -> 526 src inv: x1<=20 & x2<=15 guard: x1<=10 tgt inv: x2<=15
+458 -> 358 src inv: x1<=20 & x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x1<=20 & x2<=5
+459 -> 525 src inv: x2<=15 & x3<=20 guard: x3<=10 tgt inv: x2<=15
+459 -> 360 src inv: x2<=15 & x3<=20 guard: x2>=7 reset: x2=0 tgt inv: x2<=5 & x3<=20
+527: <Occ,Safe,Stop,Start> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+460 -> 527  reset: x3=0 tgt inv: x3<=15
+528: <Occ,Stop,Safe,Start> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+461 -> 528 src inv: x1<=20 & x3<=15 guard: x1<=10 tgt inv: x3<=15
+461 -> 365 src inv: x1<=20 & x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x1<=20 & x3<=5
+462 -> 527 src inv: x2<=20 & x3<=15 guard: x2<=10 tgt inv: x3<=15
+462 -> 367 src inv: x2<=20 & x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x2<=20 & x3<=5
+529: <Occ,Appr,Stop,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+463 -> 529 src inv: x1<=20 & x3<=20 guard: x3<=10 tgt inv: x1<=20
+530: <Transient,Cross,Stop,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=3 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)
+463 -> 530 src inv: x1<=20 & x3<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5 & x3<=20
+531: <Free,Safe,Stop,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+464 -> 531 src inv: x1<=5 guard: x1>=3
+532: <Transient,Cross,Stop,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=3 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+464 -> 532 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+533: <Occ,Appr,Stop,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+465 -> 533 src inv: x1<=20 & x2<=20 guard: x2<=10 tgt inv: x1<=20
+534: <Transient,Cross,Appr,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=3 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)
+465 -> 534 src inv: x1<=20 & x2<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5 & x2<=20
+535: <Free,Safe,Safe,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+466 -> 535 src inv: x1<=5 guard: x1>=3
+536: <Transient,Cross,Appr,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=3 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+466 -> 536 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+537: <Occ,Stop,Appr,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+467 -> 537 src inv: x2<=20 & x3<=20 guard: x3<=10 tgt inv: x2<=20
+538: <Transient,Stop,Cross,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=3 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)
+467 -> 538 src inv: x2<=20 & x3<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5 & x3<=20
+539: <Free,Stop,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+468 -> 539 src inv: x2<=5 guard: x2>=3
+540: <Transient,Stop,Cross,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=3 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+468 -> 540 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+541: <Occ,Stop,Appr,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+469 -> 541 src inv: x1<=20 & x2<=20 guard: x1<=10 tgt inv: x2<=20
+542: <Transient,Appr,Cross,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=3 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)
+469 -> 542 src inv: x1<=20 & x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x1<=20 & x2<=5
+543: <Transient,Appr,Cross,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=3 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+470 -> 543 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+544: <Free,Safe,Safe,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+470 -> 544 src inv: x2<=5 guard: x2>=3
+545: <Transient,Appr,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=0,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+471 -> 545 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+546: <Transient,Appr,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+471 -> 546 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+547: <Occ,Cross,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+471 -> 547 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+548: <Transient,Appr,Appr,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=0,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+472 -> 548 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+549: <Transient,Safe,Appr,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+472 -> 549 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+550: <Occ,Safe,Cross,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+472 -> 550 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+551: <Transient,Appr,Safe,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+473 -> 551 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+552: <Transient,Safe,Appr,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=0,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+473 -> 552 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+553: <Occ,Safe,Safe,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+473 -> 553 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+554: <Occ,Stop,Stop,Appr> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+474 -> 554 src inv: x2<=20 & x3<=20 guard: x2<=10 tgt inv: x3<=20
+555: <Transient,Stop,Appr,Cross> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=3 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)
+474 -> 555 src inv: x2<=20 & x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x2<=20 & x3<=5
+556: <Transient,Stop,Appr,Cross> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=3 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+475 -> 556 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+557: <Free,Stop,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+475 -> 557 src inv: x3<=5 guard: x3>=3
+558: <Occ,Stop,Stop,Appr> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+476 -> 558 src inv: x1<=20 & x3<=20 guard: x1<=10 tgt inv: x3<=20
+559: <Transient,Appr,Stop,Cross> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=3 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)
+476 -> 559 src inv: x1<=20 & x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x1<=20 & x3<=5
+560: <Transient,Appr,Stop,Cross> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=3 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+477 -> 560 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+561: <Free,Safe,Stop,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+477 -> 561 src inv: x3<=5 guard: x3>=3
+562: <Transient,Appr,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+478 -> 562 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+563: <Transient,Appr,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+478 -> 563 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+564: <Occ,Cross,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+478 -> 564 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+565: <Transient,Appr,Appr,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+479 -> 565 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+566: <Transient,Safe,Appr,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+479 -> 566 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+567: <Occ,Safe,Cross,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+479 -> 567 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+568: <Transient,Appr,Safe,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=0,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+480 -> 568 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+569: <Transient,Safe,Appr,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=0,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+480 -> 569 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+570: <Occ,Safe,Safe,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+480 -> 570 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+571: <Occ,Start,Safe,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+481 -> 571  reset: x1=0 tgt inv: x1<=15
+572: <Occ,Start,Stop,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+482 -> 572 src inv: x1<=15 & x2<=20 guard: x2<=10 tgt inv: x1<=15
+482 -> 376 src inv: x1<=15 & x2<=20 guard: x1>=7 reset: x1=0 tgt inv: x1<=5 & x2<=20
+483 -> 571 src inv: x1<=15 & x3<=20 guard: x3<=10 tgt inv: x1<=15
+483 -> 378 src inv: x1<=15 & x3<=20 guard: x1>=7 reset: x1=0 tgt inv: x1<=5 & x3<=20
+573: <Occ,Stop,Safe,Start> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+484 -> 573  reset: x3=0 tgt inv: x3<=15
+485 -> 573 src inv: x1<=20 & x3<=15 guard: x1<=10 tgt inv: x3<=15
+485 -> 390 src inv: x1<=20 & x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x1<=20 & x3<=5
+574: <Occ,Safe,Stop,Start> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+486 -> 574 src inv: x2<=20 & x3<=15 guard: x2<=10 tgt inv: x3<=15
+486 -> 392 src inv: x2<=20 & x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x2<=20 & x3<=5
+575: <Free,Safe,Stop,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+487 -> 575 src inv: x1<=5 guard: x1>=3
+487 -> 532 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+576: <Free,Safe,Safe,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+488 -> 576 src inv: x1<=5 guard: x1>=3
+488 -> 536 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+489 -> 4 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+489 -> 5 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+577: <Occ,Cross,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+489 -> 577 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+490 -> 7 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+490 -> 8 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+578: <Occ,Safe,Cross,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+490 -> 578 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+491 -> 10 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+491 -> 11 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+579: <Occ,Safe,Safe,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+491 -> 579 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+580: <Free,Stop,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+492 -> 580 src inv: x2<=5 guard: x2>=3
+492 -> 540 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+493 -> 543 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+581: <Free,Safe,Safe,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+493 -> 581 src inv: x2<=5 guard: x2>=3
+494 -> 545 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+494 -> 546 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+582: <Occ,Cross,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+494 -> 582 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+495 -> 548 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+495 -> 549 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+583: <Occ,Safe,Cross,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+495 -> 583 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+496 -> 551 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+496 -> 552 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+584: <Occ,Safe,Safe,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+496 -> 584 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+497 -> 556 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+585: <Free,Stop,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+497 -> 585 src inv: x3<=5 guard: x3>=3
+498 -> 560 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+586: <Free,Safe,Stop,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+498 -> 586 src inv: x3<=5 guard: x3>=3
+499 -> 562 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+499 -> 563 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+587: <Occ,Cross,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+499 -> 587 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+500 -> 565 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+500 -> 566 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+588: <Occ,Safe,Cross,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+500 -> 588 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+501 -> 568 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+501 -> 569 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+589: <Occ,Safe,Safe,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+501 -> 589 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+590: <Occ,Start,Stop,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+502 -> 590  reset: x1=0 tgt inv: x1<=15
+503 -> 590 src inv: x1<=15 & x2<=20 guard: x2<=10 tgt inv: x1<=15
+503 -> 401 src inv: x1<=15 & x2<=20 guard: x1>=7 reset: x1=0 tgt inv: x1<=5 & x2<=20
+591: <Occ,Start,Safe,Stop> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+504 -> 591 src inv: x1<=15 & x3<=20 guard: x3<=10 tgt inv: x1<=15
+504 -> 403 src inv: x1<=15 & x3<=20 guard: x1>=7 reset: x1=0 tgt inv: x1<=5 & x3<=20
+592: <Occ,Stop,Start,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+505 -> 592  reset: x2=0 tgt inv: x2<=15
+506 -> 592 src inv: x1<=20 & x2<=15 guard: x1<=10 tgt inv: x2<=15
+506 -> 408 src inv: x1<=20 & x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x1<=20 & x2<=5
+593: <Occ,Safe,Start,Stop> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+507 -> 593 src inv: x2<=15 & x3<=20 guard: x3<=10 tgt inv: x2<=15
+507 -> 410 src inv: x2<=15 & x3<=20 guard: x2>=7 reset: x2=0 tgt inv: x2<=5 & x3<=20
+594: <Free,Safe,Stop,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+508 -> 594 src inv: x1<=5 guard: x1>=3
+508 -> 532 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+595: <Free,Safe,Safe,Stop> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+509 -> 595 src inv: x1<=5 guard: x1>=3
+509 -> 536 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+510 -> 4 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+510 -> 5 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+596: <Occ,Cross,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+510 -> 596 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+511 -> 7 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+511 -> 8 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+597: <Occ,Safe,Cross,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+511 -> 597 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+512 -> 10 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+512 -> 11 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+598: <Occ,Safe,Safe,Cross> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+512 -> 598 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+599: <Free,Stop,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+513 -> 599 src inv: x2<=5 guard: x2>=3
+513 -> 540 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+514 -> 543 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+600: <Free,Safe,Safe,Stop> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+514 -> 600 src inv: x2<=5 guard: x2>=3
+515 -> 545 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+515 -> 546 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+601: <Occ,Cross,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+515 -> 601 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+516 -> 548 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+516 -> 549 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+602: <Occ,Safe,Cross,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+516 -> 602 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+517 -> 551 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+517 -> 552 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+603: <Occ,Safe,Safe,Cross> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+517 -> 603 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+518 -> 556 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+604: <Free,Stop,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+518 -> 604 src inv: x3<=5 guard: x3>=3
+519 -> 560 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+605: <Free,Safe,Stop,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+519 -> 605 src inv: x3<=5 guard: x3>=3
+520 -> 562 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+520 -> 563 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+606: <Occ,Cross,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+520 -> 606 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+521 -> 565 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+521 -> 566 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+607: <Occ,Safe,Cross,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+521 -> 607 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+522 -> 568 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+522 -> 569 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+608: <Occ,Safe,Safe,Cross> buffer[0]=3,buffer[1]=3,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+522 -> 608 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+523 -> 349 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+524 -> 347 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+609: <Transient,Appr,Start,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=3 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+525 -> 609 src inv: x2<=15 reset: x1=0 tgt inv: x1<=20 & x2<=15
+525 -> 470 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+610: <Transient,Stop,Start,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=3 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+526 -> 610 src inv: x2<=15 reset: x3=0 tgt inv: x2<=15 & x3<=20
+526 -> 468 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+611: <Transient,Appr,Stop,Start> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=3 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+527 -> 611 src inv: x3<=15 reset: x1=0 tgt inv: x1<=20 & x3<=15
+527 -> 477 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+612: <Transient,Stop,Appr,Start> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=3 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+528 -> 612 src inv: x3<=15 reset: x2=0 tgt inv: x2<=20 & x3<=15
+528 -> 475 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+613: <Occ,Cross,Stop,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+529 -> 613 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+530 -> 613 src inv: x1<=5 & x3<=20 guard: x3<=10 tgt inv: x1<=5
+614: <Occ,Safe,Start,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+531 -> 614  reset: x2=0 tgt inv: x2<=15
+532 -> 613 src inv: x1<=5 & x3<=20 guard: x3<=10 tgt inv: x1<=5
+615: <Occ,Cross,Stop,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+533 -> 615 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+534 -> 615 src inv: x1<=5 & x2<=20 guard: x2<=10 tgt inv: x1<=5
+616: <Occ,Safe,Safe,Start> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+535 -> 616  reset: x3=0 tgt inv: x3<=15
+536 -> 615 src inv: x1<=5 & x2<=20 guard: x2<=10 tgt inv: x1<=5
+617: <Occ,Stop,Cross,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+537 -> 617 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+538 -> 617 src inv: x2<=5 & x3<=20 guard: x3<=10 tgt inv: x2<=5
+618: <Occ,Start,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+539 -> 618  reset: x1=0 tgt inv: x1<=15
+540 -> 617 src inv: x2<=5 & x3<=20 guard: x3<=10 tgt inv: x2<=5
+619: <Occ,Stop,Cross,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+541 -> 619 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+542 -> 619 src inv: x1<=20 & x2<=5 guard: x1<=10 tgt inv: x2<=5
+543 -> 619 src inv: x1<=20 & x2<=5 guard: x1<=10 tgt inv: x2<=5
+620: <Occ,Safe,Safe,Start> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+544 -> 620  reset: x3=0 tgt inv: x3<=15
+621: <Occ,Appr,Stop,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+545 -> 621 src inv: x1<=20 & x2<=20 guard: x2<=10 tgt inv: x1<=20
+622: <Transient,Cross,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=0,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)
+545 -> 622 src inv: x1<=20 & x2<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5 & x2<=20
+623: <Occ,Appr,Safe,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+546 -> 623 src inv: x1<=20 & x3<=20 guard: x3<=10 tgt inv: x1<=20
+624: <Transient,Cross,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)
+546 -> 624 src inv: x1<=20 & x3<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5 & x3<=20
+625: <Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+547 -> 625 src inv: x1<=5 guard: x1>=3
+626: <Transient,Cross,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=0,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+547 -> 626 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+627: <Transient,Cross,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+547 -> 627 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+628: <Occ,Stop,Appr,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+548 -> 628 src inv: x1<=20 & x2<=20 guard: x1<=10 tgt inv: x2<=20
+629: <Transient,Appr,Cross,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=0,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)
+548 -> 629 src inv: x1<=20 & x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x1<=20 & x2<=5
+630: <Occ,Safe,Appr,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+549 -> 630 src inv: x2<=20 & x3<=20 guard: x3<=10 tgt inv: x2<=20
+631: <Transient,Safe,Cross,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=0,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)
+549 -> 631 src inv: x2<=20 & x3<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5 & x3<=20
+632: <Transient,Appr,Cross,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=0,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+550 -> 632 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+633: <Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+550 -> 633 src inv: x2<=5 guard: x2>=3
+634: <Transient,Safe,Cross,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+550 -> 634 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+635: <Occ,Stop,Safe,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+551 -> 635 src inv: x1<=20 & x3<=20 guard: x1<=10 tgt inv: x3<=20
+636: <Transient,Appr,Safe,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)
+551 -> 636 src inv: x1<=20 & x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x1<=20 & x3<=5
+637: <Occ,Safe,Stop,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+552 -> 637 src inv: x2<=20 & x3<=20 guard: x2<=10 tgt inv: x3<=20
+638: <Transient,Safe,Appr,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=0,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)
+552 -> 638 src inv: x2<=20 & x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x2<=20 & x3<=5
+639: <Transient,Appr,Safe,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+553 -> 639 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+640: <Transient,Safe,Appr,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=0,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+553 -> 640 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+641: <Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+553 -> 641 src inv: x3<=5 guard: x3>=3
+642: <Occ,Stop,Stop,Cross> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+554 -> 642 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+555 -> 642 src inv: x2<=20 & x3<=5 guard: x2<=10 tgt inv: x3<=5
+556 -> 642 src inv: x2<=20 & x3<=5 guard: x2<=10 tgt inv: x3<=5
+643: <Occ,Start,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+557 -> 643  reset: x1=0 tgt inv: x1<=15
+644: <Occ,Stop,Stop,Cross> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+558 -> 644 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+559 -> 644 src inv: x1<=20 & x3<=5 guard: x1<=10 tgt inv: x3<=5
+560 -> 644 src inv: x1<=20 & x3<=5 guard: x1<=10 tgt inv: x3<=5
+645: <Occ,Safe,Start,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+561 -> 645  reset: x2=0 tgt inv: x2<=15
+646: <Occ,Appr,Stop,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+562 -> 646 src inv: x1<=20 & x2<=20 guard: x2<=10 tgt inv: x1<=20
+647: <Transient,Cross,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)
+562 -> 647 src inv: x1<=20 & x2<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5 & x2<=20
+648: <Occ,Appr,Safe,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+563 -> 648 src inv: x1<=20 & x3<=20 guard: x3<=10 tgt inv: x1<=20
+649: <Transient,Cross,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=0,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)
+563 -> 649 src inv: x1<=20 & x3<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5 & x3<=20
+650: <Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+564 -> 650 src inv: x1<=5 guard: x1>=3
+651: <Transient,Cross,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+564 -> 651 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+652: <Transient,Cross,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+564 -> 652 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+653: <Occ,Stop,Appr,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+565 -> 653 src inv: x1<=20 & x2<=20 guard: x1<=10 tgt inv: x2<=20
+654: <Transient,Appr,Cross,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)
+565 -> 654 src inv: x1<=20 & x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x1<=20 & x2<=5
+655: <Occ,Safe,Appr,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+566 -> 655 src inv: x2<=20 & x3<=20 guard: x3<=10 tgt inv: x2<=20
+656: <Transient,Safe,Cross,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=0,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)
+566 -> 656 src inv: x2<=20 & x3<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5 & x3<=20
+657: <Transient,Appr,Cross,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+567 -> 657 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+658: <Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+567 -> 658 src inv: x2<=5 guard: x2>=3
+659: <Transient,Safe,Cross,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+567 -> 659 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+660: <Occ,Stop,Safe,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+568 -> 660 src inv: x1<=20 & x3<=20 guard: x1<=10 tgt inv: x3<=20
+661: <Transient,Appr,Safe,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=0,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)
+568 -> 661 src inv: x1<=20 & x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x1<=20 & x3<=5
+662: <Occ,Safe,Stop,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+569 -> 662 src inv: x2<=20 & x3<=20 guard: x2<=10 tgt inv: x3<=20
+663: <Transient,Safe,Appr,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=0,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)
+569 -> 663 src inv: x2<=20 & x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x2<=20 & x3<=5
+664: <Transient,Appr,Safe,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=0,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+570 -> 664 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+665: <Transient,Safe,Appr,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=0,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+570 -> 665 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+666: <Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+570 -> 666 src inv: x3<=5 guard: x3>=3
+667: <Transient,Start,Appr,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=3 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+571 -> 667 src inv: x1<=15 reset: x2=0 tgt inv: x1<=15 & x2<=20
+571 -> 488 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+668: <Transient,Start,Stop,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=3 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+572 -> 668 src inv: x1<=15 reset: x3=0 tgt inv: x1<=15 & x3<=20
+572 -> 487 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+573 -> 612 src inv: x3<=15 reset: x2=0 tgt inv: x2<=20 & x3<=15
+573 -> 497 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+574 -> 611 src inv: x3<=15 reset: x1=0 tgt inv: x1<=20 & x3<=15
+574 -> 498 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+669: <Occ,Safe,Start,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+575 -> 669  reset: x2=0 tgt inv: x2<=15
+670: <Occ,Safe,Safe,Start> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+576 -> 670  reset: x3=0 tgt inv: x3<=15
+671: <Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+577 -> 671 src inv: x1<=5 guard: x1>=3
+577 -> 18 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+577 -> 19 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+578 -> 24 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+672: <Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+578 -> 672 src inv: x2<=5 guard: x2>=3
+578 -> 26 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+579 -> 31 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+579 -> 32 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+673: <Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+579 -> 673 src inv: x3<=5 guard: x3>=3
+674: <Occ,Start,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+580 -> 674  reset: x1=0 tgt inv: x1<=15
+675: <Occ,Safe,Safe,Start> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+581 -> 675  reset: x3=0 tgt inv: x3<=15
+676: <Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+582 -> 676 src inv: x1<=5 guard: x1>=3
+582 -> 626 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+582 -> 627 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+583 -> 632 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+677: <Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=2,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+583 -> 677 src inv: x2<=5 guard: x2>=3
+583 -> 634 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+584 -> 639 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+584 -> 640 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+678: <Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+584 -> 678 src inv: x3<=5 guard: x3>=3
+679: <Occ,Start,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+585 -> 679  reset: x1=0 tgt inv: x1<=15
+680: <Occ,Safe,Start,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+586 -> 680  reset: x2=0 tgt inv: x2<=15
+681: <Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+587 -> 681 src inv: x1<=5 guard: x1>=3
+587 -> 651 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+587 -> 652 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+588 -> 657 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+682: <Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+588 -> 682 src inv: x2<=5 guard: x2>=3
+588 -> 659 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+589 -> 664 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+589 -> 665 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+683: <Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+589 -> 683 src inv: x3<=5 guard: x3>=3
+590 -> 668 src inv: x1<=15 reset: x3=0 tgt inv: x1<=15 & x3<=20
+590 -> 508 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+591 -> 667 src inv: x1<=15 reset: x2=0 tgt inv: x1<=15 & x2<=20
+591 -> 509 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+592 -> 610 src inv: x2<=15 reset: x3=0 tgt inv: x2<=15 & x3<=20
+592 -> 513 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+593 -> 609 src inv: x2<=15 reset: x1=0 tgt inv: x1<=20 & x2<=15
+593 -> 514 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+684: <Occ,Safe,Start,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+594 -> 684  reset: x2=0 tgt inv: x2<=15
+685: <Occ,Safe,Safe,Start> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+595 -> 685  reset: x3=0 tgt inv: x3<=15
+686: <Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+596 -> 686 src inv: x1<=5 guard: x1>=3
+596 -> 18 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+596 -> 19 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+597 -> 24 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+687: <Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+597 -> 687 src inv: x2<=5 guard: x2>=3
+597 -> 26 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+598 -> 31 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+598 -> 32 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+688: <Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+598 -> 688 src inv: x3<=5 guard: x3>=3
+689: <Occ,Start,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+599 -> 689  reset: x1=0 tgt inv: x1<=15
+690: <Occ,Safe,Safe,Start> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+600 -> 690  reset: x3=0 tgt inv: x3<=15
+691: <Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+601 -> 691 src inv: x1<=5 guard: x1>=3
+601 -> 626 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+601 -> 627 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+602 -> 632 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+692: <Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+602 -> 692 src inv: x2<=5 guard: x2>=3
+602 -> 634 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+603 -> 639 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+603 -> 640 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+693: <Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+603 -> 693 src inv: x3<=5 guard: x3>=3
+694: <Occ,Start,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+604 -> 694  reset: x1=0 tgt inv: x1<=15
+695: <Occ,Safe,Start,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+605 -> 695  reset: x2=0 tgt inv: x2<=15
+696: <Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+606 -> 696 src inv: x1<=5 guard: x1>=3
+606 -> 651 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+606 -> 652 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+607 -> 657 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+697: <Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+607 -> 697 src inv: x2<=5 guard: x2>=3
+607 -> 659 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+608 -> 664 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+608 -> 665 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+698: <Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=3,buffer[2]=3,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+608 -> 698 src inv: x3<=5 guard: x3>=3
+699: <Occ,Stop,Start,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+609 -> 699 src inv: x1<=20 & x2<=15 guard: x1<=10 tgt inv: x2<=15
+609 -> 542 src inv: x1<=20 & x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x1<=20 & x2<=5
+700: <Occ,Stop,Start,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+610 -> 700 src inv: x2<=15 & x3<=20 guard: x3<=10 tgt inv: x2<=15
+610 -> 538 src inv: x2<=15 & x3<=20 guard: x2>=7 reset: x2=0 tgt inv: x2<=5 & x3<=20
+701: <Occ,Stop,Stop,Start> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+611 -> 701 src inv: x1<=20 & x3<=15 guard: x1<=10 tgt inv: x3<=15
+611 -> 559 src inv: x1<=20 & x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x1<=20 & x3<=5
+702: <Occ,Stop,Stop,Start> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+612 -> 702 src inv: x2<=20 & x3<=15 guard: x2<=10 tgt inv: x3<=15
+612 -> 555 src inv: x2<=20 & x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x2<=20 & x3<=5
+703: <Free,Safe,Stop,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+613 -> 703 src inv: x1<=5 guard: x1>=3
+704: <Transient,Appr,Start,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=0,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+614 -> 704 src inv: x2<=15 reset: x1=0 tgt inv: x1<=20 & x2<=15
+705: <Transient,Safe,Start,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+614 -> 705 src inv: x2<=15 reset: x3=0 tgt inv: x2<=15 & x3<=20
+614 -> 9 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+706: <Free,Safe,Stop,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+615 -> 706 src inv: x1<=5 guard: x1>=3
+707: <Transient,Appr,Safe,Start> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=0,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+616 -> 707 src inv: x3<=15 reset: x1=0 tgt inv: x1<=20 & x3<=15
+708: <Transient,Safe,Appr,Start> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+616 -> 708 src inv: x3<=15 reset: x2=0 tgt inv: x2<=20 & x3<=15
+616 -> 12 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+709: <Free,Stop,Safe,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+617 -> 709 src inv: x2<=5 guard: x2>=3
+710: <Transient,Start,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=0,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+618 -> 710 src inv: x1<=15 reset: x2=0 tgt inv: x1<=15 & x2<=20
+711: <Transient,Start,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+618 -> 711 src inv: x1<=15 reset: x3=0 tgt inv: x1<=15 & x3<=20
+618 -> 547 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+712: <Free,Stop,Safe,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+619 -> 712 src inv: x2<=5 guard: x2>=3
+713: <Transient,Appr,Safe,Start> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+620 -> 713 src inv: x3<=15 reset: x1=0 tgt inv: x1<=20 & x3<=15
+714: <Transient,Safe,Appr,Start> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=0,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+620 -> 714 src inv: x3<=15 reset: x2=0 tgt inv: x2<=20 & x3<=15
+620 -> 553 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+621 -> 34 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+715: <Occ,Cross,Stop,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+621 -> 715 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+622 -> 715 src inv: x1<=5 & x2<=20 guard: x2<=10 tgt inv: x1<=5
+623 -> 36 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+716: <Occ,Cross,Safe,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+623 -> 716 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+624 -> 716 src inv: x1<=5 & x3<=20 guard: x3<=10 tgt inv: x1<=5
+717: <Occ,Appr,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+625 -> 717  reset: x1=0 tgt inv: x1<=20
+718: <Occ,Safe,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+625 -> 718  reset: x2=0 tgt inv: x2<=20
+719: <Occ,Safe,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+625 -> 719  reset: x3=0 tgt inv: x3<=20
+626 -> 715 src inv: x1<=5 & x2<=20 guard: x2<=10 tgt inv: x1<=5
+627 -> 716 src inv: x1<=5 & x3<=20 guard: x3<=10 tgt inv: x1<=5
+628 -> 41 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+720: <Occ,Stop,Cross,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+628 -> 720 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+629 -> 720 src inv: x1<=20 & x2<=5 guard: x1<=10 tgt inv: x2<=5
+630 -> 43 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+721: <Occ,Safe,Cross,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+630 -> 721 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+631 -> 721 src inv: x2<=5 & x3<=20 guard: x3<=10 tgt inv: x2<=5
+632 -> 720 src inv: x1<=20 & x2<=5 guard: x1<=10 tgt inv: x2<=5
+722: <Occ,Appr,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+633 -> 722  reset: x1=0 tgt inv: x1<=20
+723: <Occ,Safe,Appr,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+633 -> 723  reset: x2=0 tgt inv: x2<=20
+724: <Occ,Safe,Safe,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+633 -> 724  reset: x3=0 tgt inv: x3<=20
+634 -> 721 src inv: x2<=5 & x3<=20 guard: x3<=10 tgt inv: x2<=5
+635 -> 48 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+725: <Occ,Stop,Safe,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+635 -> 725 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+636 -> 725 src inv: x1<=20 & x3<=5 guard: x1<=10 tgt inv: x3<=5
+637 -> 50 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+726: <Occ,Safe,Stop,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+637 -> 726 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+638 -> 726 src inv: x2<=20 & x3<=5 guard: x2<=10 tgt inv: x3<=5
+639 -> 725 src inv: x1<=20 & x3<=5 guard: x1<=10 tgt inv: x3<=5
+640 -> 726 src inv: x2<=20 & x3<=5 guard: x2<=10 tgt inv: x3<=5
+727: <Occ,Appr,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+641 -> 727  reset: x1=0 tgt inv: x1<=20
+728: <Occ,Safe,Appr,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+641 -> 728  reset: x2=0 tgt inv: x2<=20
+729: <Occ,Safe,Safe,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+641 -> 729  reset: x3=0 tgt inv: x3<=20
+730: <Free,Stop,Stop,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+642 -> 730 src inv: x3<=5 guard: x3>=3
+731: <Transient,Start,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+643 -> 731 src inv: x1<=15 reset: x2=0 tgt inv: x1<=15 & x2<=20
+732: <Transient,Start,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+643 -> 732 src inv: x1<=15 reset: x3=0 tgt inv: x1<=15 & x3<=20
+643 -> 564 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+733: <Free,Stop,Stop,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+644 -> 733 src inv: x3<=5 guard: x3>=3
+734: <Transient,Appr,Start,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+645 -> 734 src inv: x2<=15 reset: x1=0 tgt inv: x1<=20 & x2<=15
+735: <Transient,Safe,Start,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+645 -> 735 src inv: x2<=15 reset: x3=0 tgt inv: x2<=15 & x3<=20
+645 -> 567 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+646 -> 34 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+736: <Occ,Cross,Stop,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+646 -> 736 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+647 -> 736 src inv: x1<=5 & x2<=20 guard: x2<=10 tgt inv: x1<=5
+648 -> 36 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+737: <Occ,Cross,Safe,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+648 -> 737 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+649 -> 737 src inv: x1<=5 & x3<=20 guard: x3<=10 tgt inv: x1<=5
+738: <Occ,Appr,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+650 -> 738  reset: x1=0 tgt inv: x1<=20
+739: <Occ,Safe,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+650 -> 739  reset: x2=0 tgt inv: x2<=20
+740: <Occ,Safe,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+650 -> 740  reset: x3=0 tgt inv: x3<=20
+651 -> 736 src inv: x1<=5 & x2<=20 guard: x2<=10 tgt inv: x1<=5
+652 -> 737 src inv: x1<=5 & x3<=20 guard: x3<=10 tgt inv: x1<=5
+653 -> 41 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+741: <Occ,Stop,Cross,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+653 -> 741 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+654 -> 741 src inv: x1<=20 & x2<=5 guard: x1<=10 tgt inv: x2<=5
+655 -> 43 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+742: <Occ,Safe,Cross,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+655 -> 742 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+656 -> 742 src inv: x2<=5 & x3<=20 guard: x3<=10 tgt inv: x2<=5
+657 -> 741 src inv: x1<=20 & x2<=5 guard: x1<=10 tgt inv: x2<=5
+743: <Occ,Appr,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+658 -> 743  reset: x1=0 tgt inv: x1<=20
+744: <Occ,Safe,Appr,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+658 -> 744  reset: x2=0 tgt inv: x2<=20
+745: <Occ,Safe,Safe,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+658 -> 745  reset: x3=0 tgt inv: x3<=20
+659 -> 742 src inv: x2<=5 & x3<=20 guard: x3<=10 tgt inv: x2<=5
+660 -> 48 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+746: <Occ,Stop,Safe,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+660 -> 746 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+661 -> 746 src inv: x1<=20 & x3<=5 guard: x1<=10 tgt inv: x3<=5
+662 -> 50 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+747: <Occ,Safe,Stop,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+662 -> 747 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+663 -> 747 src inv: x2<=20 & x3<=5 guard: x2<=10 tgt inv: x3<=5
+664 -> 746 src inv: x1<=20 & x3<=5 guard: x1<=10 tgt inv: x3<=5
+665 -> 747 src inv: x2<=20 & x3<=5 guard: x2<=10 tgt inv: x3<=5
+748: <Occ,Appr,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+666 -> 748  reset: x1=0 tgt inv: x1<=20
+749: <Occ,Safe,Appr,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+666 -> 749  reset: x2=0 tgt inv: x2<=20
+750: <Occ,Safe,Safe,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+666 -> 750  reset: x3=0 tgt inv: x3<=20
+751: <Occ,Start,Stop,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+667 -> 751 src inv: x1<=15 & x2<=20 guard: x2<=10 tgt inv: x1<=15
+667 -> 534 src inv: x1<=15 & x2<=20 guard: x1>=7 reset: x1=0 tgt inv: x1<=5 & x2<=20
+752: <Occ,Start,Stop,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+668 -> 752 src inv: x1<=15 & x3<=20 guard: x3<=10 tgt inv: x1<=15
+668 -> 530 src inv: x1<=15 & x3<=20 guard: x1>=7 reset: x1=0 tgt inv: x1<=5 & x3<=20
+669 -> 704 src inv: x2<=15 reset: x1=0 tgt inv: x1<=20 & x2<=15
+669 -> 705 src inv: x2<=15 reset: x3=0 tgt inv: x2<=15 & x3<=20
+669 -> 578 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+670 -> 707 src inv: x3<=15 reset: x1=0 tgt inv: x1<=20 & x3<=15
+670 -> 708 src inv: x3<=15 reset: x2=0 tgt inv: x2<=20 & x3<=15
+670 -> 579 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+671 -> 38  reset: x1=0 tgt inv: x1<=20
+671 -> 39  reset: x2=0 tgt inv: x2<=20
+671 -> 40  reset: x3=0 tgt inv: x3<=20
+672 -> 45  reset: x1=0 tgt inv: x1<=20
+672 -> 46  reset: x2=0 tgt inv: x2<=20
+672 -> 47  reset: x3=0 tgt inv: x3<=20
+673 -> 52  reset: x1=0 tgt inv: x1<=20
+673 -> 53  reset: x2=0 tgt inv: x2<=20
+673 -> 54  reset: x3=0 tgt inv: x3<=20
+674 -> 710 src inv: x1<=15 reset: x2=0 tgt inv: x1<=15 & x2<=20
+674 -> 711 src inv: x1<=15 reset: x3=0 tgt inv: x1<=15 & x3<=20
+674 -> 582 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+675 -> 713 src inv: x3<=15 reset: x1=0 tgt inv: x1<=20 & x3<=15
+675 -> 714 src inv: x3<=15 reset: x2=0 tgt inv: x2<=20 & x3<=15
+675 -> 584 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+676 -> 717  reset: x1=0 tgt inv: x1<=20
+676 -> 718  reset: x2=0 tgt inv: x2<=20
+676 -> 719  reset: x3=0 tgt inv: x3<=20
+677 -> 722  reset: x1=0 tgt inv: x1<=20
+677 -> 723  reset: x2=0 tgt inv: x2<=20
+677 -> 724  reset: x3=0 tgt inv: x3<=20
+678 -> 727  reset: x1=0 tgt inv: x1<=20
+678 -> 728  reset: x2=0 tgt inv: x2<=20
+678 -> 729  reset: x3=0 tgt inv: x3<=20
+679 -> 731 src inv: x1<=15 reset: x2=0 tgt inv: x1<=15 & x2<=20
+679 -> 732 src inv: x1<=15 reset: x3=0 tgt inv: x1<=15 & x3<=20
+679 -> 587 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+680 -> 734 src inv: x2<=15 reset: x1=0 tgt inv: x1<=20 & x2<=15
+680 -> 735 src inv: x2<=15 reset: x3=0 tgt inv: x2<=15 & x3<=20
+680 -> 588 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+681 -> 738  reset: x1=0 tgt inv: x1<=20
+681 -> 739  reset: x2=0 tgt inv: x2<=20
+681 -> 740  reset: x3=0 tgt inv: x3<=20
+682 -> 743  reset: x1=0 tgt inv: x1<=20
+682 -> 744  reset: x2=0 tgt inv: x2<=20
+682 -> 745  reset: x3=0 tgt inv: x3<=20
+683 -> 748  reset: x1=0 tgt inv: x1<=20
+683 -> 749  reset: x2=0 tgt inv: x2<=20
+683 -> 750  reset: x3=0 tgt inv: x3<=20
+684 -> 704 src inv: x2<=15 reset: x1=0 tgt inv: x1<=20 & x2<=15
+684 -> 705 src inv: x2<=15 reset: x3=0 tgt inv: x2<=15 & x3<=20
+684 -> 597 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+685 -> 707 src inv: x3<=15 reset: x1=0 tgt inv: x1<=20 & x3<=15
+685 -> 708 src inv: x3<=15 reset: x2=0 tgt inv: x2<=20 & x3<=15
+685 -> 598 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+686 -> 38  reset: x1=0 tgt inv: x1<=20
+686 -> 39  reset: x2=0 tgt inv: x2<=20
+686 -> 40  reset: x3=0 tgt inv: x3<=20
+687 -> 45  reset: x1=0 tgt inv: x1<=20
+687 -> 46  reset: x2=0 tgt inv: x2<=20
+687 -> 47  reset: x3=0 tgt inv: x3<=20
+688 -> 52  reset: x1=0 tgt inv: x1<=20
+688 -> 53  reset: x2=0 tgt inv: x2<=20
+688 -> 54  reset: x3=0 tgt inv: x3<=20
+689 -> 710 src inv: x1<=15 reset: x2=0 tgt inv: x1<=15 & x2<=20
+689 -> 711 src inv: x1<=15 reset: x3=0 tgt inv: x1<=15 & x3<=20
+689 -> 601 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+690 -> 713 src inv: x3<=15 reset: x1=0 tgt inv: x1<=20 & x3<=15
+690 -> 714 src inv: x3<=15 reset: x2=0 tgt inv: x2<=20 & x3<=15
+690 -> 603 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+691 -> 717  reset: x1=0 tgt inv: x1<=20
+691 -> 718  reset: x2=0 tgt inv: x2<=20
+691 -> 719  reset: x3=0 tgt inv: x3<=20
+692 -> 722  reset: x1=0 tgt inv: x1<=20
+692 -> 723  reset: x2=0 tgt inv: x2<=20
+692 -> 724  reset: x3=0 tgt inv: x3<=20
+693 -> 727  reset: x1=0 tgt inv: x1<=20
+693 -> 728  reset: x2=0 tgt inv: x2<=20
+693 -> 729  reset: x3=0 tgt inv: x3<=20
+694 -> 731 src inv: x1<=15 reset: x2=0 tgt inv: x1<=15 & x2<=20
+694 -> 732 src inv: x1<=15 reset: x3=0 tgt inv: x1<=15 & x3<=20
+694 -> 606 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+695 -> 734 src inv: x2<=15 reset: x1=0 tgt inv: x1<=20 & x2<=15
+695 -> 735 src inv: x2<=15 reset: x3=0 tgt inv: x2<=15 & x3<=20
+695 -> 607 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+696 -> 738  reset: x1=0 tgt inv: x1<=20
+696 -> 739  reset: x2=0 tgt inv: x2<=20
+696 -> 740  reset: x3=0 tgt inv: x3<=20
+697 -> 743  reset: x1=0 tgt inv: x1<=20
+697 -> 744  reset: x2=0 tgt inv: x2<=20
+697 -> 745  reset: x3=0 tgt inv: x3<=20
+698 -> 748  reset: x1=0 tgt inv: x1<=20
+698 -> 749  reset: x2=0 tgt inv: x2<=20
+698 -> 750  reset: x3=0 tgt inv: x3<=20
+699 -> 619 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+700 -> 617 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+701 -> 644 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+702 -> 642 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+753: <Occ,Safe,Start,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+703 -> 753  reset: x2=0 tgt inv: x2<=15
+754: <Occ,Stop,Start,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+704 -> 754 src inv: x1<=20 & x2<=15 guard: x1<=10 tgt inv: x2<=15
+704 -> 21 src inv: x1<=20 & x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x1<=20 & x2<=5
+705 -> 753 src inv: x2<=15 & x3<=20 guard: x3<=10 tgt inv: x2<=15
+705 -> 23 src inv: x2<=15 & x3<=20 guard: x2>=7 reset: x2=0 tgt inv: x2<=5 & x3<=20
+755: <Occ,Safe,Stop,Start> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+706 -> 755  reset: x3=0 tgt inv: x3<=15
+756: <Occ,Stop,Safe,Start> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+707 -> 756 src inv: x1<=20 & x3<=15 guard: x1<=10 tgt inv: x3<=15
+707 -> 28 src inv: x1<=20 & x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x1<=20 & x3<=5
+708 -> 755 src inv: x2<=20 & x3<=15 guard: x2<=10 tgt inv: x3<=15
+708 -> 30 src inv: x2<=20 & x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x2<=20 & x3<=5
+757: <Occ,Start,Safe,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+709 -> 757  reset: x1=0 tgt inv: x1<=15
+758: <Occ,Start,Stop,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+710 -> 758 src inv: x1<=15 & x2<=20 guard: x2<=10 tgt inv: x1<=15
+710 -> 622 src inv: x1<=15 & x2<=20 guard: x1>=7 reset: x1=0 tgt inv: x1<=5 & x2<=20
+711 -> 757 src inv: x1<=15 & x3<=20 guard: x3<=10 tgt inv: x1<=15
+711 -> 624 src inv: x1<=15 & x3<=20 guard: x1>=7 reset: x1=0 tgt inv: x1<=5 & x3<=20
+759: <Occ,Stop,Safe,Start> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+712 -> 759  reset: x3=0 tgt inv: x3<=15
+713 -> 759 src inv: x1<=20 & x3<=15 guard: x1<=10 tgt inv: x3<=15
+713 -> 636 src inv: x1<=20 & x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x1<=20 & x3<=5
+760: <Occ,Safe,Stop,Start> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+714 -> 760 src inv: x2<=20 & x3<=15 guard: x2<=10 tgt inv: x3<=15
+714 -> 638 src inv: x2<=20 & x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x2<=20 & x3<=5
+761: <Free,Safe,Stop,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+715 -> 761 src inv: x1<=5 guard: x1>=3
+715 -> 58 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+762: <Free,Safe,Safe,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+716 -> 762 src inv: x1<=5 guard: x1>=3
+716 -> 62 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+717 -> 63 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+717 -> 64 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+763: <Occ,Cross,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+717 -> 763 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+718 -> 66 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+718 -> 67 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+764: <Occ,Safe,Cross,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+718 -> 764 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+719 -> 69 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+719 -> 70 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+765: <Occ,Safe,Safe,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+719 -> 765 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+766: <Free,Stop,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+720 -> 766 src inv: x2<=5 guard: x2>=3
+720 -> 75 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+721 -> 78 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+767: <Free,Safe,Safe,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+721 -> 767 src inv: x2<=5 guard: x2>=3
+722 -> 80 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+722 -> 81 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+768: <Occ,Cross,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+722 -> 768 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+723 -> 83 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+723 -> 84 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+769: <Occ,Safe,Cross,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+723 -> 769 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+724 -> 86 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+724 -> 87 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+770: <Occ,Safe,Safe,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+724 -> 770 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+725 -> 91 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+771: <Free,Stop,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+725 -> 771 src inv: x3<=5 guard: x3>=3
+726 -> 95 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+772: <Free,Safe,Stop,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+726 -> 772 src inv: x3<=5 guard: x3>=3
+727 -> 97 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+727 -> 98 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+773: <Occ,Cross,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+727 -> 773 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+728 -> 100 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+728 -> 101 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+774: <Occ,Safe,Cross,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+728 -> 774 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+729 -> 103 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+729 -> 104 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+775: <Occ,Safe,Safe,Cross> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+729 -> 775 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+776: <Occ,Start,Stop,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+730 -> 776  reset: x1=0 tgt inv: x1<=15
+731 -> 776 src inv: x1<=15 & x2<=20 guard: x2<=10 tgt inv: x1<=15
+731 -> 647 src inv: x1<=15 & x2<=20 guard: x1>=7 reset: x1=0 tgt inv: x1<=5 & x2<=20
+777: <Occ,Start,Safe,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+732 -> 777 src inv: x1<=15 & x3<=20 guard: x3<=10 tgt inv: x1<=15
+732 -> 649 src inv: x1<=15 & x3<=20 guard: x1>=7 reset: x1=0 tgt inv: x1<=5 & x3<=20
+778: <Occ,Stop,Start,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+733 -> 778  reset: x2=0 tgt inv: x2<=15
+734 -> 778 src inv: x1<=20 & x2<=15 guard: x1<=10 tgt inv: x2<=15
+734 -> 654 src inv: x1<=20 & x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x1<=20 & x2<=5
+779: <Occ,Safe,Start,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)
+735 -> 779 src inv: x2<=15 & x3<=20 guard: x3<=10 tgt inv: x2<=15
+735 -> 656 src inv: x2<=15 & x3<=20 guard: x2>=7 reset: x2=0 tgt inv: x2<=5 & x3<=20
+780: <Free,Safe,Stop,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+736 -> 780 src inv: x1<=5 guard: x1>=3
+736 -> 58 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+781: <Free,Safe,Safe,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+737 -> 781 src inv: x1<=5 guard: x1>=3
+737 -> 62 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+738 -> 63 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+738 -> 64 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+782: <Occ,Cross,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+738 -> 782 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+739 -> 66 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+739 -> 67 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+783: <Occ,Safe,Cross,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+739 -> 783 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+740 -> 69 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+740 -> 70 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+784: <Occ,Safe,Safe,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+740 -> 784 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+785: <Free,Stop,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+741 -> 785 src inv: x2<=5 guard: x2>=3
+741 -> 75 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+742 -> 78 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+786: <Free,Safe,Safe,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+742 -> 786 src inv: x2<=5 guard: x2>=3
+743 -> 80 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+743 -> 81 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+787: <Occ,Cross,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+743 -> 787 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+744 -> 83 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+744 -> 84 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+788: <Occ,Safe,Cross,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+744 -> 788 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+745 -> 86 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+745 -> 87 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+789: <Occ,Safe,Safe,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+745 -> 789 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+746 -> 91 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+790: <Free,Stop,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+746 -> 790 src inv: x3<=5 guard: x3>=3
+747 -> 95 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+791: <Free,Safe,Stop,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+747 -> 791 src inv: x3<=5 guard: x3>=3
+748 -> 97 src inv: x1<=20 reset: x2=0 tgt inv: x1<=20 & x2<=20
+748 -> 98 src inv: x1<=20 reset: x3=0 tgt inv: x1<=20 & x3<=20
+792: <Occ,Cross,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+748 -> 792 src inv: x1<=20 guard: x1>=10 reset: x1=0 tgt inv: x1<=5
+749 -> 100 src inv: x2<=20 reset: x1=0 tgt inv: x1<=20 & x2<=20
+749 -> 101 src inv: x2<=20 reset: x3=0 tgt inv: x2<=20 & x3<=20
+793: <Occ,Safe,Cross,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+749 -> 793 src inv: x2<=20 guard: x2>=10 reset: x2=0 tgt inv: x2<=5
+750 -> 103 src inv: x3<=20 reset: x1=0 tgt inv: x1<=20 & x3<=20
+750 -> 104 src inv: x3<=20 reset: x2=0 tgt inv: x2<=20 & x3<=20
+794: <Occ,Safe,Safe,Cross> buffer[0]=3,buffer[1]=3,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+750 -> 794 src inv: x3<=20 guard: x3>=10 reset: x3=0 tgt inv: x3<=5
+751 -> 615 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+752 -> 613 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+795: <Transient,Appr,Start,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=3 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+753 -> 795 src inv: x2<=15 reset: x1=0 tgt inv: x1<=20 & x2<=15
+753 -> 44 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+796: <Transient,Stop,Start,Appr> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=3 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+754 -> 796 src inv: x2<=15 reset: x3=0 tgt inv: x2<=15 & x3<=20
+754 -> 42 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+797: <Transient,Appr,Stop,Start> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=3 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
+755 -> 797 src inv: x3<=15 reset: x1=0 tgt inv: x1<=20 & x3<=15
+755 -> 51 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+798: <Transient,Stop,Appr,Start> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=3 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+756 -> 798 src inv: x3<=15 reset: x2=0 tgt inv: x2<=20 & x3<=15
+756 -> 49 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+799: <Transient,Start,Appr,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=3 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
+757 -> 799 src inv: x1<=15 reset: x2=0 tgt inv: x1<=15 & x2<=20
+757 -> 716 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+800: <Transient,Start,Stop,Appr> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=3 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
+758 -> 800 src inv: x1<=15 reset: x3=0 tgt inv: x1<=15 & x3<=20
+758 -> 715 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+759 -> 798 src inv: x3<=15 reset: x2=0 tgt inv: x2<=20 & x3<=15
+759 -> 725 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+760 -> 797 src inv: x3<=15 reset: x1=0 tgt inv: x1<=20 & x3<=15
+760 -> 726 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+801: <Occ,Safe,Start,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+761 -> 801  reset: x2=0 tgt inv: x2<=15
+802: <Occ,Safe,Safe,Start> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+762 -> 802  reset: x3=0 tgt inv: x3<=15
+803: <Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+763 -> 803 src inv: x1<=5 guard: x1>=3
+763 -> 115 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+763 -> 116 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+764 -> 121 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+804: <Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+764 -> 804 src inv: x2<=5 guard: x2>=3
+764 -> 123 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+765 -> 128 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+765 -> 129 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+805: <Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+765 -> 805 src inv: x3<=5 guard: x3>=3
+806: <Occ,Start,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+766 -> 806  reset: x1=0 tgt inv: x1<=15
+807: <Occ,Safe,Safe,Start> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+767 -> 807  reset: x3=0 tgt inv: x3<=15
+808: <Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+768 -> 808 src inv: x1<=5 guard: x1>=3
+768 -> 140 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+768 -> 141 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+769 -> 146 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+809: <Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=2,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+769 -> 809 src inv: x2<=5 guard: x2>=3
+769 -> 148 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+770 -> 153 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+770 -> 154 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+810: <Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+770 -> 810 src inv: x3<=5 guard: x3>=3
+811: <Occ,Start,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+771 -> 811  reset: x1=0 tgt inv: x1<=15
+812: <Occ,Safe,Start,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+772 -> 812  reset: x2=0 tgt inv: x2<=15
+813: <Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+773 -> 813 src inv: x1<=5 guard: x1>=3
+773 -> 165 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+773 -> 166 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+774 -> 171 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+814: <Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+774 -> 814 src inv: x2<=5 guard: x2>=3
+774 -> 173 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+775 -> 178 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+775 -> 179 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+815: <Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+775 -> 815 src inv: x3<=5 guard: x3>=3
+776 -> 800 src inv: x1<=15 reset: x3=0 tgt inv: x1<=15 & x3<=20
+776 -> 736 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+777 -> 799 src inv: x1<=15 reset: x2=0 tgt inv: x1<=15 & x2<=20
+777 -> 737 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+778 -> 796 src inv: x2<=15 reset: x3=0 tgt inv: x2<=15 & x3<=20
+778 -> 741 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+779 -> 795 src inv: x2<=15 reset: x1=0 tgt inv: x1<=20 & x2<=15
+779 -> 742 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+816: <Occ,Safe,Start,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+780 -> 816  reset: x2=0 tgt inv: x2<=15
+817: <Occ,Safe,Safe,Start> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+781 -> 817  reset: x3=0 tgt inv: x3<=15
+818: <Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+782 -> 818 src inv: x1<=5 guard: x1>=3
+782 -> 115 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+782 -> 116 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+783 -> 121 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+819: <Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+783 -> 819 src inv: x2<=5 guard: x2>=3
+783 -> 123 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+784 -> 128 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+784 -> 129 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+820: <Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+784 -> 820 src inv: x3<=5 guard: x3>=3
+821: <Occ,Start,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+785 -> 821  reset: x1=0 tgt inv: x1<=15
+822: <Occ,Safe,Safe,Start> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+786 -> 822  reset: x3=0 tgt inv: x3<=15
+823: <Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+787 -> 823 src inv: x1<=5 guard: x1>=3
+787 -> 140 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+787 -> 141 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+788 -> 146 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+824: <Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+788 -> 824 src inv: x2<=5 guard: x2>=3
+788 -> 148 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+789 -> 153 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+789 -> 154 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+825: <Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+789 -> 825 src inv: x3<=5 guard: x3>=3
+826: <Occ,Start,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+790 -> 826  reset: x1=0 tgt inv: x1<=15
+827: <Occ,Safe,Start,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)
+791 -> 827  reset: x2=0 tgt inv: x2<=15
+828: <Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+792 -> 828 src inv: x1<=5 guard: x1>=3
+792 -> 165 src inv: x1<=5 reset: x2=0 tgt inv: x1<=5 & x2<=20
+792 -> 166 src inv: x1<=5 reset: x3=0 tgt inv: x1<=5 & x3<=20
+793 -> 171 src inv: x2<=5 reset: x1=0 tgt inv: x1<=20 & x2<=5
+829: <Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+793 -> 829 src inv: x2<=5 guard: x2>=3
+793 -> 173 src inv: x2<=5 reset: x3=0 tgt inv: x2<=5 & x3<=20
+794 -> 178 src inv: x3<=5 reset: x1=0 tgt inv: x1<=20 & x3<=5
+794 -> 179 src inv: x3<=5 reset: x2=0 tgt inv: x2<=20 & x3<=5
+830: <Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=3,buffer[2]=3,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)
+794 -> 830 src inv: x3<=5 guard: x3>=3
+831: <Occ,Stop,Start,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+795 -> 831 src inv: x1<=20 & x2<=15 guard: x1<=10 tgt inv: x2<=15
+795 -> 77 src inv: x1<=20 & x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x1<=20 & x2<=5
+832: <Occ,Stop,Start,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+796 -> 832 src inv: x2<=15 & x3<=20 guard: x3<=10 tgt inv: x2<=15
+796 -> 73 src inv: x2<=15 & x3<=20 guard: x2>=7 reset: x2=0 tgt inv: x2<=5 & x3<=20
+833: <Occ,Stop,Stop,Start> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+797 -> 833 src inv: x1<=20 & x3<=15 guard: x1<=10 tgt inv: x3<=15
+797 -> 94 src inv: x1<=20 & x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x1<=20 & x3<=5
+834: <Occ,Stop,Stop,Start> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+798 -> 834 src inv: x2<=20 & x3<=15 guard: x2<=10 tgt inv: x3<=15
+798 -> 90 src inv: x2<=20 & x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x2<=20 & x3<=5
+835: <Occ,Start,Stop,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+799 -> 835 src inv: x1<=15 & x2<=20 guard: x2<=10 tgt inv: x1<=15
+799 -> 60 src inv: x1<=15 & x2<=20 guard: x1>=7 reset: x1=0 tgt inv: x1<=5 & x2<=20
+836: <Occ,Start,Stop,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=3 (0<=x1 & 0<=x2 & 0<=x3)
+800 -> 836 src inv: x1<=15 & x3<=20 guard: x3<=10 tgt inv: x1<=15
+800 -> 56 src inv: x1<=15 & x3<=20 guard: x1>=7 reset: x1=0 tgt inv: x1<=5 & x3<=20
+801 -> 182 src inv: x2<=15 reset: x1=0 tgt inv: x1<=20 & x2<=15
+801 -> 183 src inv: x2<=15 reset: x3=0 tgt inv: x2<=15 & x3<=20
+801 -> 764 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+802 -> 185 src inv: x3<=15 reset: x1=0 tgt inv: x1<=20 & x3<=15
+802 -> 186 src inv: x3<=15 reset: x2=0 tgt inv: x2<=20 & x3<=15
+802 -> 765 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+803 -> 191  reset: x1=0 tgt inv: x1<=20
+803 -> 192  reset: x2=0 tgt inv: x2<=20
+803 -> 193  reset: x3=0 tgt inv: x3<=20
+804 -> 198  reset: x1=0 tgt inv: x1<=20
+804 -> 199  reset: x2=0 tgt inv: x2<=20
+804 -> 200  reset: x3=0 tgt inv: x3<=20
+805 -> 205  reset: x1=0 tgt inv: x1<=20
+805 -> 206  reset: x2=0 tgt inv: x2<=20
+805 -> 207  reset: x3=0 tgt inv: x3<=20
+806 -> 209 src inv: x1<=15 reset: x2=0 tgt inv: x1<=15 & x2<=20
+806 -> 210 src inv: x1<=15 reset: x3=0 tgt inv: x1<=15 & x3<=20
+806 -> 768 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+807 -> 212 src inv: x3<=15 reset: x1=0 tgt inv: x1<=20 & x3<=15
+807 -> 213 src inv: x3<=15 reset: x2=0 tgt inv: x2<=20 & x3<=15
+807 -> 770 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+808 -> 216  reset: x1=0 tgt inv: x1<=20
+808 -> 217  reset: x2=0 tgt inv: x2<=20
+808 -> 218  reset: x3=0 tgt inv: x3<=20
+809 -> 221  reset: x1=0 tgt inv: x1<=20
+809 -> 222  reset: x2=0 tgt inv: x2<=20
+809 -> 223  reset: x3=0 tgt inv: x3<=20
+810 -> 226  reset: x1=0 tgt inv: x1<=20
+810 -> 227  reset: x2=0 tgt inv: x2<=20
+810 -> 228  reset: x3=0 tgt inv: x3<=20
+811 -> 230 src inv: x1<=15 reset: x2=0 tgt inv: x1<=15 & x2<=20
+811 -> 231 src inv: x1<=15 reset: x3=0 tgt inv: x1<=15 & x3<=20
+811 -> 773 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+812 -> 233 src inv: x2<=15 reset: x1=0 tgt inv: x1<=20 & x2<=15
+812 -> 234 src inv: x2<=15 reset: x3=0 tgt inv: x2<=15 & x3<=20
+812 -> 774 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+813 -> 237  reset: x1=0 tgt inv: x1<=20
+813 -> 238  reset: x2=0 tgt inv: x2<=20
+813 -> 239  reset: x3=0 tgt inv: x3<=20
+814 -> 242  reset: x1=0 tgt inv: x1<=20
+814 -> 243  reset: x2=0 tgt inv: x2<=20
+814 -> 244  reset: x3=0 tgt inv: x3<=20
+815 -> 247  reset: x1=0 tgt inv: x1<=20
+815 -> 248  reset: x2=0 tgt inv: x2<=20
+815 -> 249  reset: x3=0 tgt inv: x3<=20
+816 -> 182 src inv: x2<=15 reset: x1=0 tgt inv: x1<=20 & x2<=15
+816 -> 183 src inv: x2<=15 reset: x3=0 tgt inv: x2<=15 & x3<=20
+816 -> 783 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+817 -> 185 src inv: x3<=15 reset: x1=0 tgt inv: x1<=20 & x3<=15
+817 -> 186 src inv: x3<=15 reset: x2=0 tgt inv: x2<=20 & x3<=15
+817 -> 784 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+818 -> 191  reset: x1=0 tgt inv: x1<=20
+818 -> 192  reset: x2=0 tgt inv: x2<=20
+818 -> 193  reset: x3=0 tgt inv: x3<=20
+819 -> 198  reset: x1=0 tgt inv: x1<=20
+819 -> 199  reset: x2=0 tgt inv: x2<=20
+819 -> 200  reset: x3=0 tgt inv: x3<=20
+820 -> 205  reset: x1=0 tgt inv: x1<=20
+820 -> 206  reset: x2=0 tgt inv: x2<=20
+820 -> 207  reset: x3=0 tgt inv: x3<=20
+821 -> 209 src inv: x1<=15 reset: x2=0 tgt inv: x1<=15 & x2<=20
+821 -> 210 src inv: x1<=15 reset: x3=0 tgt inv: x1<=15 & x3<=20
+821 -> 787 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+822 -> 212 src inv: x3<=15 reset: x1=0 tgt inv: x1<=20 & x3<=15
+822 -> 213 src inv: x3<=15 reset: x2=0 tgt inv: x2<=20 & x3<=15
+822 -> 789 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+823 -> 216  reset: x1=0 tgt inv: x1<=20
+823 -> 217  reset: x2=0 tgt inv: x2<=20
+823 -> 218  reset: x3=0 tgt inv: x3<=20
+824 -> 221  reset: x1=0 tgt inv: x1<=20
+824 -> 222  reset: x2=0 tgt inv: x2<=20
+824 -> 223  reset: x3=0 tgt inv: x3<=20
+825 -> 226  reset: x1=0 tgt inv: x1<=20
+825 -> 227  reset: x2=0 tgt inv: x2<=20
+825 -> 228  reset: x3=0 tgt inv: x3<=20
+826 -> 230 src inv: x1<=15 reset: x2=0 tgt inv: x1<=15 & x2<=20
+826 -> 231 src inv: x1<=15 reset: x3=0 tgt inv: x1<=15 & x3<=20
+826 -> 792 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+827 -> 233 src inv: x2<=15 reset: x1=0 tgt inv: x1<=20 & x2<=15
+827 -> 234 src inv: x2<=15 reset: x3=0 tgt inv: x2<=15 & x3<=20
+827 -> 793 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+828 -> 237  reset: x1=0 tgt inv: x1<=20
+828 -> 238  reset: x2=0 tgt inv: x2<=20
+828 -> 239  reset: x3=0 tgt inv: x3<=20
+829 -> 242  reset: x1=0 tgt inv: x1<=20
+829 -> 243  reset: x2=0 tgt inv: x2<=20
+829 -> 244  reset: x3=0 tgt inv: x3<=20
+830 -> 247  reset: x1=0 tgt inv: x1<=20
+830 -> 248  reset: x2=0 tgt inv: x2<=20
+830 -> 249  reset: x3=0 tgt inv: x3<=20
+831 -> 133 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+832 -> 131 src inv: x2<=15 guard: x2>=7 reset: x2=0 tgt inv: x2<=5
+833 -> 158 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+834 -> 156 src inv: x3<=15 guard: x3>=7 reset: x3=0 tgt inv: x3<=5
+835 -> 108 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5
+836 -> 106 src inv: x1<=15 guard: x1>=7 reset: x1=0 tgt inv: x1<=5

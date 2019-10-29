@@ -20,7 +20,7 @@ set(INPUTS
     parallel.sh:5
     parallel-b.sh:3
     parallel-c.sh:3
-    #    train_gate.sh:3 # problem with async_zg:extraLU+l
+    train_gate.sh:3
     )
 
 set(ACCEPT_TEST_REGEX

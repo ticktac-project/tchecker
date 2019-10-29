@@ -1,0 +1,2793 @@
+digraph train_gate_3 {
+node [shape="box",style="rounded"];
+n0 [label="<Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=1,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n1 [label="<Occ,Appr,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=1,head=0,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n0 -> n1
+n2 [label="<Occ,Safe,Appr,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=0,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n0 -> n2
+n3 [label="<Occ,Safe,Safe,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n0 -> n3
+n4 [label="<Transient,Appr,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=0,length=2 (0<=x1<=20 & x2=0 & 0<=x3 & 0<=x1-x2<=20 & x1-x3<=20 & x2-x3<=0)"]
+n1 -> n4
+n5 [label="<Transient,Appr,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=0,length=2 (0<=x1<=20 & 0<=x2 & x3=0 & x1-x2<=20 & 0<=x1-x3<=20 & 0<=x2-x3)"]
+n1 -> n5
+n6 [label="<Occ,Cross,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=1,head=0,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n1 -> n6
+n7 [label="<Transient,Appr,Appr,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=0,length=2 (x1=0 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2<=0 & x1-x3<=0 & x2-x3<=20)"]
+n2 -> n7
+n8 [label="<Transient,Safe,Appr,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2<=20 & x3=0 & -20<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=20)"]
+n2 -> n8
+n9 [label="<Occ,Safe,Cross,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=0,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n2 -> n9
+n10 [label="<Transient,Appr,Safe,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=0,length=2 (x1=0 & 0<=x2 & 0<=x3<=20 & x1-x2<=0 & -20<=x1-x3<=0 & -20<=x2-x3)"]
+n3 -> n10
+n11 [label="<Transient,Safe,Appr,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=2 (0<=x1 & x2=0 & 0<=x3<=20 & 0<=x1-x2 & -20<=x1-x3 & -20<=x2-x3<=0)"]
+n3 -> n11
+n12 [label="<Occ,Safe,Safe,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n3 -> n12
+n13 [label="<Occ,Appr,Stop,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=0,length=2 (0<=x1<=20 & 0<=x2 & 0<=x3 & x1-x2<=20 & x1-x3<=20)"]
+n4 -> n13
+n14 [label="<Transient,Cross,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=0,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)"]
+n4 -> n14
+n15 [label="<Occ,Appr,Safe,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=0,length=2 (0<=x1<=20 & 0<=x2 & 0<=x3 & x1-x2<=20 & x1-x3<=20)"]
+n5 -> n15
+n16 [label="<Transient,Cross,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=0,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)"]
+n5 -> n16
+n17 [label="<Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=1,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n6 -> n17
+n18 [label="<Transient,Cross,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=0,length=2 (0<=x1<=5 & x2=0 & 0<=x3 & 0<=x1-x2<=5 & x1-x3<=5 & x2-x3<=0)"]
+n6 -> n18
+n19 [label="<Transient,Cross,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=0,length=2 (0<=x1<=5 & 0<=x2 & x3=0 & x1-x2<=5 & 0<=x1-x3<=5 & 0<=x2-x3)"]
+n6 -> n19
+n20 [label="<Occ,Stop,Appr,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2 & x2-x3<=20)"]
+n7 -> n20
+n21 [label="<Transient,Appr,Cross,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=0,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)"]
+n7 -> n21
+n22 [label="<Occ,Safe,Appr,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2 & x2-x3<=20)"]
+n8 -> n22
+n23 [label="<Transient,Safe,Cross,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)"]
+n8 -> n23
+n24 [label="<Transient,Appr,Cross,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=0,length=2 (x1=0 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2<=0 & x1-x3<=0 & x2-x3<=5)"]
+n9 -> n24
+n25 [label="<Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n9 -> n25
+n26 [label="<Transient,Safe,Cross,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2<=5 & x3=0 & -5<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=5)"]
+n9 -> n26
+n27 [label="<Occ,Stop,Safe,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3<=20 & -20<=x1-x3 & -20<=x2-x3)"]
+n10 -> n27
+n28 [label="<Transient,Appr,Safe,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=0,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)"]
+n10 -> n28
+n29 [label="<Occ,Safe,Stop,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3<=20 & -20<=x1-x3 & -20<=x2-x3)"]
+n11 -> n29
+n30 [label="<Transient,Safe,Appr,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)"]
+n11 -> n30
+n31 [label="<Transient,Appr,Safe,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=0,length=2 (x1=0 & 0<=x2 & 0<=x3<=5 & x1-x2<=0 & -5<=x1-x3<=0 & -5<=x2-x3)"]
+n12 -> n31
+n32 [label="<Transient,Safe,Appr,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=2 (0<=x1 & x2=0 & 0<=x3<=5 & 0<=x1-x2 & -5<=x1-x3 & -5<=x2-x3<=0)"]
+n12 -> n32
+n33 [label="<Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n12 -> n33
+n34 [label="<Transient,Appr,Stop,Appr> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=3 (0<=x1<=20 & 0<=x2 & x3=0 & x1-x2<=20 & 0<=x1-x3<=20 & 0<=x2-x3)"]
+n13 -> n34
+n35 [label="<Occ,Cross,Stop,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=0,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n13 -> n35
+n14 -> n35
+n36 [label="<Transient,Appr,Appr,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=3 (0<=x1<=20 & x2=0 & 0<=x3 & 0<=x1-x2<=20 & x1-x3<=20 & x2-x3<=0)"]
+n15 -> n36
+n37 [label="<Occ,Cross,Safe,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=0,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n15 -> n37
+n16 -> n37
+n38 [label="<Occ,Appr,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=1,head=1,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n17 -> n38
+n39 [label="<Occ,Safe,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=1,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n17 -> n39
+n40 [label="<Occ,Safe,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n17 -> n40
+n41 [label="<Occ,Cross,Stop,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=0,length=2 (0<=x1<=5 & 0<=x2 & 0<=x3 & x1-x2<=5 & x1-x3<=5)"]
+n18 -> n41
+n42 [label="<Occ,Cross,Safe,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=0,length=2 (0<=x1<=5 & 0<=x2 & 0<=x3 & x1-x2<=5 & x1-x3<=5)"]
+n19 -> n42
+n43 [label="<Transient,Stop,Appr,Appr> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=3 (0<=x1 & 0<=x2<=20 & x3=0 & -20<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=20)"]
+n20 -> n43
+n44 [label="<Occ,Stop,Cross,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=0,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n20 -> n44
+n21 -> n44
+n45 [label="<Transient,Appr,Appr,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=3 (x1=0 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2<=0 & x1-x3<=0 & x2-x3<=20)"]
+n22 -> n45
+n46 [label="<Occ,Safe,Cross,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n22 -> n46
+n23 -> n46
+n47 [label="<Occ,Stop,Cross,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2 & x2-x3<=5)"]
+n24 -> n47
+n48 [label="<Occ,Appr,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=1,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n25 -> n48
+n49 [label="<Occ,Safe,Appr,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=1,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n25 -> n49
+n50 [label="<Occ,Safe,Safe,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n25 -> n50
+n51 [label="<Occ,Safe,Cross,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2 & x2-x3<=5)"]
+n26 -> n51
+n52 [label="<Transient,Stop,Appr,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=3 (0<=x1 & x2=0 & 0<=x3<=20 & 0<=x1-x2 & -20<=x1-x3 & -20<=x2-x3<=0)"]
+n27 -> n52
+n53 [label="<Occ,Stop,Safe,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n27 -> n53
+n28 -> n53
+n54 [label="<Transient,Appr,Stop,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=3 (x1=0 & 0<=x2 & 0<=x3<=20 & x1-x2<=0 & -20<=x1-x3<=0 & -20<=x2-x3)"]
+n29 -> n54
+n55 [label="<Occ,Safe,Stop,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n29 -> n55
+n30 -> n55
+n56 [label="<Occ,Stop,Safe,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3<=5 & -5<=x1-x3 & -5<=x2-x3)"]
+n31 -> n56
+n57 [label="<Occ,Safe,Stop,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3<=5 & -5<=x1-x3 & -5<=x2-x3)"]
+n32 -> n57
+n58 [label="<Occ,Appr,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=1,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n33 -> n58
+n59 [label="<Occ,Safe,Appr,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n33 -> n59
+n60 [label="<Occ,Safe,Safe,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n33 -> n60
+n61 [label="<Occ,Appr,Stop,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=3 (0<=x1<=20 & 0<=x2 & 0<=x3 & x1-x2<=20 & x1-x3<=20)"]
+n34 -> n61
+n62 [label="<Transient,Cross,Stop,Appr> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=3 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)"]
+n34 -> n62
+n63 [label="<Free,Safe,Stop,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n35 -> n63
+n64 [label="<Transient,Cross,Stop,Appr> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=3 (0<=x1<=5 & 0<=x2 & x3=0 & x1-x2<=5 & 0<=x1-x3<=5 & 0<=x2-x3)"]
+n35 -> n64
+n65 [label="<Occ,Appr,Stop,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=3 (0<=x1<=20 & 0<=x2 & 0<=x3 & x1-x2<=20 & x1-x3<=20)"]
+n36 -> n65
+n66 [label="<Transient,Cross,Appr,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=3 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)"]
+n36 -> n66
+n67 [label="<Free,Safe,Safe,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n37 -> n67
+n68 [label="<Transient,Cross,Appr,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=3 (0<=x1<=5 & x2=0 & 0<=x3 & 0<=x1-x2<=5 & x1-x3<=5 & x2-x3<=0)"]
+n37 -> n68
+n69 [label="<Transient,Appr,Appr,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=1,length=2 (0<=x1<=20 & x2=0 & 0<=x3 & 0<=x1-x2<=20 & x1-x3<=20 & x2-x3<=0)"]
+n38 -> n69
+n70 [label="<Transient,Appr,Safe,Appr> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=1,length=2 (0<=x1<=20 & 0<=x2 & x3=0 & x1-x2<=20 & 0<=x1-x3<=20 & 0<=x2-x3)"]
+n38 -> n70
+n71 [label="<Occ,Cross,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=1,head=1,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n38 -> n71
+n72 [label="<Transient,Appr,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2<=0 & x1-x3<=0 & x2-x3<=20)"]
+n39 -> n72
+n73 [label="<Transient,Safe,Appr,Appr> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2<=20 & x3=0 & -20<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=20)"]
+n39 -> n73
+n74 [label="<Occ,Safe,Cross,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=1,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n39 -> n74
+n75 [label="<Transient,Appr,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2 & 0<=x3<=20 & x1-x2<=0 & -20<=x1-x3<=0 & -20<=x2-x3)"]
+n40 -> n75
+n76 [label="<Transient,Safe,Appr,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & x2=0 & 0<=x3<=20 & 0<=x1-x2 & -20<=x1-x3 & -20<=x2-x3<=0)"]
+n40 -> n76
+n77 [label="<Occ,Safe,Safe,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n40 -> n77
+n41 -> n63
+n41 -> n64
+n42 -> n67
+n42 -> n68
+n78 [label="<Occ,Stop,Appr,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=3 (0<=x1 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2 & x2-x3<=20)"]
+n43 -> n78
+n79 [label="<Transient,Stop,Cross,Appr> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=3 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)"]
+n43 -> n79
+n80 [label="<Free,Stop,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n44 -> n80
+n81 [label="<Transient,Stop,Cross,Appr> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=3 (0<=x1 & 0<=x2<=5 & x3=0 & -5<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=5)"]
+n44 -> n81
+n82 [label="<Occ,Stop,Appr,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=3 (0<=x1 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2 & x2-x3<=20)"]
+n45 -> n82
+n83 [label="<Transient,Appr,Cross,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=3 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)"]
+n45 -> n83
+n84 [label="<Transient,Appr,Cross,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=3 (x1=0 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2<=0 & x1-x3<=0 & x2-x3<=5)"]
+n46 -> n84
+n85 [label="<Free,Safe,Safe,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n46 -> n85
+n47 -> n80
+n47 -> n81
+n86 [label="<Transient,Appr,Appr,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=1,length=2 (0<=x1<=20 & x2=0 & 0<=x3 & 0<=x1-x2<=20 & x1-x3<=20 & x2-x3<=0)"]
+n48 -> n86
+n87 [label="<Transient,Appr,Safe,Appr> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=2 (0<=x1<=20 & 0<=x2 & x3=0 & x1-x2<=20 & 0<=x1-x3<=20 & 0<=x2-x3)"]
+n48 -> n87
+n88 [label="<Occ,Cross,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=1,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n48 -> n88
+n89 [label="<Transient,Appr,Appr,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2<=0 & x1-x3<=0 & x2-x3<=20)"]
+n49 -> n89
+n90 [label="<Transient,Safe,Appr,Appr> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2<=20 & x3=0 & -20<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=20)"]
+n49 -> n90
+n91 [label="<Occ,Safe,Cross,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=1,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n49 -> n91
+n92 [label="<Transient,Appr,Safe,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2 & 0<=x3<=20 & x1-x2<=0 & -20<=x1-x3<=0 & -20<=x2-x3)"]
+n50 -> n92
+n93 [label="<Transient,Safe,Appr,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & x2=0 & 0<=x3<=20 & 0<=x1-x2 & -20<=x1-x3 & -20<=x2-x3<=0)"]
+n50 -> n93
+n94 [label="<Occ,Safe,Safe,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n50 -> n94
+n51 -> n84
+n51 -> n85
+n95 [label="<Occ,Stop,Stop,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=3 (0<=x1 & 0<=x2 & 0<=x3<=20 & -20<=x1-x3 & -20<=x2-x3)"]
+n52 -> n95
+n96 [label="<Transient,Stop,Appr,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=3 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)"]
+n52 -> n96
+n97 [label="<Transient,Stop,Appr,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=3 (0<=x1 & x2=0 & 0<=x3<=5 & 0<=x1-x2 & -5<=x1-x3 & -5<=x2-x3<=0)"]
+n53 -> n97
+n98 [label="<Free,Stop,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n53 -> n98
+n99 [label="<Occ,Stop,Stop,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=3 (0<=x1 & 0<=x2 & 0<=x3<=20 & -20<=x1-x3 & -20<=x2-x3)"]
+n54 -> n99
+n100 [label="<Transient,Appr,Stop,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=3 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)"]
+n54 -> n100
+n101 [label="<Transient,Appr,Stop,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=3 (x1=0 & 0<=x2 & 0<=x3<=5 & x1-x2<=0 & -5<=x1-x3<=0 & -5<=x2-x3)"]
+n55 -> n101
+n102 [label="<Free,Safe,Stop,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n55 -> n102
+n56 -> n97
+n56 -> n98
+n57 -> n101
+n57 -> n102
+n103 [label="<Transient,Appr,Appr,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=2 (0<=x1<=20 & x2=0 & 0<=x3 & 0<=x1-x2<=20 & x1-x3<=20 & x2-x3<=0)"]
+n58 -> n103
+n104 [label="<Transient,Appr,Safe,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=1,length=2 (0<=x1<=20 & 0<=x2 & x3=0 & x1-x2<=20 & 0<=x1-x3<=20 & 0<=x2-x3)"]
+n58 -> n104
+n105 [label="<Occ,Cross,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=1,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n58 -> n105
+n106 [label="<Transient,Appr,Appr,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2<=0 & x1-x3<=0 & x2-x3<=20)"]
+n59 -> n106
+n107 [label="<Transient,Safe,Appr,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2<=20 & x3=0 & -20<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=20)"]
+n59 -> n107
+n108 [label="<Occ,Safe,Cross,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n59 -> n108
+n109 [label="<Transient,Appr,Safe,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2 & 0<=x3<=20 & x1-x2<=0 & -20<=x1-x3<=0 & -20<=x2-x3)"]
+n60 -> n109
+n110 [label="<Transient,Safe,Appr,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & x2=0 & 0<=x3<=20 & 0<=x1-x2 & -20<=x1-x3 & -20<=x2-x3<=0)"]
+n60 -> n110
+n111 [label="<Occ,Safe,Safe,Cross> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n60 -> n111
+n112 [label="<Occ,Cross,Stop,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=3 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n61 -> n112
+n62 -> n112
+n113 [label="<Occ,Safe,Start,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=1,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n63 -> n113
+n114 [label="<Occ,Cross,Stop,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=3 (0<=x1<=5 & 0<=x2 & 0<=x3 & x1-x2<=5 & x1-x3<=5)"]
+n64 -> n114
+n115 [label="<Occ,Cross,Stop,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=3 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n65 -> n115
+n66 -> n115
+n116 [label="<Occ,Safe,Safe,Start> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n67 -> n116
+n117 [label="<Occ,Cross,Stop,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=3 (0<=x1<=5 & 0<=x2 & 0<=x3 & x1-x2<=5 & x1-x3<=5)"]
+n68 -> n117
+n118 [label="<Occ,Appr,Stop,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=1,length=2 (0<=x1<=20 & 0<=x2 & 0<=x3 & x1-x2<=20 & x1-x3<=20)"]
+n69 -> n118
+n119 [label="<Transient,Cross,Appr,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=1,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)"]
+n69 -> n119
+n120 [label="<Occ,Appr,Safe,Stop> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=1,length=2 (0<=x1<=20 & 0<=x2 & 0<=x3 & x1-x2<=20 & x1-x3<=20)"]
+n70 -> n120
+n121 [label="<Transient,Cross,Safe,Appr> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=1,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)"]
+n70 -> n121
+n122 [label="<Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=1,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n71 -> n122
+n123 [label="<Transient,Cross,Appr,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=1,length=2 (0<=x1<=5 & x2=0 & 0<=x3 & 0<=x1-x2<=5 & x1-x3<=5 & x2-x3<=0)"]
+n71 -> n123
+n124 [label="<Transient,Cross,Safe,Appr> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=1,length=2 (0<=x1<=5 & 0<=x2 & x3=0 & x1-x2<=5 & 0<=x1-x3<=5 & 0<=x2-x3)"]
+n71 -> n124
+n125 [label="<Occ,Stop,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2 & x2-x3<=20)"]
+n72 -> n125
+n126 [label="<Transient,Appr,Cross,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=1,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)"]
+n72 -> n126
+n127 [label="<Occ,Safe,Appr,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2 & x2-x3<=20)"]
+n73 -> n127
+n128 [label="<Transient,Safe,Cross,Appr> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)"]
+n73 -> n128
+n129 [label="<Transient,Appr,Cross,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2<=0 & x1-x3<=0 & x2-x3<=5)"]
+n74 -> n129
+n130 [label="<Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n74 -> n130
+n131 [label="<Transient,Safe,Cross,Appr> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2<=5 & x3=0 & -5<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=5)"]
+n74 -> n131
+n132 [label="<Occ,Stop,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3<=20 & -20<=x1-x3 & -20<=x2-x3)"]
+n75 -> n132
+n133 [label="<Transient,Appr,Safe,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)"]
+n75 -> n133
+n134 [label="<Occ,Safe,Stop,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3<=20 & -20<=x1-x3 & -20<=x2-x3)"]
+n76 -> n134
+n135 [label="<Transient,Safe,Appr,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)"]
+n76 -> n135
+n136 [label="<Transient,Appr,Safe,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2 & 0<=x3<=5 & x1-x2<=0 & -5<=x1-x3<=0 & -5<=x2-x3)"]
+n77 -> n136
+n137 [label="<Transient,Safe,Appr,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & x2=0 & 0<=x3<=5 & 0<=x1-x2 & -5<=x1-x3 & -5<=x2-x3<=0)"]
+n77 -> n137
+n138 [label="<Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n77 -> n138
+n139 [label="<Occ,Stop,Cross,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=3 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n78 -> n139
+n79 -> n139
+n140 [label="<Occ,Start,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=1,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n80 -> n140
+n141 [label="<Occ,Stop,Cross,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=3 (0<=x1 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2 & x2-x3<=5)"]
+n81 -> n141
+n142 [label="<Occ,Stop,Cross,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=3 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n82 -> n142
+n83 -> n142
+n143 [label="<Occ,Stop,Cross,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=3 (0<=x1 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2 & x2-x3<=5)"]
+n84 -> n143
+n144 [label="<Occ,Safe,Safe,Start> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n85 -> n144
+n145 [label="<Occ,Appr,Stop,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=1,length=2 (0<=x1<=20 & 0<=x2 & 0<=x3 & x1-x2<=20 & x1-x3<=20)"]
+n86 -> n145
+n146 [label="<Transient,Cross,Appr,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=1,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)"]
+n86 -> n146
+n147 [label="<Occ,Appr,Safe,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=2 (0<=x1<=20 & 0<=x2 & 0<=x3 & x1-x2<=20 & x1-x3<=20)"]
+n87 -> n147
+n148 [label="<Transient,Cross,Safe,Appr> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)"]
+n87 -> n148
+n149 [label="<Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n88 -> n149
+n150 [label="<Transient,Cross,Appr,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=1,length=2 (0<=x1<=5 & x2=0 & 0<=x3 & 0<=x1-x2<=5 & x1-x3<=5 & x2-x3<=0)"]
+n88 -> n150
+n151 [label="<Transient,Cross,Safe,Appr> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=2 (0<=x1<=5 & 0<=x2 & x3=0 & x1-x2<=5 & 0<=x1-x3<=5 & 0<=x2-x3)"]
+n88 -> n151
+n152 [label="<Occ,Stop,Appr,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2 & x2-x3<=20)"]
+n89 -> n152
+n153 [label="<Transient,Appr,Cross,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=1,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)"]
+n89 -> n153
+n154 [label="<Occ,Safe,Appr,Stop> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2 & x2-x3<=20)"]
+n90 -> n154
+n155 [label="<Transient,Safe,Cross,Appr> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)"]
+n90 -> n155
+n156 [label="<Transient,Appr,Cross,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2<=0 & x1-x3<=0 & x2-x3<=5)"]
+n91 -> n156
+n157 [label="<Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n91 -> n157
+n158 [label="<Transient,Safe,Cross,Appr> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2<=5 & x3=0 & -5<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=5)"]
+n91 -> n158
+n159 [label="<Occ,Stop,Safe,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3<=20 & -20<=x1-x3 & -20<=x2-x3)"]
+n92 -> n159
+n160 [label="<Transient,Appr,Safe,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)"]
+n92 -> n160
+n161 [label="<Occ,Safe,Stop,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3<=20 & -20<=x1-x3 & -20<=x2-x3)"]
+n93 -> n161
+n162 [label="<Transient,Safe,Appr,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)"]
+n93 -> n162
+n163 [label="<Transient,Appr,Safe,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2 & 0<=x3<=5 & x1-x2<=0 & -5<=x1-x3<=0 & -5<=x2-x3)"]
+n94 -> n163
+n164 [label="<Transient,Safe,Appr,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & x2=0 & 0<=x3<=5 & 0<=x1-x2 & -5<=x1-x3 & -5<=x2-x3<=0)"]
+n94 -> n164
+n165 [label="<Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n94 -> n165
+n166 [label="<Occ,Stop,Stop,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=3 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n95 -> n166
+n96 -> n166
+n167 [label="<Occ,Stop,Stop,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=3 (0<=x1 & 0<=x2 & 0<=x3<=5 & -5<=x1-x3 & -5<=x2-x3)"]
+n97 -> n167
+n168 [label="<Occ,Start,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=1,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n98 -> n168
+n169 [label="<Occ,Stop,Stop,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=3 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n99 -> n169
+n100 -> n169
+n170 [label="<Occ,Stop,Stop,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=3 (0<=x1 & 0<=x2 & 0<=x3<=5 & -5<=x1-x3 & -5<=x2-x3)"]
+n101 -> n170
+n171 [label="<Occ,Safe,Start,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n102 -> n171
+n172 [label="<Occ,Appr,Stop,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=2 (0<=x1<=20 & 0<=x2 & 0<=x3 & x1-x2<=20 & x1-x3<=20)"]
+n103 -> n172
+n173 [label="<Transient,Cross,Appr,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)"]
+n103 -> n173
+n174 [label="<Occ,Appr,Safe,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=1,length=2 (0<=x1<=20 & 0<=x2 & 0<=x3 & x1-x2<=20 & x1-x3<=20)"]
+n104 -> n174
+n175 [label="<Transient,Cross,Safe,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=1,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)"]
+n104 -> n175
+n176 [label="<Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n105 -> n176
+n177 [label="<Transient,Cross,Appr,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=2 (0<=x1<=5 & x2=0 & 0<=x3 & 0<=x1-x2<=5 & x1-x3<=5 & x2-x3<=0)"]
+n105 -> n177
+n178 [label="<Transient,Cross,Safe,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=1,length=2 (0<=x1<=5 & 0<=x2 & x3=0 & x1-x2<=5 & 0<=x1-x3<=5 & 0<=x2-x3)"]
+n105 -> n178
+n179 [label="<Occ,Stop,Appr,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2 & x2-x3<=20)"]
+n106 -> n179
+n180 [label="<Transient,Appr,Cross,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)"]
+n106 -> n180
+n181 [label="<Occ,Safe,Appr,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2 & x2-x3<=20)"]
+n107 -> n181
+n182 [label="<Transient,Safe,Cross,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)"]
+n107 -> n182
+n183 [label="<Transient,Appr,Cross,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2<=0 & x1-x3<=0 & x2-x3<=5)"]
+n108 -> n183
+n184 [label="<Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n108 -> n184
+n185 [label="<Transient,Safe,Cross,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2<=5 & x3=0 & -5<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=5)"]
+n108 -> n185
+n186 [label="<Occ,Stop,Safe,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3<=20 & -20<=x1-x3 & -20<=x2-x3)"]
+n109 -> n186
+n187 [label="<Transient,Appr,Safe,Cross> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)"]
+n109 -> n187
+n188 [label="<Occ,Safe,Stop,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3<=20 & -20<=x1-x3 & -20<=x2-x3)"]
+n110 -> n188
+n189 [label="<Transient,Safe,Appr,Cross> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)"]
+n110 -> n189
+n190 [label="<Transient,Appr,Safe,Cross> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2 & 0<=x3<=5 & x1-x2<=0 & -5<=x1-x3<=0 & -5<=x2-x3)"]
+n111 -> n190
+n191 [label="<Transient,Safe,Appr,Cross> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & x2=0 & 0<=x3<=5 & 0<=x1-x2 & -5<=x1-x3 & -5<=x2-x3<=0)"]
+n111 -> n191
+n192 [label="<Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n111 -> n192
+n193 [label="<Free,Safe,Stop,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)"]
+n112 -> n193
+n194 [label="<Transient,Appr,Start,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2<=15 & 0<=x3 & -15<=x1-x2<=0 & x1-x3<=0 & x2-x3<=15)"]
+n113 -> n194
+n195 [label="<Transient,Safe,Start,Appr> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2<=15 & x3=0 & -15<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=15)"]
+n113 -> n195
+n113 -> n74
+n114 -> n193
+n196 [label="<Free,Safe,Stop,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)"]
+n115 -> n196
+n197 [label="<Transient,Appr,Safe,Start> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2 & 0<=x3<=15 & x1-x2<=0 & -15<=x1-x3<=0 & -15<=x2-x3)"]
+n116 -> n197
+n198 [label="<Transient,Safe,Appr,Start> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & x2=0 & 0<=x3<=15 & 0<=x1-x2 & -15<=x1-x3 & -15<=x2-x3<=0)"]
+n116 -> n198
+n116 -> n77
+n117 -> n196
+n199 [label="<Transient,Appr,Stop,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=3 (0<=x1<=20 & 0<=x2 & x3=0 & x1-x2<=20 & 0<=x1-x3<=20 & 0<=x2-x3)"]
+n118 -> n199
+n200 [label="<Occ,Cross,Stop,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=1,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n118 -> n200
+n119 -> n200
+n201 [label="<Transient,Appr,Appr,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=3 (0<=x1<=20 & x2=0 & 0<=x3 & 0<=x1-x2<=20 & x1-x3<=20 & x2-x3<=0)"]
+n120 -> n201
+n202 [label="<Occ,Cross,Safe,Stop> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=1,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n120 -> n202
+n121 -> n202
+n203 [label="<Occ,Appr,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=1,head=2,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n122 -> n203
+n204 [label="<Occ,Safe,Appr,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=2,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n122 -> n204
+n205 [label="<Occ,Safe,Safe,Appr> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n122 -> n205
+n206 [label="<Occ,Cross,Stop,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=1,length=2 (0<=x1<=5 & 0<=x2 & 0<=x3 & x1-x2<=5 & x1-x3<=5)"]
+n123 -> n206
+n207 [label="<Occ,Cross,Safe,Stop> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=1,length=2 (0<=x1<=5 & 0<=x2 & 0<=x3 & x1-x2<=5 & x1-x3<=5)"]
+n124 -> n207
+n208 [label="<Transient,Stop,Appr,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=3 (0<=x1 & 0<=x2<=20 & x3=0 & -20<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=20)"]
+n125 -> n208
+n209 [label="<Occ,Stop,Cross,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=1,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n125 -> n209
+n126 -> n209
+n210 [label="<Transient,Appr,Appr,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=3 (x1=0 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2<=0 & x1-x3<=0 & x2-x3<=20)"]
+n127 -> n210
+n211 [label="<Occ,Safe,Cross,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n127 -> n211
+n128 -> n211
+n212 [label="<Occ,Stop,Cross,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2 & x2-x3<=5)"]
+n129 -> n212
+n213 [label="<Occ,Appr,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=2,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n130 -> n213
+n214 [label="<Occ,Safe,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=2,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n130 -> n214
+n215 [label="<Occ,Safe,Safe,Appr> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n130 -> n215
+n216 [label="<Occ,Safe,Cross,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2 & x2-x3<=5)"]
+n131 -> n216
+n217 [label="<Transient,Stop,Appr,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=3 (0<=x1 & x2=0 & 0<=x3<=20 & 0<=x1-x2 & -20<=x1-x3 & -20<=x2-x3<=0)"]
+n132 -> n217
+n218 [label="<Occ,Stop,Safe,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n132 -> n218
+n133 -> n218
+n219 [label="<Transient,Appr,Stop,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=3 (x1=0 & 0<=x2 & 0<=x3<=20 & x1-x2<=0 & -20<=x1-x3<=0 & -20<=x2-x3)"]
+n134 -> n219
+n220 [label="<Occ,Safe,Stop,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n134 -> n220
+n135 -> n220
+n221 [label="<Occ,Stop,Safe,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3<=5 & -5<=x1-x3 & -5<=x2-x3)"]
+n136 -> n221
+n222 [label="<Occ,Safe,Stop,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3<=5 & -5<=x1-x3 & -5<=x2-x3)"]
+n137 -> n222
+n223 [label="<Occ,Appr,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=2,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n138 -> n223
+n224 [label="<Occ,Safe,Appr,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n138 -> n224
+n225 [label="<Occ,Safe,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n138 -> n225
+n226 [label="<Free,Stop,Safe,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)"]
+n139 -> n226
+n227 [label="<Transient,Start,Appr,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=1,length=2 (0<=x1<=15 & x2=0 & 0<=x3 & 0<=x1-x2<=15 & x1-x3<=15 & x2-x3<=0)"]
+n140 -> n227
+n228 [label="<Transient,Start,Safe,Appr> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=2 (0<=x1<=15 & 0<=x2 & x3=0 & x1-x2<=15 & 0<=x1-x3<=15 & 0<=x2-x3)"]
+n140 -> n228
+n140 -> n88
+n141 -> n226
+n229 [label="<Free,Stop,Safe,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)"]
+n142 -> n229
+n143 -> n229
+n230 [label="<Transient,Appr,Safe,Start> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2 & 0<=x3<=15 & x1-x2<=0 & -15<=x1-x3<=0 & -15<=x2-x3)"]
+n144 -> n230
+n231 [label="<Transient,Safe,Appr,Start> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & x2=0 & 0<=x3<=15 & 0<=x1-x2 & -15<=x1-x3 & -15<=x2-x3<=0)"]
+n144 -> n231
+n144 -> n94
+n145 -> n199
+n232 [label="<Occ,Cross,Stop,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=1,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n145 -> n232
+n146 -> n232
+n147 -> n201
+n233 [label="<Occ,Cross,Safe,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n147 -> n233
+n148 -> n233
+n234 [label="<Occ,Appr,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=2,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n149 -> n234
+n235 [label="<Occ,Safe,Appr,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=2,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n149 -> n235
+n236 [label="<Occ,Safe,Safe,Appr> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n149 -> n236
+n237 [label="<Occ,Cross,Stop,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=1,length=2 (0<=x1<=5 & 0<=x2 & 0<=x3 & x1-x2<=5 & x1-x3<=5)"]
+n150 -> n237
+n238 [label="<Occ,Cross,Safe,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=2 (0<=x1<=5 & 0<=x2 & 0<=x3 & x1-x2<=5 & x1-x3<=5)"]
+n151 -> n238
+n152 -> n208
+n239 [label="<Occ,Stop,Cross,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=1,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n152 -> n239
+n153 -> n239
+n154 -> n210
+n240 [label="<Occ,Safe,Cross,Stop> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n154 -> n240
+n155 -> n240
+n241 [label="<Occ,Stop,Cross,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2 & x2-x3<=5)"]
+n156 -> n241
+n242 [label="<Occ,Appr,Safe,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=2,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n157 -> n242
+n243 [label="<Occ,Safe,Appr,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=2,head=2,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n157 -> n243
+n244 [label="<Occ,Safe,Safe,Appr> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n157 -> n244
+n245 [label="<Occ,Safe,Cross,Stop> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2 & x2-x3<=5)"]
+n158 -> n245
+n159 -> n217
+n246 [label="<Occ,Stop,Safe,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n159 -> n246
+n160 -> n246
+n161 -> n219
+n247 [label="<Occ,Safe,Stop,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n161 -> n247
+n162 -> n247
+n248 [label="<Occ,Stop,Safe,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3<=5 & -5<=x1-x3 & -5<=x2-x3)"]
+n163 -> n248
+n249 [label="<Occ,Safe,Stop,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3<=5 & -5<=x1-x3 & -5<=x2-x3)"]
+n164 -> n249
+n250 [label="<Occ,Appr,Safe,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n165 -> n250
+n251 [label="<Occ,Safe,Appr,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=2,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n165 -> n251
+n252 [label="<Occ,Safe,Safe,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n165 -> n252
+n253 [label="<Free,Stop,Stop,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)"]
+n166 -> n253
+n167 -> n253
+n254 [label="<Transient,Start,Appr,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=2 (0<=x1<=15 & x2=0 & 0<=x3 & 0<=x1-x2<=15 & x1-x3<=15 & x2-x3<=0)"]
+n168 -> n254
+n255 [label="<Transient,Start,Safe,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=1,length=2 (0<=x1<=15 & 0<=x2 & x3=0 & x1-x2<=15 & 0<=x1-x3<=15 & 0<=x2-x3)"]
+n168 -> n255
+n168 -> n105
+n256 [label="<Free,Stop,Stop,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3)"]
+n169 -> n256
+n170 -> n256
+n257 [label="<Transient,Appr,Start,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=2 (x1=0 & 0<=x2<=15 & 0<=x3 & -15<=x1-x2<=0 & x1-x3<=0 & x2-x3<=15)"]
+n171 -> n257
+n258 [label="<Transient,Safe,Start,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2<=15 & x3=0 & -15<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=15)"]
+n171 -> n258
+n171 -> n108
+n172 -> n199
+n259 [label="<Occ,Cross,Stop,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n172 -> n259
+n173 -> n259
+n174 -> n201
+n260 [label="<Occ,Cross,Safe,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=1,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n174 -> n260
+n175 -> n260
+n261 [label="<Occ,Appr,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=2,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n176 -> n261
+n262 [label="<Occ,Safe,Appr,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n176 -> n262
+n263 [label="<Occ,Safe,Safe,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n176 -> n263
+n264 [label="<Occ,Cross,Stop,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=2 (0<=x1<=5 & 0<=x2 & 0<=x3 & x1-x2<=5 & x1-x3<=5)"]
+n177 -> n264
+n265 [label="<Occ,Cross,Safe,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=1,length=2 (0<=x1<=5 & 0<=x2 & 0<=x3 & x1-x2<=5 & x1-x3<=5)"]
+n178 -> n265
+n179 -> n208
+n266 [label="<Occ,Stop,Cross,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n179 -> n266
+n180 -> n266
+n181 -> n210
+n267 [label="<Occ,Safe,Cross,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n181 -> n267
+n182 -> n267
+n268 [label="<Occ,Stop,Cross,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2 & x2-x3<=5)"]
+n183 -> n268
+n269 [label="<Occ,Appr,Safe,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n184 -> n269
+n270 [label="<Occ,Safe,Appr,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=2,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n184 -> n270
+n271 [label="<Occ,Safe,Safe,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n184 -> n271
+n272 [label="<Occ,Safe,Cross,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2 & x2-x3<=5)"]
+n185 -> n272
+n186 -> n217
+n273 [label="<Occ,Stop,Safe,Cross> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n186 -> n273
+n187 -> n273
+n188 -> n219
+n274 [label="<Occ,Safe,Stop,Cross> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n188 -> n274
+n189 -> n274
+n275 [label="<Occ,Stop,Safe,Cross> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3<=5 & -5<=x1-x3 & -5<=x2-x3)"]
+n190 -> n275
+n276 [label="<Occ,Safe,Stop,Cross> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3<=5 & -5<=x1-x3 & -5<=x2-x3)"]
+n191 -> n276
+n277 [label="<Occ,Appr,Safe,Safe> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=2,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n192 -> n277
+n278 [label="<Occ,Safe,Appr,Safe> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=2,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n192 -> n278
+n279 [label="<Occ,Safe,Safe,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n192 -> n279
+n280 [label="<Occ,Safe,Start,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n193 -> n280
+n281 [label="<Occ,Stop,Start,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2<=15 & 0<=x3 & -15<=x1-x2 & x2-x3<=15)"]
+n194 -> n281
+n194 -> n126
+n282 [label="<Occ,Safe,Start,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2<=15 & 0<=x3 & -15<=x1-x2 & x2-x3<=15)"]
+n195 -> n282
+n195 -> n128
+n283 [label="<Occ,Safe,Stop,Start> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n196 -> n283
+n284 [label="<Occ,Stop,Safe,Start> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3<=15 & -15<=x1-x3 & -15<=x2-x3)"]
+n197 -> n284
+n197 -> n133
+n285 [label="<Occ,Safe,Stop,Start> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3<=15 & -15<=x1-x3 & -15<=x2-x3)"]
+n198 -> n285
+n198 -> n135
+n286 [label="<Occ,Appr,Stop,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=3 (0<=x1<=20 & 0<=x2 & 0<=x3 & x1-x2<=20 & x1-x3<=20)"]
+n199 -> n286
+n287 [label="<Transient,Cross,Stop,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=3 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)"]
+n199 -> n287
+n288 [label="<Free,Safe,Stop,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n200 -> n288
+n289 [label="<Transient,Cross,Stop,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=3 (0<=x1<=5 & 0<=x2 & x3=0 & x1-x2<=5 & 0<=x1-x3<=5 & 0<=x2-x3)"]
+n200 -> n289
+n290 [label="<Occ,Appr,Stop,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=3 (0<=x1<=20 & 0<=x2 & 0<=x3 & x1-x2<=20 & x1-x3<=20)"]
+n201 -> n290
+n291 [label="<Transient,Cross,Appr,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=3 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)"]
+n201 -> n291
+n292 [label="<Free,Safe,Safe,Stop> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n202 -> n292
+n293 [label="<Transient,Cross,Appr,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=3 (0<=x1<=5 & x2=0 & 0<=x3 & 0<=x1-x2<=5 & x1-x3<=5 & x2-x3<=0)"]
+n202 -> n293
+n294 [label="<Transient,Appr,Appr,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=2,length=2 (0<=x1<=20 & x2=0 & 0<=x3 & 0<=x1-x2<=20 & x1-x3<=20 & x2-x3<=0)"]
+n203 -> n294
+n295 [label="<Transient,Appr,Safe,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=2,length=2 (0<=x1<=20 & 0<=x2 & x3=0 & x1-x2<=20 & 0<=x1-x3<=20 & 0<=x2-x3)"]
+n203 -> n295
+n296 [label="<Occ,Cross,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=1,head=2,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n203 -> n296
+n297 [label="<Transient,Appr,Appr,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=2,length=2 (x1=0 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2<=0 & x1-x3<=0 & x2-x3<=20)"]
+n204 -> n297
+n298 [label="<Transient,Safe,Appr,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2<=20 & x3=0 & -20<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=20)"]
+n204 -> n298
+n299 [label="<Occ,Safe,Cross,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=2,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n204 -> n299
+n300 [label="<Transient,Appr,Safe,Appr> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=2,length=2 (x1=0 & 0<=x2 & 0<=x3<=20 & x1-x2<=0 & -20<=x1-x3<=0 & -20<=x2-x3)"]
+n205 -> n300
+n301 [label="<Transient,Safe,Appr,Appr> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=2 (0<=x1 & x2=0 & 0<=x3<=20 & 0<=x1-x2 & -20<=x1-x3 & -20<=x2-x3<=0)"]
+n205 -> n301
+n302 [label="<Occ,Safe,Safe,Cross> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n205 -> n302
+n206 -> n288
+n206 -> n289
+n207 -> n292
+n207 -> n293
+n303 [label="<Occ,Stop,Appr,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=3 (0<=x1 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2 & x2-x3<=20)"]
+n208 -> n303
+n304 [label="<Transient,Stop,Cross,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=3 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)"]
+n208 -> n304
+n305 [label="<Free,Stop,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n209 -> n305
+n306 [label="<Transient,Stop,Cross,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=3 (0<=x1 & 0<=x2<=5 & x3=0 & -5<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=5)"]
+n209 -> n306
+n307 [label="<Occ,Stop,Appr,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=3 (0<=x1 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2 & x2-x3<=20)"]
+n210 -> n307
+n308 [label="<Transient,Appr,Cross,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=3 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)"]
+n210 -> n308
+n309 [label="<Transient,Appr,Cross,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=3 (x1=0 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2<=0 & x1-x3<=0 & x2-x3<=5)"]
+n211 -> n309
+n310 [label="<Free,Safe,Safe,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n211 -> n310
+n212 -> n305
+n212 -> n306
+n311 [label="<Transient,Appr,Appr,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=2,length=2 (0<=x1<=20 & x2=0 & 0<=x3 & 0<=x1-x2<=20 & x1-x3<=20 & x2-x3<=0)"]
+n213 -> n311
+n312 [label="<Transient,Appr,Safe,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=2 (0<=x1<=20 & 0<=x2 & x3=0 & x1-x2<=20 & 0<=x1-x3<=20 & 0<=x2-x3)"]
+n213 -> n312
+n313 [label="<Occ,Cross,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=2,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n213 -> n313
+n314 [label="<Transient,Appr,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=2,length=2 (x1=0 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2<=0 & x1-x3<=0 & x2-x3<=20)"]
+n214 -> n314
+n315 [label="<Transient,Safe,Appr,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2<=20 & x3=0 & -20<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=20)"]
+n214 -> n315
+n316 [label="<Occ,Safe,Cross,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=2,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n214 -> n316
+n317 [label="<Transient,Appr,Safe,Appr> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=2 (x1=0 & 0<=x2 & 0<=x3<=20 & x1-x2<=0 & -20<=x1-x3<=0 & -20<=x2-x3)"]
+n215 -> n317
+n318 [label="<Transient,Safe,Appr,Appr> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=2,length=2 (0<=x1 & x2=0 & 0<=x3<=20 & 0<=x1-x2 & -20<=x1-x3 & -20<=x2-x3<=0)"]
+n215 -> n318
+n319 [label="<Occ,Safe,Safe,Cross> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n215 -> n319
+n216 -> n309
+n216 -> n310
+n320 [label="<Occ,Stop,Stop,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=3 (0<=x1 & 0<=x2 & 0<=x3<=20 & -20<=x1-x3 & -20<=x2-x3)"]
+n217 -> n320
+n321 [label="<Transient,Stop,Appr,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=3 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)"]
+n217 -> n321
+n322 [label="<Transient,Stop,Appr,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=3 (0<=x1 & x2=0 & 0<=x3<=5 & 0<=x1-x2 & -5<=x1-x3 & -5<=x2-x3<=0)"]
+n218 -> n322
+n323 [label="<Free,Stop,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n218 -> n323
+n324 [label="<Occ,Stop,Stop,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=3 (0<=x1 & 0<=x2 & 0<=x3<=20 & -20<=x1-x3 & -20<=x2-x3)"]
+n219 -> n324
+n325 [label="<Transient,Appr,Stop,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=3 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)"]
+n219 -> n325
+n326 [label="<Transient,Appr,Stop,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=3 (x1=0 & 0<=x2 & 0<=x3<=5 & x1-x2<=0 & -5<=x1-x3<=0 & -5<=x2-x3)"]
+n220 -> n326
+n327 [label="<Free,Safe,Stop,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n220 -> n327
+n221 -> n322
+n221 -> n323
+n222 -> n326
+n222 -> n327
+n328 [label="<Transient,Appr,Appr,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=2 (0<=x1<=20 & x2=0 & 0<=x3 & 0<=x1-x2<=20 & x1-x3<=20 & x2-x3<=0)"]
+n223 -> n328
+n329 [label="<Transient,Appr,Safe,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=2,length=2 (0<=x1<=20 & 0<=x2 & x3=0 & x1-x2<=20 & 0<=x1-x3<=20 & 0<=x2-x3)"]
+n223 -> n329
+n330 [label="<Occ,Cross,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=2,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n223 -> n330
+n331 [label="<Transient,Appr,Appr,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=2 (x1=0 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2<=0 & x1-x3<=0 & x2-x3<=20)"]
+n224 -> n331
+n332 [label="<Transient,Safe,Appr,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2<=20 & x3=0 & -20<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=20)"]
+n224 -> n332
+n333 [label="<Occ,Safe,Cross,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n224 -> n333
+n334 [label="<Transient,Appr,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=2,length=2 (x1=0 & 0<=x2 & 0<=x3<=20 & x1-x2<=0 & -20<=x1-x3<=0 & -20<=x2-x3)"]
+n225 -> n334
+n335 [label="<Transient,Safe,Appr,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=2,length=2 (0<=x1 & x2=0 & 0<=x3<=20 & 0<=x1-x2 & -20<=x1-x3 & -20<=x2-x3<=0)"]
+n225 -> n335
+n336 [label="<Occ,Safe,Safe,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n225 -> n336
+n337 [label="<Occ,Start,Safe,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n226 -> n337
+n338 [label="<Occ,Start,Stop,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=1,length=2 (0<=x1<=15 & 0<=x2 & 0<=x3 & x1-x2<=15 & x1-x3<=15)"]
+n227 -> n338
+n227 -> n146
+n339 [label="<Occ,Start,Safe,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=2 (0<=x1<=15 & 0<=x2 & 0<=x3 & x1-x2<=15 & x1-x3<=15)"]
+n228 -> n339
+n228 -> n148
+n340 [label="<Occ,Stop,Safe,Start> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n229 -> n340
+n341 [label="<Occ,Stop,Safe,Start> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3<=15 & -15<=x1-x3 & -15<=x2-x3)"]
+n230 -> n341
+n230 -> n160
+n342 [label="<Occ,Safe,Stop,Start> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=1,length=2 (0<=x1 & 0<=x2 & 0<=x3<=15 & -15<=x1-x3 & -15<=x2-x3)"]
+n231 -> n342
+n231 -> n162
+n343 [label="<Free,Safe,Stop,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n232 -> n343
+n232 -> n289
+n344 [label="<Free,Safe,Safe,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n233 -> n344
+n233 -> n293
+n234 -> n294
+n234 -> n295
+n345 [label="<Occ,Cross,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=2,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n234 -> n345
+n235 -> n297
+n235 -> n298
+n346 [label="<Occ,Safe,Cross,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=2,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n235 -> n346
+n236 -> n300
+n236 -> n301
+n347 [label="<Occ,Safe,Safe,Cross> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n236 -> n347
+n237 -> n343
+n237 -> n289
+n238 -> n344
+n238 -> n293
+n348 [label="<Free,Stop,Safe,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n239 -> n348
+n239 -> n306
+n240 -> n309
+n349 [label="<Free,Safe,Safe,Stop> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n240 -> n349
+n241 -> n348
+n241 -> n306
+n242 -> n311
+n242 -> n312
+n350 [label="<Occ,Cross,Safe,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=2,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n242 -> n350
+n243 -> n314
+n243 -> n315
+n351 [label="<Occ,Safe,Cross,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=2,head=2,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n243 -> n351
+n244 -> n317
+n244 -> n318
+n352 [label="<Occ,Safe,Safe,Cross> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n244 -> n352
+n245 -> n309
+n245 -> n349
+n246 -> n322
+n353 [label="<Free,Stop,Safe,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n246 -> n353
+n247 -> n326
+n354 [label="<Free,Safe,Stop,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n247 -> n354
+n248 -> n322
+n248 -> n353
+n249 -> n326
+n249 -> n354
+n250 -> n328
+n250 -> n329
+n355 [label="<Occ,Cross,Safe,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n250 -> n355
+n251 -> n331
+n251 -> n332
+n356 [label="<Occ,Safe,Cross,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=2,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n251 -> n356
+n252 -> n334
+n252 -> n335
+n357 [label="<Occ,Safe,Safe,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n252 -> n357
+n358 [label="<Occ,Start,Stop,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n253 -> n358
+n359 [label="<Occ,Start,Stop,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=2 (0<=x1<=15 & 0<=x2 & 0<=x3 & x1-x2<=15 & x1-x3<=15)"]
+n254 -> n359
+n254 -> n173
+n360 [label="<Occ,Start,Safe,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=1,length=2 (0<=x1<=15 & 0<=x2 & 0<=x3 & x1-x2<=15 & x1-x3<=15)"]
+n255 -> n360
+n255 -> n175
+n361 [label="<Occ,Stop,Start,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n256 -> n361
+n362 [label="<Occ,Stop,Start,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=2 (0<=x1 & 0<=x2<=15 & 0<=x3 & -15<=x1-x2 & x2-x3<=15)"]
+n257 -> n362
+n257 -> n180
+n363 [label="<Occ,Safe,Start,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=1,length=2 (0<=x1 & 0<=x2<=15 & 0<=x3 & -15<=x1-x2 & x2-x3<=15)"]
+n258 -> n363
+n258 -> n182
+n364 [label="<Free,Safe,Stop,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n259 -> n364
+n259 -> n289
+n365 [label="<Free,Safe,Safe,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n260 -> n365
+n260 -> n293
+n261 -> n294
+n261 -> n295
+n366 [label="<Occ,Cross,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=2,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n261 -> n366
+n262 -> n297
+n262 -> n298
+n367 [label="<Occ,Safe,Cross,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n262 -> n367
+n263 -> n300
+n263 -> n301
+n368 [label="<Occ,Safe,Safe,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n263 -> n368
+n264 -> n364
+n264 -> n289
+n265 -> n365
+n265 -> n293
+n369 [label="<Free,Stop,Safe,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n266 -> n369
+n266 -> n306
+n267 -> n309
+n370 [label="<Free,Safe,Safe,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n267 -> n370
+n268 -> n369
+n268 -> n306
+n269 -> n311
+n269 -> n312
+n371 [label="<Occ,Cross,Safe,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n269 -> n371
+n270 -> n314
+n270 -> n315
+n372 [label="<Occ,Safe,Cross,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=2,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n270 -> n372
+n271 -> n317
+n271 -> n318
+n373 [label="<Occ,Safe,Safe,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n271 -> n373
+n272 -> n309
+n272 -> n370
+n273 -> n322
+n374 [label="<Free,Stop,Safe,Safe> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n273 -> n374
+n274 -> n326
+n375 [label="<Free,Safe,Stop,Safe> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=2,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n274 -> n375
+n275 -> n322
+n275 -> n374
+n276 -> n326
+n276 -> n375
+n277 -> n328
+n277 -> n329
+n376 [label="<Occ,Cross,Safe,Safe> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=2,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n277 -> n376
+n278 -> n331
+n278 -> n332
+n377 [label="<Occ,Safe,Cross,Safe> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=2,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n278 -> n377
+n279 -> n334
+n279 -> n335
+n378 [label="<Occ,Safe,Safe,Cross> buffer[0]=3,buffer[1]=3,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n279 -> n378
+n379 [label="<Transient,Appr,Start,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=3 (x1=0 & 0<=x2<=15 & 0<=x3 & -15<=x1-x2<=0 & x1-x3<=0 & x2-x3<=15)"]
+n280 -> n379
+n280 -> n211
+n380 [label="<Transient,Stop,Start,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=3 (0<=x1 & 0<=x2<=15 & x3=0 & -15<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=15)"]
+n281 -> n380
+n281 -> n209
+n282 -> n379
+n282 -> n211
+n381 [label="<Transient,Appr,Stop,Start> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=3 (x1=0 & 0<=x2 & 0<=x3<=15 & x1-x2<=0 & -15<=x1-x3<=0 & -15<=x2-x3)"]
+n283 -> n381
+n283 -> n220
+n382 [label="<Transient,Stop,Appr,Start> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=3 (0<=x1 & x2=0 & 0<=x3<=15 & 0<=x1-x2 & -15<=x1-x3 & -15<=x2-x3<=0)"]
+n284 -> n382
+n284 -> n218
+n285 -> n381
+n285 -> n220
+n383 [label="<Occ,Cross,Stop,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=3 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n286 -> n383
+n287 -> n383
+n384 [label="<Occ,Safe,Start,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=2,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n288 -> n384
+n385 [label="<Occ,Cross,Stop,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=3 (0<=x1<=5 & 0<=x2 & 0<=x3 & x1-x2<=5 & x1-x3<=5)"]
+n289 -> n385
+n386 [label="<Occ,Cross,Stop,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=3 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n290 -> n386
+n291 -> n386
+n387 [label="<Occ,Safe,Safe,Start> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n292 -> n387
+n388 [label="<Occ,Cross,Stop,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=3 (0<=x1<=5 & 0<=x2 & 0<=x3 & x1-x2<=5 & x1-x3<=5)"]
+n293 -> n388
+n389 [label="<Occ,Appr,Stop,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=2,length=2 (0<=x1<=20 & 0<=x2 & 0<=x3 & x1-x2<=20 & x1-x3<=20)"]
+n294 -> n389
+n390 [label="<Transient,Cross,Appr,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=2,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)"]
+n294 -> n390
+n391 [label="<Occ,Appr,Safe,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=2,length=2 (0<=x1<=20 & 0<=x2 & 0<=x3 & x1-x2<=20 & x1-x3<=20)"]
+n295 -> n391
+n392 [label="<Transient,Cross,Safe,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=2,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)"]
+n295 -> n392
+n296 -> n0
+n393 [label="<Transient,Cross,Appr,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=2,length=2 (0<=x1<=5 & x2=0 & 0<=x3 & 0<=x1-x2<=5 & x1-x3<=5 & x2-x3<=0)"]
+n296 -> n393
+n394 [label="<Transient,Cross,Safe,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=2,length=2 (0<=x1<=5 & 0<=x2 & x3=0 & x1-x2<=5 & 0<=x1-x3<=5 & 0<=x2-x3)"]
+n296 -> n394
+n395 [label="<Occ,Stop,Appr,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2 & x2-x3<=20)"]
+n297 -> n395
+n396 [label="<Transient,Appr,Cross,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=2,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)"]
+n297 -> n396
+n397 [label="<Occ,Safe,Appr,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2 & x2-x3<=20)"]
+n298 -> n397
+n398 [label="<Transient,Safe,Cross,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)"]
+n298 -> n398
+n399 [label="<Transient,Appr,Cross,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=2,length=2 (x1=0 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2<=0 & x1-x3<=0 & x2-x3<=5)"]
+n299 -> n399
+n400 [label="<Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n299 -> n400
+n401 [label="<Transient,Safe,Cross,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2<=5 & x3=0 & -5<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=5)"]
+n299 -> n401
+n402 [label="<Occ,Stop,Safe,Appr> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3<=20 & -20<=x1-x3 & -20<=x2-x3)"]
+n300 -> n402
+n403 [label="<Transient,Appr,Safe,Cross> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=2,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)"]
+n300 -> n403
+n404 [label="<Occ,Safe,Stop,Appr> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3<=20 & -20<=x1-x3 & -20<=x2-x3)"]
+n301 -> n404
+n405 [label="<Transient,Safe,Appr,Cross> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)"]
+n301 -> n405
+n406 [label="<Transient,Appr,Safe,Cross> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=2,length=2 (x1=0 & 0<=x2 & 0<=x3<=5 & x1-x2<=0 & -5<=x1-x3<=0 & -5<=x2-x3)"]
+n302 -> n406
+n407 [label="<Transient,Safe,Appr,Cross> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=2 (0<=x1 & x2=0 & 0<=x3<=5 & 0<=x1-x2 & -5<=x1-x3 & -5<=x2-x3<=0)"]
+n302 -> n407
+n408 [label="<Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n302 -> n408
+n409 [label="<Occ,Stop,Cross,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=3 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n303 -> n409
+n304 -> n409
+n410 [label="<Occ,Start,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=2,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n305 -> n410
+n411 [label="<Occ,Stop,Cross,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=3 (0<=x1 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2 & x2-x3<=5)"]
+n306 -> n411
+n412 [label="<Occ,Stop,Cross,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=3 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n307 -> n412
+n308 -> n412
+n413 [label="<Occ,Stop,Cross,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=3 (0<=x1 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2 & x2-x3<=5)"]
+n309 -> n413
+n414 [label="<Occ,Safe,Safe,Start> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n310 -> n414
+n415 [label="<Occ,Appr,Stop,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=2,length=2 (0<=x1<=20 & 0<=x2 & 0<=x3 & x1-x2<=20 & x1-x3<=20)"]
+n311 -> n415
+n416 [label="<Transient,Cross,Appr,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=2,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)"]
+n311 -> n416
+n417 [label="<Occ,Appr,Safe,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=2 (0<=x1<=20 & 0<=x2 & 0<=x3 & x1-x2<=20 & x1-x3<=20)"]
+n312 -> n417
+n418 [label="<Transient,Cross,Safe,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)"]
+n312 -> n418
+n419 [label="<Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n313 -> n419
+n420 [label="<Transient,Cross,Appr,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=2,length=2 (0<=x1<=5 & x2=0 & 0<=x3 & 0<=x1-x2<=5 & x1-x3<=5 & x2-x3<=0)"]
+n313 -> n420
+n421 [label="<Transient,Cross,Safe,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=2 (0<=x1<=5 & 0<=x2 & x3=0 & x1-x2<=5 & 0<=x1-x3<=5 & 0<=x2-x3)"]
+n313 -> n421
+n422 [label="<Occ,Stop,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2 & x2-x3<=20)"]
+n314 -> n422
+n423 [label="<Transient,Appr,Cross,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=2,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)"]
+n314 -> n423
+n424 [label="<Occ,Safe,Appr,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2 & x2-x3<=20)"]
+n315 -> n424
+n425 [label="<Transient,Safe,Cross,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=2,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)"]
+n315 -> n425
+n426 [label="<Transient,Appr,Cross,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=2,length=2 (x1=0 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2<=0 & x1-x3<=0 & x2-x3<=5)"]
+n316 -> n426
+n427 [label="<Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n316 -> n427
+n428 [label="<Transient,Safe,Cross,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2<=5 & x3=0 & -5<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=5)"]
+n316 -> n428
+n429 [label="<Occ,Stop,Safe,Appr> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3<=20 & -20<=x1-x3 & -20<=x2-x3)"]
+n317 -> n429
+n430 [label="<Transient,Appr,Safe,Cross> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)"]
+n317 -> n430
+n431 [label="<Occ,Safe,Stop,Appr> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3<=20 & -20<=x1-x3 & -20<=x2-x3)"]
+n318 -> n431
+n432 [label="<Transient,Safe,Appr,Cross> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=2,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)"]
+n318 -> n432
+n433 [label="<Transient,Appr,Safe,Cross> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=2 (x1=0 & 0<=x2 & 0<=x3<=5 & x1-x2<=0 & -5<=x1-x3<=0 & -5<=x2-x3)"]
+n319 -> n433
+n434 [label="<Transient,Safe,Appr,Cross> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=2,length=2 (0<=x1 & x2=0 & 0<=x3<=5 & 0<=x1-x2 & -5<=x1-x3 & -5<=x2-x3<=0)"]
+n319 -> n434
+n435 [label="<Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n319 -> n435
+n436 [label="<Occ,Stop,Stop,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=3 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n320 -> n436
+n321 -> n436
+n437 [label="<Occ,Stop,Stop,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=3 (0<=x1 & 0<=x2 & 0<=x3<=5 & -5<=x1-x3 & -5<=x2-x3)"]
+n322 -> n437
+n438 [label="<Occ,Start,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=2,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n323 -> n438
+n439 [label="<Occ,Stop,Stop,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=3 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n324 -> n439
+n325 -> n439
+n440 [label="<Occ,Stop,Stop,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=3 (0<=x1 & 0<=x2 & 0<=x3<=5 & -5<=x1-x3 & -5<=x2-x3)"]
+n326 -> n440
+n441 [label="<Occ,Safe,Start,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n327 -> n441
+n442 [label="<Occ,Appr,Stop,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=2 (0<=x1<=20 & 0<=x2 & 0<=x3 & x1-x2<=20 & x1-x3<=20)"]
+n328 -> n442
+n443 [label="<Transient,Cross,Appr,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)"]
+n328 -> n443
+n444 [label="<Occ,Appr,Safe,Stop> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=2,length=2 (0<=x1<=20 & 0<=x2 & 0<=x3 & x1-x2<=20 & x1-x3<=20)"]
+n329 -> n444
+n445 [label="<Transient,Cross,Safe,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=2,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)"]
+n329 -> n445
+n446 [label="<Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n330 -> n446
+n447 [label="<Transient,Cross,Appr,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=2 (0<=x1<=5 & x2=0 & 0<=x3 & 0<=x1-x2<=5 & x1-x3<=5 & x2-x3<=0)"]
+n330 -> n447
+n448 [label="<Transient,Cross,Safe,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=2,length=2 (0<=x1<=5 & 0<=x2 & x3=0 & x1-x2<=5 & 0<=x1-x3<=5 & 0<=x2-x3)"]
+n330 -> n448
+n449 [label="<Occ,Stop,Appr,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2 & x2-x3<=20)"]
+n331 -> n449
+n450 [label="<Transient,Appr,Cross,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)"]
+n331 -> n450
+n451 [label="<Occ,Safe,Appr,Stop> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2 & x2-x3<=20)"]
+n332 -> n451
+n452 [label="<Transient,Safe,Cross,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=2,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)"]
+n332 -> n452
+n453 [label="<Transient,Appr,Cross,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=2 (x1=0 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2<=0 & x1-x3<=0 & x2-x3<=5)"]
+n333 -> n453
+n454 [label="<Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n333 -> n454
+n455 [label="<Transient,Safe,Cross,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2<=5 & x3=0 & -5<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=5)"]
+n333 -> n455
+n456 [label="<Occ,Stop,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3<=20 & -20<=x1-x3 & -20<=x2-x3)"]
+n334 -> n456
+n457 [label="<Transient,Appr,Safe,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=2,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)"]
+n334 -> n457
+n458 [label="<Occ,Safe,Stop,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3<=20 & -20<=x1-x3 & -20<=x2-x3)"]
+n335 -> n458
+n459 [label="<Transient,Safe,Appr,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=2,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)"]
+n335 -> n459
+n460 [label="<Transient,Appr,Safe,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=2,length=2 (x1=0 & 0<=x2 & 0<=x3<=5 & x1-x2<=0 & -5<=x1-x3<=0 & -5<=x2-x3)"]
+n336 -> n460
+n461 [label="<Transient,Safe,Appr,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=2,length=2 (0<=x1 & x2=0 & 0<=x3<=5 & 0<=x1-x2 & -5<=x1-x3 & -5<=x2-x3<=0)"]
+n336 -> n461
+n462 [label="<Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n336 -> n462
+n463 [label="<Transient,Start,Appr,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=3 (0<=x1<=15 & x2=0 & 0<=x3 & 0<=x1-x2<=15 & x1-x3<=15 & x2-x3<=0)"]
+n337 -> n463
+n337 -> n233
+n464 [label="<Transient,Start,Stop,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=3 (0<=x1<=15 & 0<=x2 & x3=0 & x1-x2<=15 & 0<=x1-x3<=15 & 0<=x2-x3)"]
+n338 -> n464
+n338 -> n232
+n339 -> n463
+n339 -> n233
+n340 -> n382
+n340 -> n246
+n341 -> n382
+n341 -> n246
+n342 -> n381
+n342 -> n247
+n465 [label="<Occ,Safe,Start,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=2,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n343 -> n465
+n466 [label="<Occ,Safe,Safe,Start> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n344 -> n466
+n467 [label="<Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n345 -> n467
+n345 -> n393
+n345 -> n394
+n346 -> n399
+n468 [label="<Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n346 -> n468
+n346 -> n401
+n347 -> n406
+n347 -> n407
+n469 [label="<Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n347 -> n469
+n470 [label="<Occ,Start,Safe,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=2,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n348 -> n470
+n471 [label="<Occ,Safe,Safe,Start> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n349 -> n471
+n472 [label="<Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n350 -> n472
+n350 -> n420
+n350 -> n421
+n351 -> n426
+n473 [label="<Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=2,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n351 -> n473
+n351 -> n428
+n352 -> n433
+n352 -> n434
+n474 [label="<Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n352 -> n474
+n475 [label="<Occ,Start,Safe,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n353 -> n475
+n476 [label="<Occ,Safe,Start,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=2,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n354 -> n476
+n477 [label="<Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n355 -> n477
+n355 -> n447
+n355 -> n448
+n356 -> n453
+n478 [label="<Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n356 -> n478
+n356 -> n455
+n357 -> n460
+n357 -> n461
+n479 [label="<Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n357 -> n479
+n358 -> n464
+n358 -> n259
+n359 -> n464
+n359 -> n259
+n360 -> n463
+n360 -> n260
+n361 -> n380
+n361 -> n266
+n362 -> n380
+n362 -> n266
+n363 -> n379
+n363 -> n267
+n480 [label="<Occ,Safe,Start,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n364 -> n480
+n481 [label="<Occ,Safe,Safe,Start> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n365 -> n481
+n482 [label="<Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n366 -> n482
+n366 -> n393
+n366 -> n394
+n367 -> n399
+n483 [label="<Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n367 -> n483
+n367 -> n401
+n368 -> n406
+n368 -> n407
+n484 [label="<Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n368 -> n484
+n485 [label="<Occ,Start,Safe,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n369 -> n485
+n486 [label="<Occ,Safe,Safe,Start> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=2,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n370 -> n486
+n487 [label="<Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n371 -> n487
+n371 -> n420
+n371 -> n421
+n372 -> n426
+n488 [label="<Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n372 -> n488
+n372 -> n428
+n373 -> n433
+n373 -> n434
+n489 [label="<Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n373 -> n489
+n490 [label="<Occ,Start,Safe,Safe> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=2,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n374 -> n490
+n491 [label="<Occ,Safe,Start,Safe> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=2,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n375 -> n491
+n492 [label="<Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n376 -> n492
+n376 -> n447
+n376 -> n448
+n377 -> n453
+n493 [label="<Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n377 -> n493
+n377 -> n455
+n378 -> n460
+n378 -> n461
+n494 [label="<Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=3,buffer[2]=3,head=0,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n378 -> n494
+n495 [label="<Occ,Stop,Start,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=3 (0<=x1 & 0<=x2<=15 & 0<=x3 & -15<=x1-x2 & x2-x3<=15)"]
+n379 -> n495
+n379 -> n308
+n496 [label="<Occ,Stop,Start,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=3 (0<=x1 & 0<=x2<=15 & 0<=x3 & -15<=x1-x2 & x2-x3<=15)"]
+n380 -> n496
+n380 -> n304
+n497 [label="<Occ,Stop,Stop,Start> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=3 (0<=x1 & 0<=x2 & 0<=x3<=15 & -15<=x1-x3 & -15<=x2-x3)"]
+n381 -> n497
+n381 -> n325
+n498 [label="<Occ,Stop,Stop,Start> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=3 (0<=x1 & 0<=x2 & 0<=x3<=15 & -15<=x1-x3 & -15<=x2-x3)"]
+n382 -> n498
+n382 -> n321
+n499 [label="<Free,Safe,Stop,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)"]
+n383 -> n499
+n500 [label="<Transient,Appr,Start,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=2,length=2 (x1=0 & 0<=x2<=15 & 0<=x3 & -15<=x1-x2<=0 & x1-x3<=0 & x2-x3<=15)"]
+n384 -> n500
+n501 [label="<Transient,Safe,Start,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2<=15 & x3=0 & -15<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=15)"]
+n384 -> n501
+n384 -> n299
+n385 -> n499
+n502 [label="<Free,Safe,Stop,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)"]
+n386 -> n502
+n503 [label="<Transient,Appr,Safe,Start> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=2,length=2 (x1=0 & 0<=x2 & 0<=x3<=15 & x1-x2<=0 & -15<=x1-x3<=0 & -15<=x2-x3)"]
+n387 -> n503
+n504 [label="<Transient,Safe,Appr,Start> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=2 (0<=x1 & x2=0 & 0<=x3<=15 & 0<=x1-x2 & -15<=x1-x3 & -15<=x2-x3<=0)"]
+n387 -> n504
+n387 -> n302
+n388 -> n502
+n505 [label="<Transient,Appr,Stop,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=3 (0<=x1<=20 & 0<=x2 & x3=0 & x1-x2<=20 & 0<=x1-x3<=20 & 0<=x2-x3)"]
+n389 -> n505
+n506 [label="<Occ,Cross,Stop,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=2,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n389 -> n506
+n390 -> n506
+n507 [label="<Transient,Appr,Appr,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=3 (0<=x1<=20 & x2=0 & 0<=x3 & 0<=x1-x2<=20 & x1-x3<=20 & x2-x3<=0)"]
+n391 -> n507
+n508 [label="<Occ,Cross,Safe,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=2,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n391 -> n508
+n392 -> n508
+n509 [label="<Occ,Cross,Stop,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=2,length=2 (0<=x1<=5 & 0<=x2 & 0<=x3 & x1-x2<=5 & x1-x3<=5)"]
+n393 -> n509
+n510 [label="<Occ,Cross,Safe,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=2,length=2 (0<=x1<=5 & 0<=x2 & 0<=x3 & x1-x2<=5 & x1-x3<=5)"]
+n394 -> n510
+n511 [label="<Transient,Stop,Appr,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=3 (0<=x1 & 0<=x2<=20 & x3=0 & -20<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=20)"]
+n395 -> n511
+n512 [label="<Occ,Stop,Cross,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=2,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n395 -> n512
+n396 -> n512
+n513 [label="<Transient,Appr,Appr,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=3 (x1=0 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2<=0 & x1-x3<=0 & x2-x3<=20)"]
+n397 -> n513
+n514 [label="<Occ,Safe,Cross,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n397 -> n514
+n398 -> n514
+n515 [label="<Occ,Stop,Cross,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2 & x2-x3<=5)"]
+n399 -> n515
+n516 [label="<Occ,Appr,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=0,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n400 -> n516
+n517 [label="<Occ,Safe,Appr,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=0,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n400 -> n517
+n518 [label="<Occ,Safe,Safe,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n400 -> n518
+n519 [label="<Occ,Safe,Cross,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2 & x2-x3<=5)"]
+n401 -> n519
+n520 [label="<Transient,Stop,Appr,Appr> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=3 (0<=x1 & x2=0 & 0<=x3<=20 & 0<=x1-x2 & -20<=x1-x3 & -20<=x2-x3<=0)"]
+n402 -> n520
+n521 [label="<Occ,Stop,Safe,Cross> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n402 -> n521
+n403 -> n521
+n522 [label="<Transient,Appr,Stop,Appr> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=3 (x1=0 & 0<=x2 & 0<=x3<=20 & x1-x2<=0 & -20<=x1-x3<=0 & -20<=x2-x3)"]
+n404 -> n522
+n523 [label="<Occ,Safe,Stop,Cross> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n404 -> n523
+n405 -> n523
+n524 [label="<Occ,Stop,Safe,Cross> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3<=5 & -5<=x1-x3 & -5<=x2-x3)"]
+n406 -> n524
+n525 [label="<Occ,Safe,Stop,Cross> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3<=5 & -5<=x1-x3 & -5<=x2-x3)"]
+n407 -> n525
+n526 [label="<Occ,Appr,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=0,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n408 -> n526
+n527 [label="<Occ,Safe,Appr,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n408 -> n527
+n528 [label="<Occ,Safe,Safe,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n408 -> n528
+n529 [label="<Free,Stop,Safe,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)"]
+n409 -> n529
+n530 [label="<Transient,Start,Appr,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=2,length=2 (0<=x1<=15 & x2=0 & 0<=x3 & 0<=x1-x2<=15 & x1-x3<=15 & x2-x3<=0)"]
+n410 -> n530
+n531 [label="<Transient,Start,Safe,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=2 (0<=x1<=15 & 0<=x2 & x3=0 & x1-x2<=15 & 0<=x1-x3<=15 & 0<=x2-x3)"]
+n410 -> n531
+n410 -> n313
+n411 -> n529
+n532 [label="<Free,Stop,Safe,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)"]
+n412 -> n532
+n413 -> n532
+n533 [label="<Transient,Appr,Safe,Start> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=2 (x1=0 & 0<=x2 & 0<=x3<=15 & x1-x2<=0 & -15<=x1-x3<=0 & -15<=x2-x3)"]
+n414 -> n533
+n534 [label="<Transient,Safe,Appr,Start> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=2,length=2 (0<=x1 & x2=0 & 0<=x3<=15 & 0<=x1-x2 & -15<=x1-x3 & -15<=x2-x3<=0)"]
+n414 -> n534
+n414 -> n319
+n415 -> n505
+n535 [label="<Occ,Cross,Stop,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=2,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n415 -> n535
+n416 -> n535
+n417 -> n507
+n536 [label="<Occ,Cross,Safe,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n417 -> n536
+n418 -> n536
+n537 [label="<Occ,Appr,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=0,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n419 -> n537
+n538 [label="<Occ,Safe,Appr,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=0,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n419 -> n538
+n539 [label="<Occ,Safe,Safe,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n419 -> n539
+n540 [label="<Occ,Cross,Stop,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=2,length=2 (0<=x1<=5 & 0<=x2 & 0<=x3 & x1-x2<=5 & x1-x3<=5)"]
+n420 -> n540
+n541 [label="<Occ,Cross,Safe,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=2 (0<=x1<=5 & 0<=x2 & 0<=x3 & x1-x2<=5 & x1-x3<=5)"]
+n421 -> n541
+n422 -> n511
+n542 [label="<Occ,Stop,Cross,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=2,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n422 -> n542
+n423 -> n542
+n424 -> n513
+n543 [label="<Occ,Safe,Cross,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=2,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n424 -> n543
+n425 -> n543
+n544 [label="<Occ,Stop,Cross,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2 & x2-x3<=5)"]
+n426 -> n544
+n545 [label="<Occ,Appr,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=0,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n427 -> n545
+n546 [label="<Occ,Safe,Appr,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=2,head=0,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n427 -> n546
+n547 [label="<Occ,Safe,Safe,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n427 -> n547
+n548 [label="<Occ,Safe,Cross,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2 & x2-x3<=5)"]
+n428 -> n548
+n429 -> n520
+n549 [label="<Occ,Stop,Safe,Cross> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n429 -> n549
+n430 -> n549
+n431 -> n522
+n550 [label="<Occ,Safe,Stop,Cross> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n431 -> n550
+n432 -> n550
+n551 [label="<Occ,Stop,Safe,Cross> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3<=5 & -5<=x1-x3 & -5<=x2-x3)"]
+n433 -> n551
+n552 [label="<Occ,Safe,Stop,Cross> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3<=5 & -5<=x1-x3 & -5<=x2-x3)"]
+n434 -> n552
+n553 [label="<Occ,Appr,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n435 -> n553
+n554 [label="<Occ,Safe,Appr,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=0,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n435 -> n554
+n555 [label="<Occ,Safe,Safe,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n435 -> n555
+n556 [label="<Free,Stop,Stop,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)"]
+n436 -> n556
+n437 -> n556
+n557 [label="<Transient,Start,Appr,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=2 (0<=x1<=15 & x2=0 & 0<=x3 & 0<=x1-x2<=15 & x1-x3<=15 & x2-x3<=0)"]
+n438 -> n557
+n558 [label="<Transient,Start,Safe,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=2,length=2 (0<=x1<=15 & 0<=x2 & x3=0 & x1-x2<=15 & 0<=x1-x3<=15 & 0<=x2-x3)"]
+n438 -> n558
+n438 -> n330
+n559 [label="<Free,Stop,Stop,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3)"]
+n439 -> n559
+n440 -> n559
+n560 [label="<Transient,Appr,Start,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=2 (x1=0 & 0<=x2<=15 & 0<=x3 & -15<=x1-x2<=0 & x1-x3<=0 & x2-x3<=15)"]
+n441 -> n560
+n561 [label="<Transient,Safe,Start,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2<=15 & x3=0 & -15<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=15)"]
+n441 -> n561
+n441 -> n333
+n442 -> n505
+n562 [label="<Occ,Cross,Stop,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n442 -> n562
+n443 -> n562
+n444 -> n507
+n563 [label="<Occ,Cross,Safe,Stop> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=2,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n444 -> n563
+n445 -> n563
+n564 [label="<Occ,Appr,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=0,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n446 -> n564
+n565 [label="<Occ,Safe,Appr,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n446 -> n565
+n566 [label="<Occ,Safe,Safe,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n446 -> n566
+n567 [label="<Occ,Cross,Stop,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=2 (0<=x1<=5 & 0<=x2 & 0<=x3 & x1-x2<=5 & x1-x3<=5)"]
+n447 -> n567
+n568 [label="<Occ,Cross,Safe,Stop> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=2,length=2 (0<=x1<=5 & 0<=x2 & 0<=x3 & x1-x2<=5 & x1-x3<=5)"]
+n448 -> n568
+n449 -> n511
+n569 [label="<Occ,Stop,Cross,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n449 -> n569
+n450 -> n569
+n451 -> n513
+n570 [label="<Occ,Safe,Cross,Stop> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=2,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n451 -> n570
+n452 -> n570
+n571 [label="<Occ,Stop,Cross,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2 & x2-x3<=5)"]
+n453 -> n571
+n572 [label="<Occ,Appr,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n454 -> n572
+n573 [label="<Occ,Safe,Appr,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=0,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n454 -> n573
+n574 [label="<Occ,Safe,Safe,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n454 -> n574
+n575 [label="<Occ,Safe,Cross,Stop> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2 & x2-x3<=5)"]
+n455 -> n575
+n456 -> n520
+n576 [label="<Occ,Stop,Safe,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n456 -> n576
+n457 -> n576
+n458 -> n522
+n577 [label="<Occ,Safe,Stop,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n458 -> n577
+n459 -> n577
+n578 [label="<Occ,Stop,Safe,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3<=5 & -5<=x1-x3 & -5<=x2-x3)"]
+n460 -> n578
+n579 [label="<Occ,Safe,Stop,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3<=5 & -5<=x1-x3 & -5<=x2-x3)"]
+n461 -> n579
+n580 [label="<Occ,Appr,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=0,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n462 -> n580
+n581 [label="<Occ,Safe,Appr,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=0,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n462 -> n581
+n582 [label="<Occ,Safe,Safe,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n462 -> n582
+n583 [label="<Occ,Start,Stop,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=3 (0<=x1<=15 & 0<=x2 & 0<=x3 & x1-x2<=15 & x1-x3<=15)"]
+n463 -> n583
+n463 -> n291
+n584 [label="<Occ,Start,Stop,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=3 (0<=x1<=15 & 0<=x2 & 0<=x3 & x1-x2<=15 & x1-x3<=15)"]
+n464 -> n584
+n464 -> n287
+n465 -> n500
+n465 -> n501
+n465 -> n346
+n466 -> n503
+n466 -> n504
+n466 -> n347
+n467 -> n1
+n467 -> n2
+n467 -> n3
+n468 -> n516
+n468 -> n517
+n468 -> n518
+n469 -> n526
+n469 -> n527
+n469 -> n528
+n470 -> n530
+n470 -> n531
+n470 -> n350
+n471 -> n533
+n471 -> n534
+n471 -> n352
+n472 -> n537
+n472 -> n538
+n472 -> n539
+n473 -> n545
+n473 -> n546
+n473 -> n547
+n474 -> n553
+n474 -> n554
+n474 -> n555
+n475 -> n557
+n475 -> n558
+n475 -> n355
+n476 -> n560
+n476 -> n561
+n476 -> n356
+n477 -> n564
+n477 -> n565
+n477 -> n566
+n478 -> n572
+n478 -> n573
+n478 -> n574
+n479 -> n580
+n479 -> n581
+n479 -> n582
+n480 -> n500
+n480 -> n501
+n480 -> n367
+n481 -> n503
+n481 -> n504
+n481 -> n368
+n482 -> n1
+n482 -> n2
+n482 -> n3
+n483 -> n516
+n483 -> n517
+n483 -> n518
+n484 -> n526
+n484 -> n527
+n484 -> n528
+n485 -> n530
+n485 -> n531
+n485 -> n371
+n486 -> n533
+n486 -> n534
+n486 -> n373
+n487 -> n537
+n487 -> n538
+n487 -> n539
+n488 -> n545
+n488 -> n546
+n488 -> n547
+n489 -> n553
+n489 -> n554
+n489 -> n555
+n490 -> n557
+n490 -> n558
+n490 -> n376
+n491 -> n560
+n491 -> n561
+n491 -> n377
+n492 -> n564
+n492 -> n565
+n492 -> n566
+n493 -> n572
+n493 -> n573
+n493 -> n574
+n494 -> n580
+n494 -> n581
+n494 -> n582
+n495 -> n412
+n496 -> n409
+n497 -> n439
+n498 -> n436
+n585 [label="<Occ,Safe,Start,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n499 -> n585
+n586 [label="<Occ,Stop,Start,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2<=15 & 0<=x3 & -15<=x1-x2 & x2-x3<=15)"]
+n500 -> n586
+n500 -> n396
+n587 [label="<Occ,Safe,Start,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2<=15 & 0<=x3 & -15<=x1-x2 & x2-x3<=15)"]
+n501 -> n587
+n501 -> n398
+n588 [label="<Occ,Safe,Stop,Start> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n502 -> n588
+n589 [label="<Occ,Stop,Safe,Start> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3<=15 & -15<=x1-x3 & -15<=x2-x3)"]
+n503 -> n589
+n503 -> n403
+n590 [label="<Occ,Safe,Stop,Start> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3<=15 & -15<=x1-x3 & -15<=x2-x3)"]
+n504 -> n590
+n504 -> n405
+n591 [label="<Occ,Appr,Stop,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=3 (0<=x1<=20 & 0<=x2 & 0<=x3 & x1-x2<=20 & x1-x3<=20)"]
+n505 -> n591
+n592 [label="<Transient,Cross,Stop,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=3 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)"]
+n505 -> n592
+n593 [label="<Free,Safe,Stop,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n506 -> n593
+n594 [label="<Transient,Cross,Stop,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=3 (0<=x1<=5 & 0<=x2 & x3=0 & x1-x2<=5 & 0<=x1-x3<=5 & 0<=x2-x3)"]
+n506 -> n594
+n595 [label="<Occ,Appr,Stop,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=3 (0<=x1<=20 & 0<=x2 & 0<=x3 & x1-x2<=20 & x1-x3<=20)"]
+n507 -> n595
+n596 [label="<Transient,Cross,Appr,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=3 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)"]
+n507 -> n596
+n597 [label="<Free,Safe,Safe,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n508 -> n597
+n598 [label="<Transient,Cross,Appr,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=3 (0<=x1<=5 & x2=0 & 0<=x3 & 0<=x1-x2<=5 & x1-x3<=5 & x2-x3<=0)"]
+n508 -> n598
+n509 -> n593
+n509 -> n594
+n510 -> n597
+n510 -> n598
+n599 [label="<Occ,Stop,Appr,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=3 (0<=x1 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2 & x2-x3<=20)"]
+n511 -> n599
+n600 [label="<Transient,Stop,Cross,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=3 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)"]
+n511 -> n600
+n601 [label="<Free,Stop,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n512 -> n601
+n602 [label="<Transient,Stop,Cross,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=3 (0<=x1 & 0<=x2<=5 & x3=0 & -5<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=5)"]
+n512 -> n602
+n603 [label="<Occ,Stop,Appr,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=3 (0<=x1 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2 & x2-x3<=20)"]
+n513 -> n603
+n604 [label="<Transient,Appr,Cross,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=3 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)"]
+n513 -> n604
+n605 [label="<Transient,Appr,Cross,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=3 (x1=0 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2<=0 & x1-x3<=0 & x2-x3<=5)"]
+n514 -> n605
+n606 [label="<Free,Safe,Safe,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n514 -> n606
+n515 -> n601
+n515 -> n602
+n607 [label="<Transient,Appr,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=0,length=2 (0<=x1<=20 & x2=0 & 0<=x3 & 0<=x1-x2<=20 & x1-x3<=20 & x2-x3<=0)"]
+n516 -> n607
+n608 [label="<Transient,Appr,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=2 (0<=x1<=20 & 0<=x2 & x3=0 & x1-x2<=20 & 0<=x1-x3<=20 & 0<=x2-x3)"]
+n516 -> n608
+n609 [label="<Occ,Cross,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=0,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n516 -> n609
+n610 [label="<Transient,Appr,Appr,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=0,length=2 (x1=0 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2<=0 & x1-x3<=0 & x2-x3<=20)"]
+n517 -> n610
+n611 [label="<Transient,Safe,Appr,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2<=20 & x3=0 & -20<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=20)"]
+n517 -> n611
+n612 [label="<Occ,Safe,Cross,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=0,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n517 -> n612
+n613 [label="<Transient,Appr,Safe,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=2 (x1=0 & 0<=x2 & 0<=x3<=20 & x1-x2<=0 & -20<=x1-x3<=0 & -20<=x2-x3)"]
+n518 -> n613
+n614 [label="<Transient,Safe,Appr,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=0,length=2 (0<=x1 & x2=0 & 0<=x3<=20 & 0<=x1-x2 & -20<=x1-x3 & -20<=x2-x3<=0)"]
+n518 -> n614
+n615 [label="<Occ,Safe,Safe,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n518 -> n615
+n519 -> n605
+n519 -> n606
+n616 [label="<Occ,Stop,Stop,Appr> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=3 (0<=x1 & 0<=x2 & 0<=x3<=20 & -20<=x1-x3 & -20<=x2-x3)"]
+n520 -> n616
+n617 [label="<Transient,Stop,Appr,Cross> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=3 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)"]
+n520 -> n617
+n618 [label="<Transient,Stop,Appr,Cross> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=3 (0<=x1 & x2=0 & 0<=x3<=5 & 0<=x1-x2 & -5<=x1-x3 & -5<=x2-x3<=0)"]
+n521 -> n618
+n619 [label="<Free,Stop,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n521 -> n619
+n620 [label="<Occ,Stop,Stop,Appr> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=3 (0<=x1 & 0<=x2 & 0<=x3<=20 & -20<=x1-x3 & -20<=x2-x3)"]
+n522 -> n620
+n621 [label="<Transient,Appr,Stop,Cross> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=3 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)"]
+n522 -> n621
+n622 [label="<Transient,Appr,Stop,Cross> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=3 (x1=0 & 0<=x2 & 0<=x3<=5 & x1-x2<=0 & -5<=x1-x3<=0 & -5<=x2-x3)"]
+n523 -> n622
+n623 [label="<Free,Safe,Stop,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n523 -> n623
+n524 -> n618
+n524 -> n619
+n525 -> n622
+n525 -> n623
+n624 [label="<Transient,Appr,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=2 (0<=x1<=20 & x2=0 & 0<=x3 & 0<=x1-x2<=20 & x1-x3<=20 & x2-x3<=0)"]
+n526 -> n624
+n625 [label="<Transient,Appr,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=0,length=2 (0<=x1<=20 & 0<=x2 & x3=0 & x1-x2<=20 & 0<=x1-x3<=20 & 0<=x2-x3)"]
+n526 -> n625
+n626 [label="<Occ,Cross,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=0,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n526 -> n626
+n627 [label="<Transient,Appr,Appr,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=2 (x1=0 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2<=0 & x1-x3<=0 & x2-x3<=20)"]
+n527 -> n627
+n628 [label="<Transient,Safe,Appr,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2<=20 & x3=0 & -20<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=20)"]
+n527 -> n628
+n629 [label="<Occ,Safe,Cross,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n527 -> n629
+n630 [label="<Transient,Appr,Safe,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=0,length=2 (x1=0 & 0<=x2 & 0<=x3<=20 & x1-x2<=0 & -20<=x1-x3<=0 & -20<=x2-x3)"]
+n528 -> n630
+n631 [label="<Transient,Safe,Appr,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=0,length=2 (0<=x1 & x2=0 & 0<=x3<=20 & 0<=x1-x2 & -20<=x1-x3 & -20<=x2-x3<=0)"]
+n528 -> n631
+n632 [label="<Occ,Safe,Safe,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n528 -> n632
+n633 [label="<Occ,Start,Safe,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n529 -> n633
+n634 [label="<Occ,Start,Stop,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=2,length=2 (0<=x1<=15 & 0<=x2 & 0<=x3 & x1-x2<=15 & x1-x3<=15)"]
+n530 -> n634
+n530 -> n416
+n635 [label="<Occ,Start,Safe,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=2 (0<=x1<=15 & 0<=x2 & 0<=x3 & x1-x2<=15 & x1-x3<=15)"]
+n531 -> n635
+n531 -> n418
+n636 [label="<Occ,Stop,Safe,Start> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n532 -> n636
+n637 [label="<Occ,Stop,Safe,Start> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3<=15 & -15<=x1-x3 & -15<=x2-x3)"]
+n533 -> n637
+n533 -> n430
+n638 [label="<Occ,Safe,Stop,Start> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=2,length=2 (0<=x1 & 0<=x2 & 0<=x3<=15 & -15<=x1-x3 & -15<=x2-x3)"]
+n534 -> n638
+n534 -> n432
+n639 [label="<Free,Safe,Stop,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n535 -> n639
+n535 -> n594
+n640 [label="<Free,Safe,Safe,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n536 -> n640
+n536 -> n598
+n537 -> n4
+n537 -> n5
+n641 [label="<Occ,Cross,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=0,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n537 -> n641
+n538 -> n7
+n538 -> n8
+n642 [label="<Occ,Safe,Cross,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=0,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n538 -> n642
+n539 -> n10
+n539 -> n11
+n643 [label="<Occ,Safe,Safe,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n539 -> n643
+n540 -> n639
+n540 -> n594
+n541 -> n640
+n541 -> n598
+n644 [label="<Free,Stop,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n542 -> n644
+n542 -> n602
+n543 -> n605
+n645 [label="<Free,Safe,Safe,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n543 -> n645
+n544 -> n644
+n544 -> n602
+n545 -> n607
+n545 -> n608
+n646 [label="<Occ,Cross,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=0,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n545 -> n646
+n546 -> n610
+n546 -> n611
+n647 [label="<Occ,Safe,Cross,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=2,head=0,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n546 -> n647
+n547 -> n613
+n547 -> n614
+n648 [label="<Occ,Safe,Safe,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n547 -> n648
+n548 -> n605
+n548 -> n645
+n549 -> n618
+n649 [label="<Free,Stop,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n549 -> n649
+n550 -> n622
+n650 [label="<Free,Safe,Stop,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n550 -> n650
+n551 -> n618
+n551 -> n649
+n552 -> n622
+n552 -> n650
+n553 -> n624
+n553 -> n625
+n651 [label="<Occ,Cross,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n553 -> n651
+n554 -> n627
+n554 -> n628
+n652 [label="<Occ,Safe,Cross,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=0,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n554 -> n652
+n555 -> n630
+n555 -> n631
+n653 [label="<Occ,Safe,Safe,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n555 -> n653
+n654 [label="<Occ,Start,Stop,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n556 -> n654
+n655 [label="<Occ,Start,Stop,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=2 (0<=x1<=15 & 0<=x2 & 0<=x3 & x1-x2<=15 & x1-x3<=15)"]
+n557 -> n655
+n557 -> n443
+n656 [label="<Occ,Start,Safe,Stop> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=2,length=2 (0<=x1<=15 & 0<=x2 & 0<=x3 & x1-x2<=15 & x1-x3<=15)"]
+n558 -> n656
+n558 -> n445
+n657 [label="<Occ,Stop,Start,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n559 -> n657
+n658 [label="<Occ,Stop,Start,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2<=15 & 0<=x3 & -15<=x1-x2 & x2-x3<=15)"]
+n560 -> n658
+n560 -> n450
+n659 [label="<Occ,Safe,Start,Stop> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=2,length=2 (0<=x1 & 0<=x2<=15 & 0<=x3 & -15<=x1-x2 & x2-x3<=15)"]
+n561 -> n659
+n561 -> n452
+n660 [label="<Free,Safe,Stop,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n562 -> n660
+n562 -> n594
+n661 [label="<Free,Safe,Safe,Stop> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n563 -> n661
+n563 -> n598
+n564 -> n4
+n564 -> n5
+n662 [label="<Occ,Cross,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=0,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n564 -> n662
+n565 -> n7
+n565 -> n8
+n663 [label="<Occ,Safe,Cross,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n565 -> n663
+n566 -> n10
+n566 -> n11
+n664 [label="<Occ,Safe,Safe,Cross> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n566 -> n664
+n567 -> n660
+n567 -> n594
+n568 -> n661
+n568 -> n598
+n665 [label="<Free,Stop,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n569 -> n665
+n569 -> n602
+n570 -> n605
+n666 [label="<Free,Safe,Safe,Stop> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n570 -> n666
+n571 -> n665
+n571 -> n602
+n572 -> n607
+n572 -> n608
+n667 [label="<Occ,Cross,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n572 -> n667
+n573 -> n610
+n573 -> n611
+n668 [label="<Occ,Safe,Cross,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=0,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n573 -> n668
+n574 -> n613
+n574 -> n614
+n669 [label="<Occ,Safe,Safe,Cross> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n574 -> n669
+n575 -> n605
+n575 -> n666
+n576 -> n618
+n670 [label="<Free,Stop,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n576 -> n670
+n577 -> n622
+n671 [label="<Free,Safe,Stop,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n577 -> n671
+n578 -> n618
+n578 -> n670
+n579 -> n622
+n579 -> n671
+n580 -> n624
+n580 -> n625
+n672 [label="<Occ,Cross,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=0,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n580 -> n672
+n581 -> n627
+n581 -> n628
+n673 [label="<Occ,Safe,Cross,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=0,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n581 -> n673
+n582 -> n630
+n582 -> n631
+n674 [label="<Occ,Safe,Safe,Cross> buffer[0]=3,buffer[1]=3,buffer[2]=3,head=0,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n582 -> n674
+n583 -> n386
+n584 -> n383
+n675 [label="<Transient,Appr,Start,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=3 (x1=0 & 0<=x2<=15 & 0<=x3 & -15<=x1-x2<=0 & x1-x3<=0 & x2-x3<=15)"]
+n585 -> n675
+n585 -> n514
+n676 [label="<Transient,Stop,Start,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=3 (0<=x1 & 0<=x2<=15 & x3=0 & -15<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=15)"]
+n586 -> n676
+n586 -> n512
+n587 -> n675
+n587 -> n514
+n677 [label="<Transient,Appr,Stop,Start> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=3 (x1=0 & 0<=x2 & 0<=x3<=15 & x1-x2<=0 & -15<=x1-x3<=0 & -15<=x2-x3)"]
+n588 -> n677
+n588 -> n523
+n678 [label="<Transient,Stop,Appr,Start> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=3 (0<=x1 & x2=0 & 0<=x3<=15 & 0<=x1-x2 & -15<=x1-x3 & -15<=x2-x3<=0)"]
+n589 -> n678
+n589 -> n521
+n590 -> n677
+n590 -> n523
+n679 [label="<Occ,Cross,Stop,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=3 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n591 -> n679
+n592 -> n679
+n680 [label="<Occ,Safe,Start,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=0,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n593 -> n680
+n681 [label="<Occ,Cross,Stop,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=3 (0<=x1<=5 & 0<=x2 & 0<=x3 & x1-x2<=5 & x1-x3<=5)"]
+n594 -> n681
+n682 [label="<Occ,Cross,Stop,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=3 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n595 -> n682
+n596 -> n682
+n683 [label="<Occ,Safe,Safe,Start> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n597 -> n683
+n684 [label="<Occ,Cross,Stop,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=3 (0<=x1<=5 & 0<=x2 & 0<=x3 & x1-x2<=5 & x1-x3<=5)"]
+n598 -> n684
+n685 [label="<Occ,Stop,Cross,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=3 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n599 -> n685
+n600 -> n685
+n686 [label="<Occ,Start,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=0,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n601 -> n686
+n687 [label="<Occ,Stop,Cross,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=3 (0<=x1 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2 & x2-x3<=5)"]
+n602 -> n687
+n688 [label="<Occ,Stop,Cross,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=3 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n603 -> n688
+n604 -> n688
+n689 [label="<Occ,Stop,Cross,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=3 (0<=x1 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2 & x2-x3<=5)"]
+n605 -> n689
+n690 [label="<Occ,Safe,Safe,Start> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n606 -> n690
+n691 [label="<Occ,Appr,Stop,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=0,length=2 (0<=x1<=20 & 0<=x2 & 0<=x3 & x1-x2<=20 & x1-x3<=20)"]
+n607 -> n691
+n692 [label="<Transient,Cross,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=0,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)"]
+n607 -> n692
+n693 [label="<Occ,Appr,Safe,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=2 (0<=x1<=20 & 0<=x2 & 0<=x3 & x1-x2<=20 & x1-x3<=20)"]
+n608 -> n693
+n694 [label="<Transient,Cross,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)"]
+n608 -> n694
+n695 [label="<Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n609 -> n695
+n696 [label="<Transient,Cross,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=0,length=2 (0<=x1<=5 & x2=0 & 0<=x3 & 0<=x1-x2<=5 & x1-x3<=5 & x2-x3<=0)"]
+n609 -> n696
+n697 [label="<Transient,Cross,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=2 (0<=x1<=5 & 0<=x2 & x3=0 & x1-x2<=5 & 0<=x1-x3<=5 & 0<=x2-x3)"]
+n609 -> n697
+n698 [label="<Occ,Stop,Appr,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2 & x2-x3<=20)"]
+n610 -> n698
+n699 [label="<Transient,Appr,Cross,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=0,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)"]
+n610 -> n699
+n700 [label="<Occ,Safe,Appr,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2 & x2-x3<=20)"]
+n611 -> n700
+n701 [label="<Transient,Safe,Cross,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=0,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)"]
+n611 -> n701
+n702 [label="<Transient,Appr,Cross,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=0,length=2 (x1=0 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2<=0 & x1-x3<=0 & x2-x3<=5)"]
+n612 -> n702
+n703 [label="<Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n612 -> n703
+n704 [label="<Transient,Safe,Cross,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2<=5 & x3=0 & -5<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=5)"]
+n612 -> n704
+n705 [label="<Occ,Stop,Safe,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3<=20 & -20<=x1-x3 & -20<=x2-x3)"]
+n613 -> n705
+n706 [label="<Transient,Appr,Safe,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)"]
+n613 -> n706
+n707 [label="<Occ,Safe,Stop,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3<=20 & -20<=x1-x3 & -20<=x2-x3)"]
+n614 -> n707
+n708 [label="<Transient,Safe,Appr,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=0,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)"]
+n614 -> n708
+n709 [label="<Transient,Appr,Safe,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=2 (x1=0 & 0<=x2 & 0<=x3<=5 & x1-x2<=0 & -5<=x1-x3<=0 & -5<=x2-x3)"]
+n615 -> n709
+n710 [label="<Transient,Safe,Appr,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=0,length=2 (0<=x1 & x2=0 & 0<=x3<=5 & 0<=x1-x2 & -5<=x1-x3 & -5<=x2-x3<=0)"]
+n615 -> n710
+n711 [label="<Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n615 -> n711
+n712 [label="<Occ,Stop,Stop,Cross> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=3 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n616 -> n712
+n617 -> n712
+n713 [label="<Occ,Stop,Stop,Cross> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=3 (0<=x1 & 0<=x2 & 0<=x3<=5 & -5<=x1-x3 & -5<=x2-x3)"]
+n618 -> n713
+n714 [label="<Occ,Start,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=0,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n619 -> n714
+n715 [label="<Occ,Stop,Stop,Cross> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=3 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n620 -> n715
+n621 -> n715
+n716 [label="<Occ,Stop,Stop,Cross> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=3 (0<=x1 & 0<=x2 & 0<=x3<=5 & -5<=x1-x3 & -5<=x2-x3)"]
+n622 -> n716
+n717 [label="<Occ,Safe,Start,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n623 -> n717
+n718 [label="<Occ,Appr,Stop,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=2 (0<=x1<=20 & 0<=x2 & 0<=x3 & x1-x2<=20 & x1-x3<=20)"]
+n624 -> n718
+n719 [label="<Transient,Cross,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)"]
+n624 -> n719
+n720 [label="<Occ,Appr,Safe,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=0,length=2 (0<=x1<=20 & 0<=x2 & 0<=x3 & x1-x2<=20 & x1-x3<=20)"]
+n625 -> n720
+n721 [label="<Transient,Cross,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=0,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)"]
+n625 -> n721
+n722 [label="<Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n626 -> n722
+n723 [label="<Transient,Cross,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=2 (0<=x1<=5 & x2=0 & 0<=x3 & 0<=x1-x2<=5 & x1-x3<=5 & x2-x3<=0)"]
+n626 -> n723
+n724 [label="<Transient,Cross,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=0,length=2 (0<=x1<=5 & 0<=x2 & x3=0 & x1-x2<=5 & 0<=x1-x3<=5 & 0<=x2-x3)"]
+n626 -> n724
+n725 [label="<Occ,Stop,Appr,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2 & x2-x3<=20)"]
+n627 -> n725
+n726 [label="<Transient,Appr,Cross,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=2 (x1=0 & x2=0 & 0<=x3 & x1=x2 & x1-x3<=0 & x2-x3<=0)"]
+n627 -> n726
+n727 [label="<Occ,Safe,Appr,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2<=20 & 0<=x3 & -20<=x1-x2 & x2-x3<=20)"]
+n628 -> n727
+n728 [label="<Transient,Safe,Cross,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=0,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)"]
+n628 -> n728
+n729 [label="<Transient,Appr,Cross,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=2 (x1=0 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2<=0 & x1-x3<=0 & x2-x3<=5)"]
+n629 -> n729
+n730 [label="<Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n629 -> n730
+n731 [label="<Transient,Safe,Cross,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2<=5 & x3=0 & -5<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=5)"]
+n629 -> n731
+n732 [label="<Occ,Stop,Safe,Appr> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3<=20 & -20<=x1-x3 & -20<=x2-x3)"]
+n630 -> n732
+n733 [label="<Transient,Appr,Safe,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=0,length=2 (x1=0 & 0<=x2 & x3=0 & x1-x2<=0 & x1=x3 & 0<=x2-x3)"]
+n630 -> n733
+n734 [label="<Occ,Safe,Stop,Appr> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3<=20 & -20<=x1-x3 & -20<=x2-x3)"]
+n631 -> n734
+n735 [label="<Transient,Safe,Appr,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=0,length=2 (0<=x1 & x2=0 & x3=0 & 0<=x1-x2 & 0<=x1-x3 & x2=x3)"]
+n631 -> n735
+n736 [label="<Transient,Appr,Safe,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=0,length=2 (x1=0 & 0<=x2 & 0<=x3<=5 & x1-x2<=0 & -5<=x1-x3<=0 & -5<=x2-x3)"]
+n632 -> n736
+n737 [label="<Transient,Safe,Appr,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=0,length=2 (0<=x1 & x2=0 & 0<=x3<=5 & 0<=x1-x2 & -5<=x1-x3 & -5<=x2-x3<=0)"]
+n632 -> n737
+n738 [label="<Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n632 -> n738
+n739 [label="<Transient,Start,Appr,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=3 (0<=x1<=15 & x2=0 & 0<=x3 & 0<=x1-x2<=15 & x1-x3<=15 & x2-x3<=0)"]
+n633 -> n739
+n633 -> n536
+n740 [label="<Transient,Start,Stop,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=3 (0<=x1<=15 & 0<=x2 & x3=0 & x1-x2<=15 & 0<=x1-x3<=15 & 0<=x2-x3)"]
+n634 -> n740
+n634 -> n535
+n635 -> n739
+n635 -> n536
+n636 -> n678
+n636 -> n549
+n637 -> n678
+n637 -> n549
+n638 -> n677
+n638 -> n550
+n741 [label="<Occ,Safe,Start,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=0,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n639 -> n741
+n742 [label="<Occ,Safe,Safe,Start> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n640 -> n742
+n743 [label="<Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=1,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n641 -> n743
+n641 -> n18
+n641 -> n19
+n642 -> n24
+n744 [label="<Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=1,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n642 -> n744
+n642 -> n26
+n643 -> n31
+n643 -> n32
+n745 [label="<Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n643 -> n745
+n746 [label="<Occ,Start,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=0,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n644 -> n746
+n747 [label="<Occ,Safe,Safe,Start> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n645 -> n747
+n748 [label="<Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n646 -> n748
+n646 -> n696
+n646 -> n697
+n647 -> n702
+n749 [label="<Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=2,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n647 -> n749
+n647 -> n704
+n648 -> n709
+n648 -> n710
+n750 [label="<Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n648 -> n750
+n751 [label="<Occ,Start,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n649 -> n751
+n752 [label="<Occ,Safe,Start,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=0,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n650 -> n752
+n753 [label="<Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n651 -> n753
+n651 -> n723
+n651 -> n724
+n652 -> n729
+n754 [label="<Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n652 -> n754
+n652 -> n731
+n653 -> n736
+n653 -> n737
+n755 [label="<Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n653 -> n755
+n654 -> n740
+n654 -> n562
+n655 -> n740
+n655 -> n562
+n656 -> n739
+n656 -> n563
+n657 -> n676
+n657 -> n569
+n658 -> n676
+n658 -> n569
+n659 -> n675
+n659 -> n570
+n756 [label="<Occ,Safe,Start,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n660 -> n756
+n757 [label="<Occ,Safe,Safe,Start> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=0,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n661 -> n757
+n758 [label="<Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=1,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n662 -> n758
+n662 -> n18
+n662 -> n19
+n663 -> n24
+n759 [label="<Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n663 -> n759
+n663 -> n26
+n664 -> n31
+n664 -> n32
+n760 [label="<Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=3,buffer[2]=1,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n664 -> n760
+n761 [label="<Occ,Start,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n665 -> n761
+n762 [label="<Occ,Safe,Safe,Start> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=0,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n666 -> n762
+n763 [label="<Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n667 -> n763
+n667 -> n696
+n667 -> n697
+n668 -> n702
+n764 [label="<Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n668 -> n764
+n668 -> n704
+n669 -> n709
+n669 -> n710
+n765 [label="<Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n669 -> n765
+n766 [label="<Occ,Start,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=0,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n670 -> n766
+n767 [label="<Occ,Safe,Start,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=0,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n671 -> n767
+n768 [label="<Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n672 -> n768
+n672 -> n723
+n672 -> n724
+n673 -> n729
+n769 [label="<Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n673 -> n769
+n673 -> n731
+n674 -> n736
+n674 -> n737
+n770 [label="<Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=3,buffer[2]=3,head=1,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n674 -> n770
+n771 [label="<Occ,Stop,Start,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=3 (0<=x1 & 0<=x2<=15 & 0<=x3 & -15<=x1-x2 & x2-x3<=15)"]
+n675 -> n771
+n675 -> n604
+n772 [label="<Occ,Stop,Start,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=3 (0<=x1 & 0<=x2<=15 & 0<=x3 & -15<=x1-x2 & x2-x3<=15)"]
+n676 -> n772
+n676 -> n600
+n773 [label="<Occ,Stop,Stop,Start> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=3 (0<=x1 & 0<=x2 & 0<=x3<=15 & -15<=x1-x3 & -15<=x2-x3)"]
+n677 -> n773
+n677 -> n621
+n774 [label="<Occ,Stop,Stop,Start> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=3 (0<=x1 & 0<=x2 & 0<=x3<=15 & -15<=x1-x3 & -15<=x2-x3)"]
+n678 -> n774
+n678 -> n617
+n775 [label="<Free,Safe,Stop,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)"]
+n679 -> n775
+n776 [label="<Transient,Appr,Start,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=0,length=2 (x1=0 & 0<=x2<=15 & 0<=x3 & -15<=x1-x2<=0 & x1-x3<=0 & x2-x3<=15)"]
+n680 -> n776
+n777 [label="<Transient,Safe,Start,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2<=15 & x3=0 & -15<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=15)"]
+n680 -> n777
+n680 -> n9
+n681 -> n775
+n778 [label="<Free,Safe,Stop,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)"]
+n682 -> n778
+n779 [label="<Transient,Appr,Safe,Start> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=0,length=2 (x1=0 & 0<=x2 & 0<=x3<=15 & x1-x2<=0 & -15<=x1-x3<=0 & -15<=x2-x3)"]
+n683 -> n779
+n780 [label="<Transient,Safe,Appr,Start> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=2 (0<=x1 & x2=0 & 0<=x3<=15 & 0<=x1-x2 & -15<=x1-x3 & -15<=x2-x3<=0)"]
+n683 -> n780
+n683 -> n12
+n684 -> n778
+n781 [label="<Free,Stop,Safe,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)"]
+n685 -> n781
+n782 [label="<Transient,Start,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=0,length=2 (0<=x1<=15 & x2=0 & 0<=x3 & 0<=x1-x2<=15 & x1-x3<=15 & x2-x3<=0)"]
+n686 -> n782
+n783 [label="<Transient,Start,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=2 (0<=x1<=15 & 0<=x2 & x3=0 & x1-x2<=15 & 0<=x1-x3<=15 & 0<=x2-x3)"]
+n686 -> n783
+n686 -> n609
+n687 -> n781
+n784 [label="<Free,Stop,Safe,Stop> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)"]
+n688 -> n784
+n689 -> n784
+n785 [label="<Transient,Appr,Safe,Start> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=2 (x1=0 & 0<=x2 & 0<=x3<=15 & x1-x2<=0 & -15<=x1-x3<=0 & -15<=x2-x3)"]
+n690 -> n785
+n786 [label="<Transient,Safe,Appr,Start> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=0,length=2 (0<=x1 & x2=0 & 0<=x3<=15 & 0<=x1-x2 & -15<=x1-x3 & -15<=x2-x3<=0)"]
+n690 -> n786
+n690 -> n615
+n691 -> n34
+n787 [label="<Occ,Cross,Stop,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=0,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n691 -> n787
+n692 -> n787
+n693 -> n36
+n788 [label="<Occ,Cross,Safe,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n693 -> n788
+n694 -> n788
+n789 [label="<Occ,Appr,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=1,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n695 -> n789
+n790 [label="<Occ,Safe,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=1,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n695 -> n790
+n791 [label="<Occ,Safe,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n695 -> n791
+n792 [label="<Occ,Cross,Stop,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=0,length=2 (0<=x1<=5 & 0<=x2 & 0<=x3 & x1-x2<=5 & x1-x3<=5)"]
+n696 -> n792
+n793 [label="<Occ,Cross,Safe,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=2 (0<=x1<=5 & 0<=x2 & 0<=x3 & x1-x2<=5 & x1-x3<=5)"]
+n697 -> n793
+n698 -> n43
+n794 [label="<Occ,Stop,Cross,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=0,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n698 -> n794
+n699 -> n794
+n700 -> n45
+n795 [label="<Occ,Safe,Cross,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=0,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n700 -> n795
+n701 -> n795
+n796 [label="<Occ,Stop,Cross,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2 & x2-x3<=5)"]
+n702 -> n796
+n797 [label="<Occ,Appr,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=1,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n703 -> n797
+n798 [label="<Occ,Safe,Appr,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=2,head=1,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n703 -> n798
+n799 [label="<Occ,Safe,Safe,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n703 -> n799
+n800 [label="<Occ,Safe,Cross,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2 & x2-x3<=5)"]
+n704 -> n800
+n705 -> n52
+n801 [label="<Occ,Stop,Safe,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n705 -> n801
+n706 -> n801
+n707 -> n54
+n802 [label="<Occ,Safe,Stop,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n707 -> n802
+n708 -> n802
+n803 [label="<Occ,Stop,Safe,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3<=5 & -5<=x1-x3 & -5<=x2-x3)"]
+n709 -> n803
+n804 [label="<Occ,Safe,Stop,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3<=5 & -5<=x1-x3 & -5<=x2-x3)"]
+n710 -> n804
+n805 [label="<Occ,Appr,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n711 -> n805
+n806 [label="<Occ,Safe,Appr,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=1,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n711 -> n806
+n807 [label="<Occ,Safe,Safe,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n711 -> n807
+n808 [label="<Free,Stop,Stop,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)"]
+n712 -> n808
+n713 -> n808
+n809 [label="<Transient,Start,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=2 (0<=x1<=15 & x2=0 & 0<=x3 & 0<=x1-x2<=15 & x1-x3<=15 & x2-x3<=0)"]
+n714 -> n809
+n810 [label="<Transient,Start,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=0,length=2 (0<=x1<=15 & 0<=x2 & x3=0 & x1-x2<=15 & 0<=x1-x3<=15 & 0<=x2-x3)"]
+n714 -> n810
+n714 -> n626
+n811 [label="<Free,Stop,Stop,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3)"]
+n715 -> n811
+n716 -> n811
+n812 [label="<Transient,Appr,Start,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=2 (x1=0 & 0<=x2<=15 & 0<=x3 & -15<=x1-x2<=0 & x1-x3<=0 & x2-x3<=15)"]
+n717 -> n812
+n813 [label="<Transient,Safe,Start,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2<=15 & x3=0 & -15<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=15)"]
+n717 -> n813
+n717 -> n629
+n718 -> n34
+n814 [label="<Occ,Cross,Stop,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n718 -> n814
+n719 -> n814
+n720 -> n36
+n815 [label="<Occ,Cross,Safe,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=0,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n720 -> n815
+n721 -> n815
+n816 [label="<Occ,Appr,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=1,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n722 -> n816
+n817 [label="<Occ,Safe,Appr,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n722 -> n817
+n818 [label="<Occ,Safe,Safe,Appr> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n722 -> n818
+n819 [label="<Occ,Cross,Stop,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=2 (0<=x1<=5 & 0<=x2 & 0<=x3 & x1-x2<=5 & x1-x3<=5)"]
+n723 -> n819
+n820 [label="<Occ,Cross,Safe,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=0,length=2 (0<=x1<=5 & 0<=x2 & 0<=x3 & x1-x2<=5 & x1-x3<=5)"]
+n724 -> n820
+n725 -> n43
+n821 [label="<Occ,Stop,Cross,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n725 -> n821
+n726 -> n821
+n727 -> n45
+n822 [label="<Occ,Safe,Cross,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=0,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n727 -> n822
+n728 -> n822
+n823 [label="<Occ,Stop,Cross,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2 & x2-x3<=5)"]
+n729 -> n823
+n824 [label="<Occ,Appr,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n730 -> n824
+n825 [label="<Occ,Safe,Appr,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=1,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n730 -> n825
+n826 [label="<Occ,Safe,Safe,Appr> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n730 -> n826
+n827 [label="<Occ,Safe,Cross,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2<=5 & 0<=x3 & -5<=x1-x2 & x2-x3<=5)"]
+n731 -> n827
+n732 -> n52
+n828 [label="<Occ,Stop,Safe,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n732 -> n828
+n733 -> n828
+n734 -> n54
+n829 [label="<Occ,Safe,Stop,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n734 -> n829
+n735 -> n829
+n830 [label="<Occ,Stop,Safe,Cross> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3<=5 & -5<=x1-x3 & -5<=x2-x3)"]
+n736 -> n830
+n831 [label="<Occ,Safe,Stop,Cross> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3<=5 & -5<=x1-x3 & -5<=x2-x3)"]
+n737 -> n831
+n832 [label="<Occ,Appr,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=1,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n738 -> n832
+n833 [label="<Occ,Safe,Appr,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=1,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n738 -> n833
+n834 [label="<Occ,Safe,Safe,Appr> buffer[0]=3,buffer[1]=3,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n738 -> n834
+n835 [label="<Occ,Start,Stop,Stop> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=2,length=3 (0<=x1<=15 & 0<=x2 & 0<=x3 & x1-x2<=15 & x1-x3<=15)"]
+n739 -> n835
+n739 -> n596
+n836 [label="<Occ,Start,Stop,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=2,length=3 (0<=x1<=15 & 0<=x2 & 0<=x3 & x1-x2<=15 & x1-x3<=15)"]
+n740 -> n836
+n740 -> n592
+n741 -> n776
+n741 -> n777
+n741 -> n642
+n742 -> n779
+n742 -> n780
+n742 -> n643
+n743 -> n38
+n743 -> n39
+n743 -> n40
+n744 -> n48
+n744 -> n49
+n744 -> n50
+n745 -> n58
+n745 -> n59
+n745 -> n60
+n746 -> n782
+n746 -> n783
+n746 -> n646
+n747 -> n785
+n747 -> n786
+n747 -> n648
+n748 -> n789
+n748 -> n790
+n748 -> n791
+n749 -> n797
+n749 -> n798
+n749 -> n799
+n750 -> n805
+n750 -> n806
+n750 -> n807
+n751 -> n809
+n751 -> n810
+n751 -> n651
+n752 -> n812
+n752 -> n813
+n752 -> n652
+n753 -> n816
+n753 -> n817
+n753 -> n818
+n754 -> n824
+n754 -> n825
+n754 -> n826
+n755 -> n832
+n755 -> n833
+n755 -> n834
+n756 -> n776
+n756 -> n777
+n756 -> n663
+n757 -> n779
+n757 -> n780
+n757 -> n664
+n758 -> n38
+n758 -> n39
+n758 -> n40
+n759 -> n48
+n759 -> n49
+n759 -> n50
+n760 -> n58
+n760 -> n59
+n760 -> n60
+n761 -> n782
+n761 -> n783
+n761 -> n667
+n762 -> n785
+n762 -> n786
+n762 -> n669
+n763 -> n789
+n763 -> n790
+n763 -> n791
+n764 -> n797
+n764 -> n798
+n764 -> n799
+n765 -> n805
+n765 -> n806
+n765 -> n807
+n766 -> n809
+n766 -> n810
+n766 -> n672
+n767 -> n812
+n767 -> n813
+n767 -> n673
+n768 -> n816
+n768 -> n817
+n768 -> n818
+n769 -> n824
+n769 -> n825
+n769 -> n826
+n770 -> n832
+n770 -> n833
+n770 -> n834
+n771 -> n688
+n772 -> n685
+n773 -> n715
+n774 -> n712
+n837 [label="<Occ,Safe,Start,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n775 -> n837
+n838 [label="<Occ,Stop,Start,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2<=15 & 0<=x3 & -15<=x1-x2 & x2-x3<=15)"]
+n776 -> n838
+n776 -> n21
+n839 [label="<Occ,Safe,Start,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2<=15 & 0<=x3 & -15<=x1-x2 & x2-x3<=15)"]
+n777 -> n839
+n777 -> n23
+n840 [label="<Occ,Safe,Stop,Start> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n778 -> n840
+n841 [label="<Occ,Stop,Safe,Start> buffer[0]=3,buffer[1]=1,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3<=15 & -15<=x1-x3 & -15<=x2-x3)"]
+n779 -> n841
+n779 -> n28
+n842 [label="<Occ,Safe,Stop,Start> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3<=15 & -15<=x1-x3 & -15<=x2-x3)"]
+n780 -> n842
+n780 -> n30
+n843 [label="<Occ,Start,Safe,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n781 -> n843
+n844 [label="<Occ,Start,Stop,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=0,length=2 (0<=x1<=15 & 0<=x2 & 0<=x3 & x1-x2<=15 & x1-x3<=15)"]
+n782 -> n844
+n782 -> n692
+n845 [label="<Occ,Start,Safe,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=2 (0<=x1<=15 & 0<=x2 & 0<=x3 & x1-x2<=15 & x1-x3<=15)"]
+n783 -> n845
+n783 -> n694
+n846 [label="<Occ,Stop,Safe,Start> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n784 -> n846
+n847 [label="<Occ,Stop,Safe,Start> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3<=15 & -15<=x1-x3 & -15<=x2-x3)"]
+n785 -> n847
+n785 -> n706
+n848 [label="<Occ,Safe,Stop,Start> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=0,length=2 (0<=x1 & 0<=x2 & 0<=x3<=15 & -15<=x1-x3 & -15<=x2-x3)"]
+n786 -> n848
+n786 -> n708
+n849 [label="<Free,Safe,Stop,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n787 -> n849
+n787 -> n64
+n850 [label="<Free,Safe,Safe,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n788 -> n850
+n788 -> n68
+n789 -> n69
+n789 -> n70
+n851 [label="<Occ,Cross,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=1,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n789 -> n851
+n790 -> n72
+n790 -> n73
+n852 [label="<Occ,Safe,Cross,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=1,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n790 -> n852
+n791 -> n75
+n791 -> n76
+n853 [label="<Occ,Safe,Safe,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n791 -> n853
+n792 -> n849
+n792 -> n64
+n793 -> n850
+n793 -> n68
+n854 [label="<Free,Stop,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n794 -> n854
+n794 -> n81
+n795 -> n84
+n855 [label="<Free,Safe,Safe,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n795 -> n855
+n796 -> n854
+n796 -> n81
+n797 -> n86
+n797 -> n87
+n856 [label="<Occ,Cross,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=1,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n797 -> n856
+n798 -> n89
+n798 -> n90
+n857 [label="<Occ,Safe,Cross,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=2,head=1,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n798 -> n857
+n799 -> n92
+n799 -> n93
+n858 [label="<Occ,Safe,Safe,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n799 -> n858
+n800 -> n84
+n800 -> n855
+n801 -> n97
+n859 [label="<Free,Stop,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n801 -> n859
+n802 -> n101
+n860 [label="<Free,Safe,Stop,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n802 -> n860
+n803 -> n97
+n803 -> n859
+n804 -> n101
+n804 -> n860
+n805 -> n103
+n805 -> n104
+n861 [label="<Occ,Cross,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n805 -> n861
+n806 -> n106
+n806 -> n107
+n862 [label="<Occ,Safe,Cross,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=1,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n806 -> n862
+n807 -> n109
+n807 -> n110
+n863 [label="<Occ,Safe,Safe,Cross> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n807 -> n863
+n864 [label="<Occ,Start,Stop,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=2 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n808 -> n864
+n865 [label="<Occ,Start,Stop,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=2 (0<=x1<=15 & 0<=x2 & 0<=x3 & x1-x2<=15 & x1-x3<=15)"]
+n809 -> n865
+n809 -> n719
+n866 [label="<Occ,Start,Safe,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=0,length=2 (0<=x1<=15 & 0<=x2 & 0<=x3 & x1-x2<=15 & x1-x3<=15)"]
+n810 -> n866
+n810 -> n721
+n867 [label="<Occ,Stop,Start,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n811 -> n867
+n868 [label="<Occ,Stop,Start,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2<=15 & 0<=x3 & -15<=x1-x2 & x2-x3<=15)"]
+n812 -> n868
+n812 -> n726
+n869 [label="<Occ,Safe,Start,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=0,length=2 (0<=x1 & 0<=x2<=15 & 0<=x3 & -15<=x1-x2 & x2-x3<=15)"]
+n813 -> n869
+n813 -> n728
+n870 [label="<Free,Safe,Stop,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n814 -> n870
+n814 -> n64
+n871 [label="<Free,Safe,Safe,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n815 -> n871
+n815 -> n68
+n816 -> n69
+n816 -> n70
+n872 [label="<Occ,Cross,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=1,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n816 -> n872
+n817 -> n72
+n817 -> n73
+n873 [label="<Occ,Safe,Cross,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n817 -> n873
+n818 -> n75
+n818 -> n76
+n874 [label="<Occ,Safe,Safe,Cross> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n818 -> n874
+n819 -> n870
+n819 -> n64
+n820 -> n871
+n820 -> n68
+n875 [label="<Free,Stop,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n821 -> n875
+n821 -> n81
+n822 -> n84
+n876 [label="<Free,Safe,Safe,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n822 -> n876
+n823 -> n875
+n823 -> n81
+n824 -> n86
+n824 -> n87
+n877 [label="<Occ,Cross,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n824 -> n877
+n825 -> n89
+n825 -> n90
+n878 [label="<Occ,Safe,Cross,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=1,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n825 -> n878
+n826 -> n92
+n826 -> n93
+n879 [label="<Occ,Safe,Safe,Cross> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n826 -> n879
+n827 -> n84
+n827 -> n876
+n828 -> n97
+n880 [label="<Free,Stop,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n828 -> n880
+n829 -> n101
+n881 [label="<Free,Safe,Stop,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & 0<=x3)"]
+n829 -> n881
+n830 -> n97
+n830 -> n880
+n831 -> n101
+n831 -> n881
+n832 -> n103
+n832 -> n104
+n882 [label="<Occ,Cross,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=1,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n832 -> n882
+n833 -> n106
+n833 -> n107
+n883 [label="<Occ,Safe,Cross,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=1,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n833 -> n883
+n834 -> n109
+n834 -> n110
+n884 [label="<Occ,Safe,Safe,Cross> buffer[0]=3,buffer[1]=3,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n834 -> n884
+n835 -> n682
+n836 -> n679
+n885 [label="<Transient,Appr,Start,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=3 (x1=0 & 0<=x2<=15 & 0<=x3 & -15<=x1-x2<=0 & x1-x3<=0 & x2-x3<=15)"]
+n837 -> n885
+n837 -> n46
+n886 [label="<Transient,Stop,Start,Appr> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=3 (0<=x1 & 0<=x2<=15 & x3=0 & -15<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=15)"]
+n838 -> n886
+n838 -> n44
+n839 -> n885
+n839 -> n46
+n887 [label="<Transient,Appr,Stop,Start> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=3 (x1=0 & 0<=x2 & 0<=x3<=15 & x1-x2<=0 & -15<=x1-x3<=0 & -15<=x2-x3)"]
+n840 -> n887
+n840 -> n55
+n888 [label="<Transient,Stop,Appr,Start> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=3 (0<=x1 & x2=0 & 0<=x3<=15 & 0<=x1-x2 & -15<=x1-x3 & -15<=x2-x3<=0)"]
+n841 -> n888
+n841 -> n53
+n842 -> n887
+n842 -> n55
+n889 [label="<Transient,Start,Appr,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=3 (0<=x1<=15 & x2=0 & 0<=x3 & 0<=x1-x2<=15 & x1-x3<=15 & x2-x3<=0)"]
+n843 -> n889
+n843 -> n788
+n890 [label="<Transient,Start,Stop,Appr> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=3 (0<=x1<=15 & 0<=x2 & x3=0 & x1-x2<=15 & 0<=x1-x3<=15 & 0<=x2-x3)"]
+n844 -> n890
+n844 -> n787
+n845 -> n889
+n845 -> n788
+n846 -> n888
+n846 -> n801
+n847 -> n888
+n847 -> n801
+n848 -> n887
+n848 -> n802
+n891 [label="<Occ,Safe,Start,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=1,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n849 -> n891
+n892 [label="<Occ,Safe,Safe,Start> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n850 -> n892
+n893 [label="<Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=2,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n851 -> n893
+n851 -> n123
+n851 -> n124
+n852 -> n129
+n894 [label="<Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=2,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n852 -> n894
+n852 -> n131
+n853 -> n136
+n853 -> n137
+n895 [label="<Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n853 -> n895
+n896 [label="<Occ,Start,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=1,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n854 -> n896
+n897 [label="<Occ,Safe,Safe,Start> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=1,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n855 -> n897
+n898 [label="<Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=2,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n856 -> n898
+n856 -> n150
+n856 -> n151
+n857 -> n156
+n899 [label="<Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=2,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n857 -> n899
+n857 -> n158
+n858 -> n163
+n858 -> n164
+n900 [label="<Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=2,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n858 -> n900
+n901 [label="<Occ,Start,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=1,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n859 -> n901
+n902 [label="<Occ,Safe,Start,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=1,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n860 -> n902
+n903 [label="<Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n861 -> n903
+n861 -> n177
+n861 -> n178
+n862 -> n183
+n904 [label="<Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=2,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n862 -> n904
+n862 -> n185
+n863 -> n190
+n863 -> n191
+n905 [label="<Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=3,buffer[2]=2,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n863 -> n905
+n864 -> n890
+n864 -> n814
+n865 -> n890
+n865 -> n814
+n866 -> n889
+n866 -> n815
+n867 -> n886
+n867 -> n821
+n868 -> n886
+n868 -> n821
+n869 -> n885
+n869 -> n822
+n906 [label="<Occ,Safe,Start,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=1,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n870 -> n906
+n907 [label="<Occ,Safe,Safe,Start> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n871 -> n907
+n908 [label="<Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=1,buffer[2]=3,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n872 -> n908
+n872 -> n123
+n872 -> n124
+n873 -> n129
+n909 [label="<Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n873 -> n909
+n873 -> n131
+n874 -> n136
+n874 -> n137
+n910 [label="<Free,Safe,Safe,Safe> buffer[0]=1,buffer[1]=3,buffer[2]=3,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n874 -> n910
+n911 [label="<Occ,Start,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=1,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n875 -> n911
+n912 [label="<Occ,Safe,Safe,Start> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=1,length=1 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
+n876 -> n912
+n913 [label="<Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n877 -> n913
+n877 -> n150
+n877 -> n151
+n878 -> n156
+n914 [label="<Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=2,buffer[2]=3,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n878 -> n914
+n878 -> n158
+n879 -> n163
+n879 -> n164
+n915 [label="<Free,Safe,Safe,Safe> buffer[0]=2,buffer[1]=3,buffer[2]=3,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n879 -> n915
+n916 [label="<Occ,Start,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=1,length=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
+n880 -> n916
+n917 [label="<Occ,Safe,Start,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=1,length=1 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n881 -> n917
+n918 [label="<Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=1,buffer[2]=3,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n882 -> n918
+n882 -> n177
+n882 -> n178
+n883 -> n183
+n919 [label="<Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=2,buffer[2]=3,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n883 -> n919
+n883 -> n185
+n884 -> n190
+n884 -> n191
+n920 [label="<Free,Safe,Safe,Safe> buffer[0]=3,buffer[1]=3,buffer[2]=3,head=2,length=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n884 -> n920
+n921 [label="<Occ,Stop,Start,Stop> buffer[0]=2,buffer[1]=3,buffer[2]=1,head=0,length=3 (0<=x1 & 0<=x2<=15 & 0<=x3 & -15<=x1-x2 & x2-x3<=15)"]
+n885 -> n921
+n885 -> n83
+n922 [label="<Occ,Stop,Start,Stop> buffer[0]=2,buffer[1]=1,buffer[2]=3,head=0,length=3 (0<=x1 & 0<=x2<=15 & 0<=x3 & -15<=x1-x2 & x2-x3<=15)"]
+n886 -> n922
+n886 -> n79
+n923 [label="<Occ,Stop,Stop,Start> buffer[0]=3,buffer[1]=2,buffer[2]=1,head=0,length=3 (0<=x1 & 0<=x2 & 0<=x3<=15 & -15<=x1-x3 & -15<=x2-x3)"]
+n887 -> n923
+n887 -> n100
+n924 [label="<Occ,Stop,Stop,Start> buffer[0]=3,buffer[1]=1,buffer[2]=2,head=0,length=3 (0<=x1 & 0<=x2 & 0<=x3<=15 & -15<=x1-x3 & -15<=x2-x3)"]
+n888 -> n924
+n888 -> n96
+n925 [label="<Occ,Start,Stop,Stop> buffer[0]=1,buffer[1]=3,buffer[2]=2,head=0,length=3 (0<=x1<=15 & 0<=x2 & 0<=x3 & x1-x2<=15 & x1-x3<=15)"]
+n889 -> n925
+n889 -> n66
+n926 [label="<Occ,Start,Stop,Stop> buffer[0]=1,buffer[1]=2,buffer[2]=3,head=0,length=3 (0<=x1<=15 & 0<=x2 & 0<=x3 & x1-x2<=15 & x1-x3<=15)"]
+n890 -> n926
+n890 -> n62
+n891 -> n194
+n891 -> n195
+n891 -> n852
+n892 -> n197
+n892 -> n198
+n892 -> n853
+n893 -> n203
+n893 -> n204
+n893 -> n205
+n894 -> n213
+n894 -> n214
+n894 -> n215
+n895 -> n223
+n895 -> n224
+n895 -> n225
+n896 -> n227
+n896 -> n228
+n896 -> n856
+n897 -> n230
+n897 -> n231
+n897 -> n858
+n898 -> n234
+n898 -> n235
+n898 -> n236
+n899 -> n242
+n899 -> n243
+n899 -> n244
+n900 -> n250
+n900 -> n251
+n900 -> n252
+n901 -> n254
+n901 -> n255
+n901 -> n861
+n902 -> n257
+n902 -> n258
+n902 -> n862
+n903 -> n261
+n903 -> n262
+n903 -> n263
+n904 -> n269
+n904 -> n270
+n904 -> n271
+n905 -> n277
+n905 -> n278
+n905 -> n279
+n906 -> n194
+n906 -> n195
+n906 -> n873
+n907 -> n197
+n907 -> n198
+n907 -> n874
+n908 -> n203
+n908 -> n204
+n908 -> n205
+n909 -> n213
+n909 -> n214
+n909 -> n215
+n910 -> n223
+n910 -> n224
+n910 -> n225
+n911 -> n227
+n911 -> n228
+n911 -> n877
+n912 -> n230
+n912 -> n231
+n912 -> n879
+n913 -> n234
+n913 -> n235
+n913 -> n236
+n914 -> n242
+n914 -> n243
+n914 -> n244
+n915 -> n250
+n915 -> n251
+n915 -> n252
+n916 -> n254
+n916 -> n255
+n916 -> n882
+n917 -> n257
+n917 -> n258
+n917 -> n883
+n918 -> n261
+n918 -> n262
+n918 -> n263
+n919 -> n269
+n919 -> n270
+n919 -> n271
+n920 -> n277
+n920 -> n278
+n920 -> n279
+n921 -> n142
+n922 -> n139
+n923 -> n169
+n924 -> n166
+n925 -> n115
+n926 -> n112
+}
