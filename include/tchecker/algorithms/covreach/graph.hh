@@ -52,7 +52,7 @@ namespace tchecker {
        \post this node has been built from sargs and is active and unprotected
        */
       template <class ... SARGS>
-      explicit node_t(SARGS && ... sargs) : STATE(std::forward<SARGS>(sargs)...), _protected(0)
+      explicit node_t(SARGS && ... sargs) : STATE(std::forward<SARGS>(sargs)...), _protected(0), _identifier(0)
       {}
       
       /*!
@@ -104,10 +104,17 @@ namespace tchecker {
        */
       std::size_t identifier() const
       {
-        return reinterpret_cast<std::size_t>(this);
+        //return reinterpret_cast<std::size_t>(this);
+        return _identifier;
+      }
+
+      void set_identifier(size_t id)
+      {
+        _identifier = id;
       }
     protected:
       unsigned char _protected : 1;   /*!< Protected node flag */
+      size_t _identifier;
     };
     
   } // end of namespace covreach
@@ -441,7 +448,8 @@ namespace tchecker {
                                                            std::forward<node_to_key_t>(node_to_key),
                                                            std::forward<node_binary_predicate_t>(le_node)),
       _ts_allocator(std::forward<std::tuple<ARGS...>>(ts_alloc_args)),
-      _edge_allocator(block_size, tchecker::allocation_size_t<edge_t>::alloc_size())
+      _edge_allocator(block_size, tchecker::allocation_size_t<edge_t>::alloc_size()),
+      _node_ids(0)
       {
         _ts_allocator.enroll(gc);
         _edge_allocator.enroll(gc);
@@ -536,6 +544,7 @@ namespace tchecker {
           n->make_protected();
           _root_nodes.push_back(n);
         }
+        n->set_identifier (++_node_ids);
       }
       
       /*!
@@ -706,6 +715,7 @@ namespace tchecker {
       {
         return tchecker::graph::cover::graph_t<node_ptr_t, key_t>::nodes_count();
       }
+
       using const_iterator_t = typename tchecker::graph::cover::graph_t<node_ptr_t, key_t>::const_iterator_t;
 
       const_iterator_t begin () const {
@@ -715,6 +725,7 @@ namespace tchecker {
       const_iterator_t end () const {
         return tchecker::graph::cover::graph_t<node_ptr_t, key_t>::end ();
       }
+
     private:
       /*!
        \brief Connection predicate
@@ -727,10 +738,11 @@ namespace tchecker {
         auto out_edges = outgoing_edges(n);
         return ((in_edges.begin() != in_edges.end()) || (out_edges.begin() != out_edges.end()));
       }
-      
+
       std::vector<node_ptr_t> _root_nodes;         /*!< Root nodes */
       TS_ALLOCATOR _ts_allocator;                  /*!< Transition system allocator */
       tchecker::pool_t<edge_t> _edge_allocator;    /*!< Allocator of edges */
+      size_t _node_ids;                            /*!< incremented counter to identify node */
     };
     
   } // end of namespace covreach
