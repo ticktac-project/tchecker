@@ -257,7 +257,7 @@ namespace tchecker {
         
         if (options.output_format() == tchecker::covreach::options_t::DOT) {
           tchecker::covreach::dot_outputter_t<typename ALGORITHM_MODEL::node_outputter_t>
-          dot_outputter(ALGORITHM_MODEL::node_outputter_args(model));
+          dot_outputter(false, ALGORITHM_MODEL::node_outputter_args(model));
           dot_outputter.template output<graph_t, tchecker::instrusive_shared_ptr_hash_t>(options.output_stream(),
                                                                                          graph,
                                                                                          model.system().name());

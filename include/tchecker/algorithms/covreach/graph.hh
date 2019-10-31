@@ -706,6 +706,15 @@ namespace tchecker {
       {
         return tchecker::graph::cover::graph_t<node_ptr_t, key_t>::nodes_count();
       }
+      using const_iterator_t = typename tchecker::graph::cover::graph_t<node_ptr_t, key_t>::const_iterator_t;
+
+      const_iterator_t begin () const {
+        return tchecker::graph::cover::graph_t<node_ptr_t, key_t>::begin ();
+      }
+
+      const_iterator_t end () const {
+        return tchecker::graph::cover::graph_t<node_ptr_t, key_t>::end ();
+      }
     private:
       /*!
        \brief Connection predicate
