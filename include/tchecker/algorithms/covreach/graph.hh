@@ -104,7 +104,6 @@ namespace tchecker {
        */
       std::size_t identifier() const
       {
-        //return reinterpret_cast<std::size_t>(this);
         return _identifier;
       }
 
@@ -114,7 +113,7 @@ namespace tchecker {
       }
     protected:
       unsigned char _protected : 1;   /*!< Protected node flag */
-      size_t _identifier;
+      std::size_t _identifier;
     };
     
   } // end of namespace covreach
@@ -742,7 +741,7 @@ namespace tchecker {
       std::vector<node_ptr_t> _root_nodes;         /*!< Root nodes */
       TS_ALLOCATOR _ts_allocator;                  /*!< Transition system allocator */
       tchecker::pool_t<edge_t> _edge_allocator;    /*!< Allocator of edges */
-      size_t _node_ids;                            /*!< incremented counter to identify node */
+      std::size_t _node_ids;                       /*!< incremented counter to identify node */
     };
     
   } // end of namespace covreach
