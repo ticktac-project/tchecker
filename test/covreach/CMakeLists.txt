@@ -11,6 +11,9 @@ endif()
 
 set(PARSE_LABELS_SH "${CMAKE_CURRENT_SOURCE_DIR}/parse-labels.sh")
 
+# Max number of lines for DOT results
+set(DOT_MAX_SIZE 2000)
+
 # Elements of INPUTS are colon-separated lists. The first element of each
 # list is a test-case script located in ${EXAMPLES_DIR}; the tail of the list
 # contains arguments passed to the generator script.
@@ -32,11 +35,9 @@ set(INPUTS
 set(ACCEPT_TEST_REGEX "")
 set(REJECT_TEST_REGEX "^.*inclusion.*NOextra.*$")
 
-# dot format is disabled because generated graphs use addresses of states as
-# node identifiers
 set(COVREACH_OUTPUT_FORMATS
     raw
-    #dot
+    dot
     )
 
 set(COVREACH_SEARCH_ORDERS
@@ -118,6 +119,7 @@ foreach (inputfile ${COVREACH_INPUT_FILES})
 
                             tck_add_test_envvar(testenv TEST "${PARSE_LABELS_SH}")
                             tck_add_test_envvar(testenv TEST_ARGS "${TCHECKER} covreach -c ${cover} -f ${outformat} -m ${model} -s ${so} -S ${labels} ${inputfile}")
+                            tck_add_test_envvar(testenv DOT_MAX_SIZE "${DOT_MAX_SIZE}")
                             tck_set_test_env(${TEST_NAME} testenv)
                             unset(testenv)
                             math(EXPR nb_tests "${nb_tests}+1")
