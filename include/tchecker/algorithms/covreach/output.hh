@@ -9,6 +9,7 @@
 #define TCHECKER_ALGORITHMS_COVREACH_OUTPUT_HH
 
 #include <iostream>
+#include <iomanip>
 #include <stack>
 #include <tuple>
 #include <unordered_set>
@@ -89,17 +90,17 @@ namespace tchecker {
         using node_ptr_t = typename GRAPH::node_ptr_t;
         using edge_ptr_t = typename GRAPH::edge_ptr_t;
 
-        os << "digraph " << name << " {" << std::endl;
-        os << "node [shape=\"box\",style=\"rounded\"];" << std::endl;
+        auto cmp = [](node_ptr_t const &p1, node_ptr_t const &p2) {
+          return p1->identifier() < p2->identifier();
+        };
 
+        std::set<node_ptr_t, decltype (cmp)> nodes(cmp);
         if (_all_nodes)
           {
             using const_iterator_t = typename GRAPH::const_iterator_t;
 
             for (const_iterator_t ni = g.begin (); ni != g.end (); ++ni)
-              {
-                output_node (os, g, *ni);
-              }
+              nodes.insert(*ni);
           }
         else
           {
@@ -117,7 +118,7 @@ namespace tchecker {
               {
                 node_ptr_t n = waiting.top ();
                 waiting.pop ();
-                output_node (os, g, n);
+                nodes.insert(n);
 
                 auto outgoing_edges = g.outgoing_edges (n);
                 for (edge_ptr_t const &e : outgoing_edges)
@@ -133,6 +134,12 @@ namespace tchecker {
               }
             passed.clear();
           }
+
+        os << "digraph " << name << " {" << std::endl;
+        os << "node [shape=\"box\",style=\"rounded\"];" << std::endl;
+        for(auto n : nodes) {
+          output_node (os, g, n);
+        }
         os << "}" << std::endl;
 
         os.flush();
@@ -144,12 +151,22 @@ namespace tchecker {
       template <class GRAPH, class NODEPTR=typename GRAPH::node_ptr_t>
       void output_node(std::ostream & os, GRAPH const &g, NODEPTR const &n)
       {
+        using edge_ptr_t = typename GRAPH::edge_ptr_t;
+
         os << "n" << n->identifier() << " [label=\"";
         _node_outputter.output(os, *n);
         os << "\"]" << std::endl;
 
+        auto cmp = [&g](edge_ptr_t const &e1, edge_ptr_t const &e2) {
+            return g.edge_tgt(e1)->identifier() < g.edge_tgt(e2)->identifier();
+        };
+
+        std::set<edge_ptr_t, decltype (cmp)> edges(cmp);
         auto outgoing_edges = g.outgoing_edges(n);
-        for(typename GRAPH::edge_ptr_t const &e : outgoing_edges)
+        for(edge_ptr_t const &e : outgoing_edges)
+          edges.insert(e);
+
+        for(edge_ptr_t const &e : edges)
           {
             NODEPTR const &src = g.edge_src(e);
             NODEPTR const &tgt = g.edge_tgt(e);

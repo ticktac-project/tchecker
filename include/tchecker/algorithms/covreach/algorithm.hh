@@ -75,7 +75,7 @@ namespace tchecker {
        depends on the policy implemented by WAITING.
        The algorithms stops when an accepting node has been found, or when the graph has been entirely
        visited.
-       \return ACCEPTING if TS has an accepting run, NON_ACCEPTING otherwise
+       \return REACHABLE if TS has an accepting run, UNREACHABLE otherwise
        \note this algorithm may not terminate if graph is not finite
        */
       std::tuple<enum tchecker::covreach::outcome_t, tchecker::covreach::stats_t>
