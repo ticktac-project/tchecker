@@ -55,6 +55,12 @@ namespace tchecker {
     }
     
     
+    int zone_t::lexical_cmp(tchecker::offset_dbm::zone_t const & zone) const
+    {
+      return tchecker::offset_dbm::lexical_cmp(dbm_ptr(), _dim, zone.dbm_ptr(), zone._dim);
+    }
+  
+    
     std::size_t zone_t::hash() const
     {
       return tchecker::offset_dbm::hash(dbm_ptr(), _dim);

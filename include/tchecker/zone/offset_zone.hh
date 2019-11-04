@@ -53,6 +53,14 @@ namespace tchecker {
     bool operator<= (/* actual zone type */ const & zone) const;
     
     /*!
+     \brief Lexical ordering
+     \param zone : a zone
+     \return 0 if this and zone are equal, a negative value if this is smalelr than zone w.r.t.t lexical ordering on the clock constraints,
+     a positive value otherwise
+     */
+    int lexical_cmp(/* actual zone type */ const & zone) const;
+    
+    /*!
      \brief Accessor
      \return hash code for this zone
      */

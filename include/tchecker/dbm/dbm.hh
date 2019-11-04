@@ -540,7 +540,7 @@ namespace tchecker {
      \param os : output stream
      \param dbm : a dbm
      \param dim : dimension of dbm
-     \oaram clock_name : map from clock IDs to strings
+     \param clock_name : map from clock IDs to strings
      \pre dbm is not nullptr (checked by assertion)
      dbm is a dim*dim array of difference bounds
      dim >= 1 (checked by assertion).
@@ -551,6 +551,21 @@ namespace tchecker {
      */
     std::ostream & output(std::ostream & os, tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim,
                           std::function<std::string(tchecker::clock_id_t)> clock_name);
+
+    /*!
+     \brief Lexical ordering
+     \param dbm1 : first dbm
+     \param dim1 : dimension of dbm1
+     \param dbm2 : second dbm
+     \param dim2 : dimension of dbm2
+     \pre dbm1 and dbm2 are ot nullptr (checked by assertion)
+     dbm1 is a dim1*dim1 array of difference bounds
+     dbm2 is a dim2*dim2 array of difference bounds
+     dim1 >= 1 and dim2 >= 1 (checked by assertion)
+     \return 0 if dbm1 and dbm2 are equal, a negative value if dbm1 is smaller than dbm2 w.r.t. lexical ordering, and a positive value otherwise
+     */
+    int lexical_cmp(tchecker::dbm::db_t const * dbm1, tchecker::clock_id_t dim1,
+                    tchecker::dbm::db_t const * dbm2, tchecker::clock_id_t dim2);
     
   } // end of namespace dbm
   

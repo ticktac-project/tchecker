@@ -117,8 +117,9 @@ namespace tchecker {
        valuation and equal zone, false otherwise
        */
       template <class VLOC, class INTVARS_VAL, class ZONE, class VLOC_PTR, class INTVARS_VAL_PTR, class ZONE_PTR>
-      bool operator== (tchecker::zg::details::state_t<VLOC, INTVARS_VAL, ZONE, VLOC_PTR, INTVARS_VAL_PTR, ZONE_PTR> const & s1,
-                       tchecker::zg::details::state_t<VLOC, INTVARS_VAL, ZONE, VLOC_PTR, INTVARS_VAL_PTR, ZONE_PTR> const & s2)
+      bool operator==
+      (tchecker::zg::details::state_t<VLOC, INTVARS_VAL, ZONE, VLOC_PTR, INTVARS_VAL_PTR, ZONE_PTR> const & s1,
+       tchecker::zg::details::state_t<VLOC, INTVARS_VAL, ZONE, VLOC_PTR, INTVARS_VAL_PTR, ZONE_PTR> const & s2)
       {
         return (tchecker::ta::details::operator==(s1, s2) && (s1.zone() == s2.zone()));
       }
@@ -132,8 +133,9 @@ namespace tchecker {
        valuation, and equal zone, true otherwise
        */
       template <class VLOC, class INTVARS_VAL, class ZONE, class VLOC_PTR, class INTVARS_VAL_PTR, class ZONE_PTR>
-      bool operator!= (tchecker::zg::details::state_t<VLOC, INTVARS_VAL, ZONE, VLOC_PTR, INTVARS_VAL_PTR, ZONE_PTR> const & s1,
-                       tchecker::zg::details::state_t<VLOC, INTVARS_VAL, ZONE, VLOC_PTR, INTVARS_VAL_PTR, ZONE_PTR> const & s2)
+      bool operator!=
+      (tchecker::zg::details::state_t<VLOC, INTVARS_VAL, ZONE, VLOC_PTR, INTVARS_VAL_PTR, ZONE_PTR> const & s1,
+       tchecker::zg::details::state_t<VLOC, INTVARS_VAL, ZONE, VLOC_PTR, INTVARS_VAL_PTR, ZONE_PTR> const & s2)
       {
         return (! (s1 == s2));
       }
@@ -145,7 +147,8 @@ namespace tchecker {
        \return Hash value for state s
        */
       template <class VLOC, class INTVARS_VAL, class ZONE, class VLOC_PTR, class INTVARS_VAL_PTR, class ZONE_PTR>
-      std::size_t hash_value(tchecker::zg::details::state_t<VLOC, INTVARS_VAL, ZONE, VLOC_PTR, INTVARS_VAL_PTR, ZONE_PTR> const & s)
+      std::size_t hash_value
+      (tchecker::zg::details::state_t<VLOC, INTVARS_VAL, ZONE, VLOC_PTR, INTVARS_VAL_PTR, ZONE_PTR> const & s)
       {
         std::size_t h = tchecker::ta::details::hash_value(s);
         boost::hash_combine(h, s.zone().hash());
@@ -155,6 +158,28 @@ namespace tchecker {
     } // end of namespace details
     
   } // end of namespace zg
+  
+  
+  /*!
+   \brief Lexical ordering on zone graph states
+   \param s1 : first state
+   \param s2 : second state
+   \return 0 if s1 and s2 are equal, a negative value if s1 is smaller than s2 w.r.t. lexical ordering on tuple of locations, then intger valuation,
+   then zone, a positive value otherwise
+   */
+  template <class VLOC, class INTVARS_VAL, class ZONE, class VLOC_PTR, class INTVARS_VAL_PTR, class ZONE_PTR>
+  int lexical_cmp
+  (tchecker::zg::details::state_t<VLOC, INTVARS_VAL, ZONE, VLOC_PTR, INTVARS_VAL_PTR, ZONE_PTR> const & s1,
+   tchecker::zg::details::state_t<VLOC, INTVARS_VAL, ZONE, VLOC_PTR, INTVARS_VAL_PTR, ZONE_PTR> const & s2)
+  {
+    using ta_state_t = tchecker::ta::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR>;
+    int ta_lexical_cmp = tchecker::lexical_cmp(static_cast<ta_state_t const &>(s1),
+                                               static_cast<ta_state_t const &>(s2));
+    if (ta_lexical_cmp != 0)
+      return ta_lexical_cmp;
+    return s1.zone().lexical_cmp(s2.zone());
+  }
+  
   
 } // end of namespace tchecker
 

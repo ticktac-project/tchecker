@@ -14,4 +14,5 @@
 #include "test-guard_weak_sync.hh"
 #include "test-offset_clock_variables.hh"
 #include "test-offset_dbm.hh"
+#include "test-ordering.hh"
 #include "test-variables-access.hh"

@@ -6,6 +6,7 @@
  */
 
 #include "tchecker/dbm/offset_dbm.hh"
+#include "tchecker/utils/ordering.hh"
 
 #define DBM(i,j)         dbm[(i)*dim+(j)]
 #define OFFSET_DBM(i,j)  offset_dbm[(i)*offset_dim+(j)]
@@ -353,6 +354,19 @@ namespace tchecker {
       os << ")";
       
       return os;
+    }
+
+
+    int lexical_cmp(tchecker::dbm::db_t const * offset_dbm1, tchecker::clock_id_t offset_dim1,
+                    tchecker::dbm::db_t const * offset_dbm2, tchecker::clock_id_t offset_dim2)
+    {
+      assert(offset_dbm1 != nullptr);
+      assert(offset_dbm2 != nullptr);
+      assert(offset_dim1 >= 1);
+      assert(offset_dim2 >= 1);
+      return tchecker::lexical_cmp(offset_dbm1, offset_dbm1 + offset_dim1 * offset_dim1,
+                                   offset_dbm2, offset_dbm2 + offset_dim2 * offset_dim2,
+                                   tchecker::dbm::db_cmp);
     }
     
   } // end of namespace offset_dbm

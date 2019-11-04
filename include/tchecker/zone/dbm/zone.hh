@@ -100,6 +100,14 @@ namespace tchecker {
                   tchecker::clockbounds::map_t const & u) const;
       
       /*!
+       \brief Lexical ordering
+       \param zone : a zone
+       \return 0 if this and zone are equal, a negative value if this is smaller than zone w.r.t. lexical ordering on the clock constraints,
+       a positive value otherwise
+       */
+      int lexical_cmp(tchecker::dbm::zone_t const & zone) const;
+      
+      /*!
        \brief Accessor
        \return hash code for this zone
        */

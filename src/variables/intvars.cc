@@ -8,6 +8,7 @@
 #include <sstream>
 #include <stdexcept>
 
+#include "tchecker/utils/ordering.hh"
 #include "tchecker/variables/intvars.hh"
 
 namespace tchecker {
@@ -57,6 +58,16 @@ namespace tchecker {
     std::stringstream sstream;
     output(sstream, intvars_val, index);
     return sstream.str();
+  }
+  
+  
+  int lexical_cmp(tchecker::intvars_valuation_t const & intvars_val1,
+                  tchecker::intvars_valuation_t const & intvars_val2)
+  {
+    return tchecker::lexical_cmp(intvars_val1.begin(), intvars_val1.end(),
+                                 intvars_val2.begin(), intvars_val2.end(),
+                                 [] (tchecker::integer_t i1, tchecker::integer_t i2) -> int
+                                 { return (i1 < i2 ? -1 : (i1 == i2 ? 0 : 1)); });
   }
   
 } // end of namespace tchecker

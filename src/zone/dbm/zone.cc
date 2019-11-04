@@ -90,6 +90,12 @@ namespace tchecker {
     }
     
     
+    int zone_t::lexical_cmp(tchecker::dbm::zone_t const & zone) const
+    {
+      return tchecker::dbm::lexical_cmp(dbm_ptr(), _dim, zone.dbm_ptr(), zone._dim);
+    }
+    
+    
     std::size_t zone_t::hash() const
     {
       return tchecker::dbm::hash(dbm_ptr(), _dim);

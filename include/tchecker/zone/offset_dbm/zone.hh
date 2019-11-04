@@ -76,6 +76,14 @@ namespace tchecker {
       bool operator<= (tchecker::offset_dbm::zone_t const & zone) const;
       
       /*!
+       \brief Lexical ordering
+       \param zone : a zone
+       \return 0 if this and zone are equal, a negative value if this is smalelr than zone w.r.t.t lexical ordering on the clock constraints,
+       a positive value otherwise
+       */
+      int lexical_cmp(tchecker::offset_dbm::zone_t const & zone) const;
+      
+      /*!
        \brief Accessor
        \return hash code for this zone
        */
@@ -198,6 +206,15 @@ namespace tchecker {
     {
       return zone.hash();
     }
+
+
+    /*!
+     \brief Lexical ordering
+     \param zone1 : first zone
+     \param zone2 : second zone
+     \return 0 if zone1 and zone2 are equal, a negative value if zone1 is smaller than zone2 w.r.t. lexical ordering, a positive value otherwise
+     */
+    int lexical_cmp(tchecker::offset_dbm::zone_t const & zone1, tchecker::offset_dbm::zone_t const & zone2);
     
   } // end of namespace offset_dbm
   

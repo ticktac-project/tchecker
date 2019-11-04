@@ -65,6 +65,19 @@ namespace tchecker {
     
   } // end of namespace ts
   
+  
+  
+  /*!
+   \brief Lexical ordering on transition system states
+   \param s1 : first state
+   \param s2 : second state
+   \return 0 (all states are equal)
+   */
+  constexpr inline int lexical_cmp(tchecker::ts::state_t const & s1, tchecker::ts::state_t const & s2)
+  {
+    return 0;
+  }
+  
 } // end of namespace tchecker
 
 #endif // TCHECKER_TS_STATE_HH

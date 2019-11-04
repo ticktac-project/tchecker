@@ -11,6 +11,7 @@ ${TCHECKER_INCLUDE_DIR}/tchecker/utils/gc.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/utils/index.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/utils/iterator.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/utils/log.hh
+${TCHECKER_INCLUDE_DIR}/tchecker/utils/ordering.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/utils/pool.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/utils/shared_objects.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/utils/singleton_pool.hh

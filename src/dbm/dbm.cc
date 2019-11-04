@@ -14,6 +14,7 @@
 #endif
 
 #include "tchecker/dbm/dbm.hh"
+#include "tchecker/utils/ordering.hh"
 
 namespace tchecker {
   
@@ -828,6 +829,19 @@ namespace tchecker {
       os << ")";
       
       return os;
+    }
+
+
+    int lexical_cmp(tchecker::dbm::db_t const * dbm1, tchecker::clock_id_t dim1,
+                    tchecker::dbm::db_t const * dbm2, tchecker::clock_id_t dim2)
+    {
+      assert(dbm1 != nullptr);
+      assert(dbm2 != nullptr);
+      assert(dim1 >= 1);
+      assert(dim2 >= 1);
+      return tchecker::lexical_cmp(dbm1, dbm1 + dim1 * dim1,
+                                   dbm2, dbm2 + dim2 * dim2,
+                                   tchecker::dbm::db_cmp);
     }
     
   } // end of namespace dbm

@@ -11,8 +11,10 @@
 #include <functional>
 #include <sstream>
 
+#include "tchecker/basictypes.hh"
 #include "tchecker/utils/allocation_size.hh"
 #include "tchecker/utils/array.hh"
+#include "tchecker/utils/ordering.hh"
 
 /*!
  \file vloc.hh
@@ -219,6 +221,27 @@ namespace tchecker {
     std::stringstream sstream;
     tchecker::output(sstream, vloc);
     return sstream.str();
+  }
+  
+  
+  
+  
+  /*!
+   \brief Lexical ordering
+   \param vloc1 : first tuple of locations
+   \param vloc2 : second tuple of locations
+   \return 0 if vloc1 and vloc2 are equal, a negative value if vloc1 is smaller than vloc2 w.r.t. lexical ordering, and a positive value otherwise
+   */
+  template <class LOC>
+  int lexical_cmp(tchecker::vloc_t<LOC> const & vloc1, tchecker::vloc_t<LOC> const & vloc2)
+  {
+    return tchecker::lexical_cmp
+    (vloc1.begin(), vloc1.end(), vloc2.begin(), vloc2.end(),
+     [] (LOC const * loc1, LOC const * loc2) -> int
+     {
+      tchecker::loc_id_t id1 = loc1->id(), id2 = loc2->id();
+      return (id1 < id2 ? -1 : (id1 == id2 ? 0 : 1));
+    });
   }
   
 } // end of namespace tchecker

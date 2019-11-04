@@ -149,6 +149,17 @@ namespace tchecker {
     {
       return (db1 > db2 ? db1 : db2);
     }
+
+    /*!
+     \brief Comparison of difference bounds
+     \param db1 : a difference bound
+     \param db2 : a difference bound
+     \return 0 if db1 and db2 are equal, a negative value if db1 is smaller than db2, a positive value otherwise
+     */
+    inline int db_cmp(tchecker::dbm::db_t db1, tchecker::dbm::db_t db2)
+    {
+      return (db1 < db2 ? -1 : (db1 == db2 ? 0 : 1));
+    }
     
     /*!
      \brief Accessor

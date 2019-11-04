@@ -343,6 +343,17 @@ namespace tchecker {
   std::string to_string(tchecker::intvars_valuation_t const & intvars_val,
                         tchecker::intvar_index_t const & index);
   
+  
+  /*!
+   \brief Lexical ordering on integer valuations
+   \param intvars_val1 : first integer variable valuation
+   \param intvars_val2 : second integer variable valuation
+   \return 0 if intvars_val1 and intvars_val2 are equal, a negative value if intvars_val1 is smaller than intvars_val2 w.r.t. lexical ordering, and
+   a positive value otherwise.
+   */
+  int lexical_cmp(tchecker::intvars_valuation_t const & intvars_val1,
+                  tchecker::intvars_valuation_t const & intvars_val2);
+  
 } // end of namespace tchecker
 
 #endif // TCHECKER_INTVARS_HH

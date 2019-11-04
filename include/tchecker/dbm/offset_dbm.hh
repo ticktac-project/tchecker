@@ -409,6 +409,22 @@ namespace tchecker {
      */
     std::ostream & output(std::ostream & os, tchecker::dbm::db_t const * offset_dbm, tchecker::clock_id_t offset_dim,
                           std::function<std::string(tchecker::clock_id_t)> clock_name);
+
+
+    /*!
+     \brief Lexical ordering
+     \param offset_dbm1 : first offset dbm
+     \param offset_dim1 : dimension of offset_dbm1
+     \param offset_dbm2 : second offset_dbm
+     \param offset_dim2 : dimension of offset_dbm2
+     \pre offset_dbm1 and offset_dbm2 are ot nullptr (checked by assertion)
+     offset_dbm1 is a offset_dim1*offset_dim1 array of difference bounds
+     offset_dbm2 is a offset_dim2*offset_dim2 array of difference bounds
+     offset_dim1 >= 1 and offset_dim2 >= 1 (checked by assertion)
+     \return 0 if offset_dbm1 and offset_dbm2 are equal, a negative value if offset_dbm1 is smaller than offset_dbm2 w.r.t. lexical ordering, and a positive value otherwise
+     */
+    int lexical_cmp(tchecker::dbm::db_t const * offset_dbm1, tchecker::clock_id_t offset_dim1,
+                    tchecker::dbm::db_t const * offset_dbm2, tchecker::clock_id_t offset_dim2);
     
   } // end of namespace offset_dbm
   

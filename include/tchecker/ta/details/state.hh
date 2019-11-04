@@ -83,6 +83,24 @@ namespace tchecker {
     
   } // end of namespace ta
   
+  
+  
+  /*!
+   \brief Lexical ordering on TA states
+   \param s1 : first state
+   \param s2 : second state
+   \return 0 is s1 and s2 are equal, a negative value if s1 is smaller than s2 w.r.t. lexical ordering on tuple of locations then integer variables
+   valuation,, and a positive value otherwise
+   */
+  template <class VLOC, class INTVARS_VAL, class VLOC_PTR, class INTVARS_VAL_PTR>
+  inline
+  int lexical_cmp (tchecker::ta::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR> const & s1,
+                   tchecker::ta::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR> const & s2)
+  {
+    using fsm_state_t = tchecker::fsm::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR>;
+    return tchecker::lexical_cmp(static_cast<fsm_state_t const &>(s1), static_cast<fsm_state_t const &>(s2));
+  }
+  
 } // end of namespace tchecker
 
 #endif // TCHECKER_TA_DETAILS_STATE_HH

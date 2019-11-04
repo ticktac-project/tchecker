@@ -25,6 +25,7 @@ set(TEST_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/test-guard_weak_sync.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-offset_clock_variables.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-offset_dbm.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/test-ordering.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-variables-access.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/unittest.cc
     )

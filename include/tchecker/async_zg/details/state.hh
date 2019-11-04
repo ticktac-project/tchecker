@@ -37,8 +37,7 @@ namespace tchecker {
       class VLOC_PTR, class INTVARS_VAL_PTR, class OFFSET_ZONE_PTR, class SYNC_ZONE_PTR>
       class state_t : public tchecker::ta::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR> {
         using this_state_t
-        = tchecker::async_zg::details::state_t<VLOC, INTVARS_VAL, OFFSET_ZONE, SYNC_ZONE, VLOC_PTR, INTVARS_VAL_PTR,
-        OFFSET_ZONE_PTR, SYNC_ZONE_PTR>;
+        = tchecker::async_zg::details::state_t<VLOC, INTVARS_VAL, OFFSET_ZONE, SYNC_ZONE, VLOC_PTR, INTVARS_VAL_PTR, OFFSET_ZONE_PTR, SYNC_ZONE_PTR>;
       public:
         /*!
          \brief Type of offset zone
@@ -207,6 +206,30 @@ namespace tchecker {
     } // end of namespace details
     
   } // end of namespace async_zg
+  
+  
+  /*!
+   \brief Lexical ordering on asynchronous zone graph states
+   \param s1 : first state
+   \param s2 : second state
+   \return 0 if s1 and s2 are equal, a negative value if s1 is smaller than s2 w.r.t. lexical ordering on tuple of locations, then intger valuation,
+   then zone, a positive value otherwise
+   */
+  template <class VLOC, class INTVARS_VAL, class OFFSET_ZONE, class SYNC_ZONE,
+  class VLOC_PTR, class INTVARS_VAL_PTR, class OFFSET_ZONE_PTR, class SYNC_ZONE_PTR>
+  int lexical_cmp
+  (tchecker::async_zg::details::state_t<VLOC, INTVARS_VAL, OFFSET_ZONE, SYNC_ZONE,
+   VLOC_PTR, INTVARS_VAL_PTR, OFFSET_ZONE_PTR, SYNC_ZONE_PTR> const & s1,
+   tchecker::async_zg::details::state_t<VLOC, INTVARS_VAL, OFFSET_ZONE, SYNC_ZONE,
+   VLOC_PTR, INTVARS_VAL_PTR, OFFSET_ZONE_PTR, SYNC_ZONE_PTR> const & s2)
+  {
+    using ta_state_t = tchecker::ta::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR>;
+    int ta_lexical_cmp = tchecker::lexical_cmp(static_cast<ta_state_t const &>(s1),
+                                               static_cast<ta_state_t const &>(s2));
+    if (ta_lexical_cmp != 0)
+      return ta_lexical_cmp;
+    return s1.offset_zone().lexical_cmp(s2.offset_zone());
+  }
   
 } // end of namespace tchecker
 
