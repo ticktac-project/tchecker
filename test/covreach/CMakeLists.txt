@@ -12,7 +12,7 @@ endif()
 set(PARSE_LABELS_SH "${CMAKE_CURRENT_SOURCE_DIR}/parse-labels.sh")
 
 # Max number of lines for DOT results
-set(DOT_MAX_SIZE 2000)
+set(DOT_MAX_SIZE 20000)
 
 # Elements of INPUTS are colon-separated lists. The first element of each
 # list is a test-case script located in ${EXAMPLES_DIR}; the tail of the list
