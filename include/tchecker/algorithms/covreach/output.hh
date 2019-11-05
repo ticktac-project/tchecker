@@ -16,6 +16,7 @@
 
 #include "tchecker/algorithms/covreach/graph.hh"
 #include "tchecker/utils/shared_objects.hh"
+#include "tchecker/utils/ordering.hh"
 
 /*!
  \file output.hh
@@ -91,10 +92,12 @@ namespace tchecker {
         using edge_ptr_t = typename GRAPH::edge_ptr_t;
 
         auto cmp = [](node_ptr_t const &p1, node_ptr_t const &p2) {
-          return p1->identifier() < p2->identifier();
+          return tchecker::lexical_cmp(*p1, *p2) < 0;
         };
 
         std::set<node_ptr_t, decltype (cmp)> nodes(cmp);
+        std::map<node_ptr_t, std::size_t, decltype (cmp)> index(cmp);
+
         if (_all_nodes)
           {
             using const_iterator_t = typename GRAPH::const_iterator_t;
@@ -138,7 +141,10 @@ namespace tchecker {
         os << "digraph " << name << " {" << std::endl;
         os << "node [shape=\"box\",style=\"rounded\"];" << std::endl;
         for(auto n : nodes) {
-          output_node (os, g, n);
+          index.emplace(n, index.size() + 1);
+        }
+        for(auto n : nodes) {
+          output_node (os, g, n, index);
         }
         os << "}" << std::endl;
 
@@ -148,17 +154,18 @@ namespace tchecker {
         return os;
       }
     private:
-      template <class GRAPH, class NODEPTR=typename GRAPH::node_ptr_t>
-      void output_node(std::ostream & os, GRAPH const &g, NODEPTR const &n)
+      template <class GRAPH, class NODEPTR=typename GRAPH::node_ptr_t, class MAP>
+      void output_node(std::ostream & os, GRAPH const &g, NODEPTR const &n,
+                       MAP const &index)
       {
         using edge_ptr_t = typename GRAPH::edge_ptr_t;
 
-        os << "n" << n->identifier() << " [label=\"";
+        os << "n" << index.at(n) << " [label=\"";
         _node_outputter.output(os, *n);
         os << "\"]" << std::endl;
 
         auto cmp = [&g](edge_ptr_t const &e1, edge_ptr_t const &e2) {
-            return g.edge_tgt(e1)->identifier() < g.edge_tgt(e2)->identifier();
+            return tchecker::lexical_cmp(*(g.edge_tgt(e1)),*(g.edge_tgt(e2))) < 0;
         };
 
         std::set<edge_ptr_t, decltype (cmp)> edges(cmp);
@@ -171,8 +178,8 @@ namespace tchecker {
             NODEPTR const &src = g.edge_src(e);
             NODEPTR const &tgt = g.edge_tgt(e);
 
-            os << "n" << src->identifier() << " -> " << "n"
-               << tgt->identifier() << " ";
+            os << "n" << index.at(src) << " -> " << "n"
+               << index.at(tgt) << " ";
             if (g.edge_type(e) == tchecker::covreach::ABSTRACT_EDGE)
               os << "[color=blue]" << std::endl;
             else
