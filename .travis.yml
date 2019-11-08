@@ -27,19 +27,32 @@ matrix:
   include:
   - os: linux
     compiler: gcc
-    env: TEST_CONF=""
+    env: TEST_CONF="-DTCK_ENABLE_MEMCHECK_TESTS=ON \
+                    -DTCK_ENABLE_COVREACH_TESTS=ON \
+                    -DTCK_ENABLE_EXPLORE_TESTS=OFF \
+                    -DTCK_ENABLE_UNITTESTS=OFF \
+                    -DTCK_ENABLE_SIMPLE_NR_TESTS=OFF \
+                    -DTCK_ENABLE_BUGFIXES_TESTS=OFF"
   - os: linux
     compiler: gcc
-    env: TEST_CONF="-DTCK_ENABLE_COVREACH_TESTS=OFF -DTCK_ENABLE_EXPLORE_TESTS=OFF"
+    env: TEST_CONF="-DTCK_ENABLE_MEMCHECK_TESTS=ON \
+                    -DTCK_ENABLE_COVREACH_TESTS=OFF \
+                    -DTCK_ENABLE_EXPLORE_TESTS=ON \
+                    -DTCK_ENABLE_UNITTESTS=OFF \
+                    -DTCK_ENABLE_SIMPLE_NR_TESTS=OFF \
+                    -DTCK_ENABLE_BUGFIXES_TESTS=OFF"
+  - os: linux
+    compiler: gcc
+    env: TEST_CONF="-DTCK_ENABLE_COVREACH_TESTS=OFF -DTCK_ENABLE_EXPLORE_TESTS=OFF  -DTCK_ENABLE_MEMCHECK_TESTS=ON"
   - os: linux
     compiler: clang
-    env: TEST_CONF="-DTCK_ENABLE_COVREACH_TESTS=OFF -DTCK_ENABLE_EXPLORE_TESTS=OFF"
+    env: TEST_CONF="-DTCK_ENABLE_COVREACH_TESTS=OFF -DTCK_ENABLE_EXPLORE_TESTS=OFF  -DTCK_ENABLE_MEMCHECK_TESTS=ON"
   - os: osx
     compiler: gcc
-    env: TEST_CONF="-DTCK_ENABLE_COVREACH_TESTS=OFF -DTCK_ENABLE_EXPLORE_TESTS=OFF"
+    env: TEST_CONF="-DTCK_ENABLE_COVREACH_TESTS=OFF -DTCK_ENABLE_EXPLORE_TESTS=OFF -DTCK_ENABLE_MEMCHECK_TESTS=OFF"
   - os: osx
     compiler: clang
-    env: TEST_CONF="-DTCK_ENABLE_COVREACH_TESTS=OFF -DTCK_ENABLE_EXPLORE_TESTS=OFF"
+    env: TEST_CONF="-DTCK_ENABLE_COVREACH_TESTS=OFF -DTCK_ENABLE_EXPLORE_TESTS=OFF -DTCK_ENABLE_MEMCHECK_TESTS=OFF"
 
 install:
 - . ./ci-scripts/setenv-common.sh
@@ -54,6 +67,7 @@ addons:
   apt:
     packages:
     - libboost-all-dev
+    - valgrind
     update: true
   homebrew:
     packages:

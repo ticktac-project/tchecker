@@ -13,6 +13,13 @@ do
 done
 
 echo "${TEST} ${TEST_ARGS}"
+
+if test "${IS_MEMCHECK_TEST}" = "yes";
+then
+    eval ${TEST} ${TEST_ARGS}
+    exit $?
+fi
+
 if test "x${HASH_PROGRAM}" = "x";
 then
     eval ${TEST} ${TEST_ARGS} > "${OUTPUT_FILE}" 2> "${ERROR_FILE}"
