@@ -1,0 +1,10 @@
+REACHABLE true
+STORED_NODES 1
+VISITED_NODES 1
+COVERED_LEAF_NODES 0
+COVERED_NONLEAF_NODES 0
+
+digraph csmacd_3_808_26 {
+node [shape="box",style="rounded"];
+n1 [label="<Idle,Wait,Wait,Wait> j=1 (0<=y & 0<=x1 & 0<=x2 & 0<=x3)"]
+}

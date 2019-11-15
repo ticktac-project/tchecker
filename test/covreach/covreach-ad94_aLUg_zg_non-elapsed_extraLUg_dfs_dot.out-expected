@@ -1,0 +1,16 @@
+REACHABLE true
+STORED_NODES 4
+VISITED_NODES 3
+COVERED_LEAF_NODES 0
+COVERED_NONLEAF_NODES 0
+
+digraph ad94_fig10 {
+node [shape="box",style="rounded"];
+n1 [label="<l0>  (x=0 & y=0 & x=y)"]
+n1 -> n2 [color=black]
+n2 [label="<l1>  (0<=x & y=0 & 0<=x-y)"]
+n2 -> n3 [color=black]
+n2 -> n4 [color=black]
+n3 [label="<l2>  (1<=x & y=1 & 0<=x-y)"]
+n4 [label="<l3>  (0<=x<1 & 0<=y<1 & 0<=x-y<1)"]
+}

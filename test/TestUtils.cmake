@@ -137,7 +137,7 @@ function(tck_register_testcases prefix fsetup savelist outputfiles)
     foreach (testcase ${ARGN})
         tck_parse_test_spec(${testcase} testname testscript testarguments)
         set(testname "${prefix}${testname}")
-        tck_add_test (${testname} ${testname} slist)
+        tck_add_test(${testname} ${testname} slist)
 
         tck_add_test_envvar(testenv TEST "${TCK_EXAMPLES_DIR}/${testscript}")
         tck_add_test_envvar(testenv TEST_ARGS "${testarguments}")
@@ -160,58 +160,141 @@ endfunction()
 
 function(tck_filter_testcase result test_name re_acceptlist re_rejectlist)
     set(${result} TRUE PARENT_SCOPE)
-    foreach(filter IN LISTS ${re_acceptlist})
+    foreach (filter IN LISTS ${re_acceptlist})
         string(REGEX MATCH ${filter} match ${test_name})
-        if(match)
+        if (match)
             return()
-        endif()
-    endforeach()
+        endif ()
+    endforeach ()
 
     set(${result} FALSE PARENT_SCOPE)
-    foreach(filter IN LISTS ${re_rejectlist})
+    foreach (filter IN LISTS ${re_rejectlist})
         string(REGEX MATCH ${filter} match ${test_name})
-        if(match)
+        if (match)
             return()
-        endif()
-    endforeach()
+        endif ()
+    endforeach ()
 
     set(${result} TRUE PARENT_SCOPE)
 endfunction()
 
-macro(tck_add_nr_test testfile testnamevar savelist)
-    get_filename_component(ext ${testfile} EXT)
-    get_filename_component(testname ${testfile} NAME_WE)
+function(add_testbin_target_ target srcfile)
+    if (TARGET ${target})
+        return()
+    endif ()
 
-    tck_add_test(${testname} ${testname} ${savelist})
+    add_executable(${target} ${srcfile})
+    target_link_libraries(${target} testutils)
+    target_link_libraries(${target} libtchecker_static)
+    set_property(TARGET ${target} PROPERTY CXX_STANDARD 17)
+    set_property(TARGET ${target} PROPERTY CXX_STANDARD_REQUIRED ON)
+
+    # Add test invoking the build of the test executable
+    add_test(NAME ${target}-build COMMAND ${CMAKE_COMMAND}
+             --build "${CMAKE_BINARY_DIR}"
+             --config "$<CONFIG>"
+             --target ${target})
+    set_tests_properties(${target}-build PROPERTIES
+                         FIXTURES_SETUP BUILD_${target})
+endfunction(add_testbin_target_)
+
+
+function(tck_add_nr_test testfile testnamevar slist)
+    if(DEFINED ${slist})
+        set(testlist "${${slist}}")
+    else()
+        set(testlist "")
+    endif()
+    get_filename_component(ext ${testfile} EXT)
+    get_filename_component(filename ${testfile} NAME_WE)
+    set(testname ${filename})
+
+    tck_add_test(${testname} ${testname} testlist)
     tck_add_test_envvar(testenv TCK_EXAMPLES_DIR "${TCK_EXAMPLES_DIR}")
     tck_add_test_envvar(testenv TCHECKER "${TCHECKER}")
 
-    if(ext STREQUAL ".cc")
+    if (ext STREQUAL ".cc")
         # Add target to build binary for this test
-        add_executable(${testname} ${testfile})
-        target_link_libraries(${testname} testutils)
-        target_link_libraries(${testname} libtchecker_static)
-        set_property(TARGET ${testname} PROPERTY CXX_STANDARD 17)
-        set_property(TARGET ${testname} PROPERTY CXX_STANDARD_REQUIRED ON)
-
-        # Add test invoking the build of the test executable
-        add_test(NAME ${testname}-build
-                 COMMAND ${CMAKE_COMMAND} --build "${CMAKE_BINARY_DIR}" --config "$<CONFIG>" --target ${testname})
-        set_tests_properties(${testname}-build PROPERTIES FIXTURES_SETUP BUILD_${testname})
-
-        tck_add_test_envvar(testenv TEST "${CMAKE_CURRENT_BINARY_DIR}/${testname}")
-        set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED BUILD_${testname})
-    elseif(ext STREQUAL ".sh")
+        set(TESTBIN "${filename}-bin")
+        add_testbin_target_(${TESTBIN} ${testfile})
+        set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED BUILD_${TESTBIN})
+        tck_add_test_envvar(testenv TEST "$<TARGET_FILE:${TESTBIN}>")
+    elseif (ext STREQUAL ".sh")
         tck_add_test_envvar(testenv TEST "${CMAKE_CURRENT_SOURCE_DIR}/${testfile}")
-    elseif(ext STREQUAL ".tck")
+    elseif (ext STREQUAL ".tck")
         tck_add_test_envvar(testenv TEST "${TCHECKER}")
         tck_add_test_envvar(testenv TEST_ARGS "explore -f raw -m ta ${CMAKE_CURRENT_SOURCE_DIR}/${testfile}")
-    else()
+    else ()
         message(FATAL_ERROR "Don't know what kind of test is ${testfile}.")
-    endif()
+    endif ()
     set_property(TEST ${testname} APPEND PROPERTY FIXTURES_REQUIRED BUILD_TCHECKER)
 
     tck_set_test_env(${testname} testenv)
-    set(${testnamevar} ${testname} PARENT_SCOPE)
     unset(testenv)
-endmacro()
+    set(${testnamevar} ${testname} PARENT_SCOPE)
+    set(${slist} ${testlist} PARENT_SCOPE)
+endfunction()
+
+function(tck_add_nr_memcheck_test testfile testnamevar slist)
+    if (NOT TCK_ENABLE_MEMCHECK_TESTS)
+        return()
+    endif ()
+    if(DEFINED ${slist})
+        set(testlist "${${slist}}")
+    else()
+        set(testlist "")
+    endif()
+    get_filename_component(ext ${testfile} EXT)
+    get_filename_component(filename ${testfile} NAME_WE)
+    set(testname memcheck-${filename})
+
+    tck_add_test(${testname} ${testname} testlist)
+
+    tck_add_test_envvar(testenv TCK_EXAMPLES_DIR "${TCK_EXAMPLES_DIR}")
+    tck_add_test_envvar(testenv TCHECKER "${VALGRIND_PROGRAM} ${VALGRIND_OPTIONS} ${TCHECKER}")
+    tck_add_test_envvar(testenv IS_MEMCHECK_TEST "yes")
+
+    if (ext STREQUAL ".cc")
+        # Add target to build binary for this test
+        set(TESTBIN "${filename}-bin")
+        add_testbin_target_(${TESTBIN} ${testfile})
+        set_tests_properties(${testname} PROPERTIES FIXTURES_REQUIRED BUILD_${TESTBIN})
+        tck_add_test_envvar(testenv TEST "${VALGRIND_PROGRAM}")
+        tck_add_test_envvar(testenv TEST_ARGS "${VALGRIND_OPTIONS} $<TARGET_FILE:${TESTBIN}>")
+    elseif (ext STREQUAL ".sh")
+        tck_add_test_envvar(testenv TEST "${CMAKE_CURRENT_SOURCE_DIR}/${testfile}")
+    elseif (ext STREQUAL ".tck")
+        tck_add_test_envvar(testenv TEST "${TCHECKER}")
+        tck_add_test_envvar(testenv TEST_ARGS "explore -f raw -m ta ${CMAKE_CURRENT_SOURCE_DIR}/${testfile}")
+    else ()
+        message(FATAL_ERROR "Don't know what kind of test is ${testfile}.")
+    endif ()
+    set_property(TEST ${testname} APPEND PROPERTY FIXTURES_REQUIRED BUILD_TCHECKER)
+
+    tck_set_test_env(${testname} testenv)
+    unset(testenv)
+    set(${testnamevar} ${testname} PARENT_SCOPE)
+    set(${slist} ${testlist} PARENT_SCOPE)
+endfunction()
+
+option(TCK_ENABLE_MEMCHECK_TESTS "enable tests related to bug fixes" OFF)
+find_program(VALGRIND_PROGRAM NAMES valgrind)
+
+if (VALGRIND_PROGRAM)
+    set(VALGRIND_FOUND TRUE)
+    string(CONCAT VALGRIND_OPTIONS
+           "--quiet "
+           "--tool=memcheck "
+           "--leak-check=full "
+           "--num-callers=20 "
+           "--trace-children=yes "
+           "--error-exitcode=123 ")
+else ()
+    message(STATUS "Valgrind not found.")
+    set(VALGRIND_NOTFOUND FALSE)
+    set(TCK_ENABLE_MEMCHECK_TESTS OFF)
+endif ()
+
+if(NOT TCK_ENABLE_MEMCHECK_TESTS)
+    message(STATUS "Memcheck tests are disabled.")
+endif()

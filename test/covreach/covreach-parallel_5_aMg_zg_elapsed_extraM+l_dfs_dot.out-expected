@@ -1,0 +1,10 @@
+REACHABLE true
+STORED_NODES 1
+VISITED_NODES 1
+COVERED_LEAF_NODES 0
+COVERED_NONLEAF_NODES 0
+
+digraph parallel_5 {
+node [shape="box",style="rounded"];
+n1 [label="<A,A,A,A,A>  (0<=x1 & 0<=x2 & 0<=x3 & 0<=x4 & 0<=x5)"]
+}

@@ -52,7 +52,7 @@ namespace tchecker {
        \post this node has been built from sargs and is active and unprotected
        */
       template <class ... SARGS>
-      explicit node_t(SARGS && ... sargs) : STATE(std::forward<SARGS>(sargs)...), _protected(0), _identifier(0)
+      explicit node_t(SARGS && ... sargs) : STATE(std::forward<SARGS>(sargs)...), _protected(0)
       {}
       
       /*!
@@ -104,16 +104,11 @@ namespace tchecker {
        */
       std::size_t identifier() const
       {
-        return _identifier;
+        return reinterpret_cast<std::size_t>(this);
       }
 
-      void set_identifier(size_t id)
-      {
-        _identifier = id;
-      }
     protected:
       unsigned char _protected : 1;   /*!< Protected node flag */
-      std::size_t _identifier;
     };
     
   } // end of namespace covreach
@@ -447,8 +442,7 @@ namespace tchecker {
                                                            std::forward<node_to_key_t>(node_to_key),
                                                            std::forward<node_binary_predicate_t>(le_node)),
       _ts_allocator(std::forward<std::tuple<ARGS...>>(ts_alloc_args)),
-      _edge_allocator(block_size, tchecker::allocation_size_t<edge_t>::alloc_size()),
-      _node_ids(0)
+      _edge_allocator(block_size, tchecker::allocation_size_t<edge_t>::alloc_size())
       {
         _ts_allocator.enroll(gc);
         _edge_allocator.enroll(gc);
@@ -543,7 +537,6 @@ namespace tchecker {
           n->make_protected();
           _root_nodes.push_back(n);
         }
-        n->set_identifier (++_node_ids);
       }
       
       /*!
@@ -741,7 +734,6 @@ namespace tchecker {
       std::vector<node_ptr_t> _root_nodes;         /*!< Root nodes */
       TS_ALLOCATOR _ts_allocator;                  /*!< Transition system allocator */
       tchecker::pool_t<edge_t> _edge_allocator;    /*!< Allocator of edges */
-      std::size_t _node_ids;                       /*!< incremented counter to identify node */
     };
     
   } // end of namespace covreach

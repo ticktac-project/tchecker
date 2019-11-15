@@ -24,6 +24,7 @@ set(BUGFIX_TESTS
 
 foreach(testfile ${BUGFIX_TESTS})
     tck_add_nr_test(${testfile} test_name savelist)
+    tck_add_nr_memcheck_test(${testfile} test_name savelist)
 endforeach()
 
 tck_add_savelist(save-bugfixes ${savelist})

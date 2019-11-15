@@ -1,0 +1,15 @@
+/*
+ * This file is part of the TChecker Project.
+ * 
+ * See files AUTHORS and LICENSE for copyright details.
+ */
+
+#ifndef TCHECKER_MEMCHECK_UNITTEST_HH
+# define TCHECKER_MEMCHECK_UNITTEST_HH
+
+#cmakedefine VALGRIND_PROGRAM "@VALGRIND_PROGRAM@"
+#cmakedefine VALGRIND_OPTIONS "@VALGRIND_OPTIONS@"
+#cmakedefine TESTED_EXECUTABLE "@TESTED_EXECUTABLE@"
+
+#endif /* TCHECKER_MEMCHECK_UNITTEST_HH */
+

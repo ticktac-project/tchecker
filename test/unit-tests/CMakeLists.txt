@@ -49,14 +49,20 @@ foreach (FILE ${TEST_SRC})
     source_group("${GROUP}" FILES "${FILE}")
 endforeach ()
 
-add_test(NAME build-unittest
-         COMMAND ${CMAKE_COMMAND}
-         --build "${CMAKE_BINARY_DIR}"
-         --config "$<CONFIG>"
-         --target unittest
-         )
-set_tests_properties(build-unittest PROPERTIES FIXTURES_REQUIRED BUILD_TCHECKER)
-set_tests_properties(build-unittest PROPERTIES FIXTURES_SETUP BUILD_UNITTEST)
-
 include(Catch)
 catch_discover_tests(unittest PROPERTIES FIXTURES_SETUP "BUILD_UNITTEST")
+
+if(TCK_ENABLE_MEMCHECK_TESTS)
+    include_directories(${CMAKE_CURRENT_BINARY_DIR})
+    set(TESTED_EXECUTABLE "${CMAKE_CURRENT_BINARY_DIR}/unittest")
+    configure_file(memcheck-unittest.hh.in memcheck-unittest.hh)
+    add_executable(memcheck-unittest memcheck-unittest.cc memcheck-unittest.hh)
+    add_dependencies(memcheck-unittest unittest)
+
+    # A warning is emitted by 'catch_discover_tests' due to a strange usage of
+    # the exit code of the target that is interpreted as the number of tests
+    # supported by the executable. Fortunately this value is not used to produce
+    # the test-suite.
+
+    catch_discover_tests(memcheck-unittest TEST_SUFFIX " [MEMCHECKED]")
+endif()

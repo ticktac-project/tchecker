@@ -11,32 +11,34 @@ endif()
 
 set(PARSE_LABELS_SH "${CMAKE_CURRENT_SOURCE_DIR}/parse-labels.sh")
 
+# Max number of lines for DOT results
+set(DOT_MAX_SIZE 20000)
+
 # Elements of INPUTS are colon-separated lists. The first element of each
 # list is a test-case script located in ${EXAMPLES_DIR}; the tail of the list
 # contains arguments passed to the generator script.
 set(INPUTS
     ad94.sh:
     corsso.sh:2:2:10:1:2
-    critical-region.sh:2:10
     critical-region-async.sh:2:10
     csmacd.sh:3
     dining-philosophers.sh:3:3:10:0
-    fischer.sh:3:10
     fischer-async.sh:3:10
-    parallel.sh:5
-    parallel-b.sh:3
     parallel-c.sh:3
     train_gate.sh:3 
     )
 
 set(ACCEPT_TEST_REGEX "")
 set(REJECT_TEST_REGEX "^.*inclusion.*NOextra.*$")
+set(MEMCHECKED_TEST_REGEX
+    "^.*ad94.*raw.*$"
+    "^.*critical-region-async.*raw.*$")
 
-# dot format is disabled because generated graphs use addresses of states as
-# node identifiers
+set(NOT_MEMCHECKED_TEST_REGEX "^.*$")
+
 set(COVREACH_OUTPUT_FORMATS
     raw
-    #dot
+    dot
     )
 
 set(COVREACH_SEARCH_ORDERS
@@ -118,8 +120,32 @@ foreach (inputfile ${COVREACH_INPUT_FILES})
 
                             tck_add_test_envvar(testenv TEST "${PARSE_LABELS_SH}")
                             tck_add_test_envvar(testenv TEST_ARGS "${TCHECKER} covreach -c ${cover} -f ${outformat} -m ${model} -s ${so} -S ${labels} ${inputfile}")
+                            tck_add_test_envvar(testenv DOT_MAX_SIZE "${DOT_MAX_SIZE}")
                             tck_set_test_env(${TEST_NAME} testenv)
                             unset(testenv)
+                            math(EXPR nb_tests "${nb_tests}+1")
+
+                            if(NOT TCK_ENABLE_MEMCHECK_TESTS)
+                                continue()
+                            endif()
+
+                            tck_filter_testcase(accepted ${TEST_NAME} MEMCHECKED_TEST_REGEX NOT_MEMCHECKED_TEST_REGEX)
+                            if(NOT accepted)
+                                continue()
+                            endif()
+
+                            set(TEST_NAME "memcheck-${TEST_NAME}")
+                            tck_add_test (${TEST_NAME} ${TEST_NAME} nopelist)
+
+                            set_tests_properties(${TEST_NAME}
+                                                 PROPERTIES FIXTURES_REQUIRED "BUILD_TCHECKER;CHECK_TESTCASES_${testname}")
+
+                            tck_add_test_envvar(testenv IS_MEMCHECK_TEST "yes")
+                            tck_add_test_envvar(testenv TEST "${VALGRIND_PROGRAM}")
+                            tck_add_test_envvar(testenv TEST_ARGS "${VALGRIND_OPTIONS} ${TCHECKER} covreach -c ${cover} -f ${outformat} -m ${model} -s ${so} -S ${labels} ${inputfile}")
+                            tck_set_test_env(${TEST_NAME} testenv)
+                            unset(testenv)
+
                             math(EXPR nb_tests "${nb_tests}+1")
                         endforeach ()
                     endforeach ()
