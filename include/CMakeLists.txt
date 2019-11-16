@@ -5,4 +5,4 @@ configure_file(${TCHECKER_CONFIG_HH_IN} ${TCHECKER_CONFIG_HH} @ONLY)
 
 install(DIRECTORY ../include/ DESTINATION include)
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../include/ DESTINATION include)
-
+include_directories("${CMAKE_CURRENT_BINARY_DIR}/tchecker")
