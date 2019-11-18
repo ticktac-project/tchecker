@@ -26,14 +26,36 @@ set(INPUTS
     fischer-async.sh:3:10
     fischer-async-concurrent.sh:3:10
     parallel-c.sh:3
-    train_gate.sh:3 
+    train_gate.sh:3
     )
+
+if(NOT USE16)
+    list(APPEND INPUTS
+         ad94_mid.sh:)
+endif()
+
+if(USE64)
+    list(APPEND INPUTS
+         ad94_Long.sh:)
+endif()
 
 set(ACCEPT_TEST_REGEX "")
 set(REJECT_TEST_REGEX "^.*inclusion.*NOextra.*$")
 set(MEMCHECKED_TEST_REGEX
-    "^.*ad94.*raw.*$"
+    "^.*ad94_[0-9].*raw.*$"
     "^.*critical-region-async.*raw.*$")
+
+if(USE16)
+    list(APPEND MEMCHECKED_TEST_REGEX
+         "^.*ad94_[0-9].*raw.*$")
+elseif(USE64)
+    list(APPEND MEMCHECKED_TEST_REGEX
+         "^.*ad94_Long.*raw.*$")
+else()
+    list(APPEND MEMCHECKED_TEST_REGEX
+         "^.*ad94_mid.*raw.*$")
+endif()
+
 
 set(NOT_MEMCHECKED_TEST_REGEX "^.*$")
 

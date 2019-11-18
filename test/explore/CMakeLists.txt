@@ -19,6 +19,16 @@ set(INPUTS
     train_gate.sh:3
     )
 
+if(NOT USE16)
+    list(APPEND INPUTS
+         ad94_mid.sh:)
+endif()
+
+if(USE64)
+    list(APPEND INPUTS
+         ad94_Long.sh:)
+endif()
+
 set(ACCEPT_TEST_REGEX
     "^.*ad94.*_extra.*$"
     "^.*gps-mc_2.*_extra.*$"

@@ -1,0 +1,13 @@
+digraph ad94_fig10 {
+node [shape="box",style="rounded"];
+n0 [label="<l0> "]
+n1 [label="<l1> "]
+n0 -> n1
+n2 [label="<l2> "]
+n1 -> n2
+n3 [label="<l3> "]
+n1 -> n3
+n2 -> n3
+n3 -> n1
+n3 -> n3
+}

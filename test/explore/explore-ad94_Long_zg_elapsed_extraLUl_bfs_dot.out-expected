@@ -1,0 +1,18 @@
+digraph ad94_fig10_longVersion {
+node [shape="box",style="rounded"];
+n0 [label="<l0>  (0<=x & 0<=y)"]
+n1 [label="<l1>  (0<=x & 0<=y & 0<=x-y)"]
+n0 -> n1
+n2 [label="<l2>  (10000000000<=x & 10000000000<=y)"]
+n1 -> n2
+n3 [label="<l3>  (0<=x & 0<=y & x-y<10000000000)"]
+n1 -> n3
+n3 -> n1
+n4 [label="<l3>  (10000000000<x & 0<y & x-y<10000000000)"]
+n3 -> n4
+n5 [label="<l1>  (10000000000<x & 0<=y & 10000000000<x-y)"]
+n4 -> n5
+n4 -> n4
+n6 [label="<l2>  (10000000000<x & 10000000000<=y)"]
+n5 -> n6
+}
