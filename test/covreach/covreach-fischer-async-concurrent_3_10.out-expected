@@ -1,0 +1,128 @@
+#labels=cs1,cs2,cs3
+#clock:size:name
+#int:size:min:max:init:name
+#process:name
+#event:name
+#location:process:name{attributes}
+#edge:process:source:target:event:{attributes}
+#sync:events
+#   where
+#   attributes is a colon-separated list of key:value
+#   events is a colon-separated list of process@event
+
+system:fischer_async_3_10
+
+event:id_is_0
+event:id_to_0
+event:id_is_1
+event:id_to_1
+event:id_is_2
+event:id_to_2
+event:id_is_3
+event:id_to_3
+event:tau
+
+# Process 1
+process:P1
+clock:1:x1
+location:P1:A{initial:}	
+location:P1:req{invariant:x1<=10}
+location:P1:wait{}
+location:P1:cs{labels:cs1}
+edge:P1:A:req:id_is_0{do:x1=0}
+edge:P1:req:wait:id_to_1{provided:x1<=10 : do:x1=0}
+edge:P1:wait:req:id_is_0{do:x1=0}
+edge:P1:wait:cs:id_is_1{provided:x1>10}
+edge:P1:cs:A:id_to_0{}
+
+# Process 2
+process:P2
+clock:1:x2
+location:P2:A{initial:}	
+location:P2:req{invariant:x2<=10}
+location:P2:wait{}
+location:P2:cs{labels:cs2}
+edge:P2:A:req:id_is_0{do:x2=0}
+edge:P2:req:wait:id_to_2{provided:x2<=10 : do:x2=0}
+edge:P2:wait:req:id_is_0{do:x2=0}
+edge:P2:wait:cs:id_is_2{provided:x2>10}
+edge:P2:cs:A:id_to_0{}
+
+# Process 3
+process:P3
+clock:1:x3
+location:P3:A{initial:}	
+location:P3:req{invariant:x3<=10}
+location:P3:wait{}
+location:P3:cs{labels:cs3}
+edge:P3:A:req:id_is_0{do:x3=0}
+edge:P3:req:wait:id_to_3{provided:x3<=10 : do:x3=0}
+edge:P3:wait:req:id_is_0{do:x3=0}
+edge:P3:wait:cs:id_is_3{provided:x3>10}
+edge:P3:cs:A:id_to_0{}
+
+# ID 1
+process:ID1
+int:1:0:3:0:id1
+location:ID1:l{initial:}
+edge:ID1:l:l:id_is_0{provided: id1==0}
+edge:ID1:l:l:id_to_0{do: id1=0}
+edge:ID1:l:l:id_is_1{provided: id1==1}
+edge:ID1:l:l:id_to_1{do: id1=1}
+edge:ID1:l:l:id_is_2{provided: id1==2}
+edge:ID1:l:l:id_to_2{do: id1=2}
+edge:ID1:l:l:id_is_3{provided: id1==3}
+edge:ID1:l:l:id_to_3{do: id1=3}
+
+# ID 2
+process:ID2
+int:1:0:3:0:id2
+location:ID2:l{initial:}
+edge:ID2:l:l:id_is_0{provided: id2==0}
+edge:ID2:l:l:id_to_0{do: id2=0}
+edge:ID2:l:l:id_is_1{provided: id2==1}
+edge:ID2:l:l:id_to_1{do: id2=1}
+edge:ID2:l:l:id_is_2{provided: id2==2}
+edge:ID2:l:l:id_to_2{do: id2=2}
+edge:ID2:l:l:id_is_3{provided: id2==3}
+edge:ID2:l:l:id_to_3{do: id2=3}
+
+# ID 3
+process:ID3
+int:1:0:3:0:id3
+location:ID3:l{initial:}
+edge:ID3:l:l:id_is_0{provided: id3==0}
+edge:ID3:l:l:id_to_0{do: id3=0}
+edge:ID3:l:l:id_is_1{provided: id3==1}
+edge:ID3:l:l:id_to_1{do: id3=1}
+edge:ID3:l:l:id_is_2{provided: id3==2}
+edge:ID3:l:l:id_to_2{do: id3=2}
+edge:ID3:l:l:id_is_3{provided: id3==3}
+edge:ID3:l:l:id_to_3{do: id3=3}
+
+# Synchronizations
+
+sync:P1@id_is_0:ID1@id_is_0
+sync:P1@id_is_1:ID1@id_is_1
+sync:P1@id_is_2:ID1@id_is_2
+sync:P1@id_is_3:ID1@id_is_3
+sync:P2@id_is_0:ID2@id_is_0
+sync:P2@id_is_1:ID2@id_is_1
+sync:P2@id_is_2:ID2@id_is_2
+sync:P2@id_is_3:ID2@id_is_3
+sync:P3@id_is_0:ID3@id_is_0
+sync:P3@id_is_1:ID3@id_is_1
+sync:P3@id_is_2:ID3@id_is_2
+sync:P3@id_is_3:ID3@id_is_3
+sync:P1@id_to_0:ID1@id_to_0:ID2@id_to_0:ID3@id_to_0
+sync:P2@id_to_0:ID1@id_to_0:ID2@id_to_0:ID3@id_to_0
+sync:P3@id_to_0:ID1@id_to_0:ID2@id_to_0:ID3@id_to_0
+sync:P1@id_to_1:ID1@id_to_1:ID2@id_to_1:ID3@id_to_1
+sync:P2@id_to_1:ID1@id_to_1:ID2@id_to_1:ID3@id_to_1
+sync:P3@id_to_1:ID1@id_to_1:ID2@id_to_1:ID3@id_to_1
+sync:P1@id_to_2:ID1@id_to_2:ID2@id_to_2:ID3@id_to_2
+sync:P2@id_to_2:ID1@id_to_2:ID2@id_to_2:ID3@id_to_2
+sync:P3@id_to_2:ID1@id_to_2:ID2@id_to_2:ID3@id_to_2
+sync:P1@id_to_3:ID1@id_to_3:ID2@id_to_3:ID3@id_to_3
+sync:P2@id_to_3:ID1@id_to_3:ID2@id_to_3:ID3@id_to_3
+sync:P3@id_to_3:ID1@id_to_3:ID2@id_to_3:ID3@id_to_3

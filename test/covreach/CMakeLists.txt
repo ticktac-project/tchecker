@@ -24,6 +24,7 @@ set(INPUTS
     csmacd.sh:3
     dining-philosophers.sh:3:3:10:0
     fischer-async.sh:3:10
+    fischer-async-concurrent.sh:3:10
     parallel-c.sh:3
     train_gate.sh:3 
     )
