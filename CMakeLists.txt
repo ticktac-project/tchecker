@@ -16,6 +16,7 @@ set(VERSION_MAJOR   0   CACHE STRING "Project major version number.")
 set(VERSION_MINOR   2   CACHE STRING "Project minor version number.")
 mark_as_advanced(VERSION_MAJOR VERSION_MINOR)
 
+add_subdirectory(include)
 add_subdirectory(src)
 
 enable_testing()

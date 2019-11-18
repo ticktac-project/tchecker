@@ -40,7 +40,7 @@ namespace tchecker {
     /*!
      \brief Type of difference bounds
      */
-    using db_t = int32_t;
+    using db_t = tchecker::integer_t;
     
     static_assert(std::is_same<tchecker::integer_t, tchecker::dbm::db_t>::value, "");
     
@@ -54,11 +54,11 @@ namespace tchecker {
     
     static_assert(static_cast<int>(tchecker::clock_constraint_t::LE) == static_cast<int>(tchecker::dbm::LE), "");
     static_assert(static_cast<int>(tchecker::clock_constraint_t::LT) == static_cast<int>(tchecker::dbm::LT), "");
-    
-    
-    int32_t const INF_VALUE = INT32_MAX >> 1;   /*!< Infinity value */
-    int32_t const MAX_VALUE = INF_VALUE - 1;   /*!< Maximum value */
-    int32_t const MIN_VALUE = INT32_MIN >> 1;  /*!< Minimum value */
+
+
+    tchecker::dbm::db_t const INF_VALUE = tchecker::int_maxval >> 1;   /*!< Infinity value */
+    tchecker::dbm::db_t const MAX_VALUE = INF_VALUE - 1;   /*!< Maximum value */
+    tchecker::dbm::db_t const MIN_VALUE = tchecker::int_minval >> 1;  /*!< Minimum value */
     
     
     tchecker::dbm::db_t const LE_ZERO = (0 << 1) | tchecker::dbm::LE;             /*!< <=0 */
@@ -73,7 +73,7 @@ namespace tchecker {
      \return <value if cmp is LT and <=value if cmp is LE
      \throw std::invalid_argument : if value is not between MIN_VALUE and MAX_VALUE (only if compilation flag DBM_UNSAFE is not set)
      */
-    inline tchecker::dbm::db_t db(enum tchecker::dbm::comparator_t cmp, int32_t value)
+    inline tchecker::dbm::db_t db(enum tchecker::dbm::comparator_t cmp, tchecker::integer_t value)
     {
 #if !defined(DBM_UNSAFE)
       if ((value < MIN_VALUE) || (value > MAX_VALUE))
@@ -113,7 +113,7 @@ namespace tchecker {
      \throw std::invalid_argument : if the new value cannot be represented as a tchecker::dbm::db_t (only if compilation flag
      DBM_UNSAFE is not set)
      */
-    inline tchecker::dbm::db_t add(tchecker::dbm::db_t db, int32_t value)
+    inline tchecker::dbm::db_t add(tchecker::dbm::db_t db, tchecker::integer_t value)
     {
       if (db == tchecker::dbm::LT_INFINITY)
         return tchecker::dbm::LT_INFINITY;
@@ -176,7 +176,7 @@ namespace tchecker {
      \param db : a difference bound
      \return value of db
      */
-    inline int32_t value(tchecker::dbm::db_t db)
+    inline tchecker::integer_t value(tchecker::dbm::db_t db)
     {
       return (db >> 1);
     }

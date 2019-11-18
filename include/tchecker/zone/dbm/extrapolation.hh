@@ -51,13 +51,13 @@ namespace tchecker {
     /*!
      \brief Type of extrapolation function using M clock bounds
      */
-    typedef void (*extra_M_t) (tchecker::dbm::db_t *, tchecker::clock_id_t, int32_t const *);
+    typedef void (*extra_M_t) (tchecker::dbm::db_t *, tchecker::clock_id_t, tchecker::integer_t const *);
     
     
     /*!
      \brief Type of extrapolation function using LU clock bounds
      */
-    typedef void (*extra_LU_t) (tchecker::dbm::db_t *, tchecker::clock_id_t, int32_t const *, int32_t const *);
+    typedef void (*extra_LU_t) (tchecker::dbm::db_t *, tchecker::clock_id_t, tchecker::integer_t const *, tchecker::integer_t const *);
     
     
     

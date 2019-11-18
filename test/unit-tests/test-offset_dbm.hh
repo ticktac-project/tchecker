@@ -65,7 +65,7 @@ TEST_CASE( "is_positive, structural test for offset DBMs", "[offset_dbm]" ) {
         OFFSET_DBM(i,j) = tchecker::dbm::LT_INFINITY;
       OFFSET_DBM(i,i) = tchecker::dbm::LE_ZERO;
       if (i >= refcount)
-        OFFSET_DBM(refmap[i], i) = tchecker::dbm::db(tchecker::dbm::LE, refcount - i);
+        OFFSET_DBM(refmap[i], i) = tchecker::dbm::db(tchecker::dbm::LE, (tchecker::integer_t)refcount - (tchecker::integer_t)i);
     }
     
     REQUIRE(tchecker::offset_dbm::is_positive(offset_dbm, offset_dim, refcount, refmap));
@@ -78,7 +78,7 @@ TEST_CASE( "is_positive, structural test for offset DBMs", "[offset_dbm]" ) {
         OFFSET_DBM(i,j) = tchecker::dbm::LT_INFINITY;
       OFFSET_DBM(i,i) = tchecker::dbm::LE_ZERO;
       if (i >= refcount)
-        OFFSET_DBM(refmap[i], i) = tchecker::dbm::db(tchecker::dbm::LE, i - refcount);
+        OFFSET_DBM(refmap[i], i) = tchecker::dbm::db(tchecker::dbm::LE, (tchecker::integer_t)i - (tchecker::integer_t)refcount);
     }
     
     REQUIRE_FALSE(tchecker::offset_dbm::is_positive(offset_dbm, offset_dim, refcount, refmap));
@@ -134,7 +134,7 @@ TEST_CASE( "is_universal_positive, structural test for offset DBMs", "[offset_db
         OFFSET_DBM(i,j) = tchecker::dbm::LT_INFINITY;
       OFFSET_DBM(i,i) = tchecker::dbm::LE_ZERO;
       if (i >= refcount)
-        OFFSET_DBM(refmap[i], i) = tchecker::dbm::db(tchecker::dbm::LE, refcount-i);
+        OFFSET_DBM(refmap[i], i) = tchecker::dbm::db(tchecker::dbm::LE, (tchecker::integer_t)refcount-(tchecker::integer_t)i);
     }
     OFFSET_DBM(refcount, refcount + 1) = tchecker::dbm::db(tchecker::dbm::LT, 4);
     

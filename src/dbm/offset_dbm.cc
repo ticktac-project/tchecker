@@ -169,7 +169,7 @@ namespace tchecker {
     
     enum tchecker::dbm::status_t
     constrain(tchecker::dbm::db_t * offset_dbm, tchecker::clock_id_t offset_dim, tchecker::clock_id_t x, tchecker::clock_id_t y,
-              tchecker::dbm::comparator_t cmp, int32_t value)
+              tchecker::dbm::comparator_t cmp, tchecker::integer_t value)
     {
       assert(offset_dbm != nullptr);
       assert(tchecker::offset_dbm::is_tight(offset_dbm, offset_dim));
@@ -328,7 +328,7 @@ namespace tchecker {
             first = false;
             
             os << clock_name(i) << "=" << clock_name(j);
-            int32_t vij = tchecker::dbm::value(cij);
+            tchecker::integer_t vij = tchecker::dbm::value(cij);
             if (vij > 0)
               os << "+" << tchecker::dbm::value(cij);
             else if (vij < 0)

@@ -28,7 +28,7 @@ namespace tchecker {
     /*!
      \brief Type of a clock bound
      */
-    using bound_t = std::int32_t;
+    using bound_t = tchecker::integer_t;
     
     /*!
      \brief Encoding of absence of bound
