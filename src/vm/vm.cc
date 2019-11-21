@@ -35,7 +35,19 @@ namespace tchecker {
           ++bytecode;
           os << " " << *bytecode;
           break;
-          
+
+        case VM_JMP:
+          os << "JMP ";
+          ++bytecode;
+          os << *bytecode;
+          break;
+
+        case VM_JMPZ:
+          os << "JMPZ ";
+          ++bytecode;
+          os << *bytecode;
+          break;
+
         case VM_PUSH:
           os << "PUSH";
           ++bytecode;

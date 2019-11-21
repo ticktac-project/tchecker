@@ -36,6 +36,10 @@ namespace tchecker {
     VM_RETZ,         // end of operation when vK==0, return vK
     VM_FAILNOTIN,    // raise exception when (l <= vK <= h) does not hold, for parameters l and h of VM_FAILNOTIN
     //
+    VM_JMP,          // unconditional jump relatively to next instruction;
+    //                  offset is a parameter of the instruction
+    VM_JMPZ,         // stack = v1 ... vK-1                   jump if vk == 0
+    //                  offset is a parameter of the instruction
     VM_PUSH,         // stack = v1 ... vK v                   where v is a parameter of VM_PUSH
     //
     VM_VALUEAT,      // stack = v1 ... vK-1 [vK]              vK replaced by value at addr vK
@@ -280,7 +284,26 @@ namespace tchecker {
           return top<tchecker::integer_t>();
         }
           
-          
+        case VM_JMP:
+          {
+            tchecker::bytecode_t const shift = * ++bytecode;
+            bytecode += shift;
+
+            return 1;
+          }
+
+        case VM_JMPZ:
+          {
+            tchecker::bytecode_t const shift = * ++bytecode;
+
+            if (top_and_pop<tchecker::integer_t>() == 0)
+              {
+                bytecode += shift;
+                return 0;
+              }
+            return 1;
+          }
+
           // stack = v1 ... vK v   where v is a parameter of instruction VM_PUSH
         case VM_PUSH:
         {
