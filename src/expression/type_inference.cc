@@ -223,5 +223,19 @@ namespace tchecker {
       default:                       throw std::runtime_error("incomplete switch statement");
     }
   }
-  
+
+  enum tchecker::expression_type_t type_ite(enum tchecker::expression_type_t cond,
+                                            enum tchecker::expression_type_t then_value,
+                                            enum tchecker::expression_type_t else_value)
+  {
+    if (! bool_valued (cond))
+      return tchecker::EXPR_TYPE_BAD;
+
+    if (integer_valued(then_value) && integer_valued(else_value))
+      return tchecker::EXPR_TYPE_INTTERM;
+
+    return tchecker::EXPR_TYPE_BAD;
+
+  }
+
 } // end of namespace tchecker

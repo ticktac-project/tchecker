@@ -385,7 +385,8 @@ namespace tchecker {
         virtual void visit(tchecker::typed_bounded_var_expression_t const &) {}
         virtual void visit(tchecker::typed_array_expression_t const &) {}
         virtual void visit(tchecker::typed_unary_expression_t const &) {}
-        
+        virtual void visit(tchecker::typed_ite_expression_t const &) {}
+
         /*!
          \brief Visitor
          \post first and second statements have been visited

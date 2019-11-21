@@ -151,6 +151,10 @@ namespace tchecker {
       
       virtual void visit(tchecker::typed_diagonal_clkconstr_expression_t const & expr)
       { throw std::invalid_argument("not a bounded variable"); }
+
+      virtual void visit(tchecker::typed_ite_expression_t const & expr)
+      { throw std::invalid_argument("not a bounded variable"); }
+
     protected:
       BYTECODE_BACK_INSERTER _bytecode_back_inserter;  /*!< Bytecode */
     };
@@ -364,7 +368,19 @@ namespace tchecker {
         compile_clock_predicate(expr.first_clock(), expr.second_clock(), expr.bound(),
                                 operator_to_instruction(expr.binary_operator()));
       }
-    private:
+
+      /*
+       see compile_ite_expression
+       */
+      virtual void visit(tchecker::typed_ite_expression_t const & expr)
+      {
+        if (expr.type() != tchecker::EXPR_TYPE_INTTERM)
+          throw std::invalid_argument("invalid expression");
+
+        compile_ite_expression(expr);
+      }
+
+     private:
       /*
        \brief Translates expression binary operators into bytecode instructions
        \param op : operator
@@ -489,8 +505,21 @@ namespace tchecker {
         expr.operand().visit(*this);
         _bytecode_back_inserter = operator_to_instruction(expr.unary_operator());
       }
-      
-      
+
+      /*
+       insert expr.condition() bytecode
+       insert expr.then_value() bytecode
+       insert expr.else_value() bytecode
+       */
+      void compile_ite_expression(tchecker::typed_ite_expression_t const & expr)
+      {
+        expr.condition().visit(*this);
+        expr.then_value().visit(*this);
+        expr.else_value().visit(*this);
+        _bytecode_back_inserter = VM_ITE;
+      }
+
+
       BYTECODE_BACK_INSERTER _bytecode_back_inserter;  /*!< Bytecode */
     };
     
@@ -641,6 +670,10 @@ namespace tchecker {
       
       virtual void visit(tchecker::typed_diagonal_clkconstr_expression_t const & expr)
       { throw std::invalid_argument("not a bounded variable"); }
+
+      virtual void visit(tchecker::typed_ite_expression_t const & expr)
+      { throw std::invalid_argument("not a bounded variable"); }
+
     protected:
       tchecker::integer_t _min;  /*!< Variable minimal value */
       tchecker::integer_t _max;  /*!< Variable maximal value */

@@ -263,7 +263,44 @@ namespace tchecker {
         if (typed_operand->type() != tchecker::EXPR_TYPE_BAD)
           _error("in expression " + expr.to_string() + ", invalid operand " + expr.operand().to_string());
       }
-    protected:
+
+      /*!
+       \brief Visitor
+       \param expr : expression
+       \post _typed_expr points to a typed clone of expr
+       */
+      virtual void visit(tchecker::ite_expression_t const & expr)
+      {
+        // Operands
+        expr.condition().visit(*this);
+        tchecker::typed_expression_t * typed_condition = this->release();
+
+        expr.then_value().visit(*this);
+        tchecker::typed_expression_t * typed_then_value = this->release();
+
+        expr.else_value().visit(*this);
+        tchecker::typed_expression_t * typed_else_value= this->release();
+
+        // Typed expression
+        enum tchecker::expression_type_t expr_type = type_ite(typed_condition->type(), typed_then_value->type(),
+                                                              typed_else_value->type());
+        if (expr_type == tchecker::EXPR_TYPE_INTTERM)
+          _typed_expr = new tchecker::typed_ite_expression_t(expr_type, typed_condition,
+              typed_then_value,
+              typed_else_value);
+
+        // Report bad type
+        if (expr_type != tchecker::EXPR_TYPE_BAD)
+          return;
+
+        if ((typed_then_value->type() != tchecker::EXPR_TYPE_BAD) &&
+            (typed_else_value->type() != tchecker::EXPR_TYPE_BAD))
+          _error("in expression " + expr.to_string() + ", invalid composition of expressions " + expr.then_value ().to_string() +
+                 " and " + expr.else_value ().to_string());
+      }
+
+
+     protected:
       /*!
        \brief Accessor
        \param name : variable name

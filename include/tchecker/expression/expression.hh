@@ -447,7 +447,7 @@ namespace tchecker {
     EXPR_OP_PLUS,
     EXPR_OP_TIMES,
     EXPR_OP_DIV,
-    EXPR_OP_MOD,
+    EXPR_OP_MOD
   };
   
   
@@ -547,7 +547,85 @@ namespace tchecker {
     tchecker::expression_t const * _right;   /*!< Right operand */
   };
   
-  
+  /*!
+   \class ite_expression_t
+   \brief Application of if-then-else operator to expressions
+   */
+  class ite_expression_t : public virtual tchecker::expression_t {
+  public:
+    /*!
+     \brief Constructor
+     \param condition : the decision expression
+     \param then_value : the value of the expression if the condition is true
+     \param else_value : the value of the expression if the condition is false
+     \pre condition, then_value and else_value are not nullptr
+     \throw std::invalid_argument : if an argument is nullptr
+     \note this takes ownership on its arguments
+     */
+    ite_expression_t(tchecker::expression_t const * condition,
+        tchecker::expression_t const * then_value,
+        tchecker::expression_t const * else_value);
+
+    /*!
+     \brief Destructor
+     \post the operand expressions have been deleted
+     */
+    virtual ~ite_expression_t();
+
+    /*!
+     \brief Accessor
+     \return the decision expression
+     */
+    inline tchecker::expression_t const & condition() const
+    {
+      return (* _condition);
+    }
+
+    /*!
+     \brief Accessor
+     \return the Then value
+     */
+    inline tchecker::expression_t const & then_value() const
+    {
+      return (* _then_value);
+    }
+
+    /*!
+     \brief Accessor
+     \return the Else value
+     */
+    inline tchecker::expression_t const & else_value() const
+    {
+      return (* _else_value);
+    }
+  protected:
+    /*!
+     \brief Output the expression
+     \param os : output stream
+     \post this has been output to os
+     \return os after this has been output
+     */
+    virtual std::ostream & do_output(std::ostream & os) const;
+
+    /*!
+     \brief Clone
+     \return A clone of this
+     */
+    virtual tchecker::expression_t * do_clone() const;
+
+    /*!
+     \brief Visit
+     \param v : visitor
+     \post v.visit(*this) has been called
+     */
+    virtual void do_visit(tchecker::expression_visitor_t & v) const;
+
+    tchecker::expression_t const * _condition;    /*!< guard of the ite */
+    tchecker::expression_t const * _then_value;   /*!< 'then' part of the expression */
+    tchecker::expression_t const * _else_value;   /*!< 'else' part of the expression */
+  };
+
+
   
   
   /*!
@@ -595,6 +673,7 @@ namespace tchecker {
     virtual void visit(tchecker::par_expression_t const & expr) = 0;
     virtual void visit(tchecker::unary_expression_t const & expr) = 0;
     virtual void visit(tchecker::binary_expression_t const & expr) = 0;
+    virtual void visit(tchecker::ite_expression_t const & expr) = 0;
   };
   
 } // end namespace tchecker

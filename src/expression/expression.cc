@@ -293,4 +293,49 @@ namespace tchecker {
     v.visit(*this);
   }
   
+  // ite_expression_t
+
+  ite_expression_t::ite_expression_t(tchecker::expression_t const * condition,
+                                     tchecker::expression_t const * then_value,
+                                     tchecker::expression_t const * else_value)
+  :	_condition(condition), _then_value(then_value), _else_value(else_value)
+  {
+    if (_condition == nullptr)
+      throw std::invalid_argument("nullptr ite_condition expression");
+    if (_then_value == nullptr)
+      throw std::invalid_argument("nullptr then_value expression");
+    if (_else_value == nullptr)
+      throw std::invalid_argument("nullptr else_value expression");
+  }
+
+
+  ite_expression_t::~ite_expression_t()
+  {
+    delete _condition;
+    delete _then_value;
+    delete _else_value;
+  }
+
+
+  std::ostream & ite_expression_t::do_output(std::ostream & os) const
+  {
+    return os << "if " << condition ()
+              << " then " << then_value ()
+              << " else " << else_value ();
+  }
+
+
+  tchecker::expression_t * ite_expression_t::do_clone() const
+  {
+    return new tchecker::ite_expression_t(_condition->clone (),
+                                          _then_value->clone(),
+                                          _else_value->clone());
+  }
+
+
+  void ite_expression_t::do_visit(tchecker::expression_visitor_t & v) const
+  {
+    v.visit(*this);
+  }
+
 } // end of namespace tchecker

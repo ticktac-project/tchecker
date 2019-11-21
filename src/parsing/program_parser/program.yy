@@ -146,6 +146,9 @@
 %token                TOK_GE                ">="
 %token                TOK_LT                "<"
 %token                TOK_GT                ">"
+%token                TOK_IF                "if"
+%token                TOK_THEN              "then"
+%token                TOK_ELSE              "else"
 %token                TOK_NOP               "nop"
 %token <std::string>  TOK_ID                "identifier"
 %token <std::string>  TOK_INTEGER           "integer"
@@ -417,6 +420,16 @@ integer
 {
   try {
     $$ = new tchecker::binary_expression_t(tchecker::EXPR_OP_MOD, $1, $3);
+  }
+  catch (std::exception const & e) {
+    error(@$, e.what());
+    $$ = new fake_expression_t();
+  }
+}
+| TOK_IF predicate_formula TOK_THEN term TOK_ELSE term
+{
+  try {
+    $$ = new tchecker::ite_expression_t($2, $4, $6);
   }
   catch (std::exception const & e) {
     error(@$, e.what());

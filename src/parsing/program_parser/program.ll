@@ -62,6 +62,9 @@ integer  [0-9]+
 	loc.step();
 %}
 
+"if"           { return program::parser_t::make_TOK_IF(loc); }
+"then"         { return program::parser_t::make_TOK_THEN(loc); }
+"else"         { return program::parser_t::make_TOK_ELSE(loc); }
 "="            { return program::parser_t::make_TOK_ASSIGN(loc); }
 "("            { return program::parser_t::make_TOK_LPAR(loc); }
 ")"            { return program::parser_t::make_TOK_RPAR(loc); }
