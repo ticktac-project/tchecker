@@ -14,7 +14,7 @@ system: S
 #   attributes is a colon-separated list of key:value
 #   events is a colon-separated list of process@event
 
-int:1:1:50000:1151:Un
+int:1:1:1000:115:Un
 
 process:P
 location:P:A{initial:}
