@@ -15,6 +15,9 @@ set(SIMPLE_NR_TESTS
     stuck-process-3.tck
     syracuse-1.tck
     syracuse-2.tck
+    syracuse-3.tck
+    syracuse-4.tck
+    syracuse-5.tck
     )
 
 foreach(testfile ${SIMPLE_NR_TESTS})
