@@ -35,5 +35,18 @@ namespace tchecker {
     
     return tchecker::STMT_TYPE_BAD;
   }
-  
+
+  enum tchecker::statement_type_t type_if(enum tchecker::expression_type_t cond,
+                                           enum tchecker::statement_type_t then_stmt,
+                                           enum tchecker::statement_type_t else_stmt)
+  {
+    if (tchecker::bool_valued(cond) &&
+        (then_stmt!= tchecker::STMT_TYPE_BAD) &&
+        (else_stmt!= tchecker::STMT_TYPE_BAD)
+        )
+    return tchecker::STMT_TYPE_IF;
+
+    return tchecker::STMT_TYPE_BAD;
+  }
+
 } // end of namespace tchecker

@@ -399,6 +399,17 @@ namespace tchecker {
         
         /*!
          \brief Visitor
+         \post condition expression, then_stmt, else_stmt are visited
+         */
+        virtual void visit(tchecker::typed_if_statement_t const & stmt)
+        {
+          stmt.condition().visit(*this);
+          stmt.then_stmt().visit(*this);
+          stmt.else_stmt().visit(*this);
+        }
+
+        /*!
+         \brief Visitor
          \post No constraint generated for clock assignment x:=c
          */
         virtual void visit(tchecker::typed_int_to_clock_assign_statement_t const &) {}
@@ -496,6 +507,16 @@ namespace tchecker {
           stmt.second().visit(*this);
         }
         
+        /*!
+         \brief Visitor
+         \post then_stmt and else_stmt statements have been visited
+         */
+        virtual void visit(tchecker::typed_if_statement_t const & stmt)
+        {
+          stmt.then_stmt ().visit(*this);
+          stmt.else_stmt ().visit(*this);
+        }
+
         /*!
          \brief Visitor
          \post the base clock of the lvalue of stmt has been inserted if its ID can be determined

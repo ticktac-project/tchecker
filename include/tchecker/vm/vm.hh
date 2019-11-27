@@ -287,6 +287,11 @@ namespace tchecker {
         case VM_JMP:
           {
             tchecker::bytecode_t const shift = * ++bytecode;
+            // jump is relative to the address of the next instruction:
+            // - bytecode++;
+            // but we have to handle the increment of the IP in the main loop:
+            // - bytecode += shift - 1;
+            // so:
             bytecode += shift;
 
             return 1;

@@ -168,6 +168,10 @@
 %type <tchecker::statement_t *>             assignment
                                             sequence_statement
                                             statement
+                                            simple_statement
+                                            open_statement
+                                            closed_statement
+
 %type <tchecker::expression_t *>            atomic_formula
                                             conjunctive_formula
                                             non_atomic_conjunctive_formula
@@ -236,12 +240,33 @@ statement
 }
 ;
 
-
 statement:
-assignment
-{ $$ = $1; }
-| "nop"
-{ $$ = new tchecker::nop_statement_t(); }
+    open_statement
+    { $$ = $1; }
+|   closed_statement
+    { $$ = $1; }
+;
+
+open_statement:
+    TOK_IF conjunctive_formula TOK_THEN statement
+    {  $$ = new tchecker::if_statement_t($2, $4, new tchecker::nop_statement_t()); }
+|   TOK_IF conjunctive_formula TOK_THEN closed_statement TOK_ELSE open_statement
+    {  $$ = new tchecker::if_statement_t($2, $4, $6); }
+//| TOK_WHILE conjunctive_formula do statement done
+;
+
+closed_statement:
+    simple_statement
+    { $$ = $1; }
+|   TOK_IF conjunctive_formula TOK_THEN closed_statement TOK_ELSE closed_statement
+    {  $$ = new tchecker::if_statement_t($2, $4, $6); }
+;
+
+simple_statement :
+    assignment
+    { $$ = $1; }
+|   "nop"
+    { $$ = new tchecker::nop_statement_t(); }
 ;
 
 
@@ -426,10 +451,10 @@ integer
     $$ = new fake_expression_t();
   }
 }
-| TOK_IF predicate_formula TOK_THEN term TOK_ELSE term
+| TOK_LPAR TOK_IF conjunctive_formula TOK_THEN term TOK_ELSE term TOK_RPAR
 {
   try {
-    $$ = new tchecker::ite_expression_t($2, $4, $6);
+    $$ = new tchecker::ite_expression_t($3, $5, $7);
   }
   catch (std::exception const & e) {
     error(@$, e.what());

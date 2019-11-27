@@ -678,11 +678,9 @@ namespace tchecker {
       tchecker::integer_t _min;  /*!< Variable minimal value */
       tchecker::integer_t _max;  /*!< Variable maximal value */
     };
-    
-    
-    
-    
-    /*!
+
+
+      /*!
      \class statement_compiler_t
      \brief Visitor for compilation of statements
      */
@@ -809,6 +807,18 @@ namespace tchecker {
         stmt.first().visit(*this);
         stmt.second().visit(*this);
       }
+
+      /*
+       * see compile_if_then_else
+       */
+      virtual void visit(tchecker::typed_if_statement_t const & stmt)
+      {
+        if (stmt.type() == tchecker::STMT_TYPE_BAD)
+          throw std::invalid_argument("invalid statement");
+
+        compile_if_then_else (stmt.condition (), stmt.then_stmt (), stmt.else_stmt ());
+      }
+
     protected:
       /*
        Compiler for clock reset:  lvalue = int_rvalue + clock_rvalue
@@ -855,16 +865,64 @@ namespace tchecker {
         _bytecode_back_inserter = bounds_visitor.max();
         _bytecode_back_inserter = tchecker::VM_ASSIGN;
       }
-      
-      
+
+      std::vector<tchecker::bytecode_t>::size_type
+      compile_tmp_statement(tchecker::typed_statement_t const &stmt,
+                            std::vector<tchecker::bytecode_t> &container)
+      {
+        auto sz = container.size();
+        auto back_inserter = std::back_inserter(container);
+        tchecker::details::statement_compiler_t<decltype(back_inserter)> compiler(back_inserter);
+
+        stmt.visit (compiler);
+
+        if (container.size () - sz == 0)
+          throw std::runtime_error("compilation produced no bytecode");
+
+        return container.size() - sz;
+      }
+
+      void compile_if_then_else (tchecker::typed_expression_t const &cond,
+                                  tchecker::typed_statement_t const &then_stmt,
+                                  tchecker::typed_statement_t const &else_stmt)
+      {
+        tchecker::details::rvalue_expression_compiler_t<BYTECODE_BACK_INSERTER> rvalue_compiler(_bytecode_back_inserter);
+
+        // pre-compute then an else bytecodes
+        std::vector<tchecker::bytecode_t> then_bytecode;
+        auto then_len = compile_tmp_statement(then_stmt, then_bytecode);
+
+        std::vector<tchecker::bytecode_t> else_bytecode;
+        auto else_len = compile_tmp_statement(else_stmt, else_bytecode);
+
+        // generation of ite bytecode
+        //  - insert guard bytecode
+        cond.visit (rvalue_compiler);
+
+        //  - insert a conditional jump over 'then' bytecode. Jump instruction
+        //    move IP relatively to the address following the JMP.
+        _bytecode_back_inserter = tchecker::VM_JMPZ;
+        _bytecode_back_inserter = then_len + 2;
+
+        //  - insert bytecode for the 'then' statement
+        for(auto b : then_bytecode)
+          _bytecode_back_inserter = b;
+
+        //  - insert a jump over 'else' bytecode.
+        _bytecode_back_inserter = tchecker::VM_JMP;
+        _bytecode_back_inserter = else_len;
+
+        //  - insert bytecode for the 'else' statement
+        for(auto b : else_bytecode)
+          _bytecode_back_inserter = b;
+      }
+
       BYTECODE_BACK_INSERTER _bytecode_back_inserter;  /*!< Bytecode back ins. */
     };
     
   } // end of namespace details
-  
-  
-  
-  
+
+
   tchecker::bytecode_t * compile(tchecker::typed_statement_t const & stmt)
   {
     try {
@@ -887,7 +945,7 @@ namespace tchecker {
       
       tchecker::bytecode_t * b = new tchecker::bytecode_t[bytecode.size()];
       std::memcpy(b, bytecode.data(), bytecode.size() * sizeof(tchecker::bytecode_t));
-      
+
       return b;
     }
     catch (std::invalid_argument const & e) {

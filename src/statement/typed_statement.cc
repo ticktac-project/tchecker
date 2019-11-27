@@ -23,7 +23,8 @@ namespace tchecker {
       case STMT_TYPE_CLKASSIGN_CLK: return os << "CLKASSIGN_CLK";
       case STMT_TYPE_CLKASSIGN_SUM: return os << "CLKASSIGN_SUM";
       case STMT_TYPE_SEQ:           return os << "SEQ";
-      default:                      throw std::runtime_error("incomplete swicth statement");
+      case STMT_TYPE_IF:            return os << "IF";
+      default:                      throw std::runtime_error("incomplete switch statement");
     }
   }
   
@@ -168,5 +169,32 @@ namespace tchecker {
     v.visit(*this);
   }
   
+  /* typed_if_statement_t */
+
+  typed_if_statement_t::typed_if_statement_t(enum tchecker::statement_type_t type,
+                                             tchecker::typed_expression_t const * cond,
+                                             tchecker::typed_statement_t const * then_stmt,
+                                             tchecker::typed_statement_t const * else_stmt)
+  : tchecker::make_typed_statement_t<tchecker::if_statement_t>(type, cond, then_stmt, else_stmt)
+  {}
+
+
+  tchecker::statement_t * typed_if_statement_t::do_clone() const
+  {
+    tchecker::typed_expression_t * const cond_clone =
+        dynamic_cast<tchecker::typed_expression_t *>(_condition->clone());
+    tchecker::typed_statement_t * const then_clone =
+        dynamic_cast<tchecker::typed_statement_t *>(_then_stmt->clone());
+    tchecker::typed_statement_t * const else_clone =
+        dynamic_cast<tchecker::typed_statement_t *>(_else_stmt->clone());
+    return new typed_if_statement_t(_type, cond_clone, then_clone, else_clone);
+  }
+
+
+  void typed_if_statement_t::do_visit(tchecker::typed_statement_visitor_t & v) const
+  {
+    v.visit(*this);
+  }
+
 } // end of namespace tchecker
 

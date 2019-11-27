@@ -33,6 +33,7 @@ namespace tchecker {
     STMT_TYPE_CLKASSIGN_CLK,   // Assignment: clock to clock variable
     STMT_TYPE_CLKASSIGN_SUM,   // Assignment: integer+clock to clock variable
     STMT_TYPE_SEQ,             // Sequence of statements
+    STMT_TYPE_IF,              // If-Then-Else statement
   };
   
   
@@ -56,7 +57,8 @@ namespace tchecker {
   class typed_clock_to_clock_assign_statement_t;
   class typed_sum_to_clock_assign_statement_t;
   class typed_sequence_statement_t;
-  
+  class typed_if_statement_t;
+
   
   
   
@@ -105,6 +107,7 @@ namespace tchecker {
     virtual void visit(tchecker::typed_clock_to_clock_assign_statement_t const &) = 0;
     virtual void visit(tchecker::typed_sum_to_clock_assign_statement_t const &) = 0;
     virtual void visit(tchecker::typed_sequence_statement_t const &) = 0;
+    virtual void visit(tchecker::typed_if_statement_t const &) = 0;
   };
   
   
@@ -513,7 +516,76 @@ namespace tchecker {
     using tchecker::make_typed_statement_t<tchecker::sequence_statement_t>::do_visit;
   };
   
-  
+  /*!
+   \class typed_if_statement_t
+   \brief Typed if statement
+   */
+  class typed_if_statement_t : public tchecker::make_typed_statement_t<tchecker::if_statement_t> {
+  public:
+    /*!
+     \brief Constructor
+     \param type : statement type
+     \param cond : condition expression
+     \param then_stmt : first statement
+     \param else_stmt : second statement
+     \note this takes ownership on parameters
+     */
+    typed_if_statement_t(enum tchecker::statement_type_t type,
+                               tchecker::typed_expression_t const * cond,
+                               tchecker::typed_statement_t const * then_stmt,
+                               tchecker::typed_statement_t const * else_stmt);
+
+
+    /*!
+     \brief Accessor
+     \return Condition expression
+     */
+    inline tchecker::typed_expression_t const & condition() const
+    {
+      return
+      dynamic_cast<tchecker::typed_expression_t const &>
+      (tchecker::make_typed_statement_t<tchecker::if_statement_t>::condition());
+    }
+
+    /*!
+     \brief Accessor
+     \return Then statement
+     */
+    inline tchecker::typed_statement_t const & then_stmt() const
+    {
+      return
+      dynamic_cast<tchecker::typed_statement_t const &>
+      (tchecker::make_typed_statement_t<tchecker::if_statement_t>::then_stmt ());
+    }
+
+
+    /*!
+     \brief Accessor
+     \return Else statement
+     */
+    inline tchecker::typed_statement_t const & else_stmt() const
+    {
+      return
+      dynamic_cast<tchecker::typed_statement_t const &>
+      (tchecker::make_typed_statement_t<tchecker::if_statement_t>::else_stmt ());
+    }
+  protected:
+    /*!
+     \brief Clone
+     \return clone of this
+     */
+    virtual tchecker::statement_t * do_clone() const;
+
+    /*!
+     \brief Visit
+     \param v : visitor
+     */
+    virtual void do_visit(tchecker::typed_statement_visitor_t & v) const;
+
+    using tchecker::make_typed_statement_t<tchecker::if_statement_t>::do_visit;
+  };
+
+
 } // end of namespace tchecker
 
 #endif // TCHECKER_STATEMENT_TYPED_HH

@@ -278,7 +278,85 @@ namespace tchecker {
   };
   
   
-  
+  /*!
+   \class if_statement_t
+   \brief If-Then-Else statement
+   */
+  class if_statement_t : public virtual tchecker::statement_t {
+  public:
+    /*!
+     \brief Constructor
+     \param cond : condition
+     \param then_stmt : then statement
+     \param else_stmt : else statement
+     \pre cond != nullptr and then_stmt != nullptr and else_stmt != nullptr
+     \throw std::invalid_argument : if an parameter is nullptr
+     \note this takes ownership on parameters
+     */
+    if_statement_t(tchecker::expression_t const *cond,
+                   tchecker::statement_t const * then_stmt,
+                   tchecker::statement_t const * else_stmt);
+
+    /*!
+     \brief Destructor
+     */
+    virtual ~if_statement_t();
+
+    /*!
+     \brief Accessor
+     \return Guard of the if statement
+     */
+    inline tchecker::expression_t const & condition() const
+    {
+      return (* _condition);
+    }
+
+    /*!
+     \brief Accessor
+     \return Then statement
+     */
+    inline tchecker::statement_t const & then_stmt() const
+    {
+      return (* _then_stmt);
+    }
+
+    /*!
+     \brief Accessor
+     \return Second statement
+     */
+    inline tchecker::statement_t const & else_stmt() const
+    {
+      return (* _else_stmt);
+    }
+  protected:
+    /*!
+     \brief Output the statement
+     \param os : output stream
+     \post this has been output to os
+     \return os after this has been output
+     */
+    virtual std::ostream & do_output(std::ostream & os) const;
+
+    /*!
+     \brief Clone
+     \return A clone of this
+     */
+    virtual tchecker::statement_t * do_clone() const;
+
+    /*!
+     \brief Visit
+     \param v : visitor
+     \post v.visit(*this) has been called
+     */
+    virtual void do_visit(tchecker::statement_visitor_t & v) const;
+
+    tchecker::expression_t const * _condition;  /*!< Guard of the if statement */
+    tchecker::statement_t const * _then_stmt;  /*!< Then statement */
+    tchecker::statement_t const * _else_stmt;  /*!< Else statement */
+  };
+
+
+
   
   /*!
    \class statement_visitor_t
@@ -322,6 +400,7 @@ namespace tchecker {
     virtual void visit(tchecker::nop_statement_t const &) = 0;
     virtual void visit(tchecker::assign_statement_t const &) = 0;
     virtual void visit(tchecker::sequence_statement_t const &) = 0;
+    virtual void visit(tchecker::if_statement_t const &) = 0;
   };
   
   

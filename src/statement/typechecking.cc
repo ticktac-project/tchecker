@@ -5,6 +5,7 @@
  *
  */
 
+#include <tchecker/expression/type_inference.hh>
 #include "tchecker/expression/typechecking.hh"
 #include "tchecker/statement/type_inference.hh"
 #include "tchecker/statement/typechecking.hh"
@@ -161,6 +162,40 @@ namespace tchecker {
           _error("in statement " + stmt.to_string() + ", invalid sequence of " + stmt.first().to_string() + " then " +
                  stmt.second().to_string());
       }
+
+      /*!
+       \brief Visitor
+       \param stmt : if statement
+       \post _type_stmt points to a typed clone of this
+       */
+      virtual void visit(tchecker::if_statement_t const & stmt)
+      {
+        tchecker::typed_expression_t * typed_cond =
+            tchecker::typecheck(stmt.condition (), _intvars, _clocks, _error);
+
+        stmt.then_stmt ().visit(*this);
+        tchecker::typed_statement_t * typed_then = this->release();
+
+        stmt.else_stmt ().visit(*this);
+        tchecker::typed_statement_t * typed_else = this->release();
+
+        // Typed statement
+        enum tchecker::statement_type_t stmt_type =
+            type_if(typed_cond->type(), typed_then->type(), typed_else->type());
+
+        _typed_stmt = new tchecker::typed_if_statement_t(stmt_type, typed_cond,
+                                                         typed_then, typed_else);
+
+        // Report bad type
+        if (stmt_type != tchecker::STMT_TYPE_BAD)
+          return;
+
+        if (! tchecker::bool_valued (typed_cond->type ()))
+          _error("in statement " + stmt.to_string() + ", not a Boolean condition '" + stmt.condition().to_string());
+        else
+          _error("invalid if-then-else statement " + stmt.to_string());
+      }
+
     protected:
       tchecker::typed_statement_t * _typed_stmt;       /*!< Typed statement */
       tchecker::integer_variables_t const & _intvars;  /*!< Integer variables */
