@@ -15,8 +15,9 @@ system: S
 #   events is a colon-separated list of process@event
 
 int:1:1:1000:115:Un
+int:1:0:1000:0:n
 
 process:P
 location:P:A{initial:}
 event: a
-edge:P:A:A:a{do: if Un != 1 then if Un % 2 == 0 then Un= Un/2 else Un = 3*Un+1 endif endif }
+edge:P:A:A:a{do: while Un != 1 do n = n + 1; if Un % 2 == 0 then Un = Un/2 else Un = 3*Un+1 endif done }
