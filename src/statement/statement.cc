@@ -185,9 +185,10 @@ namespace tchecker {
 
   std::ostream & if_statement_t::do_output(std::ostream & os) const
   {
-    return os << "if " << _condition
+    return os << "if " << *_condition
               << " then " << *_then_stmt
-              << " else " << *_else_stmt;
+              << " else " << *_else_stmt
+              << "endif";
   }
 
 
@@ -202,6 +203,50 @@ namespace tchecker {
 
 
   void if_statement_t::do_visit(tchecker::statement_visitor_t & v) const
+  {
+    v.visit(*this);
+  }
+
+  // while_statement_t
+
+  while_statement_t::while_statement_t(tchecker::expression_t const *cond,
+                                       tchecker::statement_t const * stmt)
+  : _condition(cond), _stmt(stmt)
+  {
+    if (cond == nullptr)
+      throw std::invalid_argument("nullptr condition");
+    if (stmt == nullptr)
+      throw std::invalid_argument("nullptr iterated statement");
+  }
+
+
+
+  while_statement_t::~while_statement_t()
+  {
+    delete _condition;
+    delete _stmt;
+  }
+
+
+
+  std::ostream & while_statement_t::do_output(std::ostream & os) const
+  {
+    return os << "while " << *_condition << " do "
+              << *_stmt
+              << " done";
+  }
+
+
+
+  tchecker::statement_t * while_statement_t::do_clone() const
+  {
+    return new tchecker::while_statement_t(_condition->clone(),
+                                           _stmt->clone());
+  }
+
+
+
+  void while_statement_t::do_visit(tchecker::statement_visitor_t & v) const
   {
     v.visit(*this);
   }

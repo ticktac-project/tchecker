@@ -196,6 +196,35 @@ namespace tchecker {
           _error("invalid if-then-else statement " + stmt.to_string());
       }
 
+      /*!
+       \brief Visitor
+       \param stmt : while statement
+       \post _type_stmt points to a typed clone of this
+       */
+      virtual void visit(tchecker::while_statement_t const & stmt)
+      {
+        tchecker::typed_expression_t * typed_cond =
+            tchecker::typecheck(stmt.condition (), _intvars, _clocks, _error);
+
+        stmt.statement ().visit(*this);
+        tchecker::typed_statement_t * typed_stmt = this->release();
+
+        // Typed statement
+        enum tchecker::statement_type_t stmt_type =
+            type_while(typed_cond->type(), typed_stmt->type());
+
+        _typed_stmt = new tchecker::typed_while_statement_t(stmt_type, typed_cond, typed_stmt);;
+
+        // Report bad type
+        if (stmt_type != tchecker::STMT_TYPE_BAD)
+          return;
+
+        if (! tchecker::bool_valued (typed_cond->type ()))
+          _error("in statement " + stmt.to_string() + ", not a Boolean condition '" + stmt.condition().to_string());
+        else
+          _error("invalid while statement " + stmt.to_string());
+      }
+
     protected:
       tchecker::typed_statement_t * _typed_stmt;       /*!< Typed statement */
       tchecker::integer_variables_t const & _intvars;  /*!< Integer variables */

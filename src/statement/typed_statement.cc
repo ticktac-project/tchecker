@@ -24,6 +24,7 @@ namespace tchecker {
       case STMT_TYPE_CLKASSIGN_SUM: return os << "CLKASSIGN_SUM";
       case STMT_TYPE_SEQ:           return os << "SEQ";
       case STMT_TYPE_IF:            return os << "IF";
+      case STMT_TYPE_WHILE:         return os << "WHILE";
       default:                      throw std::runtime_error("incomplete switch statement");
     }
   }
@@ -192,6 +193,30 @@ namespace tchecker {
 
 
   void typed_if_statement_t::do_visit(tchecker::typed_statement_visitor_t & v) const
+  {
+    v.visit(*this);
+  }
+
+  /* typed_while_statement_t */
+
+  typed_while_statement_t::typed_while_statement_t(enum tchecker::statement_type_t type,
+                                                   tchecker::typed_expression_t const * cond,
+                                                   tchecker::typed_statement_t const * stmt)
+  : tchecker::make_typed_statement_t<tchecker::while_statement_t>(type, cond, stmt)
+  {}
+
+
+  tchecker::statement_t * typed_while_statement_t::do_clone() const
+  {
+    tchecker::typed_expression_t * const cond_clone =
+        dynamic_cast<tchecker::typed_expression_t *>(_condition->clone());
+    tchecker::typed_statement_t * const stmt_clone =
+        dynamic_cast<tchecker::typed_statement_t *>(_stmt->clone());
+    return new typed_while_statement_t(_type, cond_clone, stmt_clone);
+  }
+
+
+  void typed_while_statement_t::do_visit(tchecker::typed_statement_visitor_t & v) const
   {
     v.visit(*this);
   }

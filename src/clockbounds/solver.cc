@@ -410,6 +410,16 @@ namespace tchecker {
 
         /*!
          \brief Visitor
+         \post condition expression and stmt statement are visited
+         */
+        virtual void visit(tchecker::typed_while_statement_t const & stmt)
+        {
+          stmt.condition().visit(*this);
+          stmt.statement().visit(*this);
+        }
+
+        /*!
+         \brief Visitor
          \post No constraint generated for clock assignment x:=c
          */
         virtual void visit(tchecker::typed_int_to_clock_assign_statement_t const &) {}
@@ -515,6 +525,15 @@ namespace tchecker {
         {
           stmt.then_stmt ().visit(*this);
           stmt.else_stmt ().visit(*this);
+        }
+
+        /*!
+         \brief Visitor
+         \post stmt statement has been visited
+         */
+        virtual void visit(tchecker::typed_while_statement_t const & stmt)
+        {
+          stmt.statement().visit(*this);
         }
 
         /*!

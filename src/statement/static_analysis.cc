@@ -108,6 +108,12 @@ namespace tchecker {
 				stmt.then_stmt().visit(*this);
 				stmt.else_stmt().visit(*this);
 			}
+
+			virtual void visit(tchecker::typed_while_statement_t const & stmt)
+			{
+				tchecker::extract_variables(stmt.condition(), _clocks, _intvars);
+				stmt.statement().visit(*this);
+			}
 		private:
 			std::unordered_set<tchecker::clock_id_t> & _clocks;    /*!< Set of clock IDs */
 			std::unordered_set<tchecker::intvar_id_t> & _intvars;  /*!< Set of integer variable IDs */
@@ -218,6 +224,10 @@ namespace tchecker {
 			{
 				stmt.then_stmt().visit(*this);
 				stmt.else_stmt().visit(*this);
+			}
+			virtual void visit(tchecker::typed_while_statement_t const & stmt)
+			{
+				stmt.statement().visit(*this);
 			}
 		private:
 			std::unordered_set<tchecker::clock_id_t> & _clocks;    /*!< Set of clock IDs */

@@ -279,8 +279,10 @@ namespace tchecker {
           assert( contains_value<tchecker::integer_t>(h) );
           assert( contains_value<tchecker::integer_t>(offset) );
           if ( (offset < l) || (offset > h) )
-            throw std::out_of_range("out-of-bounds value");
-          
+            {
+              std::cerr << offset << "out of [" << l << ", " << h << "]" << std::endl;
+              throw std::out_of_range ("out-of-bounds value");
+            }
           return top<tchecker::integer_t>();
         }
           

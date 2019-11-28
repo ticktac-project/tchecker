@@ -819,6 +819,17 @@ namespace tchecker {
         compile_if_then_else (stmt.condition (), stmt.then_stmt (), stmt.else_stmt ());
       }
 
+      /*
+       * see compile_while
+       */
+      virtual void visit(tchecker::typed_while_statement_t const & stmt)
+      {
+        if (stmt.type() == tchecker::STMT_TYPE_BAD)
+          throw std::invalid_argument("invalid statement");
+
+        compile_while (stmt.condition (), stmt.statement ());
+      }
+
     protected:
       /*
        Compiler for clock reset:  lvalue = int_rvalue + clock_rvalue
@@ -882,9 +893,22 @@ namespace tchecker {
         return container.size() - sz;
       }
 
+      inline void append_bytecode (std::vector<tchecker::bytecode_t> bytecode)
+      {
+        for(auto b : bytecode)
+          _bytecode_back_inserter = b;
+      }
+
+      /*
+       * insert cond bytecode
+       * VM_JMPZ over 'then' bytecode to 'else' bytecode
+       * insert 'then' bytecode
+       * VM_JMP over 'else' bytecode
+       * insert 'else' bytecode
+       */
       void compile_if_then_else (tchecker::typed_expression_t const &cond,
-                                  tchecker::typed_statement_t const &then_stmt,
-                                  tchecker::typed_statement_t const &else_stmt)
+                                 tchecker::typed_statement_t const &then_stmt,
+                                 tchecker::typed_statement_t const &else_stmt)
       {
         tchecker::details::rvalue_expression_compiler_t<BYTECODE_BACK_INSERTER> rvalue_compiler(_bytecode_back_inserter);
 
@@ -905,16 +929,64 @@ namespace tchecker {
         _bytecode_back_inserter = then_len + 2;
 
         //  - insert bytecode for the 'then' statement
-        for(auto b : then_bytecode)
-          _bytecode_back_inserter = b;
+        append_bytecode (then_bytecode);
 
         //  - insert a jump over 'else' bytecode.
         _bytecode_back_inserter = tchecker::VM_JMP;
         _bytecode_back_inserter = else_len;
 
         //  - insert bytecode for the 'else' statement
-        for(auto b : else_bytecode)
-          _bytecode_back_inserter = b;
+        append_bytecode (else_bytecode);
+      }
+
+      std::vector<tchecker::bytecode_t>::size_type
+      compile_tmp_rvalue_expression(tchecker::typed_expression_t const &expr,
+                                    std::vector<tchecker::bytecode_t> &container)
+      {
+        auto sz = container.size();
+        auto back_inserter = std::back_inserter(container);
+        tchecker::details::rvalue_expression_compiler_t<decltype(back_inserter)> compiler(back_inserter);
+
+        expr.visit (compiler);
+
+        if (container.size () - sz == 0)
+          throw std::runtime_error("compilation produced no bytecode");
+
+        return container.size() - sz;
+      }
+
+      /*
+       * insert cond bytecode
+       * VM_JMPZ over 'stmt' bytecode and unconditional loop instruction
+       * insert 'stmt' bytecode
+       * VM_JMP back to cond bytecode
+       */
+      void compile_while (tchecker::typed_expression_t const &cond,
+                          tchecker::typed_statement_t const &stmt)
+      {
+        // pre-compute cond and stmt bytecodes to get their respective lengths
+
+        std::vector<tchecker::bytecode_t> cond_bytecode;
+        auto cond_len = compile_tmp_rvalue_expression(cond, cond_bytecode);
+
+        std::vector<tchecker::bytecode_t> stmt_bytecode;
+        auto stmt_len = compile_tmp_statement(stmt, stmt_bytecode);
+
+
+        // generation of while bytecode
+        //  - insert 'cond' bytecode
+        append_bytecode (cond_bytecode);
+
+        //  - insert a conditional jump over 'stmt' bytecode and loop instruction
+        _bytecode_back_inserter = tchecker::VM_JMPZ;
+        _bytecode_back_inserter = stmt_len + 2;
+
+        //  - insert bytecode for the 'stmt' statement
+        append_bytecode (stmt_bytecode);
+
+        //  - insert a loop back to 'cond' bytecode
+        _bytecode_back_inserter = tchecker::VM_JMP;
+        _bytecode_back_inserter = -(cond_len + 2 + stmt_len + 2);
       }
 
       BYTECODE_BACK_INSERTER _bytecode_back_inserter;  /*!< Bytecode back ins. */

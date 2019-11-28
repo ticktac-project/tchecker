@@ -355,6 +355,72 @@ namespace tchecker {
     tchecker::statement_t const * _else_stmt;  /*!< Else statement */
   };
 
+  /*!
+   \class while_statement_t
+   \brief while statement
+   */
+  class while_statement_t : public virtual tchecker::statement_t {
+  public:
+    /*!
+     \brief Constructor
+     \param cond : condition
+     \param stmt : iterated statement
+     \pre cond != nullptr and stmt != nullptr
+     \throw std::invalid_argument : if an parameter is nullptr
+     \note this takes ownership on parameters
+     */
+    while_statement_t(tchecker::expression_t const *cond,
+                      tchecker::statement_t const * stmt);
+
+    /*!
+     \brief Destructor
+     */
+    virtual ~while_statement_t();
+
+    /*!
+     \brief Accessor
+     \return Guard of the if statement
+     */
+    inline tchecker::expression_t const & condition() const
+    {
+      return (* _condition);
+    }
+
+    /*!
+     \brief Accessor
+     \return Iterated statement
+     */
+    inline tchecker::statement_t const & statement() const
+    {
+      return (* _stmt);
+    }
+
+  protected:
+    /*!
+     \brief Output the statement
+     \param os : output stream
+     \post this has been output to os
+     \return os after this has been output
+     */
+    virtual std::ostream & do_output(std::ostream & os) const;
+
+    /*!
+     \brief Clone
+     \return A clone of this
+     */
+    virtual tchecker::statement_t * do_clone() const;
+
+    /*!
+     \brief Visit
+     \param v : visitor
+     \post v.visit(*this) has been called
+     */
+    virtual void do_visit(tchecker::statement_visitor_t & v) const;
+
+    tchecker::expression_t const * _condition;  /*!< Guard of the if statement */
+    tchecker::statement_t const * _stmt;  /*!< Iterated statement */
+  };
+
 
 
   
@@ -401,6 +467,7 @@ namespace tchecker {
     virtual void visit(tchecker::assign_statement_t const &) = 0;
     virtual void visit(tchecker::sequence_statement_t const &) = 0;
     virtual void visit(tchecker::if_statement_t const &) = 0;
+    virtual void visit(tchecker::while_statement_t const &) = 0;
   };
   
   

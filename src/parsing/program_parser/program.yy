@@ -147,8 +147,12 @@
 %token                TOK_LT                "<"
 %token                TOK_GT                ">"
 %token                TOK_IF                "if"
+%token                TOK_ENDIF             "endif"
 %token                TOK_THEN              "then"
 %token                TOK_ELSE              "else"
+%token                TOK_WHILE             "while"
+%token                TOK_DO                "do"
+%token                TOK_DONE              "done"
 %token                TOK_NOP               "nop"
 %token <std::string>  TOK_ID                "identifier"
 %token <std::string>  TOK_INTEGER           "integer"
@@ -169,8 +173,8 @@
                                             sequence_statement
                                             statement
                                             simple_statement
-                                            open_statement
-                                            closed_statement
+                                            if_statement
+                                            loop_statement
 
 %type <tchecker::expression_t *>            atomic_formula
                                             conjunctive_formula
@@ -241,25 +245,24 @@ statement
 ;
 
 statement:
-    open_statement
-    { $$ = $1; }
-|   closed_statement
-    { $$ = $1; }
-;
-
-open_statement:
-    TOK_IF conjunctive_formula TOK_THEN statement
-    {  $$ = new tchecker::if_statement_t($2, $4, new tchecker::nop_statement_t()); }
-|   TOK_IF conjunctive_formula TOK_THEN closed_statement TOK_ELSE open_statement
-    {  $$ = new tchecker::if_statement_t($2, $4, $6); }
-//| TOK_WHILE conjunctive_formula do statement done
-;
-
-closed_statement:
     simple_statement
     { $$ = $1; }
-|   TOK_IF conjunctive_formula TOK_THEN closed_statement TOK_ELSE closed_statement
+|   if_statement
+    { $$ = $1; }
+|   loop_statement
+    { $$ = $1; }
+;
+
+if_statement:
+    TOK_IF conjunctive_formula TOK_THEN sequence_statement TOK_ENDIF
+    {  $$ = new tchecker::if_statement_t($2, $4, new tchecker::nop_statement_t()); }
+|   TOK_IF conjunctive_formula TOK_THEN sequence_statement TOK_ELSE sequence_statement TOK_ENDIF
     {  $$ = new tchecker::if_statement_t($2, $4, $6); }
+;
+
+loop_statement:
+    TOK_WHILE conjunctive_formula TOK_DO sequence_statement TOK_DONE
+    { $$ = new tchecker::while_statement_t($2, $4); }
 ;
 
 simple_statement :

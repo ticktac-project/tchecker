@@ -40,11 +40,19 @@ namespace tchecker {
    \param cond : type of condition
    \param then_stmt : type of first statement
    \param else_stmt : type of second statement
-   \return Type of sequence statement if cond then then_stmt else else_stmt
+   \return Type of statement if cond then then_stmt else else_stmt endif
    */
   enum tchecker::statement_type_t type_if(enum tchecker::expression_type_t cond,
                                           enum tchecker::statement_type_t then_stmt,
                                           enum tchecker::statement_type_t else_stmt);
+  /*!
+   \brief Type inference
+   \param cond : type of condition
+   \param stmt : type of iterated statement
+   \return Type of while cond do stmt done
+   */
+  enum tchecker::statement_type_t type_while(enum tchecker::expression_type_t cond,
+                                             enum tchecker::statement_type_t stmt);
 
 } // end of namespace tchecker
 

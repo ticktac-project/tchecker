@@ -44,7 +44,16 @@ namespace tchecker {
         (then_stmt!= tchecker::STMT_TYPE_BAD) &&
         (else_stmt!= tchecker::STMT_TYPE_BAD)
         )
-    return tchecker::STMT_TYPE_IF;
+      return tchecker::STMT_TYPE_IF;
+
+    return tchecker::STMT_TYPE_BAD;
+  }
+
+  enum tchecker::statement_type_t type_while(enum tchecker::expression_type_t cond,
+                                             enum tchecker::statement_type_t stmt)
+  {
+    if (tchecker::bool_valued(cond) && (stmt!= tchecker::STMT_TYPE_BAD))
+      return tchecker::STMT_TYPE_WHILE;
 
     return tchecker::STMT_TYPE_BAD;
   }
