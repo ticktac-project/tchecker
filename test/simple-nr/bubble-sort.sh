@@ -2,16 +2,36 @@
 #
 # This file has been generated automatically with uppaal-to-tchecker
 # 
-
-if ! test -n "${TCHECKER}";
-then
-    echo 1>&2 "missing environment variable TCHECKER"
-    exit 1
-fi
-
 SEED=12345
 MAX=1000
 N=10
+
+usage() {
+    cat >&2 << EOF
+usage: $0 [-s seed] [-n array-size] [-m max-value] [-h]
+Default values are: -s ${SEED} -n ${N} -m ${MAX}
+Use -h for this help message.
+EOF
+}
+
+TEMP=$(getopt -o "s:m:n:h" -- "$@")
+if test $? != 0; then
+    usage $0
+    exit 1
+fi
+
+eval set -- "${TEMP}"
+
+while true ; do
+        case "$1" in
+                -s) SEED=$2; shift 2 ;;
+                -n) N=$2; shift 2 ;;
+                -m) MAX=$2; shift 2 ;;
+                -h) usage $0; exit 0;;
+                --) shift; break ;;
+                *) echo "Internal error on argument '$1' !" ; exit 1 ;;
+        esac
+done
 
 init_array() {
     RANDOM=$1
@@ -22,7 +42,6 @@ init_array() {
         let i=$i+1
     done
 }
-
 
 #clock:size:name
 #int:size:min:max:init:name
@@ -35,7 +54,7 @@ init_array() {
 #   attributes is a colon-separated list of key:value
 #   events is a colon-separated list of process@event
 
-exec ${TCHECKER} explore -f raw -m ta << EOF
+cat << EOF
 system: S
 int:1:${N}:${N}:${N}:n
 int:${N}:0:${MAX}:0:A
