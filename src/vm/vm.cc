@@ -118,10 +118,6 @@ namespace tchecker {
           os << "LNOT";
           break;
 
-        case VM_ITE:
-          os << "ITE";
-          break;
-
         case VM_CLKCONSTR:
           os << "CLKCONSTR";
           ++bytecode;

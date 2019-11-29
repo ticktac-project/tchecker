@@ -59,7 +59,6 @@ namespace tchecker {
     VM_SUM,          // stack = v1 ... vK-2 (vK-1 + vK)
     VM_NEG,          // stack = v1 ... vK-1 (- vK)
     VM_LNOT,         // stack = v1 ... vK-1 (! vK)
-    VM_ITE,          // stack = v1 ... vK-3 (vK ? vK-1 : vK-2)
     //
     VM_CLKCONSTR,    // stack = v1 ... vK-4 1                  output (vK-2 vK-1 s vK) where
     //                                                         s is a parameter of VM_CLKCONSTR (strictness)
@@ -479,17 +478,6 @@ namespace tchecker {
           push<tchecker::integer_t>(! v);
           return top<tchecker::integer_t>();
         }
-
-          // stack = v1 ... vK-3 (vK ? vK-1 : vK-2)
-        case VM_ITE:
-        {
-          auto const else_value = top_and_pop<tchecker::integer_t>();
-          auto const then_value = top_and_pop<tchecker::integer_t>();
-          auto const cond = top_and_pop<tchecker::integer_t>();
-          push<tchecker::integer_t>(cond ? then_value : else_value);
-          return top<tchecker::integer_t>();
-        }
-
 
           // no-operation
         case VM_NOP:

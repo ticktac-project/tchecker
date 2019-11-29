@@ -12,8 +12,28 @@
 #include "tchecker/variables/clocks.hh"
 #include "tchecker/vm/compilers.hh"
 
-namespace tchecker {
-  
+namespace tchecker
+{
+
+  // Forward declaration of utility routines
+  namespace details {
+
+      std::vector<tchecker::bytecode_t>::size_type
+      compile_tmp_statement (tchecker::typed_statement_t const &stmt,
+                             std::vector<tchecker::bytecode_t> &container);
+
+      std::vector<tchecker::bytecode_t>::size_type
+      compile_tmp_rvalue_expression (tchecker::typed_expression_t const &expr,
+                                     std::vector<tchecker::bytecode_t> &container);
+
+      template<class BYTECODE_BACK_INSERTER>
+      inline void append_bytecode (BYTECODE_BACK_INSERTER &bbi, std::vector<tchecker::bytecode_t> bytecode)
+      {
+        for(auto b : bytecode)
+          bbi = b;
+      }
+  } // end details namespace
+
   // Expression compiler
   
   namespace details {
@@ -377,7 +397,7 @@ namespace tchecker {
         if (expr.type() != tchecker::EXPR_TYPE_INTTERM)
           throw std::invalid_argument("invalid expression");
 
-        compile_ite_expression(expr);
+        compile_ite_expression(expr.condition (), expr.then_value (), expr.else_value ());
       }
 
      private:
@@ -507,16 +527,41 @@ namespace tchecker {
       }
 
       /*
+       * insert cond bycode
+       *
        insert expr.condition() bytecode
        insert expr.then_value() bytecode
        insert expr.else_value() bytecode
        */
-      void compile_ite_expression(tchecker::typed_ite_expression_t const & expr)
+      void compile_ite_expression(tchecker::typed_expression_t const & cond,
+                                  tchecker::typed_expression_t const & then_value,
+                                  tchecker::typed_expression_t const & else_value)
       {
-        expr.condition().visit(*this);
-        expr.then_value().visit(*this);
-        expr.else_value().visit(*this);
-        _bytecode_back_inserter = VM_ITE;
+        // pre-compute then an else bytecodes
+        std::vector<tchecker::bytecode_t> then_bytecode;
+        auto then_len = compile_tmp_rvalue_expression(then_value, then_bytecode);
+
+        std::vector<tchecker::bytecode_t> else_bytecode;
+        auto else_len = compile_tmp_rvalue_expression(else_value, else_bytecode);
+
+        // generation of ite bytecode
+        //  - insert guard bytecode
+        cond.visit (*this);
+
+        //  - insert a conditional jump over 'then' bytecode. Jump instruction
+        //    move IP relatively to the address following the JMP.
+        _bytecode_back_inserter = tchecker::VM_JMPZ;
+        _bytecode_back_inserter = then_len + 2;
+
+        //  - insert bytecode for the 'then' statement
+        append_bytecode (_bytecode_back_inserter, then_bytecode);
+
+        //  - insert a jump over 'else' bytecode.
+        _bytecode_back_inserter = tchecker::VM_JMP;
+        _bytecode_back_inserter = else_len;
+
+        //  - insert bytecode for the 'else' statement
+        append_bytecode (_bytecode_back_inserter, else_bytecode);
       }
 
 
@@ -877,28 +922,6 @@ namespace tchecker {
         _bytecode_back_inserter = tchecker::VM_ASSIGN;
       }
 
-      std::vector<tchecker::bytecode_t>::size_type
-      compile_tmp_statement(tchecker::typed_statement_t const &stmt,
-                            std::vector<tchecker::bytecode_t> &container)
-      {
-        auto sz = container.size();
-        auto back_inserter = std::back_inserter(container);
-        tchecker::details::statement_compiler_t<decltype(back_inserter)> compiler(back_inserter);
-
-        stmt.visit (compiler);
-
-        if (container.size () - sz == 0)
-          throw std::runtime_error("compilation produced no bytecode");
-
-        return container.size() - sz;
-      }
-
-      inline void append_bytecode (std::vector<tchecker::bytecode_t> bytecode)
-      {
-        for(auto b : bytecode)
-          _bytecode_back_inserter = b;
-      }
-
       /*
        * insert cond bytecode
        * VM_JMPZ over 'then' bytecode to 'else' bytecode
@@ -929,30 +952,14 @@ namespace tchecker {
         _bytecode_back_inserter = then_len + 2;
 
         //  - insert bytecode for the 'then' statement
-        append_bytecode (then_bytecode);
+        append_bytecode (_bytecode_back_inserter, then_bytecode);
 
         //  - insert a jump over 'else' bytecode.
         _bytecode_back_inserter = tchecker::VM_JMP;
         _bytecode_back_inserter = else_len;
 
         //  - insert bytecode for the 'else' statement
-        append_bytecode (else_bytecode);
-      }
-
-      std::vector<tchecker::bytecode_t>::size_type
-      compile_tmp_rvalue_expression(tchecker::typed_expression_t const &expr,
-                                    std::vector<tchecker::bytecode_t> &container)
-      {
-        auto sz = container.size();
-        auto back_inserter = std::back_inserter(container);
-        tchecker::details::rvalue_expression_compiler_t<decltype(back_inserter)> compiler(back_inserter);
-
-        expr.visit (compiler);
-
-        if (container.size () - sz == 0)
-          throw std::runtime_error("compilation produced no bytecode");
-
-        return container.size() - sz;
+        append_bytecode (_bytecode_back_inserter, else_bytecode);
       }
 
       /*
@@ -975,14 +982,14 @@ namespace tchecker {
 
         // generation of while bytecode
         //  - insert 'cond' bytecode
-        append_bytecode (cond_bytecode);
+        append_bytecode (_bytecode_back_inserter, cond_bytecode);
 
         //  - insert a conditional jump over 'stmt' bytecode and loop instruction
         _bytecode_back_inserter = tchecker::VM_JMPZ;
         _bytecode_back_inserter = stmt_len + 2;
 
         //  - insert bytecode for the 'stmt' statement
-        append_bytecode (stmt_bytecode);
+        append_bytecode (_bytecode_back_inserter, stmt_bytecode);
 
         //  - insert a loop back to 'cond' bytecode
         _bytecode_back_inserter = tchecker::VM_JMP;
@@ -994,8 +1001,43 @@ namespace tchecker {
     
   } // end of namespace details
 
+    // Utility routines
+    namespace details {
+        std::vector<tchecker::bytecode_t>::size_type
+        compile_tmp_statement(tchecker::typed_statement_t const &stmt,
+                              std::vector<tchecker::bytecode_t> &container)
+        {
+          auto sz = container.size();
+          auto back_inserter = std::back_inserter(container);
+          tchecker::details::statement_compiler_t<decltype(back_inserter)> compiler(back_inserter);
 
-  tchecker::bytecode_t * compile(tchecker::typed_statement_t const & stmt)
+          stmt.visit (compiler);
+
+          if (container.size () - sz == 0)
+            throw std::runtime_error("compilation produced no bytecode");
+
+          return container.size() - sz;
+        }
+
+        std::vector<tchecker::bytecode_t>::size_type
+        compile_tmp_rvalue_expression(tchecker::typed_expression_t const &expr,
+                                      std::vector<tchecker::bytecode_t> &container)
+        {
+          auto sz = container.size();
+          auto back_inserter = std::back_inserter(container);
+          tchecker::details::rvalue_expression_compiler_t<decltype(back_inserter)> compiler(back_inserter);
+
+          expr.visit (compiler);
+
+          if (container.size () - sz == 0)
+            throw std::runtime_error("compilation produced no bytecode");
+
+          return container.size() - sz;
+        }
+    } // end of namespace details
+
+
+    tchecker::bytecode_t * compile(tchecker::typed_statement_t const & stmt)
   {
     try {
       if (stmt.type() == tchecker::STMT_TYPE_BAD)
