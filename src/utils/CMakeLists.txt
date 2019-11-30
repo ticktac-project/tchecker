@@ -7,6 +7,7 @@ ${CMAKE_CURRENT_SOURCE_DIR}/gc.cc
 ${CMAKE_CURRENT_SOURCE_DIR}/log.cc
 ${TCHECKER_INCLUDE_DIR}/tchecker/utils/allocation_size.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/utils/array.hh
+${TCHECKER_INCLUDE_DIR}/tchecker/utils/cache.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/utils/gc.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/utils/index.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/utils/iterator.hh

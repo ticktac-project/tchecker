@@ -19,6 +19,7 @@ set(TCHECKER_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${TCHECKER_TEST_DIR})
 
 set(TEST_SRC
+    ${CMAKE_CURRENT_SOURCE_DIR}/test-cache.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-db.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-dbm.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-extract_variables.hh
