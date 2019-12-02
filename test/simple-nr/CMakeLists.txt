@@ -25,6 +25,8 @@ set(SIMPLE_NR_TESTS
     bubble-sort-3.tck
     bubble-sort-4.tck
     bubble-sort-5.tck
+    bubble-sort-6.tck
+    bubble-sort-7.tck
     )
 
 foreach(testfile ${SIMPLE_NR_TESTS})
