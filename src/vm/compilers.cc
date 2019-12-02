@@ -322,8 +322,8 @@ namespace tchecker
           if (expr.type() != tchecker::EXPR_TYPE_CONJUNCTIVE_FORMULA)
             throw std::invalid_argument("invalid expression");
           
-          compile_binary_expression(expr);
-          _bytecode_back_inserter = tchecker::VM_RETZ;   // optimization: return as soon as conjunct is false
+          compile_land_expression(expr);
+          //_bytecode_back_inserter = tchecker::VM_RETZ;   // optimization: return as soon as conjunct is false
         }
         // LT, LE, EQ, NEQ, GE, GT expression
         else if (tchecker::predicate(expr.binary_operator())) {
@@ -501,8 +501,19 @@ namespace tchecker
         _bytecode_back_inserter = tchecker::VM_PUSH;
         _bytecode_back_inserter = 1;
       }
-      
-      
+
+      /*
+       * insert expr.left_operand() bytecode
+       * insert conditional jump JMPZ over second operand bytecode
+       * insert expr.right_operand() bytecode
+       */
+      void compile_land_expression(tchecker::typed_binary_expression_t const & expr)
+      {
+        tchecker::typed_int_expression_t zero(EXPR_TYPE_INTTERM, 0);
+        compile_ite_expression (expr.left_operand (), expr.right_operand (),
+                                zero);
+      }
+
       /*
        insert expr.left_operand() bytecode
        insert expr.right_operand() bytecode
