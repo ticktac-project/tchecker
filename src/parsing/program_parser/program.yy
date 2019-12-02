@@ -316,6 +316,7 @@ non_atomic_conjunctive_formula:
     $$ = new fake_expression_t();
   }
 }
+
 ;
 
 
@@ -454,10 +455,10 @@ integer
     $$ = new fake_expression_t();
   }
 }
-| TOK_LPAR TOK_IF conjunctive_formula TOK_THEN term TOK_ELSE term TOK_RPAR
+| TOK_IF conjunctive_formula TOK_THEN term TOK_ELSE term TOK_ENDIF
 {
   try {
-    $$ = new tchecker::ite_expression_t($3, $5, $7);
+    $$ = new tchecker::ite_expression_t($2, $4, $6);
   }
   catch (std::exception const & e) {
     error(@$, e.what());
