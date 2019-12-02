@@ -19,4 +19,4 @@ int:1:1:1000:115:Un
 process:P
 location:P:A{initial:}
 event: a
-edge:P:A:A:a{do: Un=(if Un%2 ==0 then Un/2 else 3*Un+1) }
+edge:P:A:A:a{do: Un=(if Un%2 ==0 then Un/2 else 3*Un+1 endif) }
