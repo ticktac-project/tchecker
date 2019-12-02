@@ -18,10 +18,13 @@ set(SIMPLE_NR_TESTS
     syracuse-3.tck
     syracuse-4.tck
     syracuse-5.tck
+    syracuse-5b.tck
     syracuse-6.tck
     bubble-sort-1.tck
     bubble-sort-2.tck
     bubble-sort-3.tck
+    bubble-sort-4.tck
+    bubble-sort-5.tck
     )
 
 foreach(testfile ${SIMPLE_NR_TESTS})

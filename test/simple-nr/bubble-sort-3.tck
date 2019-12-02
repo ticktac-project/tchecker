@@ -1,3 +1,6 @@
+# File generated with the following setting:
+# N=20 SEED=12345 MAX=100
+
 system: S
 int:1:20:20:20:n
 int:20:0:100:0:A
