@@ -422,8 +422,121 @@ namespace tchecker {
   };
 
 
+    /*!
+     \class local_var_statement_t
+     \brief declaration of a local integer variable
+     */
+    class local_var_statement_t : public virtual tchecker::statement_t {
+     public:
+      /*!
+       \brief Constructor
+       \param varname : name of the new local variable
+       \pre ! varname.empty()
+       */
+      local_var_statement_t(std::string varname);
 
-  
+      /*!
+       \brief Destructor
+       */
+      virtual ~local_var_statement_t();
+
+      /*!
+       \brief Accessor
+       \return Right value
+       */
+      inline std::string varname() const
+      {
+        return _varname;
+      }
+
+     protected:
+      /*!
+       \brief Output the statement
+       \param os : output stream
+       \post this has been output to os
+       \return os after this has been output
+       */
+      virtual std::ostream & do_output(std::ostream & os) const;
+
+      /*!
+       \brief Clone
+       \return A clone of this
+       */
+      virtual tchecker::statement_t * do_clone() const;
+
+      /*!
+       \brief Visit
+       \param v : visitor
+       \post v.visit(*this) has been called
+       */
+      virtual void do_visit(tchecker::statement_visitor_t & v) const;
+
+      std::string                 _varname;   /*!< Identifier  */
+    };
+
+    /*!
+     \class local_statement_t
+     \brief local declaration
+     */
+    class local_array_statement_t : public virtual tchecker::statement_t {
+     public:
+      /*!
+       \brief Constructor
+       \param varname : name of the new local variable
+       \param size: size expression
+       \pre ! varname.empty()
+       */
+      local_array_statement_t(std::string varname, tchecker::expression_t const * size);
+
+      /*!
+       \brief Destructor
+       */
+      virtual ~local_array_statement_t();
+
+      /*!
+       \brief Accessor
+       \return Right value
+       */
+      inline std::string varname() const
+      {
+        return _varname;
+      }
+
+      /*!
+       \brief Accessor
+       \return Size of the variable
+       */
+      inline tchecker::expression_t const & size() const
+      {
+        return (* _size);
+      }
+
+     protected:
+      /*!
+       \brief Output the statement
+       \param os : output stream
+       \post this has been output to os
+       \return os after this has been output
+       */
+      virtual std::ostream & do_output(std::ostream & os) const;
+
+      /*!
+       \brief Clone
+       \return A clone of this
+       */
+      virtual tchecker::statement_t * do_clone() const;
+
+      /*!
+       \brief Visit
+       \param v : visitor
+       \post v.visit(*this) has been called
+       */
+      virtual void do_visit(tchecker::statement_visitor_t & v) const;
+
+      std::string                 _varname;   /*!< Identifier  */
+      tchecker::expression_t const * _size;   /*!< Size of the array*/
+    };
+
   /*!
    \class statement_visitor_t
    \brief Visitor for statements
@@ -468,6 +581,8 @@ namespace tchecker {
     virtual void visit(tchecker::sequence_statement_t const &) = 0;
     virtual void visit(tchecker::if_statement_t const &) = 0;
     virtual void visit(tchecker::while_statement_t const &) = 0;
+    virtual void visit(tchecker::local_var_statement_t const &) = 0;
+    virtual void visit(tchecker::local_array_statement_t const &) = 0;
   };
   
   

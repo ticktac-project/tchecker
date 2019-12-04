@@ -154,6 +154,7 @@
 %token                TOK_DO                "do"
 %token                TOK_DONE              "done"
 %token                TOK_NOP               "nop"
+%token                TOK_LOCAL             "local"
 %token <std::string>  TOK_ID                "identifier"
 %token <std::string>  TOK_INTEGER           "integer"
 %token                TOK_EOF          0    "end of file"
@@ -175,6 +176,7 @@
                                             simple_statement
                                             if_statement
                                             loop_statement
+                                            local_statement
 
 %type <tchecker::expression_t *>            atomic_formula
                                             conjunctive_formula
@@ -251,6 +253,8 @@ statement:
     { $$ = $1; }
 |   loop_statement
     { $$ = $1; }
+|   local_statement
+    { $$ = $1; }
 ;
 
 if_statement:
@@ -263,6 +267,13 @@ if_statement:
 loop_statement:
     TOK_WHILE conjunctive_formula TOK_DO sequence_statement TOK_DONE
     { $$ = new tchecker::while_statement_t($2, $4); }
+;
+
+local_statement:
+    TOK_LOCAL TOK_ID
+    { $$ = new tchecker::local_var_statement_t($2); }
+|   TOK_LOCAL TOK_ID TOK_LBRACKET term TOK_RBRACKET
+    { $$ = new tchecker::local_array_statement_t($2, $4); }
 ;
 
 simple_statement :

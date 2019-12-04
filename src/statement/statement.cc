@@ -61,7 +61,7 @@ namespace tchecker {
     return new tchecker::nop_statement_t();
   }
   
-  
+
   void
   nop_statement_t::do_visit(tchecker::statement_visitor_t & v) const
   {
@@ -113,7 +113,7 @@ namespace tchecker {
   {
     v.visit(*this);
   }
-  
+
   
   
   
@@ -251,5 +251,64 @@ namespace tchecker {
     v.visit(*this);
   }
 
+
+  // local_var_statement_t
+
+  local_var_statement_t::local_var_statement_t(std::string varname)
+      : _varname(varname)
+  {
+    if (_varname.empty())
+      throw std::invalid_argument("empty varname");
+  }
+
+  local_var_statement_t::~local_var_statement_t()
+  {
+  }
+
+  std::ostream & local_var_statement_t::do_output(std::ostream & os) const
+  {
+    return os << "local " << _varname;
+  }
+
+  tchecker::statement_t * local_var_statement_t::do_clone() const
+  {
+    return new tchecker::local_var_statement_t(_varname);
+  }
+
+  void local_var_statement_t::do_visit(tchecker::statement_visitor_t & v) const
+  {
+    v.visit(*this);
+  }
+
+  // local_array_statement_t
+
+  local_array_statement_t::local_array_statement_t(std::string varname, tchecker::expression_t const * size)
+      : _varname(varname), _size(size)
+  {
+    if (_varname.empty())
+      throw std::invalid_argument("empty varname");
+    if (_size == nullptr)
+      throw std::invalid_argument("nullptr size");
+  }
+
+  local_array_statement_t::~local_array_statement_t()
+  {
+    delete _size;
+  }
+
+  std::ostream & local_array_statement_t::do_output(std::ostream & os) const
+  {
+    return os << "local " << _varname << "[" << *_size << "]";
+  }
+
+  tchecker::statement_t * local_array_statement_t::do_clone() const
+  {
+    return new tchecker::local_array_statement_t(_varname, _size->clone());
+  }
+
+  void local_array_statement_t::do_visit(tchecker::statement_visitor_t & v) const
+  {
+    v.visit(*this);
+  }
 
 } // end of namespace tchecker
