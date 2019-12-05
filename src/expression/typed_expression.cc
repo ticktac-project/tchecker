@@ -18,6 +18,8 @@ namespace tchecker {
       case EXPR_TYPE_INTTERM:             return os << "INTTERM";
       case EXPR_TYPE_INTVAR:              return os << "INTVAR";
       case EXPR_TYPE_INTARRAY:            return os << "INTARRAY";
+      case EXPR_TYPE_LOCALINTVAR:         return os << "LOCALINTVAR";
+      case EXPR_TYPE_LOCALINTARRAY:       return os << "LOCALINTARRAY";
       case EXPR_TYPE_INTLVALUE:           return os << "INTLVALUE";
       case EXPR_TYPE_CLKVAR:              return os << "CLKVAR";
       case EXPR_TYPE_CLKARRAY:            return os << "CLKARRAY";

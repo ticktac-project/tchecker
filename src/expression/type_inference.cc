@@ -12,7 +12,8 @@ namespace tchecker {
   
   bool integer_dereference(enum tchecker::expression_type_t type)
   {
-    return ((type == tchecker::EXPR_TYPE_INTVAR) || (type == tchecker::EXPR_TYPE_INTARRAY));
+    return ((type == tchecker::EXPR_TYPE_INTVAR) || (type == tchecker::EXPR_TYPE_INTARRAY) ||
+            (type == tchecker::EXPR_TYPE_LOCALINTVAR) || (type == tchecker::EXPR_TYPE_LOCALINTARRAY));
   }
   
   
@@ -20,13 +21,16 @@ namespace tchecker {
   {
     return ((type == tchecker::EXPR_TYPE_INTTERM) ||
             (type == tchecker::EXPR_TYPE_INTVAR) ||
-            (type == tchecker::EXPR_TYPE_INTLVALUE));
+            (type == tchecker::EXPR_TYPE_INTLVALUE) ||
+            (type == tchecker::EXPR_TYPE_LOCALINTVAR));
   }
   
   
   bool integer_assignable(enum tchecker::expression_type_t type)
   {
-    return ((type == tchecker::EXPR_TYPE_INTVAR) || (type == tchecker::EXPR_TYPE_INTLVALUE));
+    return ((type == tchecker::EXPR_TYPE_INTVAR) || (type == tchecker::EXPR_TYPE_INTLVALUE) ||
+            (type == tchecker::EXPR_TYPE_LOCALINTVAR));
+
   }
   
   
