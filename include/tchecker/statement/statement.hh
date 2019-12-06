@@ -430,10 +430,10 @@ namespace tchecker {
      public:
       /*!
        \brief Constructor
-       \param varname : name of the new local variable
-       \pre ! varname.empty()
+       \param name : name of the new local variable
+       \pre ! name.empty()
        */
-      local_var_statement_t(std::string varname);
+      local_var_statement_t(std::string name);
 
       /*!
        \brief Destructor
@@ -444,9 +444,9 @@ namespace tchecker {
        \brief Accessor
        \return Right value
        */
-      inline std::string varname() const
+      inline std::string name() const
       {
-        return _varname;
+        return _name;
       }
 
      protected:
@@ -471,7 +471,7 @@ namespace tchecker {
        */
       virtual void do_visit(tchecker::statement_visitor_t & v) const;
 
-      std::string                 _varname;   /*!< Identifier  */
+      std::string _name;   /*!< Identifier  */
     };
 
     /*!
@@ -482,11 +482,11 @@ namespace tchecker {
      public:
       /*!
        \brief Constructor
-       \param varname : name of the new local variable
+       \param name : name of the new local variable
        \param size: size expression
        \pre ! varname.empty()
        */
-      local_array_statement_t(std::string varname, tchecker::expression_t const * size);
+      local_array_statement_t(std::string name, tchecker::expression_t const * size);
 
       /*!
        \brief Destructor
@@ -497,9 +497,9 @@ namespace tchecker {
        \brief Accessor
        \return Right value
        */
-      inline std::string varname() const
+      inline std::string name() const
       {
-        return _varname;
+        return _name;
       }
 
       /*!
@@ -533,7 +533,7 @@ namespace tchecker {
        */
       virtual void do_visit(tchecker::statement_visitor_t & v) const;
 
-      std::string                 _varname;   /*!< Identifier  */
+      std::string                    _name;   /*!< Identifier  */
       tchecker::expression_t const * _size;   /*!< Size of the array*/
     };
 

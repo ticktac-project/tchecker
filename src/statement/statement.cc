@@ -254,11 +254,11 @@ namespace tchecker {
 
   // local_var_statement_t
 
-  local_var_statement_t::local_var_statement_t(std::string varname)
-      : _varname(varname)
+  local_var_statement_t::local_var_statement_t(std::string name)
+      : _name(name)
   {
-    if (_varname.empty())
-      throw std::invalid_argument("empty varname");
+    if (_name.empty())
+      throw std::invalid_argument("empty name");
   }
 
   local_var_statement_t::~local_var_statement_t()
@@ -267,12 +267,12 @@ namespace tchecker {
 
   std::ostream & local_var_statement_t::do_output(std::ostream & os) const
   {
-    return os << "local " << _varname;
+    return os << "local " << _name;
   }
 
   tchecker::statement_t * local_var_statement_t::do_clone() const
   {
-    return new tchecker::local_var_statement_t(_varname);
+    return new tchecker::local_var_statement_t(_name);
   }
 
   void local_var_statement_t::do_visit(tchecker::statement_visitor_t & v) const
@@ -282,11 +282,11 @@ namespace tchecker {
 
   // local_array_statement_t
 
-  local_array_statement_t::local_array_statement_t(std::string varname, tchecker::expression_t const * size)
-      : _varname(varname), _size(size)
+  local_array_statement_t::local_array_statement_t(std::string name, tchecker::expression_t const * size)
+      : _name(name), _size(size)
   {
-    if (_varname.empty())
-      throw std::invalid_argument("empty varname");
+    if (_name.empty())
+      throw std::invalid_argument("empty name");
     if (_size == nullptr)
       throw std::invalid_argument("nullptr size");
   }
@@ -298,12 +298,12 @@ namespace tchecker {
 
   std::ostream & local_array_statement_t::do_output(std::ostream & os) const
   {
-    return os << "local " << _varname << "[" << *_size << "]";
+    return os << "local " << _name << "[" << *_size << "]";
   }
 
   tchecker::statement_t * local_array_statement_t::do_clone() const
   {
-    return new tchecker::local_array_statement_t(_varname, _size->clone());
+    return new tchecker::local_array_statement_t(_name, _size->clone());
   }
 
   void local_array_statement_t::do_visit(tchecker::statement_visitor_t & v) const
