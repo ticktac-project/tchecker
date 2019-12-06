@@ -114,6 +114,16 @@ namespace tchecker {
 				tchecker::extract_variables(stmt.condition(), _clocks, _intvars);
 				stmt.statement().visit(*this);
 			}
+
+			virtual void visit(tchecker::typed_local_var_statement_t const & stmt)
+			{
+			}
+
+			virtual void visit(tchecker::typed_local_array_statement_t const & stmt)
+			{
+				tchecker::extract_variables(stmt.size(), _clocks, _intvars);
+			}
+
 		private:
 			std::unordered_set<tchecker::clock_id_t> & _clocks;    /*!< Set of clock IDs */
 			std::unordered_set<tchecker::intvar_id_t> & _intvars;  /*!< Set of integer variable IDs */
@@ -229,7 +239,16 @@ namespace tchecker {
 			{
 				stmt.statement().visit(*this);
 			}
-		private:
+
+		  	virtual void visit(tchecker::typed_local_var_statement_t const & stmt)
+		 	{
+			}
+
+			virtual void visit(tchecker::typed_local_array_statement_t const & stmt)
+			{
+		  	}
+
+		 private:
 			std::unordered_set<tchecker::clock_id_t> & _clocks;    /*!< Set of clock IDs */
 			std::unordered_set<tchecker::intvar_id_t> & _intvars;  /*!< Set of integer variable IDs */
 		};

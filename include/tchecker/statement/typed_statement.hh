@@ -35,6 +35,8 @@ namespace tchecker {
     STMT_TYPE_SEQ,             // Sequence of statements
     STMT_TYPE_IF,              // If-Then-Else statement
     STMT_TYPE_WHILE,           // While statement
+    STMT_TYPE_LOCAL_INT,       // Local variable declaration
+    STMT_TYPE_LOCAL_ARRAY,     // Local array declaration
   };
   
   
@@ -60,6 +62,8 @@ namespace tchecker {
   class typed_sequence_statement_t;
   class typed_if_statement_t;
   class typed_while_statement_t;
+  class typed_local_var_statement_t;
+  class typed_local_array_statement_t;
 
   
   
@@ -111,6 +115,8 @@ namespace tchecker {
     virtual void visit(tchecker::typed_sequence_statement_t const &) = 0;
     virtual void visit(tchecker::typed_if_statement_t const &) = 0;
     virtual void visit(tchecker::typed_while_statement_t const &) = 0;
+    virtual void visit(tchecker::typed_local_var_statement_t const &) = 0;
+    virtual void visit(tchecker::typed_local_array_statement_t const &) = 0;
   };
   
   
@@ -641,6 +647,100 @@ namespace tchecker {
     virtual void do_visit(tchecker::typed_statement_visitor_t & v) const;
 
     using tchecker::make_typed_statement_t<tchecker::while_statement_t>::do_visit;
+  };
+
+
+  /*!
+   \class typed_local_var_statement_t
+   \brief Typed local variable declaration
+   */
+  class typed_local_var_statement_t : public tchecker::make_typed_statement_t<tchecker::local_var_statement_t> {
+  public:
+    /*!
+     \brief Constructor
+     \param type : statement type
+     \param name : name of the variable
+     */
+    typed_local_var_statement_t(enum tchecker::statement_type_t type,
+                                std::string name);
+
+    /*!
+     \brief Accessor
+     \return name of the variable
+     */
+    inline std::string name() const
+    {
+      return tchecker::make_typed_statement_t<tchecker::local_var_statement_t>::name();
+    }
+
+  protected:
+    /*!
+     \brief Clone
+     \return clone of this
+     */
+    virtual tchecker::statement_t * do_clone() const;
+
+    /*!
+     \brief Visit
+     \param v : visitor
+     */
+    virtual void do_visit(tchecker::typed_statement_visitor_t & v) const;
+
+    using tchecker::make_typed_statement_t<tchecker::local_var_statement_t>::do_visit;
+  };
+
+  /*!
+   \class typed_local_array_statement_t
+   \brief Typed local array declaration statement
+   */
+  class typed_local_array_statement_t : public tchecker::make_typed_statement_t<tchecker::local_array_statement_t> {
+  public:
+    /*!
+     \brief Constructor
+     \param type : statement type
+     \param name : name of the array
+     \param size : expression that represents the size of the array
+     \note this takes ownership on parameters
+     */
+    typed_local_array_statement_t(enum tchecker::statement_type_t type,
+                                  std::string name,
+                                  tchecker::typed_expression_t const * size);
+
+    /*!
+     \brief Accessor
+     \return Name of the variable
+     */
+    inline std::string name() const
+    {
+      return
+      tchecker::make_typed_statement_t<tchecker::local_array_statement_t>::name();
+    }
+
+    /*!
+     \brief Accessor
+     \return size of the array
+     */
+    inline tchecker::typed_expression_t const & size() const
+    {
+      return
+      dynamic_cast<tchecker::typed_expression_t const &>
+      (tchecker::make_typed_statement_t<tchecker::local_array_statement_t>::size());
+    }
+
+  protected:
+    /*!
+     \brief Clone
+     \return clone of this
+     */
+    virtual tchecker::statement_t * do_clone() const;
+
+    /*!
+     \brief Visit
+     \param v : visitor
+     */
+    virtual void do_visit(tchecker::typed_statement_visitor_t & v) const;
+
+    using tchecker::make_typed_statement_t<tchecker::local_array_statement_t>::do_visit;
   };
 
 

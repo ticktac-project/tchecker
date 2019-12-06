@@ -25,6 +25,8 @@ namespace tchecker {
       case STMT_TYPE_SEQ:           return os << "SEQ";
       case STMT_TYPE_IF:            return os << "IF";
       case STMT_TYPE_WHILE:         return os << "WHILE";
+      case STMT_TYPE_LOCAL_INT:     return os << "LOCAL_INT";
+      case STMT_TYPE_LOCAL_ARRAY:   return os << "LOCAL_ARRAY";
       default:                      throw std::runtime_error("incomplete switch statement");
     }
   }
@@ -217,6 +219,49 @@ namespace tchecker {
 
 
   void typed_while_statement_t::do_visit(tchecker::typed_statement_visitor_t & v) const
+  {
+    v.visit(*this);
+  }
+
+  /* typed_local_var_statement_t */
+
+  typed_local_var_statement_t::typed_local_var_statement_t(enum tchecker::statement_type_t type,
+                                                           std::string name)
+  : tchecker::make_typed_statement_t<tchecker::local_var_statement_t>(type, name)
+  {}
+
+
+  tchecker::statement_t * typed_local_var_statement_t::do_clone() const
+  {
+    return new typed_local_var_statement_t(_type, _name);
+  }
+
+
+  void typed_local_var_statement_t::do_visit(tchecker::typed_statement_visitor_t & v) const
+  {
+    v.visit(*this);
+  }
+
+  /* typed_local_array_statement_t */
+
+  typed_local_array_statement_t::typed_local_array_statement_t(enum tchecker::statement_type_t type,
+                                                               std::string name,
+                                                               tchecker::typed_expression_t const *size)
+
+  : tchecker::make_typed_statement_t<tchecker::local_array_statement_t>(type, name, size)
+  {}
+
+
+  tchecker::statement_t * typed_local_array_statement_t::do_clone() const
+  {
+    tchecker::typed_expression_t * const size =
+        dynamic_cast<tchecker::typed_expression_t *>(_size->clone());
+
+    return new typed_local_array_statement_t(_type, _name, size);
+  }
+
+
+  void typed_local_array_statement_t::do_visit(tchecker::typed_statement_visitor_t & v) const
   {
     v.visit(*this);
   }

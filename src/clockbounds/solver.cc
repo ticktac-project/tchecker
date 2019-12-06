@@ -458,7 +458,10 @@ namespace tchecker {
         // Other visitors on statements
         virtual void visit(tchecker::typed_nop_statement_t const &) {}
         virtual void visit(tchecker::typed_assign_statement_t const &) {}
-      protected:
+        virtual void visit(tchecker::typed_local_var_statement_t const & stmt) {}
+        virtual void visit(tchecker::typed_local_array_statement_t const & stmt) {}
+
+       protected:
         tchecker::loc_id_t _src;                                  /*!< Source location ID */
         tchecker::loc_id_t _tgt;                                  /*!< Target location ID */
         tchecker::clockbounds::diagonal_free::solver_t & _solver;  /*!< Solver */
@@ -572,7 +575,10 @@ namespace tchecker {
         // Other visitors
         virtual void visit(tchecker::typed_nop_statement_t const &) {}
         virtual void visit(tchecker::typed_assign_statement_t const &) {}
-      protected:
+        virtual void visit(tchecker::typed_local_var_statement_t const & stmt) {}
+        virtual void visit(tchecker::typed_local_array_statement_t const & stmt) {}
+
+       protected:
         INSERT_ITERATOR & _inserter;  /*!< Inserter for assigned clock IDs */
       };
       
