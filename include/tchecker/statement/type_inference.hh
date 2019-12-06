@@ -54,6 +54,13 @@ namespace tchecker {
   enum tchecker::statement_type_t type_while(enum tchecker::expression_type_t cond,
                                              enum tchecker::statement_type_t stmt);
 
+  /*!
+   \brief Type inference
+   \param size : type of size expression
+   \return Type of local var[size]
+   */
+  enum tchecker::statement_type_t type_local_array(enum tchecker::expression_type_t size);
+
 } // end of namespace tchecker
 
 #endif // TCHECKER_STATEMENT_TYPE_INFERENCE_HH

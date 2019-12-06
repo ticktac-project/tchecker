@@ -58,4 +58,11 @@ namespace tchecker {
     return tchecker::STMT_TYPE_BAD;
   }
 
+  enum tchecker::statement_type_t type_local_array(enum tchecker::expression_type_t size)
+  {
+    if (tchecker::integer_valued (size))
+      return tchecker::STMT_TYPE_LOCAL_ARRAY;
+    return tchecker::STMT_TYPE_BAD;
+  }
+
 } // end of namespace tchecker
