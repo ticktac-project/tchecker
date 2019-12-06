@@ -155,27 +155,37 @@ namespace tchecker
       
       
       virtual void visit(tchecker::typed_int_expression_t const & expr)
-      { throw std::invalid_argument("not an lvalue expression"); }
+      { not_supported (expr); }
       
       virtual void visit(tchecker::typed_par_expression_t const & expr)
-      { throw std::invalid_argument("not an lvalue expression"); }
+      { not_supported (expr); }
       
       virtual void visit(tchecker::typed_binary_expression_t const & expr)
-      { throw std::invalid_argument("not an lvalue expression"); }
+      { not_supported (expr); }
       
       virtual void visit(tchecker::typed_unary_expression_t const & expr)
-      { throw std::invalid_argument("not an lvalue expression"); }
+      { not_supported (expr); }
       
       virtual void visit(tchecker::typed_simple_clkconstr_expression_t const & expr)
-      { throw std::invalid_argument("not a bounded variable"); }
+      { not_supported (expr); }
       
       virtual void visit(tchecker::typed_diagonal_clkconstr_expression_t const & expr)
-      { throw std::invalid_argument("not a bounded variable"); }
+      { not_supported (expr); }
 
       virtual void visit(tchecker::typed_ite_expression_t const & expr)
-      { throw std::invalid_argument("not a bounded variable"); }
+      { not_supported (expr); }
 
     protected:
+      void not_supported(tchecker::typed_expression_t const & expr) {
+        throw std::invalid_argument("not lvalue expression: "+expr.to_string ());
+      }
+
+      void invalid_expression(tchecker::typed_expression_t const & expr,
+                              std::string expected) {
+        throw std::invalid_argument("invalid expression '" + expr.to_string () +
+                                    "' where " + expected + " is expected.");
+      }
+
       BYTECODE_BACK_INSERTER _bytecode_back_inserter;  /*!< Bytecode */
     };
     
@@ -275,7 +285,7 @@ namespace tchecker
       {
         if ((expr.type() != tchecker::EXPR_TYPE_CLKLVALUE) &&
             (expr.type() != tchecker::EXPR_TYPE_INTLVALUE))
-          throw std::invalid_argument("invalid expression");
+          invalid_expression (expr, "an lvalue");
         
         // Write bytecode (similar to lvalue, except last instruction)
         tchecker::details::lvalue_expression_compiler_t<BYTECODE_BACK_INSERTER> lvalue_expression_compiler(_bytecode_back_inserter);
@@ -291,7 +301,7 @@ namespace tchecker
       virtual void visit(tchecker::typed_int_expression_t const & expr)
       {
         if (expr.type() != tchecker::EXPR_TYPE_INTTERM)
-          throw std::invalid_argument("invalid expression");
+          invalid_expression (expr, "a integer term");
         
         // Write bytecode
         _bytecode_back_inserter = tchecker::VM_PUSH;
@@ -305,8 +315,8 @@ namespace tchecker
       virtual void visit(tchecker::typed_par_expression_t const & expr)
       {
         if (expr.type() == tchecker::EXPR_TYPE_BAD)
-          throw std::invalid_argument("invalid expression");
-        
+          invalid_expression (expr, "a parenthesized");
+
         // Write bytecode
         expr.expr().visit(*this);
       }
@@ -320,7 +330,7 @@ namespace tchecker
         // LAND expression
         if (expr.binary_operator() == tchecker::EXPR_OP_LAND) {
           if (expr.type() != tchecker::EXPR_TYPE_CONJUNCTIVE_FORMULA)
-            throw std::invalid_argument("invalid expression");
+            invalid_expression (expr, "a conjunction");
           
           compile_land_expression(expr);
           //_bytecode_back_inserter = tchecker::VM_RETZ;   // optimization: return as soon as conjunct is false
@@ -328,14 +338,14 @@ namespace tchecker
         // LT, LE, EQ, NEQ, GE, GT expression
         else if (tchecker::predicate(expr.binary_operator())) {
           if (expr.type() != tchecker::EXPR_TYPE_ATOMIC_PREDICATE)
-            throw std::invalid_argument("invalid expression");
+            invalid_expression (expr, "an atomic predicate");
           
           compile_binary_expression(expr);
         }
         // arithmetic operators
         else {
           if (expr.type() != tchecker::EXPR_TYPE_INTTERM)
-            throw std::invalid_argument("invalid expression");
+            invalid_expression (expr, "an integer expression");
           
           compile_binary_expression(expr);
         }
@@ -350,12 +360,12 @@ namespace tchecker
         // NEG expresison
         if (expr.unary_operator() == tchecker::EXPR_OP_NEG) {
           if (expr.type() != tchecker::EXPR_TYPE_INTTERM)
-            throw std::invalid_argument("invalid expression");
+            invalid_expression (expr, "an unary expression");
         }
         // LNOT expression
         else if (expr.unary_operator() == tchecker::EXPR_OP_LNOT) {
           if (expr.type() != tchecker::EXPR_TYPE_ATOMIC_PREDICATE)
-            throw std::invalid_argument("invalid expression");
+            invalid_expression (expr, "an unary expression");
         }
         
         compile_unary_expression(expr);
@@ -368,8 +378,8 @@ namespace tchecker
       virtual void visit(tchecker::typed_simple_clkconstr_expression_t const & expr)
       {
         if (expr.type() != tchecker::EXPR_TYPE_CLKCONSTR_SIMPLE)
-          throw std::invalid_argument("invalid expression");
-        
+          invalid_expression (expr, "a simple clock constraint");
+
         tchecker::typed_var_expression_t zero_clock(tchecker::EXPR_TYPE_CLKVAR, tchecker::zero_clock_name,
                                                     tchecker::zero_clock_id, 1);
         
@@ -383,8 +393,8 @@ namespace tchecker
       virtual void visit(tchecker::typed_diagonal_clkconstr_expression_t const & expr)
       {
         if (expr.type() != tchecker::EXPR_TYPE_CLKCONSTR_DIAGONAL)
-          throw std::invalid_argument("invalid expression");
-        
+          invalid_expression (expr, "a diagonal clock constraint");
+
         compile_clock_predicate(expr.first_clock(), expr.second_clock(), expr.bound(),
                                 operator_to_instruction(expr.binary_operator()));
       }
@@ -395,7 +405,7 @@ namespace tchecker
       virtual void visit(tchecker::typed_ite_expression_t const & expr)
       {
         if (expr.type() != tchecker::EXPR_TYPE_INTTERM)
-          throw std::invalid_argument("invalid expression");
+          invalid_expression (expr, "an if-then-else");
 
         compile_ite_expression(expr.condition (), expr.then_value (), expr.else_value ());
       }
@@ -576,6 +586,12 @@ namespace tchecker
       }
 
 
+      void invalid_expression(tchecker::typed_expression_t const & expr,
+                              std::string expected) {
+          throw std::invalid_argument("invalid expression '" + expr.to_string () +
+                                      "' where " + expected + " is expected.");
+      }
+
       BYTECODE_BACK_INSERTER _bytecode_back_inserter;  /*!< Bytecode */
     };
     
@@ -707,30 +723,34 @@ namespace tchecker
       
       
       virtual void visit(tchecker::typed_int_expression_t const & expr)
-      { throw std::invalid_argument("not a bounded variable"); }
+      { not_supported (expr); }
       
       virtual void visit(tchecker::typed_var_expression_t const & expr)
-      { throw std::invalid_argument("not a bounded variable"); }
+      { not_supported (expr); }
       
       virtual void visit(tchecker::typed_par_expression_t const & expr)
-      { throw std::invalid_argument("not a bounded variable"); }
+      { not_supported (expr); }
       
       virtual void visit(tchecker::typed_binary_expression_t const & expr)
-      { throw std::invalid_argument("not a bounded variable"); }
+      { not_supported (expr); }
       
       virtual void visit(tchecker::typed_unary_expression_t const & expr)
-      { throw std::invalid_argument("not a bounded variable"); }
+      { not_supported (expr); }
       
       virtual void visit(tchecker::typed_simple_clkconstr_expression_t const & expr)
-      { throw std::invalid_argument("not a bounded variable"); }
+      { not_supported (expr); }
       
       virtual void visit(tchecker::typed_diagonal_clkconstr_expression_t const & expr)
-      { throw std::invalid_argument("not a bounded variable"); }
+      { not_supported (expr); }
 
       virtual void visit(tchecker::typed_ite_expression_t const & expr)
-      { throw std::invalid_argument("not a bounded variable"); }
+      { not_supported (expr); }
 
     protected:
+      void not_supported(tchecker::typed_expression_t const & expr) {
+        throw std::invalid_argument("not a bounded variable: " + expr.to_string ());
+      }
+
       tchecker::integer_t _min;  /*!< Variable minimal value */
       tchecker::integer_t _max;  /*!< Variable maximal value */
     };
