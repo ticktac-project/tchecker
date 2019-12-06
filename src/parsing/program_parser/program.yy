@@ -253,8 +253,6 @@ statement:
     { $$ = $1; }
 |   loop_statement
     { $$ = $1; }
-|   local_statement
-    { $$ = $1; }
 ;
 
 if_statement:
@@ -281,6 +279,8 @@ simple_statement :
     { $$ = $1; }
 |   "nop"
     { $$ = new tchecker::nop_statement_t(); }
+|   local_statement
+    { $$ = $1; }
 ;
 
 
