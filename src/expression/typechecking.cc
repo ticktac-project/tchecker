@@ -111,11 +111,11 @@ namespace tchecker {
         
         // bounded integer variable
         if ((type == tchecker::EXPR_TYPE_LOCALINTVAR) || (type == tchecker::EXPR_TYPE_LOCALINTARRAY)) {
-          _typed_expr = new tchecker::typed_var_expression_t(type, expr.name(), id, size);
+          auto const & infos = _intvars.info(id);
+          _typed_expr = new tchecker::typed_bounded_var_expression_t(type, expr.name(), id, size, infos.min(), infos.max());
         }
         else if ((type == tchecker::EXPR_TYPE_INTVAR) || (type == tchecker::EXPR_TYPE_INTARRAY)) {
           auto const & infos = _intvars.info(id);
-
           _typed_expr = new tchecker::typed_bounded_var_expression_t(type, expr.name(), id, size, infos.min(), infos.max());
         }
         // clock variable
