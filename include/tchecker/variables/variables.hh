@@ -192,7 +192,18 @@ namespace tchecker {
       return _index.key(*it);
     }
     
-    
+    /*!
+     \brief Accessor
+     \param name : variable name
+     \return true if the variable exists
+     */
+    inline ID exists(std::string const & name) const
+    {
+      auto it = _index.find_value(name);
+      return ! (it == _index.end_value_map());
+    }
+
+
     /*!
      \brief Accessor
      \param id : variable id
