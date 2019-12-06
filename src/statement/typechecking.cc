@@ -6,6 +6,7 @@
  */
 
 #include <tchecker/expression/type_inference.hh>
+#include <tchecker/expression/static_analysis.hh>
 #include "tchecker/expression/typechecking.hh"
 #include "tchecker/statement/type_inference.hh"
 #include "tchecker/statement/typechecking.hh"
@@ -26,10 +27,12 @@ namespace tchecker {
        \param clocks : clock variables
        \param error : error logging function
        */
-      statement_typechecker_t(tchecker::integer_variables_t const & intvars,
+      statement_typechecker_t(tchecker::integer_variables_t const & localvars,
+                              tchecker::integer_variables_t const & intvars,
                               tchecker::clock_variables_t const & clocks,
                               std::function<void(std::string const &)> error)
       : _typed_stmt(nullptr),
+      _localvars(localvars),
       _intvars(intvars),
       _clocks(clocks),
       _error(error)
@@ -102,9 +105,9 @@ namespace tchecker {
       {
         // Left and right values
         tchecker::typed_lvalue_expression_t * typed_lvalue =
-        dynamic_cast<tchecker::typed_lvalue_expression_t *>(tchecker::typecheck(stmt.lvalue(), _intvars, _clocks, _error));
+        dynamic_cast<tchecker::typed_lvalue_expression_t *>(tchecker::typecheck(stmt.lvalue(), _localvars, _intvars, _clocks, _error));
         
-        tchecker::typed_expression_t * typed_rvalue = tchecker::typecheck(stmt.rvalue(), _intvars, _clocks, _error);
+        tchecker::typed_expression_t * typed_rvalue = tchecker::typecheck(stmt.rvalue(), _localvars, _intvars, _clocks, _error);
         
         // Typed statement
         enum tchecker::statement_type_t stmt_type = type_assign(typed_lvalue->type(), typed_rvalue->type());
@@ -171,7 +174,7 @@ namespace tchecker {
       virtual void visit(tchecker::if_statement_t const & stmt)
       {
         tchecker::typed_expression_t * typed_cond =
-            tchecker::typecheck(stmt.condition (), _intvars, _clocks, _error);
+            tchecker::typecheck(stmt.condition (), _localvars, _intvars, _clocks, _error);
 
         stmt.then_stmt ().visit(*this);
         tchecker::typed_statement_t * typed_then = this->release();
@@ -204,7 +207,7 @@ namespace tchecker {
       virtual void visit(tchecker::while_statement_t const & stmt)
       {
         tchecker::typed_expression_t * typed_cond =
-            tchecker::typecheck(stmt.condition (), _intvars, _clocks, _error);
+            tchecker::typecheck(stmt.condition (), _localvars, _intvars, _clocks, _error);
 
         stmt.statement ().visit(*this);
         tchecker::typed_statement_t * typed_stmt = this->release();
@@ -225,8 +228,62 @@ namespace tchecker {
           _error("invalid while statement " + stmt.to_string());
       }
 
-    protected:
+      /*!
+       \brief Visitor
+       \param stmt : local var statement
+       \post _type_stmt points to a typed clone of this
+       */
+      virtual void visit(tchecker::local_var_statement_t const & stmt)
+      {
+        enum tchecker::statement_type_t stmt_type;
+        if (_localvars.exists(stmt.name())) {
+          stmt_type = tchecker::STMT_TYPE_BAD;
+          _error ("local variable already exists:" + stmt.name ());
+        } else if (_intvars.exists(stmt.name())) {
+          stmt_type = tchecker::STMT_TYPE_BAD;
+          _error ("local variable already exists:" + stmt.name ());
+        } else {
+          stmt_type = tchecker::STMT_TYPE_LOCAL_INT;
+          _localvars.declare (stmt.name (), 1, tchecker::int_minval, tchecker::int_maxval, 0);
+        }
+        _typed_stmt = new tchecker::typed_local_var_statement_t (stmt_type, stmt.name());
+      }
+
+    /*!
+     \brief Visitor
+     \param stmt : local array statement
+     \post _type_stmt points to a typed clone of this
+     */
+      virtual void visit(tchecker::local_array_statement_t const & stmt)
+      {
+        enum tchecker::statement_type_t stmt_type = tchecker::STMT_TYPE_BAD;
+
+        tchecker::typed_expression_t const *szexpr =
+            tchecker::typecheck(stmt.size (), _localvars, _intvars, _clocks, _error);
+
+        if (! integer_valued (szexpr->type ())) {
+          _error ("array size is not an integer:" + szexpr->to_string ());
+        } else if (_localvars.exists(stmt.name())) {
+          _error ("local variable already exists:" + stmt.name ());
+        } else if (_intvars.exists(stmt.name())) {
+          _error ("local variable already exists as a global one:" + stmt.name ());
+        } else {
+          try {
+              auto size = tchecker::const_evaluate (stmt.size ());
+              stmt_type = tchecker::STMT_TYPE_LOCAL_ARRAY;
+              delete szexpr;
+              szexpr = new tchecker::typed_int_expression_t(EXPR_TYPE_INTTERM, size);
+              _localvars.declare (stmt.name (), size, tchecker::int_minval, tchecker::int_maxval, 0);
+          } catch(...) {
+            _error ("can't compute array size:" + stmt.to_string ());
+          }
+        }
+        _typed_stmt = new tchecker::typed_local_array_statement_t (stmt_type, stmt.name(), szexpr);
+      }
+
+      protected:
       tchecker::typed_statement_t * _typed_stmt;       /*!< Typed statement */
+      tchecker::integer_variables_t _localvars;  /*!< Integer variables */
       tchecker::integer_variables_t const & _intvars;  /*!< Integer variables */
       tchecker::clock_variables_t const & _clocks;     /*!< Clock variables */
       std::function<void(std::string const &)> _error; /*!< Error logging func */
@@ -238,11 +295,12 @@ namespace tchecker {
   
   
   tchecker::typed_statement_t * typecheck(tchecker::statement_t const & stmt,
+                                          tchecker::integer_variables_t const & localvars,
                                           tchecker::integer_variables_t const & intvars,
                                           tchecker::clock_variables_t const & clocks,
                                           std::function<void(std::string const &)> error)
   {
-    tchecker::details::statement_typechecker_t v(intvars, clocks, error);
+    tchecker::details::statement_typechecker_t v(localvars, intvars, clocks, error);
     stmt.visit(v);
     return v.release();
   }

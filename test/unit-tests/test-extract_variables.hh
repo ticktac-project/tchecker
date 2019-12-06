@@ -43,11 +43,11 @@ TEST_CASE( "expression with no array variables", "[extract_variables]" ) {
   
   SECTION( "single variable" ) {
     std::string expr_str{ "x" };
-    
     tchecker::expression_t * expr = tchecker::parsing::parse_expression("", expr_str, log);
     REQUIRE(expr != nullptr);
-    
-    tchecker::typed_expression_t * typed_expr = tchecker::typecheck(*expr, intvars, clocks);
+
+    tchecker::integer_variables_t lvars;
+    tchecker::typed_expression_t * typed_expr = tchecker::typecheck(*expr, lvars, intvars, clocks);
     REQUIRE(typed_expr != nullptr);
     
     std::unordered_set<tchecker::clock_id_t> expr_clocks;
@@ -69,8 +69,9 @@ TEST_CASE( "expression with no array variables", "[extract_variables]" ) {
     
     tchecker::expression_t * expr = tchecker::parsing::parse_expression("", expr_str, log);
     REQUIRE(expr != nullptr);
-    
-    tchecker::typed_expression_t * typed_expr = tchecker::typecheck(*expr, intvars, clocks);
+
+    tchecker::integer_variables_t lvars;
+    tchecker::typed_expression_t * typed_expr = tchecker::typecheck(*expr, lvars, intvars, clocks);
     REQUIRE(typed_expr != nullptr);
     
     std::unordered_set<tchecker::clock_id_t> expr_clocks;
@@ -93,8 +94,9 @@ TEST_CASE( "expression with no array variables", "[extract_variables]" ) {
     
     tchecker::expression_t * expr = tchecker::parsing::parse_expression("", expr_str, log);
     REQUIRE(expr != nullptr);
-    
-    tchecker::typed_expression_t * typed_expr = tchecker::typecheck(*expr, intvars, clocks);
+
+    tchecker::integer_variables_t lvars;
+    tchecker::typed_expression_t * typed_expr = tchecker::typecheck(*expr, lvars, intvars, clocks);
     REQUIRE(typed_expr != nullptr);
     
     std::unordered_set<tchecker::clock_id_t> expr_clocks;
@@ -119,8 +121,9 @@ TEST_CASE( "expression with no array variables", "[extract_variables]" ) {
     
     tchecker::expression_t * expr = tchecker::parsing::parse_expression("", expr_str, log);
     REQUIRE(expr != nullptr);
-    
-    tchecker::typed_expression_t * typed_expr = tchecker::typecheck(*expr, intvars, clocks);
+
+    tchecker::integer_variables_t lvars;
+    tchecker::typed_expression_t * typed_expr = tchecker::typecheck(*expr, lvars, intvars, clocks);
     REQUIRE(typed_expr != nullptr);
     
     std::unordered_set<tchecker::clock_id_t> expr_clocks;
@@ -170,8 +173,9 @@ TEST_CASE( "expression with array variables", "[extract_variables]" ) {
   
     tchecker::expression_t * expr = tchecker::parsing::parse_expression("", expr_str, log);
     REQUIRE(expr != nullptr);
-  
-    tchecker::typed_expression_t * typed_expr = tchecker::typecheck(*expr, intvars, clocks);
+
+    tchecker::integer_variables_t lvars;
+    tchecker::typed_expression_t * typed_expr = tchecker::typecheck(*expr, lvars, intvars, clocks);
     REQUIRE(typed_expr != nullptr);
   
     std::unordered_set<tchecker::clock_id_t> expr_clocks;
@@ -193,8 +197,9 @@ TEST_CASE( "expression with array variables", "[extract_variables]" ) {
   
     tchecker::expression_t * expr = tchecker::parsing::parse_expression("", expr_str, log);
     REQUIRE(expr != nullptr);
-  
-    tchecker::typed_expression_t * typed_expr = tchecker::typecheck(*expr, intvars, clocks);
+
+    tchecker::integer_variables_t lvars;
+    tchecker::typed_expression_t * typed_expr = tchecker::typecheck(*expr, lvars, intvars, clocks);
     REQUIRE(typed_expr != nullptr);
   
     std::unordered_set<tchecker::clock_id_t> expr_clocks;
@@ -220,8 +225,9 @@ TEST_CASE( "expression with array variables", "[extract_variables]" ) {
   
     tchecker::expression_t * expr = tchecker::parsing::parse_expression("", expr_str, log);
     REQUIRE(expr != nullptr);
-  
-    tchecker::typed_expression_t * typed_expr = tchecker::typecheck(*expr, intvars, clocks);
+
+    tchecker::integer_variables_t lvars;
+    tchecker::typed_expression_t * typed_expr = tchecker::typecheck(*expr, lvars, intvars, clocks);
     REQUIRE(typed_expr != nullptr);
   
     std::unordered_set<tchecker::clock_id_t> expr_clocks;
@@ -250,8 +256,9 @@ TEST_CASE( "expression with array variables", "[extract_variables]" ) {
   
     tchecker::expression_t * expr = tchecker::parsing::parse_expression("", expr_str, log);
     REQUIRE(expr != nullptr);
-  
-    tchecker::typed_expression_t * typed_expr = tchecker::typecheck(*expr, intvars, clocks);
+
+    tchecker::integer_variables_t lvars;
+    tchecker::typed_expression_t * typed_expr = tchecker::typecheck(*expr, lvars, intvars, clocks);
     REQUIRE(typed_expr != nullptr);
   
     std::unordered_set<tchecker::clock_id_t> expr_clocks;
@@ -307,8 +314,9 @@ TEST_CASE( "statements with no array variable", "[extract_variables]" ) {
     
     tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str, log);
     REQUIRE(stmt != nullptr);
-    
-    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, intvars, clocks);
+
+    tchecker::integer_variables_t lvars;
+    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt,lvars, intvars, clocks);
     REQUIRE(typed_stmt != nullptr);
     
     std::unordered_set<tchecker::clock_id_t> read_clocks;
@@ -335,8 +343,9 @@ TEST_CASE( "statements with no array variable", "[extract_variables]" ) {
     
     tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str, log);
     REQUIRE(stmt != nullptr);
-    
-    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, intvars, clocks);
+
+    tchecker::integer_variables_t lvars;
+    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, lvars, intvars, clocks);
     REQUIRE(typed_stmt != nullptr);
     
     std::unordered_set<tchecker::clock_id_t> read_clocks;
@@ -364,8 +373,9 @@ TEST_CASE( "statements with no array variable", "[extract_variables]" ) {
     
     tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str, log);
     REQUIRE(stmt != nullptr);
-    
-    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, intvars, clocks);
+
+    tchecker::integer_variables_t lvars;
+    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, lvars, intvars, clocks);
     REQUIRE(typed_stmt != nullptr);
     
     std::unordered_set<tchecker::clock_id_t> read_clocks;
@@ -393,8 +403,9 @@ TEST_CASE( "statements with no array variable", "[extract_variables]" ) {
     
     tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str, log);
     REQUIRE(stmt != nullptr);
-    
-    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, intvars, clocks);
+
+    tchecker::integer_variables_t lvars;
+    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, lvars, intvars, clocks);
     REQUIRE(typed_stmt != nullptr);
     
     std::unordered_set<tchecker::clock_id_t> read_clocks;
@@ -424,8 +435,9 @@ TEST_CASE( "statements with no array variable", "[extract_variables]" ) {
     
     tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str, log);
     REQUIRE(stmt != nullptr);
-    
-    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, intvars, clocks);
+
+    tchecker::integer_variables_t lvars;
+    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, lvars, intvars, clocks);
     REQUIRE(typed_stmt != nullptr);
     
     std::unordered_set<tchecker::clock_id_t> read_clocks;
@@ -452,8 +464,9 @@ TEST_CASE( "statements with no array variable", "[extract_variables]" ) {
     
     tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str, log);
     REQUIRE(stmt != nullptr);
-    
-    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, intvars, clocks);
+
+    tchecker::integer_variables_t lvars;
+    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, lvars, intvars, clocks);
     REQUIRE(typed_stmt != nullptr);
     
     std::unordered_set<tchecker::clock_id_t> read_clocks;
@@ -483,8 +496,9 @@ TEST_CASE( "statements with no array variable", "[extract_variables]" ) {
     
     tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str, log);
     REQUIRE(stmt != nullptr);
-    
-    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, intvars, clocks);
+
+    tchecker::integer_variables_t lvars;
+    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, lvars, intvars, clocks);
     REQUIRE(typed_stmt != nullptr);
     
     std::unordered_set<tchecker::clock_id_t> read_clocks;
@@ -516,8 +530,9 @@ TEST_CASE( "statements with no array variable", "[extract_variables]" ) {
     
     tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str, log);
     REQUIRE(stmt != nullptr);
-    
-    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, intvars, clocks);
+
+    tchecker::integer_variables_t lvars;
+    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, lvars, intvars, clocks);
     REQUIRE(typed_stmt != nullptr);
     
     std::unordered_set<tchecker::clock_id_t> read_clocks;
@@ -548,8 +563,9 @@ TEST_CASE( "statements with no array variable", "[extract_variables]" ) {
     
     tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str, log);
     REQUIRE(stmt != nullptr);
-    
-    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, intvars, clocks);
+
+    tchecker::integer_variables_t lvars;
+    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, lvars, intvars, clocks);
     REQUIRE(typed_stmt != nullptr);
     
     std::unordered_set<tchecker::clock_id_t> read_clocks;
@@ -609,8 +625,9 @@ TEST_CASE( "statements with array variables", "[extract_variables]" ) {
     
     tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str, log);
     REQUIRE(stmt != nullptr);
-    
-    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, intvars, clocks);
+
+    tchecker::integer_variables_t lvars;
+    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, lvars, intvars, clocks);
     REQUIRE(typed_stmt != nullptr);
     
     std::unordered_set<tchecker::clock_id_t> read_clocks;
@@ -637,8 +654,9 @@ TEST_CASE( "statements with array variables", "[extract_variables]" ) {
     
     tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str, log);
     REQUIRE(stmt != nullptr);
-    
-    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, intvars, clocks);
+
+    tchecker::integer_variables_t lvars;
+    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, lvars, intvars, clocks);
     REQUIRE(typed_stmt != nullptr);
     
     std::unordered_set<tchecker::clock_id_t> read_clocks;
@@ -668,8 +686,9 @@ TEST_CASE( "statements with array variables", "[extract_variables]" ) {
     
     tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str, log);
     REQUIRE(stmt != nullptr);
-    
-    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, intvars, clocks);
+
+    tchecker::integer_variables_t lvars;
+    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, lvars, intvars, clocks);
     REQUIRE(typed_stmt != nullptr);
     
     std::unordered_set<tchecker::clock_id_t> read_clocks;
@@ -701,8 +720,9 @@ TEST_CASE( "statements with array variables", "[extract_variables]" ) {
     
     tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str, log);
     REQUIRE(stmt != nullptr);
-    
-    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, intvars, clocks);
+
+    tchecker::integer_variables_t lvars;
+    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, lvars, intvars, clocks);
     REQUIRE(typed_stmt != nullptr);
     
     std::unordered_set<tchecker::clock_id_t> read_clocks;
@@ -729,8 +749,9 @@ TEST_CASE( "statements with array variables", "[extract_variables]" ) {
     
     tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str, log);
     REQUIRE(stmt != nullptr);
-    
-    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, intvars, clocks);
+
+    tchecker::integer_variables_t lvars;
+    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, lvars, intvars, clocks);
     REQUIRE(typed_stmt != nullptr);
     
     std::unordered_set<tchecker::clock_id_t> read_clocks;
@@ -760,8 +781,9 @@ TEST_CASE( "statements with array variables", "[extract_variables]" ) {
     
     tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str, log);
     REQUIRE(stmt != nullptr);
-    
-    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, intvars, clocks);
+
+    tchecker::integer_variables_t lvars;
+    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, lvars, intvars, clocks);
     REQUIRE(typed_stmt != nullptr);
     
     std::unordered_set<tchecker::clock_id_t> read_clocks;
