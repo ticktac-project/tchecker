@@ -79,6 +79,14 @@ namespace tchecker {
               }
             };
             
+            class node_lt_t {
+            public:
+              bool operator() (node_ptr_t const & n1, node_ptr_t const & n2) const
+              {
+                return tchecker::lexical_cmp(*n1, *n2) < 0;
+              }
+            };
+            
             static std::tuple<> state_predicate_args(model_t const & model)
             {
               return std::tuple<>();
@@ -147,6 +155,14 @@ namespace tchecker {
               bool operator() (node_ptr_t const & n1, node_ptr_t const & n2)
               {
                 return (static_cast<tchecker::ta::state_t const &>(*n1) == static_cast<tchecker::ta::state_t const &>(*n2));
+              }
+            };
+            
+            class node_lt_t {
+            public:
+              bool operator() (node_ptr_t const & n1, node_ptr_t const & n2) const
+              {
+                return tchecker::lexical_cmp(*n1, *n2) < 0;
               }
             };
             
@@ -258,9 +274,9 @@ namespace tchecker {
         if (options.output_format() == tchecker::covreach::options_t::DOT) {
           tchecker::covreach::dot_outputter_t<typename ALGORITHM_MODEL::node_outputter_t>
           dot_outputter(false, ALGORITHM_MODEL::node_outputter_args(model));
-          dot_outputter.template output<graph_t, tchecker::instrusive_shared_ptr_hash_t>(options.output_stream(),
-                                                                                         graph,
-                                                                                         model.system().name());
+          
+          dot_outputter.template output<graph_t, typename ALGORITHM_MODEL::node_lt_t>
+          (options.output_stream(), graph, model.system().name());
         }
         
         gc.stop();

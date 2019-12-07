@@ -75,7 +75,7 @@ namespace tchecker {
      \param ptr : pointer to an allocated zone
      \param args : parameters to a constructor of type T
      \pre ptr points sizeof(refcount_t) bytes after the beginning of an
-     allocated zone of size at least 
+     allocated zone of size at least
      tchecker::allocation_size_t<shared_ptr_t<T>>
      \see tchecker::make_shared_t::make_shared_t
      */
@@ -134,7 +134,7 @@ namespace tchecker {
      \param t : shared object
      \post t has been assign to this
      \note the reference counter is not touched
-     */		
+     */
     make_shared_t<T, REFCOUNT, RESERVED> & operator= (tchecker::make_shared_t<T, REFCOUNT, RESERVED> const & t)
     {
       this->T::operator=(t);
@@ -315,7 +315,7 @@ namespace tchecker {
   /*!
    \class intrusive_shared_ptr_t
    \brief Shared pointers with intrusive reference counter
-   \tparam T : type of internal pointer. Must be make_shared_t<Y> for some type 
+   \tparam T : type of internal pointer. Must be make_shared_t<Y> for some type
    Y.
    */
   template <class T>
@@ -579,8 +579,6 @@ namespace tchecker {
   }
   
   
-  
-  
   /*!
    \class intrusive_shared_ptr_hash_t
    \brief Hash
@@ -637,6 +635,31 @@ namespace tchecker {
   };
   
 } // end of namespace tchecker
+
+
+
+namespace std {
+  
+  /*!
+   \class hash
+   \brief Specialisation of std::hash<> for tchecker::intrusive_shared_ptr_t
+   \tparam T : type of internal pointer (see tchecker::intrusive_shared_ptr_t)
+   */
+  template <class T>
+  class hash<tchecker::intrusive_shared_ptr_t<T>> {
+  public:
+    /*!
+     \brief Hash function
+     \param p : intrusive shared pointer
+     \return hash value for the internal pointer in p
+     */
+    std::size_t operator() (tchecker::intrusive_shared_ptr_t<T> const & p) const
+    {
+      return tchecker::hash_value(p);
+    }
+  };
+  
+} // end of namespace std
 
 #endif // TCHECKER_SHARED_OBJECTS_HH
 

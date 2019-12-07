@@ -76,6 +76,9 @@ namespace tchecker {
       /*!
        \brief Graph output
        \tparam GRAPH : type of graph, should inherit from tchecker::covreach::graph_t
+       \tparam NODE_LT : type of total ordering on GRAPH::node_ptr_t, should be deterministic in order to guarantee
+       that the output does not depend on the way the graph has been built (memory allocation, order of exploration, etc).
+       This can be achieved using tchecker::lexical_cmp for instance.
        \tparam HASH : type of hash function on GRAPH::node_ptr_t
        \tparam EQUAL : type of equality predicate on GRAPH::node_ptr_t
        \param os : output stream
@@ -85,18 +88,20 @@ namespace tchecker {
        \return os after g has been output
        */
       template
-      <class GRAPH, class HASH=std::hash<typename GRAPH::node_ptr_t>, class EQUAL=std::equal_to<typename GRAPH::node_ptr_t>>
+      <class GRAPH,
+      class NODE_LT,
+      class HASH=std::hash<typename GRAPH::node_ptr_t>,
+      class EQUAL=std::equal_to<typename GRAPH::node_ptr_t>
+      >
       std::ostream & output(std::ostream & os, GRAPH const & g, std::string const & name)
       {
         using node_ptr_t = typename GRAPH::node_ptr_t;
         using edge_ptr_t = typename GRAPH::edge_ptr_t;
 
-        auto cmp = [](node_ptr_t const &p1, node_ptr_t const &p2) {
-          return tchecker::lexical_cmp(*p1, *p2) < 0;
-        };
-
-        std::set<node_ptr_t, decltype (cmp)> nodes(cmp);
-        std::map<node_ptr_t, std::size_t, decltype (cmp)> index(cmp);
+        NODE_LT node_lt;
+        
+        std::set<node_ptr_t, NODE_LT> nodes(node_lt);
+        std::map<node_ptr_t, std::size_t, NODE_LT> index(node_lt);
 
         if (_all_nodes)
           {
@@ -144,7 +149,7 @@ namespace tchecker {
           index.emplace(n, index.size() + 1);
         }
         for(auto n : nodes) {
-          output_node (os, g, n, index);
+          output_node (os, g, n, index, node_lt);
         }
         os << "}" << std::endl;
 
@@ -154,9 +159,8 @@ namespace tchecker {
         return os;
       }
     private:
-      template <class GRAPH, class NODEPTR=typename GRAPH::node_ptr_t, class MAP>
-      void output_node(std::ostream & os, GRAPH const &g, NODEPTR const &n,
-                       MAP const &index)
+      template <class GRAPH, class NODEPTR=typename GRAPH::node_ptr_t, class MAP, class NODE_LT>
+      void output_node(std::ostream & os, GRAPH const &g, NODEPTR const &n, MAP const &index, NODE_LT && node_lt)
       {
         using edge_ptr_t = typename GRAPH::edge_ptr_t;
 
@@ -164,11 +168,11 @@ namespace tchecker {
         _node_outputter.output(os, *n);
         os << "\"]" << std::endl;
 
-        auto cmp = [&g](edge_ptr_t const &e1, edge_ptr_t const &e2) {
-            return tchecker::lexical_cmp(*(g.edge_tgt(e1)),*(g.edge_tgt(e2))) < 0;
+        auto edge_lt = [&g,&node_lt](edge_ptr_t const &e1, edge_ptr_t const &e2) {
+          return node_lt(g.edge_tgt(e1), g.edge_tgt(e2));
         };
 
-        std::set<edge_ptr_t, decltype (cmp)> edges(cmp);
+        std::set<edge_ptr_t, decltype (edge_lt)> edges(edge_lt);
         auto outgoing_edges = g.outgoing_edges(n);
         for(edge_ptr_t const &e : outgoing_edges)
           edges.insert(e);
