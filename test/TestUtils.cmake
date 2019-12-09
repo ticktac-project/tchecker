@@ -210,6 +210,7 @@ function(tck_add_nr_test testfile testnamevar slist)
     set(testname ${filename})
 
     tck_add_test(${testname} ${testname} testlist)
+    tck_add_test_envvar(testenv SRCDIR "${CMAKE_CURRENT_SOURCE_DIR}")
     tck_add_test_envvar(testenv TCK_EXAMPLES_DIR "${TCK_EXAMPLES_DIR}")
     tck_add_test_envvar(testenv TCHECKER "${TCHECKER}")
 
@@ -250,6 +251,7 @@ function(tck_add_nr_memcheck_test testfile testnamevar slist)
 
     tck_add_test(${testname} ${testname} testlist)
 
+    tck_add_test_envvar(testenv SRCDIR "${CMAKE_CURRENT_SOURCE_DIR}")
     tck_add_test_envvar(testenv TCK_EXAMPLES_DIR "${TCK_EXAMPLES_DIR}")
     tck_add_test_envvar(testenv TCHECKER "${VALGRIND_PROGRAM} ${VALGRIND_OPTIONS} ${TCHECKER}")
     tck_add_test_envvar(testenv IS_MEMCHECK_TEST "yes")

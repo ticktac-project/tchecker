@@ -1,0 +1,76 @@
+#labels=cs1,cs2
+#clock:size:name
+#int:size:min:max:init:name
+#process:name
+#event:name
+#location:process:name{attributes}
+#edge:process:source:target:event:{attributes}
+#sync:events
+#   where
+#   attributes is a colon-separated list of key:value
+#   events is a colon-separated list of process@event
+
+system:fischer_async_2_10
+
+event:id_is_0
+event:id_to_0
+event:id_is_1
+event:id_to_1
+event:id_is_2
+event:id_to_2
+event:tau
+
+# Process 1
+process:P1
+clock:1:x1
+location:P1:A{initial:}	
+location:P1:req{invariant:x1<=10}
+location:P1:wait{}
+location:P1:cs{labels:cs1}
+edge:P1:A:req:id_is_0{do:x1=0}
+
+# Process 2
+process:P2
+clock:1:x2
+location:P2:A{initial:}	
+location:P2:req{invariant:x2<=10}
+location:P2:wait{}
+location:P2:cs{labels:cs2}
+edge:P2:A:req:id_is_0{do:x2=0}
+
+# ID 1
+process:ID1
+int:1:0:2:0:id1
+location:ID1:l{initial:}
+edge:ID1:l:l:id_is_0{provided: id1==0}
+edge:ID1:l:l:id_to_0{do: id1=0}
+edge:ID1:l:l:id_is_1{provided: id1==1}
+edge:ID1:l:l:id_to_1{do: id1=1}
+edge:ID1:l:l:id_is_2{provided: id1==2}
+edge:ID1:l:l:id_to_2{do: id1=2}
+
+# ID 2
+process:ID2
+int:1:0:2:0:id2
+location:ID2:l{initial:}
+edge:ID2:l:l:id_is_0{provided: id2==0}
+edge:ID2:l:l:id_to_0{do: id2=0}
+edge:ID2:l:l:id_is_1{provided: id2==1}
+edge:ID2:l:l:id_to_1{do: id2=1}
+edge:ID2:l:l:id_is_2{provided: id2==2}
+edge:ID2:l:l:id_to_2{do: id2=2}
+
+# Synchronizations
+
+sync:P1@id_is_0:ID1@id_is_0
+sync:P1@id_is_1:ID1@id_is_1
+sync:P1@id_is_2:ID1@id_is_2
+sync:P2@id_is_0:ID2@id_is_0
+sync:P2@id_is_1:ID2@id_is_1
+sync:P2@id_is_2:ID2@id_is_2
+sync:P1@id_to_0:ID1@id_to_0:ID2@id_to_0
+sync:P2@id_to_0:ID1@id_to_0:ID2@id_to_0
+sync:P1@id_to_1:ID1@id_to_1:ID2@id_to_1
+sync:P2@id_to_1:ID1@id_to_1:ID2@id_to_1
+sync:P1@id_to_2:ID1@id_to_2:ID2@id_to_2
+sync:P2@id_to_2:ID1@id_to_2:ID2@id_to_2

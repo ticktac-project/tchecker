@@ -20,6 +20,7 @@ set(BUGFIX_TESTS
     bug-008a.sh
     bug-008b.sh
     bug-009.tck
+    bug-041.sh
     )
 
 foreach(testfile ${BUGFIX_TESTS})
