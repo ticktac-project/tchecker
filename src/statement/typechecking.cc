@@ -209,7 +209,10 @@ namespace tchecker {
         tchecker::typed_expression_t * typed_cond =
             tchecker::typecheck(stmt.condition (), _localvars, _intvars, _clocks, _error);
 
+        tchecker::integer_variables_t lvars (_localvars);
         stmt.statement ().visit(*this);
+        _localvars = lvars;
+
         tchecker::typed_statement_t * typed_stmt = this->release();
 
         // Typed statement

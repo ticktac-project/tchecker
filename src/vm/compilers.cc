@@ -103,9 +103,11 @@ namespace tchecker
       {
         if ((expr.type() != tchecker::EXPR_TYPE_CLKVAR) &&
             (expr.type() != tchecker::EXPR_TYPE_INTVAR) &&
+            (expr.type() != tchecker::EXPR_TYPE_LOCALINTVAR) &&
             (expr.type() != tchecker::EXPR_TYPE_CLKARRAY) &&
-            (expr.type() != tchecker::EXPR_TYPE_INTARRAY))
-          throw std::invalid_argument("invalid expression");
+            (expr.type() != tchecker::EXPR_TYPE_INTARRAY) &&
+            (expr.type() != tchecker::EXPR_TYPE_LOCALINTARRAY))
+          invalid_expression (expr, "a variable");
         
         // Write bytecode
         _bytecode_back_inserter = tchecker::VM_PUSH;
@@ -134,7 +136,7 @@ namespace tchecker
       {
         if ((expr.type() != tchecker::EXPR_TYPE_CLKLVALUE) &&
             (expr.type() != tchecker::EXPR_TYPE_INTLVALUE))
-          throw std::invalid_argument("invalid expression");
+          invalid_expression (expr, "a lvalue");
         
         // offset bounds
         auto const id = expr.variable().id();
@@ -250,9 +252,11 @@ namespace tchecker
       {
         if ((expr.type() != tchecker::EXPR_TYPE_CLKVAR) &&
             (expr.type() != tchecker::EXPR_TYPE_INTVAR) &&
+            (expr.type() != tchecker::EXPR_TYPE_LOCALINTVAR) &&
             (expr.type() != tchecker::EXPR_TYPE_CLKARRAY) &&
-            (expr.type() != tchecker::EXPR_TYPE_INTARRAY))
-          throw std::invalid_argument("invalid expression");
+            (expr.type() != tchecker::EXPR_TYPE_INTARRAY) &&
+            (expr.type() != tchecker::EXPR_TYPE_LOCALINTARRAY))
+          invalid_expression (expr, "a variable");
         
         // Write bytecode (similar to lvalue, except last instruction)
         tchecker::details::lvalue_expression_compiler_t<BYTECODE_BACK_INSERTER> lvalue_expression_compiler(_bytecode_back_inserter);
@@ -906,7 +910,17 @@ namespace tchecker
         compile_while (stmt.condition (), stmt.statement ());
       }
 
-    protected:
+      virtual void visit(tchecker::typed_local_var_statement_t const & stmt)
+      {
+        std::cerr << "not implemented" << std::endl;
+      }
+
+      virtual void visit(tchecker::typed_local_array_statement_t const & stmt)
+      {
+        std::cerr << "not implemented" << std::endl;
+      }
+
+     protected:
       /*
        Compiler for clock reset:  lvalue = int_rvalue + clock_rvalue
        

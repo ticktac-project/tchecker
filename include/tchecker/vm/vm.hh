@@ -64,6 +64,9 @@ namespace tchecker {
     //                                                         s is a parameter of VM_CLKCONSTR (strictness)
     VM_CLKRESET,     // stack = v1 ... vK-3                    output (vK-2 vK-1 vK)
     //
+    VM_PUSH_FRAME,
+    VM_POP_FRAME,
+    //
     VM_NOP,          // SHOULD BE LAST INSTRUCTION
   };
   
@@ -621,6 +624,9 @@ namespace tchecker {
     std::size_t const _flat_clocks_size;           /*!< Number of flat clock variables */
     bool _return;                                  /*!< Return flag */
     std::vector<tchecker::bytecode_t> _stack;      /*!< Interpretation stack */
+
+    using frame_t = std::map<tchecker::bytecode_t, tchecker::integer_t>;
+    std::vector<frame_t> _frames;
     // NB: implemented as an std::vector for methods clear() and size()
   };
   
