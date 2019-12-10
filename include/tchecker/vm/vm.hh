@@ -295,37 +295,34 @@ namespace tchecker {
           assert( contains_value<tchecker::integer_t>(h) );
           assert( contains_value<tchecker::integer_t>(offset) );
           if ( (offset < l) || (offset > h) )
-            {
-              std::cerr << offset << " out of [" << l << ", " << h << "]" << std::endl;
-              throw std::out_of_range ("out-of-bounds value");
-            }
+            throw std::out_of_range("out-of-bounds value");
           return top<tchecker::integer_t>();
         }
-          
-        case VM_JMP:
-          {
-            tchecker::bytecode_t const shift = * ++bytecode;
-            // jump is relative to the address of the next instruction:
-            // - bytecode++;
-            // but we have to handle the increment of the IP in the main loop:
-            // - bytecode += shift - 1;
-            // so:
-            bytecode += shift;
 
-            return 1;
-          }
+        case VM_JMP:
+        {
+          tchecker::bytecode_t const shift = * ++bytecode;
+          // jump is relative to the address of the next instruction:
+          // - bytecode++;
+          // but we have to handle the increment of the IP in the main loop:
+          // - bytecode += shift - 1;
+          // so:
+          bytecode += shift;
+
+          return 1;
+        }
 
         case VM_JMPZ:
-          {
-            tchecker::bytecode_t const shift = * ++bytecode;
+        {
+          tchecker::bytecode_t const shift = * ++bytecode;
 
-            if (top_and_pop<tchecker::integer_t>() == 0)
-              {
-                bytecode += shift;
-                return 0;
-              }
-            return 1;
-          }
+          if (top_and_pop<tchecker::integer_t>() == 0)
+            {
+              bytecode += shift;
+              return 0;
+            }
+          return 1;
+        }
 
           // stack = v1 ... vK v   where v is a parameter of instruction VM_PUSH
         case VM_PUSH:
@@ -532,15 +529,60 @@ namespace tchecker {
           clkreset.emplace_back(left_id, right_id, value);
           return 1;
         }
+
+          case VM_PUSH_FRAME:
+          {
+            _frames.emplace_back ();
+            return 1;
+          }
+
+          case VM_POP_FRAME:
+          {
+            _frames.pop_back ();
+            return 1;
+          }
+
+          case VM_VALUEAT_FRAME:
+          {
+            auto const id = top_and_pop<tchecker::bytecode_t> ();
+            push<tchecker::integer_t> (slot_of (id));
+            return top<tchecker::integer_t> ();
+          }
+
+          case VM_ASSIGN_FRAME:
+          {
+            auto const value = top_and_pop<tchecker::integer_t> ();
+            auto const id = top_and_pop<tchecker::intvar_id_t> ();
+            slot_of (id) = value;
+            return value;
+          }
+
+          case VM_INIT_FRAME:
+          {
+            auto const id = top_and_pop<tchecker::intvar_id_t> ();
+            _frames.back ()[id] = 0;
+
+            return 0;
+          }
       }
       
       // should never be reached
       throw std::runtime_error("incomplete switch statement");
     }
-    
-    
-    
-    
+
+    using frame_t = std::map<tchecker::bytecode_t, tchecker::integer_t>;
+
+    tchecker::integer_t &slot_of (tchecker::bytecode_t id) {
+      for(auto it = _frames.rbegin (); it != _frames.rend (); ++it)
+        {
+          auto kv = it->find (id);
+          if (kv != it->end ())
+            return kv->second;
+      }
+      throw std::out_of_range("unknown local variable ID");
+    }
+
+
     // integer domain checking
     
     /*!
@@ -633,15 +675,14 @@ namespace tchecker {
       return _stack.size();
     }
     
-    
+
     std::size_t const _flat_intvars_size;          /*!< Number of flat bounded integer variables */
     std::size_t const _flat_clocks_size;           /*!< Number of flat clock variables */
     bool _return;                                  /*!< Return flag */
     std::vector<tchecker::bytecode_t> _stack;      /*!< Interpretation stack */
-
-    using frame_t = std::map<tchecker::bytecode_t, tchecker::integer_t>;
-    std::vector<frame_t> _frames;
     // NB: implemented as an std::vector for methods clear() and size()
+
+    std::vector<frame_t> _frames;
   };
   
 } // end of namespace tchecker

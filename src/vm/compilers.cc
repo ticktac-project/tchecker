@@ -135,7 +135,8 @@ namespace tchecker
       virtual void visit(tchecker::typed_array_expression_t const & expr)
       {
         if ((expr.type() != tchecker::EXPR_TYPE_CLKLVALUE) &&
-            (expr.type() != tchecker::EXPR_TYPE_INTLVALUE))
+            (expr.type() != tchecker::EXPR_TYPE_INTLVALUE) &&
+            (expr.type() != tchecker::EXPR_TYPE_LOCALINTLVALUE))
           invalid_expression (expr, "a lvalue");
         
         // offset bounds
@@ -262,7 +263,11 @@ namespace tchecker
         tchecker::details::lvalue_expression_compiler_t<BYTECODE_BACK_INSERTER> lvalue_expression_compiler(_bytecode_back_inserter);
         
         expr.visit(lvalue_expression_compiler);
-        _bytecode_back_inserter = tchecker::VM_VALUEAT;
+        if ((expr.type() != tchecker::EXPR_TYPE_LOCALINTVAR) &&
+            (expr.type() != tchecker::EXPR_TYPE_LOCALINTARRAY))
+          _bytecode_back_inserter = tchecker::VM_VALUEAT;
+        else
+          _bytecode_back_inserter = tchecker::VM_VALUEAT_FRAME;
       }
       
       
@@ -288,14 +293,19 @@ namespace tchecker
       virtual void visit(tchecker::typed_array_expression_t const & expr)
       {
         if ((expr.type() != tchecker::EXPR_TYPE_CLKLVALUE) &&
-            (expr.type() != tchecker::EXPR_TYPE_INTLVALUE))
+            (expr.type() != tchecker::EXPR_TYPE_INTLVALUE) &&
+            (expr.type() != tchecker::EXPR_TYPE_LOCALINTLVALUE)
+            )
           invalid_expression (expr, "an lvalue");
         
         // Write bytecode (similar to lvalue, except last instruction)
         tchecker::details::lvalue_expression_compiler_t<BYTECODE_BACK_INSERTER> lvalue_expression_compiler(_bytecode_back_inserter);
         
         expr.visit(lvalue_expression_compiler);
-        _bytecode_back_inserter = tchecker::VM_VALUEAT;
+        if (expr.type() == tchecker::EXPR_TYPE_LOCALINTLVALUE)
+          _bytecode_back_inserter = tchecker::VM_VALUEAT_FRAME;
+        else
+          _bytecode_back_inserter = tchecker::VM_VALUEAT;
       }
       
       
@@ -912,7 +922,9 @@ namespace tchecker
 
       virtual void visit(tchecker::typed_local_var_statement_t const & stmt)
       {
-        std::cerr << "not implemented" << std::endl;
+        tchecker::details::lvalue_expression_compiler_t<BYTECODE_BACK_INSERTER> lvalue_compiler(_bytecode_back_inserter);
+        stmt.variable ().visit (lvalue_compiler);
+        _bytecode_back_inserter = VM_INIT_FRAME;
       }
 
       virtual void visit(tchecker::typed_local_array_statement_t const & stmt)
@@ -964,7 +976,10 @@ namespace tchecker
         _bytecode_back_inserter = tchecker::VM_FAILNOTIN;
         _bytecode_back_inserter = bounds_visitor.min();
         _bytecode_back_inserter = bounds_visitor.max();
-        _bytecode_back_inserter = tchecker::VM_ASSIGN;
+        if (lvalue.type () == EXPR_TYPE_LOCALINTLVALUE || lvalue.type () == EXPR_TYPE_LOCALINTVAR)
+          _bytecode_back_inserter = tchecker::VM_ASSIGN_FRAME;
+        else
+          _bytecode_back_inserter = tchecker::VM_ASSIGN;
       }
 
       /*
@@ -1054,9 +1069,11 @@ namespace tchecker
         {
           auto sz = container.size();
           auto back_inserter = std::back_inserter(container);
-          tchecker::details::statement_compiler_t<decltype(back_inserter)> compiler(back_inserter);
 
+          back_inserter = VM_PUSH_FRAME;
+          tchecker::details::statement_compiler_t<decltype(back_inserter)> compiler(back_inserter);
           stmt.visit (compiler);
+          back_inserter = VM_POP_FRAME;
 
           if (container.size () - sz == 0)
             throw std::runtime_error("compilation produced no bytecode");
@@ -1090,9 +1107,11 @@ namespace tchecker
       
       std::vector<tchecker::bytecode_t> bytecode;
       auto back_inserter = std::back_inserter(bytecode);
-      
+
+      back_inserter = VM_PUSH_FRAME;
       tchecker::details::statement_compiler_t<decltype(back_inserter)> compiler(back_inserter);
       stmt.visit(compiler);
+      back_inserter = VM_POP_FRAME;
       back_inserter = tchecker::VM_PUSH;  // return code...
       back_inserter = 1;                  // ...for statement
       back_inserter = tchecker::VM_RET;
