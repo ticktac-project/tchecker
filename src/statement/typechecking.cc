@@ -243,10 +243,10 @@ namespace tchecker {
         std::string name = stmt.variable().name();
         if (_localvars.exists(name)) {
           stmt_type = tchecker::STMT_TYPE_BAD;
-          _error ("local variable already exists:" + name);
+          _error ("local variable already exists: " + name);
         } else if (_intvars.exists(name)) {
           stmt_type = tchecker::STMT_TYPE_BAD;
-          _error ("local variable already exists:" + name);
+          _error ("local variable already exists: " + name);
         } else {
           stmt_type = tchecker::STMT_TYPE_LOCAL_INT;
           _localvars.declare (name, 1, tchecker::int_minval, tchecker::int_maxval, 0);
