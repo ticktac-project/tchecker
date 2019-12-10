@@ -66,6 +66,9 @@ namespace tchecker {
     //
     VM_PUSH_FRAME,
     VM_POP_FRAME,
+    VM_VALUEAT_FRAME,
+    VM_ASSIGN_FRAME,
+    VM_INIT_FRAME,
     //
     VM_NOP,          // SHOULD BE LAST INSTRUCTION
   };
@@ -116,7 +119,18 @@ namespace tchecker {
    */
   std::ostream & output(std::ostream & os, tchecker::bytecode_t const * bytecode);
   
-  
+  /*!
+   \brief Output
+   \param os : output stream
+   \param bytecode : sequence of bytecode intructions
+   \pre bytecode is null-terminated (i.e. RET terminated), and well-formed
+   (i.e. instructions have the expected parameters)
+   \post the instruction pointed by bytecode has been output to os
+   \return the number of bytes of the instruction
+   */
+  std::size_t output_instruction(std::ostream & os, tchecker::bytecode_t const *bytecode);
+
+
   
   
   // Virtual machine (VM)
