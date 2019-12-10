@@ -226,14 +226,15 @@ namespace tchecker {
   /* typed_local_var_statement_t */
 
   typed_local_var_statement_t::typed_local_var_statement_t(enum tchecker::statement_type_t type,
-                                                           std::string name)
-  : tchecker::make_typed_statement_t<tchecker::local_var_statement_t>(type, name)
+                                                           tchecker::typed_var_expression_t const *variable)
+  : tchecker::make_typed_statement_t<tchecker::local_var_statement_t>(type, variable)
   {}
 
 
   tchecker::statement_t * typed_local_var_statement_t::do_clone() const
   {
-    return new typed_local_var_statement_t(_type, _name);
+    auto var = dynamic_cast<typed_var_expression_t const *>(_variable->clone());
+    return new typed_local_var_statement_t(_type, var);
   }
 
 
@@ -245,19 +246,21 @@ namespace tchecker {
   /* typed_local_array_statement_t */
 
   typed_local_array_statement_t::typed_local_array_statement_t(enum tchecker::statement_type_t type,
-                                                               std::string name,
+                                                               tchecker::typed_var_expression_t const *variable,
                                                                tchecker::typed_expression_t const *size)
 
-  : tchecker::make_typed_statement_t<tchecker::local_array_statement_t>(type, name, size)
+  : tchecker::make_typed_statement_t<tchecker::local_array_statement_t>(type, variable, size)
   {}
 
 
   tchecker::statement_t * typed_local_array_statement_t::do_clone() const
   {
+    tchecker::typed_var_expression_t * const variable =
+        dynamic_cast<tchecker::typed_var_expression_t *>(_variable->clone());
     tchecker::typed_expression_t * const size =
         dynamic_cast<tchecker::typed_expression_t *>(_size->clone());
 
-    return new typed_local_array_statement_t(_type, _name, size);
+    return new typed_local_array_statement_t(_type, variable, size);
   }
 
 

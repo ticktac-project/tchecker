@@ -433,7 +433,7 @@ namespace tchecker {
        \param name : name of the new local variable
        \pre ! name.empty()
        */
-      local_var_statement_t(std::string name);
+      local_var_statement_t(tchecker::var_expression_t const *var);
 
       /*!
        \brief Destructor
@@ -444,9 +444,9 @@ namespace tchecker {
        \brief Accessor
        \return Right value
        */
-      inline std::string name() const
+      inline tchecker::var_expression_t const & variable() const
       {
-        return _name;
+        return *_variable;
       }
 
      protected:
@@ -471,7 +471,7 @@ namespace tchecker {
        */
       virtual void do_visit(tchecker::statement_visitor_t & v) const;
 
-      std::string _name;   /*!< Identifier  */
+      tchecker::var_expression_t const * _variable;   /*!< Variable  */
     };
 
     /*!
@@ -482,11 +482,12 @@ namespace tchecker {
      public:
       /*!
        \brief Constructor
-       \param name : name of the new local variable
+       \param variable: the new local variable
        \param size: size expression
-       \pre ! varname.empty()
+       \pre neither variable nor size are nullptr
        */
-      local_array_statement_t(std::string name, tchecker::expression_t const * size);
+      local_array_statement_t(tchecker::var_expression_t const * variable,
+                              tchecker::expression_t const * size);
 
       /*!
        \brief Destructor
@@ -497,9 +498,9 @@ namespace tchecker {
        \brief Accessor
        \return Right value
        */
-      inline std::string name() const
+      inline tchecker::var_expression_t const & variable() const
       {
-        return _name;
+        return (*_variable);
       }
 
       /*!
@@ -533,8 +534,8 @@ namespace tchecker {
        */
       virtual void do_visit(tchecker::statement_visitor_t & v) const;
 
-      std::string                    _name;   /*!< Identifier  */
-      tchecker::expression_t const * _size;   /*!< Size of the array*/
+      tchecker::var_expression_t const * _variable;   /*!< Variable  */
+      tchecker::expression_t const     * _size;   /*!< Size of the array*/
     };
 
   /*!

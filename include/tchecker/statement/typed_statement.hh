@@ -662,15 +662,16 @@ namespace tchecker {
      \param name : name of the variable
      */
     typed_local_var_statement_t(enum tchecker::statement_type_t type,
-                                std::string name);
+                                tchecker::typed_var_expression_t const *variable);
 
     /*!
      \brief Accessor
-     \return name of the variable
+     \return Variable
      */
-    inline std::string name() const
+    inline tchecker::typed_var_expression_t const & variable() const
     {
-      return tchecker::make_typed_statement_t<tchecker::local_var_statement_t>::name();
+      return dynamic_cast<tchecker::typed_var_expression_t const &>
+      (tchecker::make_typed_statement_t<tchecker::local_var_statement_t>::variable ());
     }
 
   protected:
@@ -703,17 +704,13 @@ namespace tchecker {
      \note this takes ownership on parameters
      */
     typed_local_array_statement_t(enum tchecker::statement_type_t type,
-                                  std::string name,
+                                  tchecker::typed_var_expression_t const *variable,
                                   tchecker::typed_expression_t const * size);
 
-    /*!
-     \brief Accessor
-     \return Name of the variable
-     */
-    inline std::string name() const
+    inline tchecker::typed_var_expression_t const & variable() const
     {
-      return
-      tchecker::make_typed_statement_t<tchecker::local_array_statement_t>::name();
+      return dynamic_cast<tchecker::typed_var_expression_t const &>
+      (tchecker::make_typed_statement_t<tchecker::local_array_statement_t>::variable ());
     }
 
     /*!

@@ -254,25 +254,27 @@ namespace tchecker {
 
   // local_var_statement_t
 
-  local_var_statement_t::local_var_statement_t(std::string name)
-      : _name(name)
+  local_var_statement_t::local_var_statement_t(tchecker::var_expression_t const *variable)
+      : _variable(variable)
   {
-    if (_name.empty())
-      throw std::invalid_argument("empty name");
+    if (variable == nullptr)
+      throw std::invalid_argument("nullptr local variable");
   }
 
   local_var_statement_t::~local_var_statement_t()
   {
+    delete _variable;
   }
 
   std::ostream & local_var_statement_t::do_output(std::ostream & os) const
   {
-    return os << "local " << _name;
+    return os << "local " << (*_variable);
   }
 
   tchecker::statement_t * local_var_statement_t::do_clone() const
   {
-    return new tchecker::local_var_statement_t(_name);
+    auto var = dynamic_cast<tchecker::var_expression_t const *>(_variable->clone ());
+    return new tchecker::local_var_statement_t(var);
   }
 
   void local_var_statement_t::do_visit(tchecker::statement_visitor_t & v) const
@@ -282,28 +284,30 @@ namespace tchecker {
 
   // local_array_statement_t
 
-  local_array_statement_t::local_array_statement_t(std::string name, tchecker::expression_t const * size)
-      : _name(name), _size(size)
+  local_array_statement_t::local_array_statement_t(tchecker::var_expression_t const *variable, tchecker::expression_t const * size)
+      : _variable(variable), _size(size)
   {
-    if (_name.empty())
-      throw std::invalid_argument("empty name");
-    if (_size == nullptr)
+    if (variable == nullptr)
+      throw std::invalid_argument("nullptr local variable");
+    if (size == nullptr)
       throw std::invalid_argument("nullptr size");
   }
 
   local_array_statement_t::~local_array_statement_t()
   {
+    delete _variable;
     delete _size;
   }
 
   std::ostream & local_array_statement_t::do_output(std::ostream & os) const
   {
-    return os << "local " << _name << "[" << *_size << "]";
+    return os << "local " << *_variable << "[" << *_size << "]";
   }
 
   tchecker::statement_t * local_array_statement_t::do_clone() const
   {
-    return new tchecker::local_array_statement_t(_name, _size->clone());
+    auto var = dynamic_cast<tchecker::var_expression_t const *>(_variable->clone ());
+    return new tchecker::local_array_statement_t(var, _size->clone());
   }
 
   void local_array_statement_t::do_visit(tchecker::statement_visitor_t & v) const

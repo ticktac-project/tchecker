@@ -268,9 +268,9 @@ loop_statement:
 ;
 
 local_statement:
-    TOK_LOCAL TOK_ID
+    TOK_LOCAL variable_term
     { $$ = new tchecker::local_var_statement_t($2); }
-|   TOK_LOCAL TOK_ID TOK_LBRACKET term TOK_RBRACKET
+|   TOK_LOCAL variable_term TOK_LBRACKET term TOK_RBRACKET
     { $$ = new tchecker::local_array_statement_t($2, $4); }
 ;
 

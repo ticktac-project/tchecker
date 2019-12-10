@@ -239,17 +239,24 @@ namespace tchecker {
       virtual void visit(tchecker::local_var_statement_t const & stmt)
       {
         enum tchecker::statement_type_t stmt_type;
-        if (_localvars.exists(stmt.name())) {
+
+        std::string name = stmt.variable().name();
+        if (_localvars.exists(name)) {
           stmt_type = tchecker::STMT_TYPE_BAD;
-          _error ("local variable already exists:" + stmt.name ());
-        } else if (_intvars.exists(stmt.name())) {
+          _error ("local variable already exists:" + name);
+        } else if (_intvars.exists(name)) {
           stmt_type = tchecker::STMT_TYPE_BAD;
-          _error ("local variable already exists:" + stmt.name ());
+          _error ("local variable already exists:" + name);
         } else {
           stmt_type = tchecker::STMT_TYPE_LOCAL_INT;
-          _localvars.declare (stmt.name (), 1, tchecker::int_minval, tchecker::int_maxval, 0);
+          _localvars.declare (name, 1, tchecker::int_minval, tchecker::int_maxval, 0);
         }
-        _typed_stmt = new tchecker::typed_local_var_statement_t (stmt_type, stmt.name());
+
+        tchecker::typed_var_expression_t const *variable=
+            dynamic_cast<tchecker::typed_var_expression_t const *>
+            (tchecker::typecheck(stmt.variable(), _localvars, _intvars, _clocks, _error));
+
+        _typed_stmt = new tchecker::typed_local_var_statement_t (stmt_type, variable);
       }
 
     /*!
@@ -261,27 +268,31 @@ namespace tchecker {
       {
         enum tchecker::statement_type_t stmt_type = tchecker::STMT_TYPE_BAD;
 
+        std::string name = stmt.variable().name();
         tchecker::typed_expression_t const *szexpr =
             tchecker::typecheck(stmt.size (), _localvars, _intvars, _clocks, _error);
 
         if (! integer_valued (szexpr->type ())) {
           _error ("array size is not an integer:" + szexpr->to_string ());
-        } else if (_localvars.exists(stmt.name())) {
-          _error ("local variable already exists:" + stmt.name ());
-        } else if (_intvars.exists(stmt.name())) {
-          _error ("local variable already exists as a global one:" + stmt.name ());
+        } else if (_localvars.exists(name)) {
+          _error ("local variable already exists:" + name);
+        } else if (_intvars.exists(name)) {
+          _error ("local variable already exists as a global one:" + name);
         } else {
           try {
               auto size = tchecker::const_evaluate (stmt.size ());
               stmt_type = tchecker::STMT_TYPE_LOCAL_ARRAY;
               delete szexpr;
               szexpr = new tchecker::typed_int_expression_t(EXPR_TYPE_INTTERM, size);
-              _localvars.declare (stmt.name (), size, tchecker::int_minval, tchecker::int_maxval, 0);
+              _localvars.declare (name, size, tchecker::int_minval, tchecker::int_maxval, 0);
           } catch(...) {
             _error ("can't compute array size:" + stmt.to_string ());
           }
         }
-        _typed_stmt = new tchecker::typed_local_array_statement_t (stmt_type, stmt.name(), szexpr);
+        tchecker::typed_var_expression_t const *variable=
+            dynamic_cast<tchecker::typed_var_expression_t const *>
+            (tchecker::typecheck(stmt.variable(), _localvars, _intvars, _clocks, _error));
+        _typed_stmt = new tchecker::typed_local_array_statement_t (stmt_type, variable, szexpr);
       }
 
       protected:
