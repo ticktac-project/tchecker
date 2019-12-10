@@ -230,11 +230,15 @@ sequence_statement
 }
 ;
 
+opt_semicolon :
+    ";"
+|
+;
 
 sequence_statement:
-statement
+statement opt_semicolon
 { $$ = $1; }
-| sequence_statement ";" statement
+|  statement ";" sequence_statement
 {
   try {
     $$ = new tchecker::sequence_statement_t($1, $3);
