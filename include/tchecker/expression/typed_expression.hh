@@ -33,6 +33,7 @@ namespace tchecker {
     EXPR_TYPE_LOCALINTVAR,          // Local integer variable (with size=1)
     EXPR_TYPE_LOCALINTARRAY,        // Local array of integer variables (with size>1)
     EXPR_TYPE_INTLVALUE,            // Assignable integer expr (left value)
+    EXPR_TYPE_LOCALINTLVALUE,       // Assignable integer expr (left value)
     EXPR_TYPE_CLKVAR,               // Clock variable (with size=1)
     EXPR_TYPE_CLKARRAY,             // Array of clock variables (with size>1)
     EXPR_TYPE_CLKLVALUE,            // Assignable clock expr (left value)
