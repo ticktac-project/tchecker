@@ -28,6 +28,6 @@ edge:P:A:A:a{do:
             x = 3*Un+1
         endif;
         Un = x;
-    y = 10
+        y = 10
     done
 }
