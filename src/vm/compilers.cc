@@ -929,7 +929,14 @@ namespace tchecker
 
       virtual void visit(tchecker::typed_local_array_statement_t const & stmt)
       {
-        std::cerr << "not implemented" << std::endl;
+        tchecker::variable_size_t id = stmt.variable().id();
+        tchecker::variable_size_t asize = stmt.variable().size ();
+
+        for(tchecker::variable_size_t i = 0; i < asize; i++) {
+            _bytecode_back_inserter = VM_PUSH;
+            _bytecode_back_inserter = id+i;
+            _bytecode_back_inserter = VM_INIT_FRAME;
+        }
       }
 
      protected:
