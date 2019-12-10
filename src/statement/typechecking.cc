@@ -273,11 +273,11 @@ namespace tchecker {
             tchecker::typecheck(stmt.size (), _localvars, _intvars, _clocks, _error);
 
         if (! integer_valued (szexpr->type ())) {
-          _error ("array size is not an integer:" + szexpr->to_string ());
+          _error ("array size is not an integer: " + szexpr->to_string ());
         } else if (_localvars.exists(name)) {
-          _error ("local variable already exists:" + name);
+          _error ("local variable already exists: " + name);
         } else if (_intvars.exists(name)) {
-          _error ("local variable already exists as a global one:" + name);
+          _error ("local variable already exists as a global one: " + name);
         } else {
           try {
               auto size = tchecker::const_evaluate (stmt.size ());
