@@ -22,14 +22,16 @@ namespace tchecker {
     return ((type == tchecker::EXPR_TYPE_INTTERM) ||
             (type == tchecker::EXPR_TYPE_INTVAR) ||
             (type == tchecker::EXPR_TYPE_INTLVALUE) ||
-            (type == tchecker::EXPR_TYPE_LOCALINTVAR));
+            (type == tchecker::EXPR_TYPE_LOCALINTVAR) ||
+            (type == tchecker::EXPR_TYPE_LOCALINTLVALUE)
+            );
   }
   
   
   bool integer_assignable(enum tchecker::expression_type_t type)
   {
     return ((type == tchecker::EXPR_TYPE_INTVAR) || (type == tchecker::EXPR_TYPE_INTLVALUE) ||
-            (type == tchecker::EXPR_TYPE_LOCALINTVAR));
+            (type == tchecker::EXPR_TYPE_LOCALINTVAR) || (type == tchecker::EXPR_TYPE_LOCALINTLVALUE));
 
   }
   
