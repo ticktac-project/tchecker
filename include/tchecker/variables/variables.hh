@@ -258,7 +258,7 @@ namespace tchecker {
     {
       try {
         _index.add(id, name);
-        auto && [it, ok] = _info.insert(std::make_pair(id, info));
+        auto && ok = _info.insert(std::make_pair(id, info)).second;
         if (! ok) {
           _index.erase(id);
           throw;
