@@ -229,7 +229,10 @@ namespace tchecker {
           compile(*this->_system, log);
                                      
           if (log.error_count() > 0)
-            throw std::runtime_error("System compilation failure");
+            {
+              free_memory();
+              throw std::runtime_error ("System compilation failure");
+            }
         }
         
         /*!
