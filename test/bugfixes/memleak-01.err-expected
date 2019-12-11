@@ -1,0 +1,5 @@
+Attribute do: local i; local i: ERROR, local variable already exists: i
+Attribute do: local i; local i: ERROR, compiling statement local i; local i, invalid statement
+ERROR, System compilation failure
+
+3 error(s)

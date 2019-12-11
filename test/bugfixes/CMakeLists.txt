@@ -21,6 +21,8 @@ set(BUGFIX_TESTS
     bug-008b.sh
     bug-009.tck
     bug-041.sh
+
+    memleak-01.tck
     )
 
 foreach(testfile ${BUGFIX_TESTS})

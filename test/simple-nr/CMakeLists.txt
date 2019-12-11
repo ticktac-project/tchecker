@@ -18,10 +18,15 @@ set(SIMPLE_NR_TESTS
     bubble-sort-6.tck
     bubble-sort-7.tck
     bubble-sort-8.tck
+
     local-array-1.tck
+    local-array-2.tck
+    local-array-3.tck
+    
     stuck-process-1.tck
     stuck-process-2.tck
     stuck-process-3.tck
+
     syracuse-1.tck
     syracuse-2.tck
     syracuse-3.tck
