@@ -48,6 +48,15 @@ namespace tchecker {
 																 std::unordered_set<tchecker::clock_id_t> & clocks,
 																 std::unordered_set<tchecker::intvar_id_t> & intvars);
 	
+	/*!
+	 \brief Check if a statement declares local variables
+	 \param stmt : statement
+	 \post return true if in the scope of stmt some local variables are declared.
+	 It does not consider local declarations of inner scopes e.g. scopes in the
+	 'then' or 'else' branches of an If-Then-Else statement. Actually, only
+	 sequence statements are recursively visited.
+	 */
+	bool has_local_declarations(tchecker::typed_statement_t const & stmt);
 } // end of namespace tchecker
 
 #endif // TCHECKER_STATEMENT_STATIC_ANALYSIS_HH
