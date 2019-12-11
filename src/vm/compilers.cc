@@ -7,6 +7,7 @@
 
 #include <limits>
 #include <vector>
+#include <tchecker/statement/static_analysis.hh>
 
 #include "tchecker/expression/type_inference.hh"
 #include "tchecker/variables/clocks.hh"
@@ -1076,11 +1077,14 @@ namespace tchecker
         {
           auto sz = container.size();
           auto back_inserter = std::back_inserter(container);
+          bool localdecl = tchecker::has_local_declarations (stmt);
+          if (localdecl)
+            back_inserter = VM_PUSH_FRAME;
 
-          back_inserter = VM_PUSH_FRAME;
           tchecker::details::statement_compiler_t<decltype(back_inserter)> compiler(back_inserter);
           stmt.visit (compiler);
-          back_inserter = VM_POP_FRAME;
+          if (localdecl)
+            back_inserter = VM_POP_FRAME;
 
           if (container.size () - sz == 0)
             throw std::runtime_error("compilation produced no bytecode");
@@ -1115,10 +1119,13 @@ namespace tchecker
       std::vector<tchecker::bytecode_t> bytecode;
       auto back_inserter = std::back_inserter(bytecode);
 
-      back_inserter = VM_PUSH_FRAME;
+      bool localdecl = tchecker::has_local_declarations (stmt);
+      if (localdecl)
+        back_inserter = VM_PUSH_FRAME;
       tchecker::details::statement_compiler_t<decltype(back_inserter)> compiler(back_inserter);
       stmt.visit(compiler);
-      back_inserter = VM_POP_FRAME;
+      if (localdecl)
+        back_inserter = VM_POP_FRAME;
       back_inserter = tchecker::VM_PUSH;  // return code...
       back_inserter = 1;                  // ...for statement
       back_inserter = tchecker::VM_RET;
