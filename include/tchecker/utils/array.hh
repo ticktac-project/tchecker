@@ -106,7 +106,8 @@ namespace tchecker {
    \return true if a1 and a2 have same capacity, false otherwise
    */
   template <class CAPACITY>
-  bool operator== (tchecker::array_capacity_t<CAPACITY> const & a1, tchecker::array_capacity_t<CAPACITY> const & a2)
+  bool
+  operator== (tchecker::array_capacity_t<CAPACITY> const & a1, tchecker::array_capacity_t<CAPACITY> const & a2)
   {
     return (a1.capacity() == a2.capacity());
   }
@@ -118,7 +119,8 @@ namespace tchecker {
    \return false if a1 and a2 have same capacity, true otherwise
    */
   template <class CAPACITY>
-  bool operator!= (tchecker::array_capacity_t<CAPACITY> const & a1, tchecker::array_capacity_t<CAPACITY> const & a2)
+  bool
+  operator!= (tchecker::array_capacity_t<CAPACITY> const & a1, tchecker::array_capacity_t<CAPACITY> const & a2)
   {
     return (! (a1 == a2));
   }
@@ -239,7 +241,8 @@ namespace tchecker {
      \post this is a copy of a
      \throw std::invalid_argument : if precondition is violated
      */
-    tchecker::make_array_t<T, T_ALLOCSIZE, BASE> & operator= (tchecker::make_array_t<T, T_ALLOCSIZE, BASE> const & a)
+    tchecker::make_array_t<T, T_ALLOCSIZE, BASE> &
+    operator= (tchecker::make_array_t<T, T_ALLOCSIZE, BASE> const & a)
     {
       if (BASE::_capacity != a.BASE::_capacity)
         throw std::invalid_argument("invalid array capacity");
@@ -496,6 +499,7 @@ namespace tchecker {
     return (! (a1 == a2));
   }
   
+  
   /*!
    \brief Hash
    \param a : array
@@ -588,9 +592,10 @@ namespace tchecker {
    constructed with base_args, with capacity values constructed with t_args
    */
   template<class T, std::size_t T_ALLOCSIZE, class BASE, class... BASE_ARGS, class... T_ARGS>
-  tchecker::make_array_t<T, T_ALLOCSIZE, BASE> * make_array_allocate_and_construct(typename BASE::capacity_t capacity,
-                                                                                   std::tuple<BASE_ARGS...> base_args,
-                                                                                   std::tuple<T_ARGS...> t_args)
+  tchecker::make_array_t<T, T_ALLOCSIZE, BASE> *
+  make_array_allocate_and_construct(typename BASE::capacity_t capacity,
+                                    std::tuple<BASE_ARGS...> base_args,
+                                    std::tuple<T_ARGS...> t_args)
   {
     using array_t = tchecker::make_array_t<T, T_ALLOCSIZE, BASE>;
     

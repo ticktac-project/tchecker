@@ -106,8 +106,8 @@ namespace tchecker {
                                                          TRANSITION & t,
                                                          typename ASYNC_ZG::initial_iterator_value_t const & v)
         {
-          return _async_zg.initialize(*s.vloc_ptr(), *s.intvars_val_ptr(), *s.offset_zone_ptr(), *s.sync_zone_ptr(),
-                                      v, t.src_invariant_container());
+          return _async_zg.initialize(*s.vloc_ptr(), *s.intvars_valuation_ptr(), *s.offset_zone_ptr(),
+                                      *s.sync_zone_ptr(), v, t.src_invariant_container());
         }
         
         /*!
@@ -125,9 +125,9 @@ namespace tchecker {
                                                    TRANSITION & t,
                                                    typename ASYNC_ZG::outgoing_edges_iterator_value_t const & v)
         {
-          return _async_zg.next(*s.vloc_ptr(), *s.intvars_val_ptr(), *s.offset_zone_ptr(), *s.sync_zone_ptr(), v,
-                                t.src_invariant_container(), t.guard_container(), t.reset_container(),
-                                t.tgt_invariant_container());
+          return _async_zg.next(*s.vloc_ptr(), *s.intvars_valuation_ptr(), *s.offset_zone_ptr(),
+                                *s.sync_zone_ptr(), v, t.src_invariant_container(), t.guard_container(),
+                                t.reset_container(), t.tgt_invariant_container());
         }
         
         /*!
