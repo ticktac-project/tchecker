@@ -1,0 +1,27 @@
+COVREAH output
+REACHABLE false
+digraph fischer_async_2_10 {
+node [shape="box",style="rounded"];
+n1 [label="<A,A,l,l> id1=0,id2=0 (0<=x1 & 0<=x2 & x1=x2)"]
+n1 -> n2 [color=black]
+n1 -> n3 [color=black]
+n2 [label="<A,req,l,l> id1=0,id2=0 (0<=x1 & 0<=x2<=10 & 0<=x1-x2)"]
+n2 -> n4 [color=black]
+n3 [label="<req,A,l,l> id1=0,id2=0 (0<=x1<=10 & 0<=x2 & x1-x2<=0)"]
+n3 -> n5 [color=black]
+n4 [label="<req,req,l,l> id1=0,id2=0 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)"]
+n5 [label="<req,req,l,l> id1=0,id2=0 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)"]
+}
+EXPLORE output
+digraph fischer_async_2_10 {
+node [shape="box",style="rounded"];
+n0 [label="<A,A,l,l> id1=0,id2=0 (0<=x1 & 0<=x2 & x1=x2)"]
+n1 [label="<req,A,l,l> id1=0,id2=0 (0<=x1<=10 & 0<=x2 & x1-x2<=0)"]
+n0 -> n1
+n2 [label="<A,req,l,l> id1=0,id2=0 (0<=x1 & 0<=x2<=10 & 0<=x1-x2)"]
+n0 -> n2
+n3 [label="<req,req,l,l> id1=0,id2=0 (0<=x1<=10 & 0<=x2<=10 & 0<=x1-x2<=10)"]
+n1 -> n3
+n4 [label="<req,req,l,l> id1=0,id2=0 (0<=x1<=10 & 0<=x2<=10 & -10<=x1-x2<=0)"]
+n2 -> n4
+}
