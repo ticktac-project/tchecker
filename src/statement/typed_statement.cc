@@ -230,11 +230,19 @@ namespace tchecker {
   : tchecker::make_typed_statement_t<tchecker::local_var_statement_t>(type, variable)
   {}
 
+  typed_local_var_statement_t::typed_local_var_statement_t(enum tchecker::statement_type_t type,
+                                                           tchecker::typed_var_expression_t const *variable,
+                                                           tchecker::typed_expression_t const *init)
+  : tchecker::make_typed_statement_t<tchecker::local_var_statement_t>(type, variable, init)
+  {}
+
 
   tchecker::statement_t * typed_local_var_statement_t::do_clone() const
   {
     auto var = dynamic_cast<typed_var_expression_t const *>(_variable->clone());
-    return new typed_local_var_statement_t(_type, var);
+    auto init = dynamic_cast<typed_expression_t const *>(_initial_value->clone());
+
+    return new typed_local_var_statement_t(_type, var, init);
   }
 
 

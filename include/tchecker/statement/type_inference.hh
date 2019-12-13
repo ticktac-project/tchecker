@@ -56,10 +56,21 @@ namespace tchecker {
 
   /*!
    \brief Type inference
+   \param variable : type of the local variable expression
+   \param init : type of the initial value expression
+   \return Type of local var = init
+   */
+  enum tchecker::statement_type_t type_local(enum tchecker::expression_type_t variable,
+                                             enum tchecker::expression_type_t init);
+
+  /*!
+   \brief Type inference
+   \param variable : type of the local variable expression
    \param size : type of size expression
    \return Type of local var[size]
    */
-  enum tchecker::statement_type_t type_local_array(enum tchecker::expression_type_t size);
+  enum tchecker::statement_type_t type_local_array(enum tchecker::expression_type_t variable,
+                                                   enum tchecker::expression_type_t size);
 
 } // end of namespace tchecker
 

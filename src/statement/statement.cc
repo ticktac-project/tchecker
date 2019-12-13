@@ -259,22 +259,34 @@ namespace tchecker {
   {
     if (variable == nullptr)
       throw std::invalid_argument("nullptr local variable");
+    _initial_value = new tchecker::int_expression_t(0);
+  }
+
+  local_var_statement_t::local_var_statement_t(tchecker::var_expression_t const *variable,
+                                               tchecker::expression_t const *init)
+      : _variable(variable), _initial_value(init)
+  {
+    if (variable == nullptr)
+      throw std::invalid_argument("nullptr local variable");
+    if (init == nullptr)
+      throw std::invalid_argument("nullptr initial value");
   }
 
   local_var_statement_t::~local_var_statement_t()
   {
     delete _variable;
+    delete _initial_value;
   }
 
   std::ostream & local_var_statement_t::do_output(std::ostream & os) const
   {
-    return os << "local " << (*_variable);
+    return os << "local " << (*_variable) << " = " << (*_initial_value);
   }
 
   tchecker::statement_t * local_var_statement_t::do_clone() const
   {
     auto var = dynamic_cast<tchecker::var_expression_t const *>(_variable->clone ());
-    return new tchecker::local_var_statement_t(var);
+    return new tchecker::local_var_statement_t(var, _initial_value->clone());
   }
 
   void local_var_statement_t::do_visit(tchecker::statement_visitor_t & v) const

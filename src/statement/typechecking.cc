@@ -256,7 +256,13 @@ namespace tchecker {
             dynamic_cast<tchecker::typed_var_expression_t const *>
             (tchecker::typecheck(stmt.variable(), _localvars, _intvars, _clocks, _error));
 
-        _typed_stmt = new tchecker::typed_local_var_statement_t (stmt_type, variable);
+        tchecker::typed_expression_t const *init =
+            tchecker::typecheck(stmt.initial_value (), _localvars, _intvars, _clocks, _error);
+
+        if (! tchecker::integer_valued (init->type()))
+          stmt_type = tchecker::STMT_TYPE_BAD;
+
+        _typed_stmt = new tchecker::typed_local_var_statement_t (stmt_type, variable, init);
       }
 
     /*!

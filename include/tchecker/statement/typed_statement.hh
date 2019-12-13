@@ -659,10 +659,20 @@ namespace tchecker {
     /*!
      \brief Constructor
      \param type : statement type
-     \param name : name of the variable
+     \param variable : the local variable
      */
     typed_local_var_statement_t(enum tchecker::statement_type_t type,
                                 tchecker::typed_var_expression_t const *variable);
+
+    /*!
+     \brief Constructor
+     \param type : statement type
+     \param variable : the local variable
+     \param init : the initial value assigned to \a variable
+     */
+    typed_local_var_statement_t(enum tchecker::statement_type_t type,
+                                tchecker::typed_var_expression_t const *variable,
+                                tchecker::typed_expression_t const *init);
 
     /*!
      \brief Accessor
@@ -671,7 +681,17 @@ namespace tchecker {
     inline tchecker::typed_var_expression_t const & variable() const
     {
       return dynamic_cast<tchecker::typed_var_expression_t const &>
-      (tchecker::make_typed_statement_t<tchecker::local_var_statement_t>::variable ());
+      (tchecker::make_typed_statement_t<tchecker::local_var_statement_t>::variable());
+    }
+
+    /*!
+     \brief Accessor
+     \return Initial value
+     */
+    inline tchecker::typed_expression_t const & initial_value() const
+    {
+      return dynamic_cast<tchecker::typed_expression_t const &>
+      (tchecker::make_typed_statement_t<tchecker::local_var_statement_t>::initial_value());
     }
 
   protected:

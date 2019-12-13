@@ -117,6 +117,7 @@ namespace tchecker {
 
 			virtual void visit(tchecker::typed_local_var_statement_t const & stmt)
 			{
+				tchecker::extract_variables(stmt.initial_value(), _clocks, _intvars);
 			}
 
 			virtual void visit(tchecker::typed_local_array_statement_t const & stmt)

@@ -430,10 +430,19 @@ namespace tchecker {
      public:
       /*!
        \brief Constructor
-       \param name : name of the new local variable
+       \param var : the new local variable
        \pre ! name.empty()
        */
       local_var_statement_t(tchecker::var_expression_t const *var);
+
+      /*!
+       \brief Constructor
+       \param var : the new local variable
+       \param init : initial value assigned to var
+       \pre ! name.empty()
+       */
+      local_var_statement_t(tchecker::var_expression_t const *var,
+                            tchecker::expression_t const *init);
 
       /*!
        \brief Destructor
@@ -442,11 +451,20 @@ namespace tchecker {
 
       /*!
        \brief Accessor
-       \return Right value
+       \return The variable
        */
       inline tchecker::var_expression_t const & variable() const
       {
         return *_variable;
+      }
+
+      /*!
+       \brief Accessor
+       \return The initial value of the local variable
+       */
+      inline tchecker::expression_t const & initial_value() const
+      {
+        return *_initial_value;
       }
 
      protected:
@@ -471,7 +489,8 @@ namespace tchecker {
        */
       virtual void do_visit(tchecker::statement_visitor_t & v) const;
 
-      tchecker::var_expression_t const * _variable;   /*!< Variable  */
+      tchecker::var_expression_t const * _variable;      /*!< Variable  */
+      tchecker::expression_t const * _initial_value; /*!< Initial value */
     };
 
     /*!

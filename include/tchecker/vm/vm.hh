@@ -559,8 +559,9 @@ namespace tchecker {
 
           case VM_INIT_FRAME:
           {
+            auto const value = top_and_pop<tchecker::intvar_id_t> ();
             auto const id = top_and_pop<tchecker::intvar_id_t> ();
-            _frames.back ()[id] = 0;
+            _frames.back ()[id] = value;
 
             return 0;
           }

@@ -58,9 +58,18 @@ namespace tchecker {
     return tchecker::STMT_TYPE_BAD;
   }
 
-  enum tchecker::statement_type_t type_local_array(enum tchecker::expression_type_t size)
+  enum tchecker::statement_type_t type_local(enum tchecker::expression_type_t variable,
+                                             enum tchecker::expression_type_t init)
   {
-    if (tchecker::integer_valued (size))
+    if (tchecker::integer_valued (init) && variable == tchecker::EXPR_TYPE_LOCALINTVAR)
+      return tchecker::STMT_TYPE_LOCAL_INT;
+    return tchecker::STMT_TYPE_BAD;
+  }
+
+  enum tchecker::statement_type_t type_local_array(enum tchecker::expression_type_t variable,
+                                                   enum tchecker::expression_type_t size)
+  {
+    if (tchecker::integer_valued (size) && variable == tchecker::EXPR_TYPE_LOCALINTARRAY)
       return tchecker::STMT_TYPE_LOCAL_ARRAY;
     return tchecker::STMT_TYPE_BAD;
   }

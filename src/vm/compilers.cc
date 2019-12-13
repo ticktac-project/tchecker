@@ -923,8 +923,10 @@ namespace tchecker
 
       virtual void visit(tchecker::typed_local_var_statement_t const & stmt)
       {
-        tchecker::details::lvalue_expression_compiler_t<BYTECODE_BACK_INSERTER> lvalue_compiler(_bytecode_back_inserter);
-        stmt.variable ().visit (lvalue_compiler);
+	    tchecker::details::lvalue_expression_compiler_t<BYTECODE_BACK_INSERTER> lvalue_compiler(_bytecode_back_inserter);
+	    stmt.variable ().visit (lvalue_compiler);
+        tchecker::details::rvalue_expression_compiler_t<BYTECODE_BACK_INSERTER> rvalue_compiler(_bytecode_back_inserter);
+        stmt.initial_value ().visit (rvalue_compiler);
         _bytecode_back_inserter = VM_INIT_FRAME;
       }
 
@@ -936,6 +938,8 @@ namespace tchecker
         for(tchecker::variable_size_t i = 0; i < asize; i++) {
             _bytecode_back_inserter = VM_PUSH;
             _bytecode_back_inserter = id+i;
+            _bytecode_back_inserter = VM_PUSH;
+            _bytecode_back_inserter = 0;
             _bytecode_back_inserter = VM_INIT_FRAME;
         }
       }
@@ -1115,7 +1119,7 @@ namespace tchecker
     try {
       if (stmt.type() == tchecker::STMT_TYPE_BAD)
         throw std::invalid_argument("invalid statement");
-      
+
       std::vector<tchecker::bytecode_t> bytecode;
       auto back_inserter = std::back_inserter(bytecode);
 
