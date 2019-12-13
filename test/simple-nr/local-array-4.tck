@@ -19,8 +19,7 @@ location:P:A{initial:}
 event: initArray
 event: revertArray
 edge:P:A:A:initArray{do:
-    local i;
-    i = 0;
+    local i = 0;
     while (i < n) do
         Array[i] = i;
         i = i+1
@@ -28,9 +27,9 @@ edge:P:A:A:initArray{do:
 }
 
 edge:P:A:A:revertArray{do:
-    local i;
+    local i = 0;
     local tmp[5];
-    i = 0;
+
     while (i < n) do
         tmp[i] = Array[n - i - 1];
         i = i+1;

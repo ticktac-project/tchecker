@@ -22,7 +22,8 @@ set(SIMPLE_NR_TESTS
     local-array-1.tck
     local-array-2.tck
     local-array-3.tck
-    
+    local-array-4.tck
+
     stuck-process-1.tck
     stuck-process-2.tck
     stuck-process-3.tck
