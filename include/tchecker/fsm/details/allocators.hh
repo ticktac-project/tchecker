@@ -133,9 +133,11 @@ namespace tchecker {
         tchecker::intrusive_shared_ptr_t<STATE> construct_from_state(STATE const & state, ARGS && ... args)
         {
           return
-          tchecker::ts::state_pool_allocator_t<STATE>::construct(args...,
-                                                                 _vloc_pool.construct(state.vloc()),
-                                                                 _intvars_val_pool.construct(state.intvars_valuation()));
+          tchecker::ts::state_pool_allocator_t<STATE>::construct
+	    (state,
+	     args...,
+	     _vloc_pool.construct(state.vloc()),
+	     _intvars_val_pool.construct(state.intvars_valuation()));
         }
         
         /*!

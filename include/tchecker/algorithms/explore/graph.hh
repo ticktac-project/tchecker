@@ -44,6 +44,20 @@ namespace tchecker {
       node_t(tchecker::node_id_t id, SARGS && ... sargs)
       : tchecker::graph::node_with_id_t(id), STATE(std::forward<SARGS>(sargs)...)
       {}
+
+      /*!
+	\brief Constructor
+	\param node : a node
+	\param id : node identifier
+	\param sargs : parameters to a constructor of class STATE
+	\pre id should uniquely identify this node
+	\post this node has been built from sargs, with identifier id
+      */
+      template <class ... SARGS>
+      node_t(tchecker::explore::node_t<STATE> const & node, tchecker::node_id_t id,
+	     SARGS && ... sargs)
+	: tchecker::graph::node_with_id_t(id), STATE(node, std::forward<SARGS>(sargs)...)
+      {}
       
       /*!
        \brief Copy constructor
