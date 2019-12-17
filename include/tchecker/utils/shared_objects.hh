@@ -11,7 +11,11 @@
 #include <exception>
 #include <limits>
 
-#include <boost/functional/hash.hpp>
+#if BOOST_VERSION <= 106600
+# include <boost/functional/hash.hpp>
+#else
+# include <boost/container_hash/hash.hpp>
+#endif
 
 #include "tchecker/utils/allocation_size.hh"
 
