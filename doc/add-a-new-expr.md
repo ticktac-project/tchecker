@@ -1,6 +1,6 @@
 # Adding a new kind of expression 
 
-In this document we will a new kind of operator to the syntax of expressions. The new
+In this document we will add a new kind of operator to the syntax of expressions. The new
 operator introduced by following changes is the well-known ternary operator `if-then-else`. 
 
 ## Creating the new classes  
@@ -35,7 +35,7 @@ To implement the `ite` operator we use an _ad-hoc_ instruction `VM_ITE` added to
 program interpreter. However it could have been implement using jump instructions.
 
 * in [src/vm/compilers.cc](file:../src/vm/compilers.cc):
-    * add the compilattion of the operator into a `VM_ITE` instruction.
+    * add the compilation of the operator into a `VM_ITE` instruction.
         * bytecodes of operands are inserted in the order `if`, `then` and `else` (the)
         interpreter must pop evaluations of operands in reverse order.
         * then 'VM_ITE' is inserted.
