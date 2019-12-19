@@ -25,11 +25,11 @@ while (x < n - 1) do
             A[j] = A[j+1];
             A[j+1] = tmp;
             tmp = 0
-        endif ;
+        end ;
         j = j + 1
-     done;
+     end;
      x = x + 1
-done
+end
 }
 edge:P:B:B:checkA{provided: i < n-1 && A[i] <= A[i+1] : do : i = i+1 }
 edge:P:B:ERR:checkA{provided: i < n-1 && A[i] > A[i+1] }

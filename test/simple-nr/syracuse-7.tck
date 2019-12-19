@@ -26,8 +26,8 @@ edge:P:A:A:a{do:
             x = Un/2
         else
             x = 3*Un+1
-        endif;
+        end;
         Un = x;
         y = 10
-    done
+    end
 }

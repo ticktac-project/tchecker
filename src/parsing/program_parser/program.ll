@@ -63,11 +63,10 @@ integer  [0-9]+
 %}
 
 "if"           { return program::parser_t::make_TOK_IF(loc); }
-"endif"        { return program::parser_t::make_TOK_ENDIF(loc); }
+"end"          { return program::parser_t::make_TOK_END(loc); }
 "then"         { return program::parser_t::make_TOK_THEN(loc); }
 "else"         { return program::parser_t::make_TOK_ELSE(loc); }
 "while"        { return program::parser_t::make_TOK_WHILE(loc); }
-"done"         { return program::parser_t::make_TOK_DONE(loc); }
 "do"           { return program::parser_t::make_TOK_DO(loc); }
 "local"        { return program::parser_t::make_TOK_LOCAL(loc); }
 

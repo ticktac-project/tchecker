@@ -147,12 +147,11 @@
 %token                TOK_LT                "<"
 %token                TOK_GT                ">"
 %token                TOK_IF                "if"
-%token                TOK_ENDIF             "endif"
+%token                TOK_END               "end"
 %token                TOK_THEN              "then"
 %token                TOK_ELSE              "else"
 %token                TOK_WHILE             "while"
 %token                TOK_DO                "do"
-%token                TOK_DONE              "done"
 %token                TOK_NOP               "nop"
 %token                TOK_LOCAL             "local"
 %token <std::string>  TOK_ID                "identifier"
@@ -260,14 +259,14 @@ statement:
 ;
 
 if_statement:
-    TOK_IF conjunctive_formula TOK_THEN sequence_statement TOK_ENDIF
+    TOK_IF conjunctive_formula TOK_THEN sequence_statement TOK_END
     {  $$ = new tchecker::if_statement_t($2, $4, new tchecker::nop_statement_t()); }
-|   TOK_IF conjunctive_formula TOK_THEN sequence_statement TOK_ELSE sequence_statement TOK_ENDIF
+|   TOK_IF conjunctive_formula TOK_THEN sequence_statement TOK_ELSE sequence_statement TOK_END
     {  $$ = new tchecker::if_statement_t($2, $4, $6); }
 ;
 
 loop_statement:
-    TOK_WHILE conjunctive_formula TOK_DO sequence_statement TOK_DONE
+    TOK_WHILE conjunctive_formula TOK_DO sequence_statement TOK_END
     { $$ = new tchecker::while_statement_t($2, $4); }
 ;
 
@@ -472,7 +471,7 @@ integer
     $$ = new fake_expression_t();
   }
 }
-| TOK_IF conjunctive_formula TOK_THEN term TOK_ELSE term TOK_ENDIF
+| TOK_IF conjunctive_formula TOK_THEN term TOK_ELSE term TOK_END
 {
   try {
     $$ = new tchecker::ite_expression_t($2, $4, $6);

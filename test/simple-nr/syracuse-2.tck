@@ -16,4 +16,4 @@ int:1:1:1000:115:Un
 process:P
 location:P:A{initial:}
 event: a
-edge:P:A:A:a{do: Un=(if Un%2 ==0 then (17*Un)/34 else 39*(Un-1)/13+4 endif) }
+edge:P:A:A:a{do: Un=(if Un%2 ==0 then (17*Un)/34 else 39*(Un-1)/13+4 end) }
