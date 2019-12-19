@@ -471,10 +471,10 @@ integer
     $$ = new fake_expression_t();
   }
 }
-| TOK_IF conjunctive_formula TOK_THEN term TOK_ELSE term TOK_END
+| TOK_LPAR TOK_IF conjunctive_formula TOK_THEN term TOK_ELSE term TOK_RPAR
 {
   try {
-    $$ = new tchecker::ite_expression_t($2, $4, $6);
+    $$ = new tchecker::ite_expression_t($3, $5, $7);
   }
   catch (std::exception const & e) {
     error(@$, e.what());
