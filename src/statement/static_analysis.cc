@@ -285,36 +285,36 @@ namespace tchecker {
 		 \brief Visitor of statements that check if at least one local variable exists
 		 */
 		class local_declaration_visitor_t : public tchecker::typed_statement_visitor_t {
-		 public:
+		public:
 		  /*!
-           \brief Constructor
-           */
+		   \brief Constructor
+		   */
 		  local_declaration_visitor_t() : _value(false) {}
 
 		  /*!
-           \brief Copy constructor
-           */
+		   \brief Copy constructor
+		   */
 		  local_declaration_visitor_t(tchecker::details::local_declaration_visitor_t const &) = default;
 
 		  /*!
-           \brief Move constructor
-           */
+		   \brief Move constructor
+		   */
 		  local_declaration_visitor_t(tchecker::details::local_declaration_visitor_t &&) = default;
 
 		  /*!
-           \brief Destructor
-           */
+		   \brief Destructor
+		   */
 		  virtual ~local_declaration_visitor_t() = default;
 
 		  /*!
-           \brief Assignment operator (deleted)
-           */
+		   \brief Assignment operator (deleted)
+		   */
 		  tchecker::details::local_declaration_visitor_t &
 		  operator= (tchecker::details::local_declaration_visitor_t const &) = delete;
 
 		  /*!
-           \brief Move assignment operator (deleted)
-           */
+		   \brief Move assignment operator (deleted)
+		   */
 		  tchecker::details::local_declaration_visitor_t &
 		  operator= (tchecker::details::local_declaration_visitor_t &&) = delete;
 
@@ -323,20 +323,20 @@ namespace tchecker {
 		  {
 			  stmt.first().visit(*this);
 			  if(! _value)
-			  	stmt.second().visit(*this);
+				stmt.second().visit(*this);
 		  }
 
-          virtual void visit(tchecker::typed_local_var_statement_t const & stmt)
-          {
-		    _value = true;
-          }
+		  virtual void visit(tchecker::typed_local_var_statement_t const & stmt)
+		  {
+			_value = true;
+		  }
 
-          virtual void visit(tchecker::typed_local_array_statement_t const & stmt)
-          {
-		    _value = true;
-          }
+		  virtual void visit(tchecker::typed_local_array_statement_t const & stmt)
+		  {
+			_value = true;
+		  }
 
-          // irrelevant methods
+		  // irrelevant methods
 		  virtual void visit(tchecker::typed_assign_statement_t const & stmt) {}
 		  virtual void visit(tchecker::typed_int_to_clock_assign_statement_t const & stmt) {}
 		  virtual void visit(tchecker::typed_clock_to_clock_assign_statement_t const & stmt) {}
@@ -345,11 +345,11 @@ namespace tchecker {
 		  virtual void visit(tchecker::typed_if_statement_t const & stmt) {}
 		  virtual void visit(tchecker::typed_while_statement_t const & stmt) {}
 
-          inline bool value() {
-		  	return _value;
+		  inline bool value() {
+			return _value;
 		  }
 
-		 private:
+		private:
 		  bool _value;
 		};
 

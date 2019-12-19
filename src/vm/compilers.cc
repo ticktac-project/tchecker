@@ -348,7 +348,6 @@ namespace tchecker
             invalid_expression (expr, "a conjunction");
           
           compile_land_expression(expr);
-          //_bytecode_back_inserter = tchecker::VM_RETZ;   // optimization: return as soon as conjunct is false
         }
         // LT, LE, EQ, NEQ, GE, GT expression
         else if (tchecker::predicate(expr.binary_operator())) {
@@ -573,7 +572,7 @@ namespace tchecker
                                   tchecker::typed_expression_t const & then_value,
                                   tchecker::typed_expression_t const & else_value)
       {
-        // pre-compute then an else bytecodes
+        // pre-compute 'then' and 'else' bytecodes
         std::vector<tchecker::bytecode_t> then_bytecode;
         auto then_len = compile_tmp_rvalue_expression(then_value, then_bytecode);
 
