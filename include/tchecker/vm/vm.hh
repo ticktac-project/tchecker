@@ -38,7 +38,7 @@ namespace tchecker {
     //
     VM_JMP,          // unconditional jump relatively to next instruction;
     //                  offset is a parameter of the instruction
-    VM_JMPZ,         // stack = v1 ... vK-1                   jump if vk == 0
+    VM_JMPZ,         // stack = v1 ... vK   jump if vK == 0
     //                  offset is a parameter of the instruction
     VM_PUSH,         // stack = v1 ... vK v                   where v is a parameter of VM_PUSH
     //
@@ -64,12 +64,14 @@ namespace tchecker {
     //                                                         s is a parameter of VM_CLKCONSTR (strictness)
     VM_CLKRESET,     // stack = v1 ... vK-3                    output (vK-2 vK-1 vK)
     //
-    VM_PUSH_FRAME,
-    VM_POP_FRAME,
-    VM_VALUEAT_FRAME,
-    VM_ASSIGN_FRAME,
-    VM_INIT_FRAME,
-    //
+    VM_PUSH_FRAME,   // push a new frame for local variables
+    VM_POP_FRAME,    // pop the top-level frame
+    VM_VALUEAT_FRAME,// stack = v1 ... vK-1 [vK] 
+                     // vK is replaced by the value of the local variable identified by vK.
+    VM_ASSIGN_FRAME, // stack = v1 ... vK-2 
+                     // [vK-1] is assigned vK where vK-1 identifies a local variables.
+    VM_INIT_FRAME,   // stack = v1 ... vK-2
+                     // [vK-1] is initialized with vK where vK-1 identifies a local variables.
     VM_NOP,          // SHOULD BE LAST INSTRUCTION
   };
   
@@ -294,16 +296,17 @@ namespace tchecker {
           assert( contains_value<tchecker::integer_t>(l) );
           assert( contains_value<tchecker::integer_t>(h) );
           assert( contains_value<tchecker::integer_t>(offset) );
-          if ( (offset < l) || (offset > h) )
-            {
+          if ( (offset < l) || (offset > h) ) {
               std::stringstream ss;
               ss << offset << " out of [" << l << ", " << h << "]";
               throw std::out_of_range("out-of-bounds value: " + ss.str());
-            }
+          }
 
           return top<tchecker::integer_t>();
         }
 
+          // unconditional jump relatively to next instruction;
+          // offset is a parameter of the instruction
         case VM_JMP:
         {
           tchecker::bytecode_t const shift = * ++bytecode;
@@ -316,7 +319,8 @@ namespace tchecker {
 
           return 1;
         }
-
+          // stack = v1 ... vK   jump if vK == 0
+          // offset is a parameter of the instruction
         case VM_JMPZ:
         {
           tchecker::bytecode_t const shift = * ++bytecode;
@@ -535,41 +539,48 @@ namespace tchecker {
           return 1;
         }
 
-          case VM_PUSH_FRAME:
-          {
-            _frames.emplace_back ();
-            return 1;
-          }
+          // push a new frame for local variables
+        case VM_PUSH_FRAME:
+        {
+          _frames.emplace_back ();
+          return 1;
+        }
+          // pop the top-level frame
+        case VM_POP_FRAME:
+        {
+          _frames.pop_back ();
+          return 1;
+        }
 
-          case VM_POP_FRAME:
-          {
-            _frames.pop_back ();
-            return 1;
-          }
+          // stack = v1 ... vK-1 [vK]
+          // vK is replaced by the value of the local variable identified by vK.
+        case VM_VALUEAT_FRAME:
+        {
+          auto const id = top_and_pop<tchecker::bytecode_t> ();
+          push<tchecker::integer_t> (slot_of (id));
+          return top<tchecker::integer_t> ();
+        }
 
-          case VM_VALUEAT_FRAME:
-          {
-            auto const id = top_and_pop<tchecker::bytecode_t> ();
-            push<tchecker::integer_t> (slot_of (id));
-            return top<tchecker::integer_t> ();
-          }
+          // stack = v1 ... vK-2
+          // [vK-1] is assigned vK where vK-1 identifies a local variables.
+        case VM_ASSIGN_FRAME:
+        {
+          auto const value = top_and_pop<tchecker::integer_t> ();
+          auto const id = top_and_pop<tchecker::intvar_id_t> ();
+          slot_of (id) = value;
+          return value;
+        }
 
-          case VM_ASSIGN_FRAME:
-          {
-            auto const value = top_and_pop<tchecker::integer_t> ();
-            auto const id = top_and_pop<tchecker::intvar_id_t> ();
-            slot_of (id) = value;
-            return value;
-          }
+          // stack = v1 ... vK-2
+          // [vK-1] is initialized with vK where vK-1 identifies a local variables.
+        case VM_INIT_FRAME:
+        {
+          auto const value = top_and_pop<tchecker::intvar_id_t> ();
+          auto const id = top_and_pop<tchecker::intvar_id_t> ();
+          _frames.back ()[id] = value;
 
-          case VM_INIT_FRAME:
-          {
-            auto const value = top_and_pop<tchecker::intvar_id_t> ();
-            auto const id = top_and_pop<tchecker::intvar_id_t> ();
-            _frames.back ()[id] = value;
-
-            return 0;
-          }
+          return 0;
+        }
       }
       
       // should never be reached
@@ -578,6 +589,12 @@ namespace tchecker {
 
     using frame_t = std::map<tchecker::bytecode_t, tchecker::integer_t>;
 
+    /*!
+     \brief Look for a local variable in the stack of frames
+     \param id the identifier of the local variable
+     \return the lvalue of this variable
+     \throw std::out_of_range is the variable is not found.s
+     */
     tchecker::integer_t &slot_of (tchecker::bytecode_t id) {
       for(auto it = _frames.rbegin (); it != _frames.rend (); ++it)
         {

@@ -447,7 +447,7 @@ namespace tchecker {
     EXPR_OP_PLUS,
     EXPR_OP_TIMES,
     EXPR_OP_DIV,
-    EXPR_OP_MOD
+    EXPR_OP_MOD,
   };
   
   

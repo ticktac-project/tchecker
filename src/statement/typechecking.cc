@@ -23,6 +23,7 @@ namespace tchecker {
     public:
       /*!
        \brief Constructor
+       \param localvars : local variables
        \param intvars : integer variables
        \param clocks : clock variables
        \param error : error logging function

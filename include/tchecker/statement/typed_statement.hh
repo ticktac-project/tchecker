@@ -719,7 +719,7 @@ namespace tchecker {
     /*!
      \brief Constructor
      \param type : statement type
-     \param name : name of the array
+     \param variable : name of the array
      \param size : expression that represents the size of the array
      \note this takes ownership on parameters
      */

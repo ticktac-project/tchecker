@@ -230,13 +230,13 @@ namespace tchecker {
    */
   enum tchecker::expression_type_t type_unary(enum tchecker::unary_operator_t op, enum tchecker::expression_type_t expr_type);
 
-  /*
-  \brief Type inference
-  \param cond : expression type
-  \param then_value : expression type
+  /*!
+   \brief Type inference
+   \param cond : expression type
+   \param then_value : expression type
    \param else_value : expression type
-  \return type of expression if cond then then_value else else_value
-  */
+   \return type of expression if cond then then_value else else_value
+   */
   enum tchecker::expression_type_t type_ite(enum tchecker::expression_type_t cond,
                                             enum tchecker::expression_type_t then_value,
                                             enum tchecker::expression_type_t else_value);

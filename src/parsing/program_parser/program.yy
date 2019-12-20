@@ -332,7 +332,6 @@ non_atomic_conjunctive_formula:
     $$ = new fake_expression_t();
   }
 }
-
 ;
 
 

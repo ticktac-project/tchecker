@@ -366,10 +366,10 @@ namespace tchecker {
      \param cond : condition
      \param stmt : iterated statement
      \pre cond != nullptr and stmt != nullptr
-     \throw std::invalid_argument : if an parameter is nullptr
+     \throw std::invalid_argument : if a parameter is nullptr
      \note this takes ownership on parameters
      */
-    while_statement_t(tchecker::expression_t const *cond,
+    while_statement_t(tchecker::expression_t const * cond,
                       tchecker::statement_t const * stmt);
 
     /*!
@@ -431,7 +431,9 @@ namespace tchecker {
       /*!
        \brief Constructor
        \param var : the new local variable
-       \pre ! name.empty()
+       \pre var != nullptr
+       \throw std::invalid_argument : if an parameter is nullptr
+       \note this takes ownership on parameterss
        */
       local_var_statement_t(tchecker::var_expression_t const *var);
 
@@ -439,7 +441,9 @@ namespace tchecker {
        \brief Constructor
        \param var : the new local variable
        \param init : initial value assigned to var
-       \pre ! name.empty()
+       \pre var != nullptr and init != nullptr
+       \throw std::invalid_argument : if an parameter is nullptr
+       \note this takes ownership on parameters
        */
       local_var_statement_t(tchecker::var_expression_t const *var,
                             tchecker::expression_t const *init);
@@ -503,7 +507,9 @@ namespace tchecker {
        \brief Constructor
        \param variable: the new local variable
        \param size: size expression
-       \pre neither variable nor size are nullptr
+       \pre variable != nullptr and size != nullptr
+       \throw std::invalid_argument : if an parameter is nullptr
+       \note this takes ownership on parameters
        */
       local_array_statement_t(tchecker::var_expression_t const * variable,
                               tchecker::expression_t const * size);

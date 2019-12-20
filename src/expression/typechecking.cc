@@ -152,14 +152,12 @@ namespace tchecker {
         // Typed expression
         enum tchecker::expression_type_t expr_type;
         
-        if (integer_dereference(variable_type) && integer_valued(offset_type))
-          {
+        if (integer_dereference(variable_type) && integer_valued(offset_type)) {
             if ((variable_type == tchecker::EXPR_TYPE_LOCALINTVAR) || (variable_type == tchecker::EXPR_TYPE_LOCALINTARRAY))
               expr_type = tchecker::EXPR_TYPE_LOCALINTLVALUE;
             else
               expr_type = tchecker::EXPR_TYPE_INTLVALUE;
-          }
-        else if (clock_dereference(variable_type) && integer_valued(offset_type))
+        } else if (clock_dereference(variable_type) && integer_valued(offset_type))
           expr_type = tchecker::EXPR_TYPE_CLKLVALUE;
         else
           expr_type = tchecker::EXPR_TYPE_BAD;

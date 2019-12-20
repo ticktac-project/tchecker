@@ -771,9 +771,9 @@ namespace tchecker
 
 
       /*!
-     \class statement_compiler_t
-     \brief Visitor for compilation of statements
-     */
+       \class statement_compiler_t
+       \brief Visitor for compilation of statements
+       */
     template <class BYTECODE_BACK_INSERTER>
     class statement_compiler_t final : public tchecker::typed_statement_visitor_t {
     public:

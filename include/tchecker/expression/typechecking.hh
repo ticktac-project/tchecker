@@ -26,6 +26,7 @@ namespace tchecker {
   /*!
    \brief Type checking for expressions
    \param expr : expression
+   \param localvars : local vsariables
    \param intvars : integer variables
    \param clocks : clock variables
    \param error : error logging function
