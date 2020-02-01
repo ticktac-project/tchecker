@@ -214,8 +214,7 @@ namespace tchecker {
     int lexical_cmp(tchecker::fsm::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR> const & s1,
                     tchecker::fsm::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR> const & s2)
     {
-      int ts_cmp = tchecker::lexical_cmp(static_cast<tchecker::ts::state_t const &>(s1),
-                                         static_cast<tchecker::ts::state_t const &>(s2));
+      int ts_cmp = tchecker::ts::lexical_cmp(s1, s2);
       if (ts_cmp != 0)
         return ts_cmp;
       int vloc_cmp = tchecker::lexical_cmp(s1.vloc(), s2.vloc());
