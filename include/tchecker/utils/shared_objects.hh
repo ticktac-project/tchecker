@@ -406,7 +406,7 @@ namespace tchecker {
      */
     tchecker::intrusive_shared_ptr_t<T> & operator= (tchecker::intrusive_shared_ptr_t<T> const & p)
     {
-      if (*this != p)
+      if (this != &p)
         reset(p._t);
       return *this;
     }
@@ -421,7 +421,7 @@ namespace tchecker {
     template <class Y>
     tchecker::intrusive_shared_ptr_t<T> & operator= (tchecker::intrusive_shared_ptr_t<Y> const & y)
     {
-      if (*this != y)
+      if (this != &y)
         reset(dynamic_cast<T *>(y._t));
       return *this;
     }
@@ -434,7 +434,7 @@ namespace tchecker {
      */
     tchecker::intrusive_shared_ptr_t<T> & operator= (tchecker::intrusive_shared_ptr_t<T> && p)
     {
-      if (*this != p) {
+      if (this != &p) {
         reset(p._t);
         p.reset(nullptr);
       }
@@ -452,7 +452,7 @@ namespace tchecker {
     template <class Y>
     tchecker::intrusive_shared_ptr_t<T> & operator= (tchecker::intrusive_shared_ptr_t<Y> && y)
     {
-      if (*this != y) {
+      if (this != &y) {
         reset(dynamic_cast<T *>(y._t));
         y.reset(nullptr);
       }
