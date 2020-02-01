@@ -82,25 +82,25 @@ namespace tchecker {
         _offset_zone(offset_zone),
         _sync_zone(sync_zone)
         {}
-
-	/*!
-	  \brief Constructor
-	  \param s : a state
-	  \param offset_zone : an offset zone
-	  \param sync_zone : a synchronized zone
-	  \param vloc : tuple of locations
-	  \param intvars_val : integer variables valuation
-	  \pre vloc, intvars_val, offset_zone and sync_zone should not be nullptr (not checked)
-	  \note this keeps a pointer to vloc, intvars_val, offset_zone and sync_zone
+        
+        /*!
+         \brief Constructor
+         \param s : a state
+         \param offset_zone : an offset zone
+         \param sync_zone : a synchronized zone
+         \param vloc : tuple of locations
+         \param intvars_val : integer variables valuation
+         \pre vloc, intvars_val, offset_zone and sync_zone should not be nullptr (not checked)
+         \note this keeps a pointer to vloc, intvars_val, offset_zone and sync_zone
          */
         state_t(this_state_t const & s,
                 OFFSET_ZONE_PTR const & offset_zone,
                 SYNC_ZONE_PTR const & sync_zone,
                 VLOC_PTR const & vloc,
                 INTVARS_VAL_PTR const & intvars_val)
-	  : tchecker::ta::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR>(s, vloc, intvars_val),
-	    _offset_zone(offset_zone),
-	    _sync_zone(sync_zone)
+        : tchecker::ta::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR>(s, vloc, intvars_val),
+        _offset_zone(offset_zone),
+        _sync_zone(sync_zone)
         {}
         
         /*!
@@ -169,93 +169,91 @@ namespace tchecker {
         SYNC_ZONE_PTR _sync_zone;      /*!< Synchronized zone */
       };
       
-      
-      
-      
-      /*!
-       \brief Equality check
-       \param s1 : state
-       \param s2 : state
-       \return true if s1 and s2 have equal tuple of locations, equal integer variables
-       valuation and equal zone, false otherwise
-       */
-      template <class VLOC, class INTVARS_VAL, class OFFSET_ZONE, class SYNC_ZONE,
-      class VLOC_PTR, class INTVARS_VAL_PTR, class OFFSET_ZONE_PTR, class SYNC_ZONE_PTR>
-      inline bool
-      operator== (tchecker::async_zg::details::state_t<VLOC, INTVARS_VAL, OFFSET_ZONE, SYNC_ZONE,
-                  VLOC_PTR, INTVARS_VAL_PTR, OFFSET_ZONE_PTR, SYNC_ZONE_PTR> const & s1,
-                  tchecker::async_zg::details::state_t<VLOC, INTVARS_VAL, OFFSET_ZONE, SYNC_ZONE,
-                  VLOC_PTR, INTVARS_VAL_PTR, OFFSET_ZONE_PTR, SYNC_ZONE_PTR> const & s2)
-      {
-        return (tchecker::ta::details::operator==(s1, s2) &&
-                (s1.offset_zone() == s2.offset_zone()) &&
-                (s1.sync_zone() == s2.sync_zone()));
-      }
-      
-      
-      /*!
-       \brief Disequality check
-       \param s1 : state
-       \param s2 : state
-       \return false if s1 and s2 have equal tuple of locations, equal integer variables
-       valuation, and equal zone, true otherwise
-       */
-      template <class VLOC, class INTVARS_VAL, class OFFSET_ZONE, class SYNC_ZONE,
-      class VLOC_PTR, class INTVARS_VAL_PTR, class OFFSET_ZONE_PTR, class SYNC_ZONE_PTR>
-      inline bool operator!=
-      (tchecker::async_zg::details::state_t<VLOC, INTVARS_VAL, OFFSET_ZONE, SYNC_ZONE,
-       VLOC_PTR, INTVARS_VAL_PTR, OFFSET_ZONE_PTR, SYNC_ZONE_PTR> const & s1,
-       tchecker::async_zg::details::state_t<VLOC, INTVARS_VAL, OFFSET_ZONE, SYNC_ZONE,
-       VLOC_PTR, INTVARS_VAL_PTR, OFFSET_ZONE_PTR, SYNC_ZONE_PTR> const & s2)
-      {
-        return (! (s1 == s2));
-      }
-      
-      
-      /*!
-       \brief Hash
-       \param s : state
-       \return Hash value for state s
-       */
-      template <class VLOC, class INTVARS_VAL, class OFFSET_ZONE, class SYNC_ZONE,
-      class VLOC_PTR, class INTVARS_VAL_PTR, class OFFSET_ZONE_PTR, class SYNC_ZONE_PTR>
-      inline std::size_t
-      hash_value(tchecker::async_zg::details::state_t<VLOC, INTVARS_VAL, OFFSET_ZONE, SYNC_ZONE,
-                 VLOC_PTR, INTVARS_VAL_PTR, OFFSET_ZONE_PTR, SYNC_ZONE_PTR> const & s)
-      {
-        std::size_t h = tchecker::ta::details::hash_value(s);
-        boost::hash_combine(h, s.offset_zone().hash());
-        boost::hash_combine(h, s.sync_zone().hash());
-        return h;
-      }
-      
     } // end of namespace details
     
+    
+    
+    
+    /*!
+     \brief Equality check
+     \param s1 : state
+     \param s2 : state
+     \return true if s1 and s2 have equal tuple of locations, equal integer variables
+     valuation and equal zone, false otherwise
+     */
+    template <class VLOC, class INTVARS_VAL, class OFFSET_ZONE, class SYNC_ZONE,
+    class VLOC_PTR, class INTVARS_VAL_PTR, class OFFSET_ZONE_PTR, class SYNC_ZONE_PTR>
+    inline bool
+    operator== (tchecker::async_zg::details::state_t<VLOC, INTVARS_VAL, OFFSET_ZONE, SYNC_ZONE,
+                VLOC_PTR, INTVARS_VAL_PTR, OFFSET_ZONE_PTR, SYNC_ZONE_PTR> const & s1,
+                tchecker::async_zg::details::state_t<VLOC, INTVARS_VAL, OFFSET_ZONE, SYNC_ZONE,
+                VLOC_PTR, INTVARS_VAL_PTR, OFFSET_ZONE_PTR, SYNC_ZONE_PTR> const & s2)
+    {
+      return (tchecker::ta::operator==(s1, s2) &&
+              (s1.offset_zone() == s2.offset_zone()) &&
+              (s1.sync_zone() == s2.sync_zone()));
+    }
+    
+    
+    /*!
+     \brief Disequality check
+     \param s1 : state
+     \param s2 : state
+     \return false if s1 and s2 have equal tuple of locations, equal integer variables
+     valuation, and equal zone, true otherwise
+     */
+    template <class VLOC, class INTVARS_VAL, class OFFSET_ZONE, class SYNC_ZONE,
+    class VLOC_PTR, class INTVARS_VAL_PTR, class OFFSET_ZONE_PTR, class SYNC_ZONE_PTR>
+    inline bool operator!=
+    (tchecker::async_zg::details::state_t<VLOC, INTVARS_VAL, OFFSET_ZONE, SYNC_ZONE,
+     VLOC_PTR, INTVARS_VAL_PTR, OFFSET_ZONE_PTR, SYNC_ZONE_PTR> const & s1,
+     tchecker::async_zg::details::state_t<VLOC, INTVARS_VAL, OFFSET_ZONE, SYNC_ZONE,
+     VLOC_PTR, INTVARS_VAL_PTR, OFFSET_ZONE_PTR, SYNC_ZONE_PTR> const & s2)
+    {
+      return (! (s1 == s2));
+    }
+    
+    
+    /*!
+     \brief Hash
+     \param s : state
+     \return Hash value for state s
+     */
+    template <class VLOC, class INTVARS_VAL, class OFFSET_ZONE, class SYNC_ZONE,
+    class VLOC_PTR, class INTVARS_VAL_PTR, class OFFSET_ZONE_PTR, class SYNC_ZONE_PTR>
+    inline std::size_t
+    hash_value(tchecker::async_zg::details::state_t<VLOC, INTVARS_VAL, OFFSET_ZONE, SYNC_ZONE,
+               VLOC_PTR, INTVARS_VAL_PTR, OFFSET_ZONE_PTR, SYNC_ZONE_PTR> const & s)
+    {
+      std::size_t h = tchecker::ta::hash_value(s);
+      boost::hash_combine(h, s.offset_zone().hash());
+      boost::hash_combine(h, s.sync_zone().hash());
+      return h;
+    }
+    
+    
+    /*!
+     \brief Lexical ordering on asynchronous zone graph states
+     \param s1 : first state
+     \param s2 : second state
+     \return 0 if s1 and s2 are equal, a negative value if s1 is smaller than s2 w.r.t. lexical ordering on tuple of locations, then intger valuation,
+     then zone, a positive value otherwise
+     */
+    template <class VLOC, class INTVARS_VAL, class OFFSET_ZONE, class SYNC_ZONE,
+    class VLOC_PTR, class INTVARS_VAL_PTR, class OFFSET_ZONE_PTR, class SYNC_ZONE_PTR>
+    int lexical_cmp
+    (tchecker::async_zg::details::state_t<VLOC, INTVARS_VAL, OFFSET_ZONE, SYNC_ZONE,
+     VLOC_PTR, INTVARS_VAL_PTR, OFFSET_ZONE_PTR, SYNC_ZONE_PTR> const & s1,
+     tchecker::async_zg::details::state_t<VLOC, INTVARS_VAL, OFFSET_ZONE, SYNC_ZONE,
+     VLOC_PTR, INTVARS_VAL_PTR, OFFSET_ZONE_PTR, SYNC_ZONE_PTR> const & s2)
+    {
+      int ta_lexical_cmp = tchecker::ta::lexical_cmp(s1, s2);
+      if (ta_lexical_cmp != 0)
+        return ta_lexical_cmp;
+      return s1.offset_zone().lexical_cmp(s2.offset_zone());
+    }
+    
   } // end of namespace async_zg
-  
-  
-  /*!
-   \brief Lexical ordering on asynchronous zone graph states
-   \param s1 : first state
-   \param s2 : second state
-   \return 0 if s1 and s2 are equal, a negative value if s1 is smaller than s2 w.r.t. lexical ordering on tuple of locations, then intger valuation,
-   then zone, a positive value otherwise
-   */
-  template <class VLOC, class INTVARS_VAL, class OFFSET_ZONE, class SYNC_ZONE,
-  class VLOC_PTR, class INTVARS_VAL_PTR, class OFFSET_ZONE_PTR, class SYNC_ZONE_PTR>
-  int lexical_cmp
-  (tchecker::async_zg::details::state_t<VLOC, INTVARS_VAL, OFFSET_ZONE, SYNC_ZONE,
-   VLOC_PTR, INTVARS_VAL_PTR, OFFSET_ZONE_PTR, SYNC_ZONE_PTR> const & s1,
-   tchecker::async_zg::details::state_t<VLOC, INTVARS_VAL, OFFSET_ZONE, SYNC_ZONE,
-   VLOC_PTR, INTVARS_VAL_PTR, OFFSET_ZONE_PTR, SYNC_ZONE_PTR> const & s2)
-  {
-    using ta_state_t = tchecker::ta::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR>;
-    int ta_lexical_cmp = tchecker::lexical_cmp(static_cast<ta_state_t const &>(s1),
-                                               static_cast<ta_state_t const &>(s2));
-    if (ta_lexical_cmp != 0)
-      return ta_lexical_cmp;
-    return s1.offset_zone().lexical_cmp(s2.offset_zone());
-  }
   
 } // end of namespace tchecker
 

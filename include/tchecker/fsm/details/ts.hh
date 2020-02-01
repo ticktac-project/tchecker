@@ -100,7 +100,7 @@ namespace tchecker {
                                                          TRANSITION & t,
                                                          typename FSM::initial_iterator_value_t const & v)
         {
-          return _fsm.initialize(*s.vloc_ptr(), *s.intvars_val_ptr(), v);
+          return _fsm.initialize(*s.vloc_ptr(), *s.intvars_valuation_ptr(), v);
         }
         
         /*!
@@ -118,7 +118,7 @@ namespace tchecker {
                                                    TRANSITION & t,
                                                    typename FSM::outgoing_edges_iterator_value_t const & v)
         {
-          return _fsm.next(*s.vloc_ptr(), *s.intvars_val_ptr(), v);
+          return _fsm.next(*s.vloc_ptr(), *s.intvars_valuation_ptr(), v);
         }
         
         /*!

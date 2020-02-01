@@ -66,16 +66,18 @@ namespace tchecker {
             
             static inline key_t node_to_key(node_ptr_t const & node)
             {
-              return tchecker::ta::details::hash_value(*node);
+              return tchecker::ta::hash_value(*node);
             }
             
             class state_predicate_t {
             public:
-              using node_ptr_t = typename tchecker::covreach::details::zg::ta::algorithm_model_t<ZONE_SEMANTICS>::node_ptr_t;
+              using node_ptr_t
+              = typename tchecker::covreach::details::zg::ta::algorithm_model_t<ZONE_SEMANTICS>::node_ptr_t;
               
               bool operator() (node_ptr_t const & n1, node_ptr_t const & n2)
               {
-                return (static_cast<tchecker::ta::state_t const &>(*n1) == static_cast<tchecker::ta::state_t const &>(*n2));
+                return (static_cast<tchecker::ta::state_t const &>(*n1)
+                        == static_cast<tchecker::ta::state_t const &>(*n2));
               }
             };
             
@@ -83,7 +85,7 @@ namespace tchecker {
             public:
               bool operator() (node_ptr_t const & n1, node_ptr_t const & n2) const
               {
-                return tchecker::lexical_cmp(*n1, *n2) < 0;
+                return tchecker::zg::lexical_cmp(*n1, *n2) < 0;
               }
             };
             
@@ -138,23 +140,26 @@ namespace tchecker {
             using node_ptr_t = typename tchecker::covreach::details::graph_types_t<ts_t>::node_ptr_t;
             
             using node_allocator_t = typename zone_semantics_t::template state_pool_allocator_t<node_t>;
-            using transition_allocator_t = typename zone_semantics_t::template transition_singleton_allocator_t<transition_t>;
+            using transition_allocator_t
+            = typename zone_semantics_t::template transition_singleton_allocator_t<transition_t>;
             using ts_allocator_t = tchecker::ts::allocator_t<node_allocator_t, transition_allocator_t>;
             
             using graph_t = tchecker::covreach::graph_t<key_t, ts_t, ts_allocator_t>;
             
             static inline key_t node_to_key(node_ptr_t const & node)
             {
-              return tchecker::ta::details::hash_value(*node);
+              return tchecker::ta::hash_value(*node);
             }
             
             class state_predicate_t {
             public:
-              using node_ptr_t = typename tchecker::covreach::details::async_zg::ta::algorithm_model_t<ZONE_SEMANTICS>::node_ptr_t;
+              using node_ptr_t
+              = typename tchecker::covreach::details::async_zg::ta::algorithm_model_t<ZONE_SEMANTICS>::node_ptr_t;
               
               bool operator() (node_ptr_t const & n1, node_ptr_t const & n2)
               {
-                return (static_cast<tchecker::ta::state_t const &>(*n1) == static_cast<tchecker::ta::state_t const &>(*n2));
+                return (static_cast<tchecker::ta::state_t const &>(*n1)
+                        == static_cast<tchecker::ta::state_t const &>(*n2));
               }
             };
             
@@ -162,7 +167,7 @@ namespace tchecker {
             public:
               bool operator() (node_ptr_t const & n1, node_ptr_t const & n2) const
               {
-                return tchecker::lexical_cmp(*n1, *n2) < 0;
+                return tchecker::async_zg::lexical_cmp(*n1, *n2) < 0;
               }
             };
             

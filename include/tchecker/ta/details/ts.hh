@@ -98,7 +98,7 @@ namespace tchecker {
                                                          TRANSITION & t,
                                                          typename TA::initial_iterator_value_t const & v)
         {
-          return _ta.initialize(*s.vloc_ptr(), *s.intvars_val_ptr(), v, t.src_invariant_container());
+          return _ta.initialize(*s.vloc_ptr(), *s.intvars_valuation_ptr(), v, t.src_invariant_container());
         }
         
         /*!
@@ -116,8 +116,8 @@ namespace tchecker {
                                                    TRANSITION & t,
                                                    typename TA::outgoing_edges_iterator_value_t const & v)
         {
-          return _ta.next(*s.vloc_ptr(), *s.intvars_val_ptr(), v, t.src_invariant_container(), t.guard_container(),
-                          t.reset_container(), t.tgt_invariant_container());
+          return _ta.next(*s.vloc_ptr(), *s.intvars_valuation_ptr(), v, t.src_invariant_container(),
+                          t.guard_container(), t.reset_container(), t.tgt_invariant_container());
         }
         
         /*!

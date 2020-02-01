@@ -68,24 +68,25 @@ namespace tchecker {
         explicit state_t(VLOC_PTR const & vloc, INTVARS_VAL_PTR const & intvars_val)
         : _vloc(vloc), _intvars_val(intvars_val)
         {}
-
-	/*!
-	  \brief Constructor
-	  \param state : a state
-	  \param vloc : tuple of locations
-	  \param intvars_val : integer variables valuation
-	  \pre vloc and intvars_val must not be nullptr (not checked)
-	  \note this keeps a pointer to vloc and to intvars_val
-	*/
+        
+        /*!
+         \brief Constructor
+         \param state : a state
+         \param vloc : tuple of locations
+         \param intvars_val : integer variables valuation
+         \pre vloc and intvars_val must not be nullptr (not checked)
+         \note this keeps a pointer to vloc and to intvars_val
+         */
         state_t(tchecker::fsm::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR> const & s,
                 VLOC_PTR const & vloc, INTVARS_VAL_PTR const & intvars_val)
-	  : tchecker::ts::state_t(s), _vloc(vloc), _intvars_val(intvars_val)
-	{}
+        : tchecker::ts::state_t(s), _vloc(vloc), _intvars_val(intvars_val)
+        {}
         
         /*!
          \brief Copy constructor (deleted)
          */
-        state_t(tchecker::fsm::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR> const &) = delete;
+        state_t(tchecker::fsm::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR> const &)
+        = delete;
         
         /*!
          \brief Move constructor (deleted)
@@ -102,7 +103,8 @@ namespace tchecker {
          \brief Assignment operator (deleted)
          */
         tchecker::fsm::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR> &
-        operator= (tchecker::fsm::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR> const &) = delete;
+        operator= (tchecker::fsm::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR> const &)
+        = delete;
         
         /*!
          \brief Move-assignment operator (deleted)
@@ -141,7 +143,7 @@ namespace tchecker {
          \brief Accessor
          \return pointer to integer variables valuation
          */
-        INTVARS_VAL_PTR & intvars_val_ptr()
+        INTVARS_VAL_PTR & intvars_valuation_ptr()
         {
           return _intvars_val;
         }
@@ -150,80 +152,79 @@ namespace tchecker {
         INTVARS_VAL_PTR _intvars_val;    /*!< Valuation of integer variables */
       };
       
-      
-      /*!
-       \brief Equality check
-       \param s1 : state
-       \param s2 : state
-       \return true if s1 and s2 have equal tuple of locations, and equal integer variables
-       valuation, false otherwise
-       */
-      template <class VLOC, class INTVARS_VAL, class VLOC_PTR, class INTVARS_VAL_PTR>
-      bool operator== (tchecker::fsm::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR> const & s1,
-                       tchecker::fsm::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR> const & s2)
-      {
-        return (
-                (static_cast<tchecker::ts::state_t const &>(s1) == static_cast<tchecker::ts::state_t const &>(s2)) &&
-                (s1.vloc() == s2.vloc()) &&
-                (s1.intvars_valuation() == s2.intvars_valuation())
-                );
-      }
-      
-      
-      /*!
-       \brief Disequality check
-       \param s1 : state
-       \param s2 : state
-       \return false if s1 and s2 have equal tuple of locations, and equal integer variables
-       valuation, true otherwise
-       */
-      template <class VLOC, class INTVARS_VAL, class VLOC_PTR, class INTVARS_VAL_PTR>
-      bool operator!= (tchecker::fsm::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR> const & s1,
-                       tchecker::fsm::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR> const & s2)
-      {
-        return (! (s1 == s2));
-      }
-      
-      
-      /*!
-       \brief Hash
-       \param s : state
-       \return Hash value for state s
-       */
-      template <class VLOC, class INTVARS_VAL, class VLOC_PTR, class INTVARS_VAL_PTR>
-      std::size_t hash_value(tchecker::fsm::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR> const & s)
-      {
-        std::size_t h = hash_value(static_cast<tchecker::ts::state_t const &>(s));
-        boost::hash_combine(h, s.vloc());
-        boost::hash_combine(h, s.intvars_valuation());
-        return h;
-      }
-      
     } // end of namespace details
     
+    
+    /*!
+     \brief Equality check
+     \param s1 : state
+     \param s2 : state
+     \return true if s1 and s2 have equal tuple of locations, and equal integer variables
+     valuation, false otherwise
+     */
+    template <class VLOC, class INTVARS_VAL, class VLOC_PTR, class INTVARS_VAL_PTR>
+    bool operator== (tchecker::fsm::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR> const & s1,
+                     tchecker::fsm::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR> const & s2)
+    {
+      return ((static_cast<tchecker::ts::state_t const &>(s1) == static_cast<tchecker::ts::state_t const &>(s2))
+              && (s1.vloc() == s2.vloc())
+              && (s1.intvars_valuation() == s2.intvars_valuation())
+              );
+    }
+    
+    
+    /*!
+     \brief Disequality check
+     \param s1 : state
+     \param s2 : state
+     \return false if s1 and s2 have equal tuple of locations, and equal integer variables
+     valuation, true otherwise
+     */
+    template <class VLOC, class INTVARS_VAL, class VLOC_PTR, class INTVARS_VAL_PTR>
+    bool operator!= (tchecker::fsm::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR> const & s1,
+                     tchecker::fsm::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR> const & s2)
+    {
+      return (! (s1 == s2));
+    }
+    
+    
+    /*!
+     \brief Hash
+     \param s : state
+     \return Hash value for state s
+     */
+    template <class VLOC, class INTVARS_VAL, class VLOC_PTR, class INTVARS_VAL_PTR>
+    std::size_t
+    hash_value(tchecker::fsm::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR> const & s)
+    {
+      std::size_t h = hash_value(static_cast<tchecker::ts::state_t const &>(s));
+      boost::hash_combine(h, s.vloc());
+      boost::hash_combine(h, s.intvars_valuation());
+      return h;
+    }
+    
+    /*!
+     \brief Lexical ordering on FSM states
+     \param s1 : first state
+     \param s2 : second state
+     \return 0 if s1 and s2 are equal, a negative value if s1 is smaller than s2 w.r.t. lexical ordering on tuple of locations then integer variables
+     valuation, a positive value otherwise
+     */
+    template <class VLOC, class INTVARS_VAL, class VLOC_PTR, class INTVARS_VAL_PTR>
+    int lexical_cmp(tchecker::fsm::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR> const & s1,
+                    tchecker::fsm::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR> const & s2)
+    {
+      int ts_cmp = tchecker::lexical_cmp(static_cast<tchecker::ts::state_t const &>(s1),
+                                         static_cast<tchecker::ts::state_t const &>(s2));
+      if (ts_cmp != 0)
+        return ts_cmp;
+      int vloc_cmp = tchecker::lexical_cmp(s1.vloc(), s2.vloc());
+      if (vloc_cmp != 0)
+        return vloc_cmp;
+      return tchecker::lexical_cmp(s1.intvars_valuation(), s2.intvars_valuation());
+    }
+    
   } // end of namespace fsm
-  
-  
-  /*!
-   \brief Lexical ordering on FSM states
-   \param s1 : first state
-   \param s2 : second state
-   \return 0 if s1 and s2 are equal, a negative value if s1 is smaller than s2 w.r.t. lexical ordering on tuple of locations then integer variables
-   valuation, a positive value otherwise
-   */
-  template <class VLOC, class INTVARS_VAL, class VLOC_PTR, class INTVARS_VAL_PTR>
-  int lexical_cmp(tchecker::fsm::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR> const & s1,
-                  tchecker::fsm::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR> const & s2)
-  {
-    int ts_cmp = tchecker::lexical_cmp(static_cast<tchecker::ts::state_t const &>(s1),
-                                       static_cast<tchecker::ts::state_t const &>(s2));
-    if (ts_cmp != 0)
-      return ts_cmp;
-    int vloc_cmp = tchecker::lexical_cmp(s1.vloc(), s2.vloc());
-    if (vloc_cmp != 0)
-      return vloc_cmp;
-    return tchecker::lexical_cmp(s1.intvars_valuation(), s2.intvars_valuation());
-  }
   
 } // end of namespace tchecker
 
