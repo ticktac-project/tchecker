@@ -8,6 +8,12 @@
 #ifndef TCHECKER_ZG_DETAILS_STATE_HH
 #define TCHECKER_ZG_DETAILS_STATE_HH
 
+#if BOOST_VERSION <= 106600
+# include <boost/functional/hash.hpp>
+#else
+# include <boost/container_hash/hash.hpp>
+#endif
+
 #include "tchecker/ta/details/state.hh"
 
 /*!
@@ -56,6 +62,23 @@ namespace tchecker {
         : tchecker::ta::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR>(vloc, intvars_val),
         _zone(zone)
         {}
+
+	/*!
+	  \brief Constructor
+	  \param s : a state
+	  \param zone : a zone
+	  \param vloc : tuple of locations
+	  \param intvars_val : integer variables valuation
+	  \pre vloc, intvars_val and zone must be valid pointers (not checked)
+	  \note this keeps a pointer to vloc, intvars_val and zone
+	*/
+        state_t
+        (tchecker::zg::details::state_t<VLOC, INTVARS_VAL, ZONE, VLOC_PTR, INTVARS_VAL_PTR, ZONE_PTR> const & s,
+         ZONE_PTR const & zone, VLOC_PTR const & vloc, INTVARS_VAL_PTR const & intvars_val)
+	  : tchecker::ta::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR>(s, vloc, intvars_val),
+	    _zone(zone)
+        {}
+    
         
         /*!
          \brief Copy constructor (deleted)

@@ -8,7 +8,11 @@
 #ifndef TCHECKER_FSM_DETAILS_STATE_HH
 #define TCHECKER_FSM_DETAILS_STATE_HH
 
-#include <boost/functional/hash.hpp>
+#if BOOST_VERSION <= 106600
+# include <boost/functional/hash.hpp>
+#else
+# include <boost/container_hash/hash.hpp>
+#endif
 
 #include "tchecker/ts/state.hh"
 
@@ -64,6 +68,19 @@ namespace tchecker {
         explicit state_t(VLOC_PTR const & vloc, INTVARS_VAL_PTR const & intvars_val)
         : _vloc(vloc), _intvars_val(intvars_val)
         {}
+
+	/*!
+	  \brief Constructor
+	  \param state : a state
+	  \param vloc : tuple of locations
+	  \param intvars_val : integer variables valuation
+	  \pre vloc and intvars_val must not be nullptr (not checked)
+	  \note this keeps a pointer to vloc and to intvars_val
+	*/
+        state_t(tchecker::fsm::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR> const & s,
+                VLOC_PTR const & vloc, INTVARS_VAL_PTR const & intvars_val)
+	  : tchecker::ts::state_t(s), _vloc(vloc), _intvars_val(intvars_val)
+	{}
         
         /*!
          \brief Copy constructor (deleted)

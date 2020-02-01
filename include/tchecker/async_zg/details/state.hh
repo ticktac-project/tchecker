@@ -8,6 +8,12 @@
 #ifndef TCHECKER_ASYNC_ZG_DETAILS_STATE_HH
 #define TCHECKER_ASYNC_ZG_DETAILS_STATE_HH
 
+#if BOOST_VERSION <= 106600
+# include <boost/functional/hash.hpp>
+#else
+# include <boost/container_hash/hash.hpp>
+#endif
+
 #include "tchecker/ta/details/state.hh"
 
 /*!
@@ -75,6 +81,26 @@ namespace tchecker {
         : tchecker::ta::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR>(vloc, intvars_val),
         _offset_zone(offset_zone),
         _sync_zone(sync_zone)
+        {}
+
+	/*!
+	  \brief Constructor
+	  \param s : a state
+	  \param offset_zone : an offset zone
+	  \param sync_zone : a synchronized zone
+	  \param vloc : tuple of locations
+	  \param intvars_val : integer variables valuation
+	  \pre vloc, intvars_val, offset_zone and sync_zone should not be nullptr (not checked)
+	  \note this keeps a pointer to vloc, intvars_val, offset_zone and sync_zone
+         */
+        state_t(this_state_t const & s,
+                OFFSET_ZONE_PTR const & offset_zone,
+                SYNC_ZONE_PTR const & sync_zone,
+                VLOC_PTR const & vloc,
+                INTVARS_VAL_PTR const & intvars_val)
+	  : tchecker::ta::details::state_t<VLOC, INTVARS_VAL, VLOC_PTR, INTVARS_VAL_PTR>(s, vloc, intvars_val),
+	    _offset_zone(offset_zone),
+	    _sync_zone(sync_zone)
         {}
         
         /*!
