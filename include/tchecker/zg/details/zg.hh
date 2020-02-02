@@ -203,8 +203,8 @@ namespace tchecker {
           if (status != tchecker::STATE_OK)
             return status;
           bool tgt_delay_allowed = tchecker::ta::delay_allowed(vloc);
-          return _zone_semantics.next(zone, src_delay_allowed, src_invariant, guard, clkreset, tgt_delay_allowed,
-                                      tgt_invariant, vloc);
+          return _zone_semantics.next(zone, src_delay_allowed, src_invariant, guard, clkreset,
+                                      tgt_delay_allowed, tgt_invariant, vloc);
         }
         
         /*!

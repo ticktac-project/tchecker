@@ -57,7 +57,8 @@ namespace tchecker {
     /*!
      \brief Type of extrapolation function using LU clock bounds
      */
-    typedef void (*extra_LU_t) (tchecker::dbm::db_t *, tchecker::clock_id_t, tchecker::integer_t const *, tchecker::integer_t const *);
+    typedef void (*extra_LU_t) (tchecker::dbm::db_t *, tchecker::clock_id_t, tchecker::integer_t const *,
+                                tchecker::integer_t const *);
     
     
     

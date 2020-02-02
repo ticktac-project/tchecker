@@ -130,10 +130,12 @@ namespace tchecker {
          \pre offset_dim is equal to _offset_dim (checked by assertion)
          dim is equal to _offset_dim - _refcount + 1 (checked by assertion)
          \post dbm is the set of synchronized valuations in offset_dbm
-         \return true if dbm is not empty, false otherwise
+         \return tchecker::dbm::EMPTY is dbm is empty, tchecker::dbm::NON_EMPTY otherwise
          */
-        bool sync_zone(tchecker::dbm::db_t const * const offset_dbm, tchecker::clock_id_t offset_dim,
-                       tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim);
+        enum tchecker::dbm::status_t sync_zone(tchecker::dbm::db_t const * const offset_dbm,
+                                               tchecker::clock_id_t offset_dim,
+                                               tchecker::dbm::db_t * dbm,
+                                               tchecker::clock_id_t dim);
       private:
         tchecker::dbm::db_t * _offset_dbm;    /*!< Offset DBM (for computations) */
         tchecker::clock_id_t _offset_dim;     /*!< Dimension of _offset_dbm */
@@ -290,12 +292,12 @@ namespace tchecker {
         
         tchecker::offset_dbm::zero(offset_dbm, offset_dim);
         
-        if ( ! tchecker::offset_dbm::details::constrain(offset_dbm, offset_dim, invariant) )
+        if (tchecker::offset_dbm::details::constrain(offset_dbm, offset_dim, invariant) == tchecker::dbm::EMPTY)
           return tchecker::STATE_CLOCKS_SRC_INVARIANT_VIOLATED;
         
         tchecker::offset_dbm::asynchronous_open_up(offset_dbm, offset_dim, _refcount, delay_allowed);
         
-        if ( ! tchecker::offset_dbm::details::constrain(offset_dbm, offset_dim, invariant) )
+        if (tchecker::offset_dbm::details::constrain(offset_dbm, offset_dim, invariant) == tchecker::dbm::EMPTY)
           return tchecker::STATE_CLOCKS_SRC_INVARIANT_VIOLATED;
         
         return tchecker::STATE_OK;
@@ -335,7 +337,8 @@ namespace tchecker {
         tchecker::dbm::db_t * sync_dbm = sync_zone.dbm();
         auto sync_dim = sync_zone.dim();
         
-        if ( ! _sync_zone_computer->sync_zone(offset_zone.dbm(), offset_zone.dim(), sync_dbm, sync_dim) )
+        if (_sync_zone_computer->sync_zone(offset_zone.dbm(), offset_zone.dim(), sync_dbm, sync_dim)
+            == tchecker::dbm::EMPTY)
           return tchecker::STATE_EMPTY_ZONE;
         
         EXTRAPOLATION::extrapolate(sync_dbm, sync_dim, vloc);
@@ -383,17 +386,19 @@ namespace tchecker {
         
         assert(offset_dim == _offset_dim);
         
-        if ( ! tchecker::offset_dbm::details::constrain(offset_dbm, offset_dim, guard) )
+        if (tchecker::offset_dbm::details::constrain(offset_dbm, offset_dim, guard) == tchecker::dbm::EMPTY)
           return tchecker::STATE_CLOCKS_GUARD_VIOLATED;
         
         tchecker::offset_dbm::details::reset(offset_dbm, offset_dim, _refcount, _refmap, clkreset);
         
-        if ( ! tchecker::offset_dbm::details::constrain(offset_dbm, offset_dim, tgt_invariant) )
+        if (tchecker::offset_dbm::details::constrain(offset_dbm, offset_dim, tgt_invariant)
+            == tchecker::dbm::EMPTY)
           return tchecker::STATE_CLOCKS_TGT_INVARIANT_VIOLATED;
         
         tchecker::offset_dbm::asynchronous_open_up(offset_dbm, offset_dim, _refcount, tgt_delay_allowed);
         
-        if ( ! tchecker::offset_dbm::details::constrain(offset_dbm, offset_dim, tgt_invariant) )
+        if (tchecker::offset_dbm::details::constrain(offset_dbm, offset_dim, tgt_invariant)
+            == tchecker::dbm::EMPTY)
           return tchecker::STATE_CLOCKS_TGT_INVARIANT_VIOLATED;
         
         return tchecker::STATE_OK;
@@ -448,7 +453,8 @@ namespace tchecker {
         tchecker::dbm::db_t * sync_dbm = sync_zone.dbm();
         auto sync_dim = sync_zone.dim();
         
-        if ( ! _sync_zone_computer->sync_zone(offset_zone.dbm(), offset_zone.dim(), sync_dbm, sync_dim) )
+        if (_sync_zone_computer->sync_zone(offset_zone.dbm(), offset_zone.dim(), sync_dbm, sync_dim)
+            == tchecker::dbm::EMPTY)
           return tchecker::STATE_EMPTY_ZONE;
         
         EXTRAPOLATION::extrapolate(sync_dbm, sync_dim, tgt_vloc);
@@ -613,7 +619,7 @@ namespace tchecker {
         
         tchecker::offset_dbm::zero(offset_dbm, offset_dim);
         
-        if ( ! tchecker::offset_dbm::details::constrain(offset_dbm, offset_dim, invariant) )
+        if (tchecker::offset_dbm::details::constrain(offset_dbm, offset_dim, invariant) == tchecker::dbm::EMPTY)
           return tchecker::STATE_CLOCKS_SRC_INVARIANT_VIOLATED;
         
         return tchecker::STATE_OK;
@@ -653,7 +659,8 @@ namespace tchecker {
         tchecker::dbm::db_t * sync_dbm = sync_zone.dbm();
         auto sync_dim = sync_zone.dim();
         
-        if ( ! _sync_zone_computer->sync_zone(offset_zone.dbm(), offset_zone.dim(), sync_dbm, sync_dim) )
+        if (_sync_zone_computer->sync_zone(offset_zone.dbm(), offset_zone.dim(), sync_dbm, sync_dim)
+            == tchecker::dbm::EMPTY)
           return tchecker::STATE_EMPTY_ZONE;
         
         EXTRAPOLATION::extrapolate(sync_dbm, sync_dim, vloc);
@@ -707,15 +714,17 @@ namespace tchecker {
         
         tchecker::offset_dbm::asynchronous_open_up(offset_dbm, offset_dim, _refcount, src_delay_allowed);
         
-        if ( ! tchecker::offset_dbm::details::constrain(offset_dbm, offset_dim, src_invariant) )
+        if (tchecker::offset_dbm::details::constrain(offset_dbm, offset_dim, src_invariant)
+            == tchecker::dbm::EMPTY)
           return tchecker::STATE_CLOCKS_SRC_INVARIANT_VIOLATED;  // should never occur
         
-        if ( ! tchecker::offset_dbm::details::constrain(offset_dbm, offset_dim, guard) )
+        if (tchecker::offset_dbm::details::constrain(offset_dbm, offset_dim, guard) == tchecker::dbm::EMPTY)
           return tchecker::STATE_CLOCKS_GUARD_VIOLATED;
         
         tchecker::offset_dbm::details::reset(offset_dbm, offset_dim, _refcount, _refmap, clkreset);
         
-        if ( ! tchecker::offset_dbm::details::constrain(offset_dbm, offset_dim, tgt_invariant) )
+        if (tchecker::offset_dbm::details::constrain(offset_dbm, offset_dim, tgt_invariant)
+            == tchecker::dbm::EMPTY)
           return tchecker::STATE_CLOCKS_TGT_INVARIANT_VIOLATED;
         
         return tchecker::STATE_OK;
@@ -772,7 +781,8 @@ namespace tchecker {
         tchecker::dbm::db_t * sync_dbm = sync_zone.dbm();
         auto sync_dim = sync_zone.dim();
         
-        if ( ! _sync_zone_computer->sync_zone(offset_zone.dbm(), offset_zone.dim(), sync_dbm, sync_dim) )
+        if (_sync_zone_computer->sync_zone(offset_zone.dbm(), offset_zone.dim(), sync_dbm, sync_dim)
+            == tchecker::dbm::EMPTY)
           return tchecker::STATE_EMPTY_ZONE;
         
         EXTRAPOLATION::extrapolate(sync_dbm, sync_dim, tgt_vloc);

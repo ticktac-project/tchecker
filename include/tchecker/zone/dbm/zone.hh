@@ -203,7 +203,8 @@ namespace tchecker {
        */
       constexpr tchecker::dbm::db_t * dbm_ptr() const
       {
-        return static_cast<tchecker::dbm::db_t *>(static_cast<void *>(const_cast<tchecker::dbm::zone_t *>(this) + 1));
+        return
+        static_cast<tchecker::dbm::db_t *>(static_cast<void *>(const_cast<tchecker::dbm::zone_t *>(this) + 1));
       }
       
       /*!

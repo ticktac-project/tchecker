@@ -22,7 +22,9 @@ namespace tchecker {
         assert(tchecker::offset_dbm::is_tight(dbm, dim));
         
         for (tchecker::clock_constraint_t const & c : constraints) {
-          auto cmp = (c.comparator() == tchecker::clock_constraint_t::LT ? tchecker::dbm::LT : tchecker::dbm::LE);
+          auto cmp = (c.comparator() == tchecker::clock_constraint_t::LT
+                      ? tchecker::dbm::LT
+                      : tchecker::dbm::LE);
           if (tchecker::dbm::constrain(dbm, dim, c.id1(), c.id2(), cmp, c.value()) == tchecker::dbm::EMPTY)
             return false;
         }
@@ -138,10 +140,11 @@ namespace tchecker {
       }
       
       
-      bool sync_zone_computer_t::sync_zone(tchecker::dbm::db_t const * const offset_dbm,
-                                           tchecker::clock_id_t offset_dim,
-                                           tchecker::dbm::db_t * dbm,
-                                           tchecker::clock_id_t dim)
+      enum tchecker::dbm::status_t
+      sync_zone_computer_t::sync_zone(tchecker::dbm::db_t const * const offset_dbm,
+                                      tchecker::clock_id_t offset_dim,
+                                      tchecker::dbm::db_t * dbm,
+                                      tchecker::clock_id_t dim)
       {
         assert(offset_dbm != nullptr);
         assert(offset_dim == _offset_dim);
@@ -151,12 +154,11 @@ namespace tchecker {
         std::memcpy(_offset_dbm, offset_dbm, _offset_dim * _offset_dim * sizeof(*_offset_dbm));
         
         auto res = tchecker::offset_dbm::synchronize(_offset_dbm, _offset_dim, _refcount);
-        if (res == tchecker::dbm::EMPTY)
-          return false;
         
-        tchecker::offset_dbm::to_dbm(_offset_dbm, _offset_dim, _refcount, _refmap, dbm, dim);
+        if (res == tchecker::dbm::NON_EMPTY)
+          tchecker::offset_dbm::to_dbm(_offset_dbm, _offset_dim, _refcount, _refmap, dbm, dim);
         
-        return true;
+        return res;
       }
       
     } // end of namespace details

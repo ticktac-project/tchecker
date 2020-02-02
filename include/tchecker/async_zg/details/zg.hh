@@ -352,10 +352,12 @@ namespace tchecker {
             if ((c.id1() == tchecker::zero_clock_id) && (c.id2() == tchecker::zero_clock_id))
               throw std::invalid_argument("cannot translate clock constraint of the form 0-0 <= c");
             offset_id1
-            = (c.id1() == tchecker::zero_clock_id ? tchecker::offset_dbm::reference_id(c.id2(), _refcount, _refmap)
+            = (c.id1() == tchecker::zero_clock_id
+               ? tchecker::offset_dbm::reference_id(c.id2(), _refcount, _refmap)
                : tchecker::offset_dbm::offset_id(c.id1(), _refcount));
             offset_id2
-            = (c.id2() == tchecker::zero_clock_id ? tchecker::offset_dbm::reference_id(c.id1(), _refcount, _refmap)
+            = (c.id2() == tchecker::zero_clock_id
+               ? tchecker::offset_dbm::reference_id(c.id1(), _refcount, _refmap)
                : tchecker::offset_dbm::offset_id(c.id2(), _refcount));
             offset_constraints.emplace_back(offset_id1, offset_id2, c.comparator(), c.value());
           }
@@ -376,7 +378,8 @@ namespace tchecker {
             if (! r.reset_to_zero())
               throw std::invalid_argument("cannot translate non-zero clock resets");
             tchecker::clock_id_t offset_left = tchecker::offset_dbm::offset_id(r.left_id(), _refcount);
-            tchecker::clock_id_t offset_right = tchecker::offset_dbm::reference_id(r.left_id(), _refcount, _refmap);
+            tchecker::clock_id_t offset_right = tchecker::offset_dbm::reference_id(r.left_id(), _refcount,
+                                                                                   _refmap);
             offset_resets.emplace_back(offset_left, offset_right, r.value());
           }
         }

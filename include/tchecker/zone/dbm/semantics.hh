@@ -58,7 +58,8 @@ namespace tchecker {
        \post dbm has been updated w.r.t. every clock reset in resets
        dbm is tight
        */
-      void reset(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_reset_container_t const & resets);
+      void reset(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim,
+                 tchecker::clock_reset_container_t const & resets);
       
     } // end of namespace details
     
@@ -142,13 +143,13 @@ namespace tchecker {
         
         tchecker::dbm::zero(dbm, dim);
         
-        if ( ! tchecker::dbm::details::constrain(dbm, dim, invariant) )
+        if ( tchecker::dbm::details::constrain(dbm, dim, invariant) == tchecker::dbm::EMPTY )
           return tchecker::STATE_CLOCKS_SRC_INVARIANT_VIOLATED;
         
         if (delay_allowed) {
           tchecker::dbm::open_up(dbm, dim);
           
-          if ( ! tchecker::dbm::details::constrain(dbm, dim, invariant) )
+          if ( tchecker::dbm::details::constrain(dbm, dim, invariant) == tchecker::dbm::EMPTY )
             return tchecker::STATE_CLOCKS_SRC_INVARIANT_VIOLATED;
         }
         
@@ -190,18 +191,18 @@ namespace tchecker {
         tchecker::dbm::db_t * dbm = zone.dbm();
         auto dim = zone.dim();
         
-        if ( ! tchecker::dbm::details::constrain(dbm, dim, guard) )
+        if ( tchecker::dbm::details::constrain(dbm, dim, guard) == tchecker::dbm::EMPTY )
           return tchecker::STATE_CLOCKS_GUARD_VIOLATED;
         
         tchecker::dbm::details::reset(dbm, dim, clkreset);
         
-        if ( ! tchecker::dbm::details::constrain(dbm, dim, tgt_invariant) )
+        if ( tchecker::dbm::details::constrain(dbm, dim, tgt_invariant) == tchecker::dbm::EMPTY )
           return tchecker::STATE_CLOCKS_TGT_INVARIANT_VIOLATED;
         
         if (tgt_delay_allowed) {
           tchecker::dbm::open_up(dbm, dim);
           
-          if ( ! tchecker::dbm::details::constrain(dbm, dim, tgt_invariant) )
+          if ( tchecker::dbm::details::constrain(dbm, dim, tgt_invariant) == tchecker::dbm::EMPTY )
             return tchecker::STATE_CLOCKS_TGT_INVARIANT_VIOLATED;
         }
         
@@ -292,7 +293,7 @@ namespace tchecker {
         
         tchecker::dbm::zero(dbm, dim);
         
-        if ( ! tchecker::dbm::details::constrain(dbm, dim, invariant) )
+        if ( tchecker::dbm::details::constrain(dbm, dim, invariant) == tchecker::dbm::EMPTY )
           return tchecker::STATE_CLOCKS_SRC_INVARIANT_VIOLATED;
         
         EXTRAPOLATION::extrapolate(dbm, dim, vloc);
@@ -340,16 +341,16 @@ namespace tchecker {
         if (src_delay_allowed) {
           tchecker::dbm::open_up(dbm, dim);
           
-          if ( ! tchecker::dbm::details::constrain(dbm, dim, src_invariant) )
+          if ( tchecker::dbm::details::constrain(dbm, dim, src_invariant) == tchecker::dbm::EMPTY )
             return tchecker::STATE_CLOCKS_SRC_INVARIANT_VIOLATED;  // should never occur
         }
         
-        if ( ! tchecker::dbm::details::constrain(dbm, dim, guard) )
+        if ( tchecker::dbm::details::constrain(dbm, dim, guard) == tchecker::dbm::EMPTY )
           return tchecker::STATE_CLOCKS_GUARD_VIOLATED;
         
         tchecker::dbm::details::reset(dbm, dim, clkreset);
         
-        if ( ! tchecker::dbm::details::constrain(dbm, dim, tgt_invariant) )
+        if ( tchecker::dbm::details::constrain(dbm, dim, tgt_invariant) == tchecker::dbm::EMPTY )
           return tchecker::STATE_CLOCKS_TGT_INVARIANT_VIOLATED;
         
         EXTRAPOLATION::extrapolate(dbm, dim, tgt_vloc);

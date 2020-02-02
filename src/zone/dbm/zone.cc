@@ -104,7 +104,8 @@ namespace tchecker {
     
     std::ostream & zone_t::output(std::ostream & os, tchecker::clock_index_t const & index) const
     {
-      return tchecker::dbm::output(os, dbm_ptr(), _dim, [&] (tchecker::clock_id_t id) { return index.value(id); });
+      return tchecker::dbm::output(os, dbm_ptr(), _dim,
+                                   [&] (tchecker::clock_id_t id) { return index.value(id); });
     }
     
     
