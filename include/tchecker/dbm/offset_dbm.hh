@@ -8,6 +8,8 @@
 #ifndef TCHECKER_OFFSET_DBM_HH
 #define TCHECKER_OFFSET_DBM_HH
 
+#include <boost/dynamic_bitset/dynamic_bitset.hpp>
+
 #include "tchecker/basictypes.hh"
 #include "tchecker/dbm/db.hh"
 #include "tchecker/dbm/dbm.hh"
@@ -20,9 +22,10 @@
  variable. The reference map refmap associates to each offset variable X, its reference clock
  RX=refmap[X]. Reference clocks are mapped to themselves (i.e. RX=refmap[RX]).
  
- Refence clocks play the role of the fictitious clock 0 in usual DBMs. And usual clocks x are
- represented as RX-X, the difference between the corresponding reference clock and the corresponding
- offset variable
+ The value of usual clock x is  represented as X-RX, the difference between the corresponding
+ offset variable X and the corresponding  reference clock RX. Observe that RX plays the same
+ role as the fictituous clock 0 with usual clock. In particular, time flows back in past by letting
+ referene clock decrease.
  
  for more details on offset DBMs, see "Partial Order Reduction for Timed Systems", J. Bengtsson,
  B. Jonsson, J. Lilis and Wang Yi, CONCUR, 1998.
@@ -113,8 +116,8 @@ namespace tchecker {
      and reference map refmap.
      offset_dbm is tight.
      */
-    void universal_positive(tchecker::dbm::db_t * offset_dbm, tchecker::clock_id_t offset_dim, tchecker::clock_id_t refcount,
-                            tchecker::clock_id_t const * refmap);
+    void universal_positive(tchecker::dbm::db_t * offset_dbm, tchecker::clock_id_t offset_dim,
+                            tchecker::clock_id_t refcount, tchecker::clock_id_t const * refmap);
     
     /*!
      \brief Initialize to zero
@@ -170,8 +173,8 @@ namespace tchecker {
      1 <= refcount <= offset_dim (checked by assertion)
      refmap maps each variable in offset_dbm to its reference clock.
      */
-    bool is_positive(tchecker::dbm::db_t const * offset_dbm, tchecker::clock_id_t offset_dim, tchecker::clock_id_t refcount,
-                     tchecker::clock_id_t const * refmap);
+    bool is_positive(tchecker::dbm::db_t const * offset_dbm, tchecker::clock_id_t offset_dim,
+                     tchecker::clock_id_t refcount, tchecker::clock_id_t const * refmap);
     
     /*!
      \brief Positive universality predicate
@@ -213,7 +216,8 @@ namespace tchecker {
      the first refcount clocks of offset_dbm are reference clocks.
      \return true if reference clocks are equal to each other in offset_dbm, false otherwise
      */
-    bool is_synchronized(tchecker::dbm::db_t const * offset_dbm, tchecker::clock_id_t offset_dim, tchecker::clock_id_t refcount);
+    bool is_synchronized(tchecker::dbm::db_t const * offset_dbm, tchecker::clock_id_t offset_dim,
+                         tchecker::clock_id_t refcount);
     
     /*!
      \brief Equality predicate
@@ -242,7 +246,8 @@ namespace tchecker {
      offset_dim >= 1 (checked by assertion).
      \return true if offset_dbm1 is included into offset_dbm2, false otherwise
      */
-    bool is_le(tchecker::dbm::db_t const * offset_dbm1, tchecker::dbm::db_t const * offset_dbm2, tchecker::clock_id_t offset_dim);
+    bool is_le(tchecker::dbm::db_t const * offset_dbm1, tchecker::dbm::db_t const * offset_dbm2,
+               tchecker::clock_id_t offset_dim);
     
     /*!
      \brief Hash function
@@ -281,8 +286,8 @@ namespace tchecker {
      DBM_UNSAFE is not set)
      */
     enum tchecker::dbm::status_t
-    constrain(tchecker::dbm::db_t * offset_dbm, tchecker::clock_id_t offset_dim, tchecker::clock_id_t x, tchecker::clock_id_t y,
-              tchecker::dbm::comparator_t cmp, tchecker::integer_t value);
+    constrain(tchecker::dbm::db_t * offset_dbm, tchecker::clock_id_t offset_dim, tchecker::clock_id_t x,
+              tchecker::clock_id_t y, tchecker::dbm::comparator_t cmp, tchecker::integer_t value);
     
     /*!
      \brief Restriction to synchronized valuations
@@ -298,7 +303,8 @@ namespace tchecker {
      \return tchecker::dbm::EMPTY if synchronized offset_dbm is empty, tchecker::dbm::NON_EMPTY otherwise
      */
     enum tchecker::dbm::status_t
-    synchronize(tchecker::dbm::db_t * offset_dbm, tchecker::clock_id_t offset_dim, tchecker::clock_id_t refcount);
+    synchronize(tchecker::dbm::db_t * offset_dbm, tchecker::clock_id_t offset_dim,
+                tchecker::clock_id_t refcount);
     
     /*!
      \brief Reset variable to its reference clock
@@ -318,8 +324,9 @@ namespace tchecker {
      variables are unchanged.
      offset_dbm is tight
      */
-    void reset_to_refclock(tchecker::dbm::db_t * offset_dbm, tchecker::clock_id_t offset_dim, tchecker::clock_id_t x,
-                           tchecker::clock_id_t refcount, tchecker::clock_id_t const * refmap);
+    void reset_to_refclock(tchecker::dbm::db_t * offset_dbm, tchecker::clock_id_t offset_dim,
+                           tchecker::clock_id_t x, tchecker::clock_id_t refcount,
+                           tchecker::clock_id_t const * refmap);
     
     /*!
      \brief Asynchronous open-up (delay)
@@ -336,7 +343,29 @@ namespace tchecker {
      (i.e. r1 - r2 < inf, for any two reference clocks r1 and r2, r1 != r2).
      offset_dbm is tight.
      */
-    void asynchronous_open_up(tchecker::dbm::db_t * offset_dbm, tchecker::clock_id_t offset_dim, tchecker::clock_id_t refcount);
+    void asynchronous_open_up(tchecker::dbm::db_t * offset_dbm, tchecker::clock_id_t offset_dim,
+                              tchecker::clock_id_t refcount);
+    
+    /*!
+     \brief Asynchronous open-up (delay)
+     \param offset_dbm : an offset DBM
+     \param offset_dim : dimension of offset_dbm
+     \param refcount : number of reference clocks
+     \param delay_allowed : reference clocks allowed to delay
+     \pre offset_dbm is not nullptr (checked by assertion)
+     offset_dbm is a offset_dim*offset_dim array of difference bounds
+     offset_dbm is consistent (checked by assertion)
+     offset_dbm is tight (checked by assertion)
+     1 <= refcount <= offset_dim (checked by assertion)
+     the first refcount variables of offset_dbm are reference clocks.
+     delay_allowed has size refcount (checked by assertion)
+     \post reference clocks in offset_dbm with delay_allowed are unbounded (i.e. x-r<inf for every reference clock r and
+     any variable x, including x=r').
+     reference clocks in offset_dbm without delay_allowed are unchanged
+     offset_dbm is tight.
+     */
+    void asynchronous_open_up(tchecker::dbm::db_t * offset_dbm, tchecker::clock_id_t offset_dim,
+                              tchecker::clock_id_t refcount, boost::dynamic_bitset<> const & delay_allowed);
     
     /*!
      \brief Tighten an offset DBM
@@ -377,8 +406,9 @@ namespace tchecker {
      0 clock in dbm.
      dbm is tight.
      */
-    void to_dbm(tchecker::dbm::db_t const * offset_dbm, tchecker::clock_id_t offset_dim, tchecker::clock_id_t refcount,
-                tchecker::clock_id_t const * refmap, tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim);
+    void to_dbm(tchecker::dbm::db_t const * offset_dbm, tchecker::clock_id_t offset_dim,
+                tchecker::clock_id_t refcount, tchecker::clock_id_t const * refmap,
+                tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim);
     
     /*!
      \brief Output an offset DBM as a matrix
@@ -391,7 +421,8 @@ namespace tchecker {
      \post offset_dbm has been output to os
      \return os after output
      */
-    std::ostream & output_matrix(std::ostream & os, tchecker::dbm::db_t const * offset_dbm, tchecker::clock_id_t offset_dim);
+    std::ostream & output_matrix(std::ostream & os, tchecker::dbm::db_t const * offset_dbm,
+                                 tchecker::clock_id_t offset_dim);
     
     /*!
      \brief Output an offset DBM as a conjunction of constraints
@@ -407,9 +438,9 @@ namespace tchecker {
      from the universal DBM.
      \return os after output
      */
-    std::ostream & output(std::ostream & os, tchecker::dbm::db_t const * offset_dbm, tchecker::clock_id_t offset_dim,
+    std::ostream & output(std::ostream & os, tchecker::dbm::db_t const * offset_dbm,
+                          tchecker::clock_id_t offset_dim,
                           std::function<std::string(tchecker::clock_id_t)> clock_name);
-
 
     /*!
      \brief Lexical ordering
@@ -421,7 +452,8 @@ namespace tchecker {
      offset_dbm1 is a offset_dim1*offset_dim1 array of difference bounds
      offset_dbm2 is a offset_dim2*offset_dim2 array of difference bounds
      offset_dim1 >= 1 and offset_dim2 >= 1 (checked by assertion)
-     \return 0 if offset_dbm1 and offset_dbm2 are equal, a negative value if offset_dbm1 is smaller than offset_dbm2 w.r.t. lexical ordering, and a positive value otherwise
+     \return 0 if offset_dbm1 and offset_dbm2 are equal, a negative value if offset_dbm1 is smaller than offset_dbm2 w.r.t. lexical ordering,
+     and a positive value otherwise
      */
     int lexical_cmp(tchecker::dbm::db_t const * offset_dbm1, tchecker::clock_id_t offset_dim1,
                     tchecker::dbm::db_t const * offset_dbm2, tchecker::clock_id_t offset_dim2);

@@ -65,7 +65,8 @@ TEST_CASE( "is_positive, structural test for offset DBMs", "[offset_dbm]" ) {
         OFFSET_DBM(i,j) = tchecker::dbm::LT_INFINITY;
       OFFSET_DBM(i,i) = tchecker::dbm::LE_ZERO;
       if (i >= refcount)
-        OFFSET_DBM(refmap[i], i) = tchecker::dbm::db(tchecker::dbm::LE, (tchecker::integer_t)refcount - (tchecker::integer_t)i);
+        OFFSET_DBM(refmap[i], i) = tchecker::dbm::db(tchecker::dbm::LE,
+                                                     (tchecker::integer_t)refcount - (tchecker::integer_t)i);
     }
     
     REQUIRE(tchecker::offset_dbm::is_positive(offset_dbm, offset_dim, refcount, refmap));
@@ -78,7 +79,8 @@ TEST_CASE( "is_positive, structural test for offset DBMs", "[offset_dbm]" ) {
         OFFSET_DBM(i,j) = tchecker::dbm::LT_INFINITY;
       OFFSET_DBM(i,i) = tchecker::dbm::LE_ZERO;
       if (i >= refcount)
-        OFFSET_DBM(refmap[i], i) = tchecker::dbm::db(tchecker::dbm::LE, (tchecker::integer_t)i - (tchecker::integer_t)refcount);
+        OFFSET_DBM(refmap[i], i) = tchecker::dbm::db(tchecker::dbm::LE,
+                                                     (tchecker::integer_t)i - (tchecker::integer_t)refcount);
     }
     
     REQUIRE_FALSE(tchecker::offset_dbm::is_positive(offset_dbm, offset_dim, refcount, refmap));
@@ -134,7 +136,8 @@ TEST_CASE( "is_universal_positive, structural test for offset DBMs", "[offset_db
         OFFSET_DBM(i,j) = tchecker::dbm::LT_INFINITY;
       OFFSET_DBM(i,i) = tchecker::dbm::LE_ZERO;
       if (i >= refcount)
-        OFFSET_DBM(refmap[i], i) = tchecker::dbm::db(tchecker::dbm::LE, (tchecker::integer_t)refcount-(tchecker::integer_t)i);
+        OFFSET_DBM(refmap[i], i) = tchecker::dbm::db(tchecker::dbm::LE,
+                                                     (tchecker::integer_t)refcount-(tchecker::integer_t)i);
     }
     OFFSET_DBM(refcount, refcount + 1) = tchecker::dbm::db(tchecker::dbm::LT, 4);
     
@@ -168,7 +171,9 @@ TEST_CASE( "is_synchronized, structural test for offset DBMs", "[offset_dbm]" ) 
     tchecker::dbm::db_t offset_dbm[offset_dim * offset_dim];
     for (tchecker::clock_id_t i = 0; i < offset_dim; ++i) {
       for (tchecker::clock_id_t j = 0; j < offset_dim; ++j)
-        OFFSET_DBM(i, j) = ((i < refcount) && (j < refcount) ? tchecker::dbm::LE_ZERO : tchecker::dbm::LT_INFINITY);
+        OFFSET_DBM(i, j) = ((i < refcount) && (j < refcount)
+                            ? tchecker::dbm::LE_ZERO
+                            : tchecker::dbm::LT_INFINITY);
       OFFSET_DBM(i, i) = tchecker::dbm::LE_ZERO;
     }
     
@@ -437,6 +442,35 @@ TEST_CASE( "asynchronous_open_up on offset DBMs", "[offset_dbm]" ) {
         OFFSET_DBM2(i,r) = (i == r ? tchecker::dbm::LE_ZERO : tchecker::dbm::LT_INFINITY);
     
     tchecker::offset_dbm::asynchronous_open_up(offset_dbm, offset_dim, refcount);
+    
+    REQUIRE(tchecker::offset_dbm::is_equal(offset_dbm, offset_dbm2, offset_dim));
+  }
+  
+  SECTION( "asynchronous_open_up on offset DBM, patial delay allowed" ) {
+    tchecker::dbm::db_t offset_dbm[offset_dim * offset_dim];
+    tchecker::offset_dbm::universal_positive(offset_dbm, offset_dim, refcount, refmap);
+    OFFSET_DBM(0, 1) = tchecker::dbm::LE_ZERO;
+    OFFSET_DBM(0, 3) = tchecker::dbm::LE_ZERO;
+    OFFSET_DBM(1, 0) = tchecker::dbm::LE_ZERO;
+    OFFSET_DBM(1, 4) = tchecker::dbm::db(tchecker::dbm::LE, 1);
+    OFFSET_DBM(2, 1) = tchecker::dbm::db(tchecker::dbm::LE, 1);
+    OFFSET_DBM(2, 5) = tchecker::dbm::db(tchecker::dbm::LE, 2);
+    OFFSET_DBM(4, 1) = tchecker::dbm::db(tchecker::dbm::LE, 2);
+    OFFSET_DBM(4, 3) = tchecker::dbm::db(tchecker::dbm::LE, 8);
+    OFFSET_DBM(5, 6) = tchecker::dbm::db(tchecker::dbm::LE, -1);
+    OFFSET_DBM(6, 5) = tchecker::dbm::db(tchecker::dbm::LE, 3);
+    tchecker::offset_dbm::tighten(offset_dbm, offset_dim);
+    
+    boost::dynamic_bitset<> delay_allowed(refcount, 0);
+    delay_allowed[1] = 1;
+    
+    tchecker::dbm::db_t offset_dbm2[offset_dim * offset_dim];
+    std::memcpy(offset_dbm2, offset_dbm, offset_dim * offset_dim * sizeof(*offset_dbm2));
+    tchecker::clock_id_t r = 1;
+    for (tchecker::clock_id_t i = 0; i < offset_dim; ++i)
+      OFFSET_DBM2(i,r) = (i == r ? tchecker::dbm::LE_ZERO : tchecker::dbm::LT_INFINITY);
+    
+    tchecker::offset_dbm::asynchronous_open_up(offset_dbm, offset_dim, refcount, delay_allowed);
     
     REQUIRE(tchecker::offset_dbm::is_equal(offset_dbm, offset_dbm2, offset_dim));
   }

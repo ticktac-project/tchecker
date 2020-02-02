@@ -8,6 +8,10 @@
 #ifndef TCHECKER_TA_HH
 #define TCHECKER_TA_HH
 
+#include <cassert>
+
+#include <boost/dynamic_bitset/dynamic_bitset.hpp>
+
 #include "tchecker/flat_system/vloc.hh"
 #include "tchecker/fsm/fsm.hh"
 #include "tchecker/ta/details/allocators.hh"
@@ -75,7 +79,7 @@ namespace tchecker {
     
     
     /*!
-     \brief Checks if time can delay in a tuple of locations
+     \brief Checks if time can elapse in a tuple of locations
      \tparam LOC : type of locations, should derive from tchecker::ta::details::loc_t
      \param vloc : tuple of locations
      \return true if time delay is allowed in vloc, false otherwise
@@ -87,6 +91,24 @@ namespace tchecker {
         if (! loc->delay_allowed())
           return false;
       return true;
+    }
+    
+    
+    /*!
+     \brief Checks if time can elapse in a tuple of locations
+     \tparam LOC : type of locations, should derive from tchecker::ta::details::loc_t
+     \param vloc : tuple of locations
+     \param allowed : bit vector
+     \pre allowed and vloc have same size (checked by assertion)
+     \post allowed[i] indicates whether process i can delay (value 1) or not (value 0)
+     */
+    template <class LOC>
+    void delay_allowed(tchecker::vloc_t<LOC> const & vloc, boost::dynamic_bitset<> & allowed)
+    {
+      assert(vloc.size() == allowed.size());
+      std::size_t size = vloc.size();
+      for (std::size_t i = 0; i < size; ++i)
+        allowed[i] = vloc[i]->delay_allowed();
     }
     
     

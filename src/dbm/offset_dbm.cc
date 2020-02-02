@@ -31,8 +31,8 @@ namespace tchecker {
     }
     
     
-    void universal_positive(tchecker::dbm::db_t * offset_dbm, tchecker::clock_id_t offset_dim, tchecker::clock_id_t refcount,
-                            tchecker::clock_id_t const * refmap)
+    void universal_positive(tchecker::dbm::db_t * offset_dbm, tchecker::clock_id_t offset_dim,
+                            tchecker::clock_id_t refcount, tchecker::clock_id_t const * refmap)
     {
       assert(offset_dbm != nullptr);
       assert(refcount >= 1);
@@ -70,8 +70,8 @@ namespace tchecker {
     }
     
     
-    bool is_positive(tchecker::dbm::db_t const * offset_dbm, tchecker::clock_id_t offset_dim, tchecker::clock_id_t refcount,
-                     tchecker::clock_id_t const * refmap)
+    bool is_positive(tchecker::dbm::db_t const * offset_dbm, tchecker::clock_id_t offset_dim,
+                     tchecker::clock_id_t refcount, tchecker::clock_id_t const * refmap)
     {
       assert(offset_dbm != nullptr);
       assert(tchecker::offset_dbm::is_tight(offset_dbm, offset_dim));
@@ -99,7 +99,9 @@ namespace tchecker {
       for (tchecker::clock_id_t i = 0; i < offset_dim; ++i) {
         for (tchecker::clock_id_t j = 0; j < offset_dim; ++j) {
           tchecker::clock_id_t rj = refmap[j];
-          tchecker::dbm::db_t expected = ((i == j) || (i == rj) ? tchecker::dbm::LE_ZERO : tchecker::dbm::LT_INFINITY);
+          tchecker::dbm::db_t expected = ((i == j) || (i == rj)
+                                          ? tchecker::dbm::LE_ZERO
+                                          : tchecker::dbm::LT_INFINITY);
           if (OFFSET_DBM(i, j) != expected)
             return false;
         }
@@ -116,7 +118,8 @@ namespace tchecker {
     }
     
     
-    bool is_synchronized(tchecker::dbm::db_t const * offset_dbm, tchecker::clock_id_t offset_dim, tchecker::clock_id_t refcount)
+    bool is_synchronized(tchecker::dbm::db_t const * offset_dbm, tchecker::clock_id_t offset_dim,
+                         tchecker::clock_id_t refcount)
     {
       assert(offset_dbm != nullptr);
       assert(tchecker::dbm::is_consistent(offset_dbm, offset_dim));
@@ -133,7 +136,8 @@ namespace tchecker {
     }
     
     
-    bool is_equal(tchecker::dbm::db_t const * offset_dbm1, tchecker::dbm::db_t const * offset_dbm2, tchecker::clock_id_t offset_dim)
+    bool is_equal(tchecker::dbm::db_t const * offset_dbm1, tchecker::dbm::db_t const * offset_dbm2,
+                  tchecker::clock_id_t offset_dim)
     {
       assert(offset_dbm1 != nullptr);
       assert(offset_dbm2 != nullptr);
@@ -146,7 +150,8 @@ namespace tchecker {
     }
     
     
-    bool is_le(tchecker::dbm::db_t const * offset_dbm1, tchecker::dbm::db_t const * offset_dbm2, tchecker::clock_id_t offset_dim)
+    bool is_le(tchecker::dbm::db_t const * offset_dbm1, tchecker::dbm::db_t const * offset_dbm2,
+               tchecker::clock_id_t offset_dim)
     {
       assert(offset_dbm1 != nullptr);
       assert(offset_dbm2 != nullptr);
@@ -168,8 +173,8 @@ namespace tchecker {
     
     
     enum tchecker::dbm::status_t
-    constrain(tchecker::dbm::db_t * offset_dbm, tchecker::clock_id_t offset_dim, tchecker::clock_id_t x, tchecker::clock_id_t y,
-              tchecker::dbm::comparator_t cmp, tchecker::integer_t value)
+    constrain(tchecker::dbm::db_t * offset_dbm, tchecker::clock_id_t offset_dim, tchecker::clock_id_t x,
+              tchecker::clock_id_t y, tchecker::dbm::comparator_t cmp, tchecker::integer_t value)
     {
       assert(offset_dbm != nullptr);
       assert(tchecker::offset_dbm::is_tight(offset_dbm, offset_dim));
@@ -222,8 +227,9 @@ namespace tchecker {
     }
     
     
-    void reset_to_refclock(tchecker::dbm::db_t * offset_dbm, tchecker::clock_id_t offset_dim, tchecker::clock_id_t x,
-                           tchecker::clock_id_t refcount, tchecker::clock_id_t const * refmap)
+    void reset_to_refclock(tchecker::dbm::db_t * offset_dbm, tchecker::clock_id_t offset_dim,
+                           tchecker::clock_id_t x, tchecker::clock_id_t refcount,
+                           tchecker::clock_id_t const * refmap)
     {
       assert(offset_dbm != nullptr);
       assert(tchecker::dbm::is_consistent(offset_dbm, offset_dim));
@@ -246,7 +252,8 @@ namespace tchecker {
     }
     
     
-    void asynchronous_open_up(tchecker::dbm::db_t * offset_dbm, tchecker::clock_id_t offset_dim, tchecker::clock_id_t refcount)
+    void asynchronous_open_up(tchecker::dbm::db_t * offset_dbm, tchecker::clock_id_t offset_dim,
+                              tchecker::clock_id_t refcount)
     {
       assert(offset_dbm != nullptr);
       assert(tchecker::dbm::is_consistent(offset_dbm, offset_dim));
@@ -254,8 +261,33 @@ namespace tchecker {
       assert(1 <= refcount);
       assert(refcount <= offset_dim);
       
-      // RX - X < inf for all X and RX (including X=RY)
+      // X - R < inf for all X and R (including X=R')
       for (tchecker::clock_id_t r = 0; r < refcount; ++r) {
+        for (tchecker::clock_id_t i = 0; i < offset_dim; ++i)
+          OFFSET_DBM(i,r) = tchecker::dbm::LT_INFINITY;
+        OFFSET_DBM(r,r) = tchecker::dbm::LE_ZERO;
+      }
+      
+      assert(tchecker::dbm::is_consistent(offset_dbm, offset_dim));
+      assert(tchecker::offset_dbm::is_tight(offset_dbm, offset_dim));
+    }
+    
+    
+    void asynchronous_open_up(tchecker::dbm::db_t * offset_dbm, tchecker::clock_id_t offset_dim,
+                              tchecker::clock_id_t refcount, boost::dynamic_bitset<> const & delay_allowed)
+    {
+      assert(offset_dbm != nullptr);
+      assert(tchecker::dbm::is_consistent(offset_dbm, offset_dim));
+      assert(tchecker::offset_dbm::is_tight(offset_dbm, offset_dim));
+      assert(1 <= refcount);
+      assert(refcount <= offset_dim);
+      assert(refcount == delay_allowed.size());
+      
+      // X - R < inf for all X and R s.t. delay is allowed for R (including X=R')
+      for (tchecker::clock_id_t r = 0; r < refcount; ++r) {
+        if (! delay_allowed[r])
+          continue;
+        
         for (tchecker::clock_id_t i = 0; i < offset_dim; ++i)
           OFFSET_DBM(i,r) = tchecker::dbm::LT_INFINITY;
         OFFSET_DBM(r,r) = tchecker::dbm::LE_ZERO;
@@ -274,8 +306,9 @@ namespace tchecker {
     }
     
     
-    void to_dbm(tchecker::dbm::db_t const * offset_dbm, tchecker::clock_id_t offset_dim, tchecker::clock_id_t refcount,
-                tchecker::clock_id_t const * refmap, tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim)
+    void to_dbm(tchecker::dbm::db_t const * offset_dbm, tchecker::clock_id_t offset_dim,
+                tchecker::clock_id_t refcount, tchecker::clock_id_t const * refmap,
+                tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim)
     {
       assert(offset_dbm != nullptr);
       assert(tchecker::dbm::is_consistent(offset_dbm, offset_dim));
@@ -305,13 +338,15 @@ namespace tchecker {
     }
     
     
-    std::ostream & output_matrix(std::ostream & os, tchecker::dbm::db_t const * offset_dbm, tchecker::clock_id_t offset_dim)
+    std::ostream & output_matrix(std::ostream & os, tchecker::dbm::db_t const * offset_dbm,
+                                 tchecker::clock_id_t offset_dim)
     {
       return tchecker::dbm::output_matrix(os, offset_dbm, offset_dim);
     }
     
     
-    std::ostream & output(std::ostream & os, tchecker::dbm::db_t const * offset_dbm, tchecker::clock_id_t offset_dim,
+    std::ostream & output(std::ostream & os, tchecker::dbm::db_t const * offset_dbm,
+                          tchecker::clock_id_t offset_dim,
                           std::function<std::string(tchecker::clock_id_t)> clock_name)
     {
       bool first = true;

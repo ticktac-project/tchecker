@@ -69,7 +69,9 @@ namespace tchecker {
         : _ta(model),
         _async_zone_semantics(model),
         _refcount(model.flattened_offset_clock_variables().refcount()),
-        _refmap(model.flattened_offset_clock_variables().refmap())
+        _refmap(model.flattened_offset_clock_variables().refmap()),
+        _src_delay_allowed(model.system().processes_count()),
+        _tgt_delay_allowed(model.system().processes_count())
         {}
         
         /*!
@@ -151,7 +153,9 @@ namespace tchecker {
           if (status != tchecker::STATE_OK)
             return status;
           translate_invariant(invariant);
-          return _async_zone_semantics.initialize(offset_zone, tchecker::ta::delay_allowed(vloc), _offset_src_invariant, vloc);
+          tchecker::ta::delay_allowed(vloc, _src_delay_allowed);
+          return _async_zone_semantics.initialize(offset_zone, _src_delay_allowed,
+                                                  _offset_src_invariant, vloc);
         }
         
         /*!
@@ -177,7 +181,8 @@ namespace tchecker {
           if (status != tchecker::STATE_OK)
             return status;
           translate_invariant(invariant);
-          return _async_zone_semantics.initialize(offset_zone, sync_zone, tchecker::ta::delay_allowed(vloc),
+          tchecker::ta::delay_allowed(vloc, _src_delay_allowed);
+          return _async_zone_semantics.initialize(offset_zone, sync_zone, _src_delay_allowed,
                                                   _offset_src_invariant, vloc);
         }
         
@@ -235,15 +240,16 @@ namespace tchecker {
                                            tchecker::clock_reset_container_t & clkreset,
                                            tchecker::clock_constraint_container_t & tgt_invariant)
         {
-          bool src_delay_allowed = tchecker::ta::delay_allowed(vloc);
+          tchecker::ta::delay_allowed(vloc, _src_delay_allowed);
           auto status = _ta.next(vloc, intvars_val, vedge, src_invariant, guard, clkreset, tgt_invariant);
           if (status != tchecker::STATE_OK)
             return status;
-          bool tgt_delay_allowed = tchecker::ta::delay_allowed(vloc);
+          tchecker::ta::delay_allowed(vloc, _tgt_delay_allowed);
           translate_guard_reset_invariants(src_invariant, guard, clkreset, tgt_invariant);
           reference_clock_synchronization(vedge, _offset_guard);
-          return _async_zone_semantics.next(offset_zone, src_delay_allowed, _offset_src_invariant, _offset_guard, _offset_clkreset,
-                                            tgt_delay_allowed, _offset_tgt_invariant, vloc);
+          return _async_zone_semantics.next(offset_zone, _src_delay_allowed, _offset_src_invariant,
+                                            _offset_guard, _offset_clkreset, _tgt_delay_allowed,
+                                            _offset_tgt_invariant, vloc);
         }
         
         /*!
@@ -271,15 +277,16 @@ namespace tchecker {
                                            tchecker::clock_reset_container_t & clkreset,
                                            tchecker::clock_constraint_container_t & tgt_invariant)
         {
-          bool src_delay_allowed = tchecker::ta::delay_allowed(vloc);
+          tchecker::ta::delay_allowed(vloc, _src_delay_allowed);
           auto status = _ta.next(vloc, intvars_val, vedge, src_invariant, guard, clkreset, tgt_invariant);
           if (status != tchecker::STATE_OK)
             return status;
-          bool tgt_delay_allowed = tchecker::ta::delay_allowed(vloc);
+          tchecker::ta::delay_allowed(vloc, _tgt_delay_allowed);
           translate_guard_reset_invariants(src_invariant, guard, clkreset, tgt_invariant);
           reference_clock_synchronization(vedge, _offset_guard);
-          return _async_zone_semantics.next(offset_zone, sync_zone, src_delay_allowed, _offset_src_invariant, _offset_guard,
-                                            _offset_clkreset, tgt_delay_allowed, _offset_tgt_invariant, vloc);
+          return _async_zone_semantics.next(offset_zone, sync_zone, _src_delay_allowed, _offset_src_invariant,
+                                            _offset_guard, _offset_clkreset, _tgt_delay_allowed,
+                                            _offset_tgt_invariant, vloc);
         }
         
         /*!
@@ -404,6 +411,8 @@ namespace tchecker {
         tchecker::clock_constraint_container_t _offset_guard;           /*!< Guard over offset clocks */
         tchecker::clock_reset_container_t _offset_clkreset;             /*!< Resets over offset clocks */
         tchecker::clock_constraint_container_t _offset_tgt_invariant;   /*!< Target state invariant over offset clocks */
+        boost::dynamic_bitset<> _src_delay_allowed;                     /*!< Bit vector of processes allowed to delay */
+        boost::dynamic_bitset<> _tgt_delay_allowed;                     /*!< Bit vector of processes allowed to delay */
       };
       
     } // end of namespace details
