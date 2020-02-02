@@ -25,16 +25,16 @@ namespace tchecker {
   namespace dbm {
     
     /* IMPLEMENTATION NOTES:
-     Difference bound #c is encoded in a 32-bits integer with the least-significant bit used to store the comparator #: LE (<=) or
-     LT (<), and the other bits used to store c.
+     Difference bound #c is encoded in a 32-bits integer with the least-significant bit used to store the
+     comparator #: LE (<=) or LT (<), and the other bits used to store c.
      
      Comparison with "cleaner" implementations, e.g.:
      struct db_t {                            struct db_t {
        unsigned cmp : 1;                        int32_t db;  // managed as db_t below
        int value : 31;                        };
      };
-     have shown that current implementation is the fastest. This is due to using a primitive non-composite type (no constructor),
-     and to arithmetic and bit-level operations.
+     have shown that current implementation is the fastest. This is due to using a primitive non-composite
+     type (no constructor), and to arithmetic and bit-level operations.
      */
     
     /*!
@@ -99,7 +99,9 @@ namespace tchecker {
 #if defined(DBM_UNSAFE)
       return ((db1 + db2) - ((db1 | db2) & 1));
 #else
-      return tchecker::dbm::db(((db1 & tchecker::dbm::LE) && (db2 & tchecker::dbm::LE)) ? tchecker::dbm::LE : tchecker::dbm::LT,
+      return tchecker::dbm::db(((db1 & tchecker::dbm::LE) && (db2 & tchecker::dbm::LE))
+                               ? tchecker::dbm::LE
+                               : tchecker::dbm::LT,
                                (db1 >> 1) + (db2 >> 1));
 #endif // DBM_UNSAFE
     }
@@ -120,7 +122,8 @@ namespace tchecker {
 #if defined(DBM_UNSAFE)
       return (db + (value << 1));
 #else
-      return tchecker::dbm::db(((db & tchecker::dbm::LE) ? tchecker::dbm::LE : tchecker::dbm::LT), (db >> 1) + value);
+      return tchecker::dbm::db(((db & tchecker::dbm::LE) ? tchecker::dbm::LE : tchecker::dbm::LT),
+                               (db >> 1) + value);
 #endif // DBM_UNSAFE
     }
     

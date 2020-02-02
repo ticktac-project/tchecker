@@ -178,8 +178,8 @@ namespace tchecker {
     }
     
     
-    enum tchecker::dbm::status_t tighten(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x,
-                                         tchecker::clock_id_t y)
+    enum tchecker::dbm::status_t tighten(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim,
+                                         tchecker::clock_id_t x, tchecker::clock_id_t y)
     {
       assert(dbm != nullptr);
       assert(dim >= 1);
@@ -212,8 +212,8 @@ namespace tchecker {
     
     
     enum tchecker::dbm::status_t
-    constrain(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x, tchecker::clock_id_t y,
-              tchecker::dbm::comparator_t cmp, tchecker::integer_t value)
+    constrain(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x,
+              tchecker::clock_id_t y, tchecker::dbm::comparator_t cmp, tchecker::integer_t value)
     {
       assert(dbm != nullptr);
       assert(dim >= 1);
@@ -272,8 +272,8 @@ namespace tchecker {
     }
     
     
-    void reset(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x, tchecker::clock_id_t y,
-               tchecker::integer_t value)
+    void reset(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x,
+               tchecker::clock_id_t y, tchecker::integer_t value)
     {
       if (y == 0)
         reset_to_value(dbm, dim, x, value);
@@ -284,7 +284,8 @@ namespace tchecker {
     }
     
     
-    void reset_to_value(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x, tchecker::integer_t value)
+    void reset_to_value(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x,
+                        tchecker::integer_t value)
     {
       assert(dbm != nullptr);
       assert(dim >= 1);
@@ -308,7 +309,8 @@ namespace tchecker {
     }
     
     
-    void reset_to_clock(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x, tchecker::clock_id_t y)
+    void reset_to_clock(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x,
+                        tchecker::clock_id_t y)
     {
       assert(dbm != nullptr);
       assert(dim >= 1);
@@ -330,8 +332,8 @@ namespace tchecker {
     }
     
     
-    void reset_to_sum(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x, tchecker::clock_id_t y,
-                      tchecker::integer_t value)
+    void reset_to_sum(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x,
+                      tchecker::clock_id_t y, tchecker::integer_t value)
     {
       assert(dbm != nullptr);
       assert(dim >= 1);
@@ -543,7 +545,8 @@ namespace tchecker {
     }
     
     
-    void extra_lu(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::integer_t const * l, tchecker::integer_t const * u)
+    void extra_lu(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::integer_t const * l,
+                  tchecker::integer_t const * u)
     {
       assert(dbm != nullptr);
       assert(dim >= 1);
@@ -608,7 +611,8 @@ namespace tchecker {
     }
     
     
-    void extra_lu_plus(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::integer_t const * l, tchecker::integer_t const * u)
+    void extra_lu_plus(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::integer_t const * l,
+                       tchecker::integer_t const * u)
     {
       assert(dbm != nullptr);
       assert(dim >= 1);
@@ -693,7 +697,8 @@ namespace tchecker {
     }
     
     
-    bool is_alu_le(tchecker::dbm::db_t const * dbm1, tchecker::dbm::db_t const * dbm2, tchecker::clock_id_t dim, tchecker::integer_t const * l, tchecker::integer_t const * u)
+    bool is_alu_le(tchecker::dbm::db_t const * dbm1, tchecker::dbm::db_t const * dbm2, tchecker::clock_id_t dim,
+                   tchecker::integer_t const * l, tchecker::integer_t const * u)
     {
       assert(dbm1 != nullptr);
       assert(dbm2 != nullptr);
@@ -744,7 +749,8 @@ namespace tchecker {
     }
     
     
-    bool is_am_le(tchecker::dbm::db_t const * dbm1, tchecker::dbm::db_t const * dbm2, tchecker::clock_id_t dim, tchecker::integer_t const * m)
+    bool is_am_le(tchecker::dbm::db_t const * dbm1, tchecker::dbm::db_t const * dbm2,
+                  tchecker::clock_id_t dim, tchecker::integer_t const * m)
     {
       return tchecker::dbm::is_alu_le(dbm1, dbm2, dim, m, m);
     }
@@ -776,7 +782,8 @@ namespace tchecker {
     }
     
     
-    std::ostream & output(std::ostream & os, tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim, std::function<std::string(tchecker::clock_id_t)> clock_name)
+    std::ostream & output(std::ostream & os, tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim,
+                          std::function<std::string(tchecker::clock_id_t)> clock_name)
     {
       os << "(";
       

@@ -197,8 +197,8 @@ namespace tchecker {
      \note if every edge in dbm is tight w.r.t. all other edges except i->j, then after the call, dbm is either empty, or it is
      not empty and tight.
      */
-    enum tchecker::dbm::status_t tighten(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x,
-                                         tchecker::clock_id_t y);
+    enum tchecker::dbm::status_t tighten(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim,
+                                         tchecker::clock_id_t x, tchecker::clock_id_t y);
     
     /*!
      \brief Constrain a DBM
@@ -224,8 +224,8 @@ namespace tchecker {
      DBM_UNSAFE is not set)
      */
     enum tchecker::dbm::status_t
-    constrain(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x, tchecker::clock_id_t y,
-              tchecker::dbm::comparator_t cmp, tchecker::integer_t value);
+    constrain(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x,
+              tchecker::clock_id_t y, tchecker::dbm::comparator_t cmp, tchecker::integer_t value);
     
     /*!
      \brief Equality predicate
@@ -277,8 +277,8 @@ namespace tchecker {
      \throw std::invalid_argument : if `<= value` cannot be represented as a tchecker::dbm::db_t (only if compilation flag
      DBM_UNSAFE is not set)
      */
-    void reset(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x, tchecker::clock_id_t y,
-               tchecker::integer_t value);
+    void reset(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x,
+               tchecker::clock_id_t y, tchecker::integer_t value);
     
     /*!
      \brief Reset a clock to a constant
@@ -300,7 +300,8 @@ namespace tchecker {
      \throw std::invalid_argument : if `<= value` cannot be represented as a tchecker::dbm::db_t (only if compilation flag
      DBM_UNSAFE is not set)
      */
-    void reset_to_value(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x, tchecker::integer_t value);
+    void reset_to_value(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x,
+                        tchecker::integer_t value);
     
     /*!
      \brief Reset a clock to another clock
@@ -319,7 +320,8 @@ namespace tchecker {
      dbm is consistent.
      dbm is tight.
      */
-    void reset_to_clock(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x, tchecker::clock_id_t y);
+    void reset_to_clock(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x,
+                        tchecker::clock_id_t y);
     
     /*!
      \brief Reset a clock to the sum of a clock and a non-negative integer
@@ -341,8 +343,8 @@ namespace tchecker {
      dbm is consistent (checked by assertion)
      dbm is tight (checked by assertion)
      */
-    void reset_to_sum(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x, tchecker::clock_id_t y,
-                      tchecker::integer_t value);
+    void reset_to_sum(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x,
+                      tchecker::clock_id_t y, tchecker::integer_t value);
     
     /*!
      \brief Open up (delay)
@@ -442,7 +444,8 @@ namespace tchecker {
      Pelanek. Int. J. STTT, 2006)
      \note set l[i]/u[i] to -tchecker::dbm::INF_VALUE if clock i has no lower/upper bound
      */
-    void extra_lu(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::integer_t const * l, tchecker::integer_t const * u);
+    void extra_lu(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::integer_t const * l,
+                  tchecker::integer_t const * u);
     
     /*!
      \brief ExtraLU+ extrapolation
@@ -464,7 +467,8 @@ namespace tchecker {
      Pelanek. Int. J. STTT, 2006)
      \note set l[i]/u[i] to -tchecker::dbm::INF_VALUE if clock i has no lower/upper bound
      */
-    void extra_lu_plus(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::integer_t const * l, tchecker::integer_t const * u);
+    void extra_lu_plus(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::integer_t const * l,
+                       tchecker::integer_t const * u);
     
     /*!
      \brief Checks inclusion w.r.t. abstraction aLU
