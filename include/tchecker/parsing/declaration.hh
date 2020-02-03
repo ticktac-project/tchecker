@@ -35,374 +35,13 @@ namespace tchecker {
     
     
     
-    /*!
-     \class declaration_t
-     \brief Declaration from input file
-     \note Abstract base class
-     */
-    class declaration_t : private boost::noncopyable {
-    public:
-      /*!
-       \brief Constructor
-       */
-      declaration_t() = default;
-      
-      /*!
-       \brief Destructor
-       */
-      virtual ~declaration_t() = default;
-      
-      /*!
-       \brief Assignment operator (DELETED)
-       */
-      tchecker::parsing::declaration_t & operator= (tchecker::parsing::declaration_t const &) = delete;
-      
-      /*!
-       \brief Move assignment operator (DELETED)
-       */
-      tchecker::parsing::declaration_t & operator= (tchecker::parsing::declaration_t &&) = delete;
-      
-      /*!
-       \brief Clone
-       \return Returns a clone of this
-       */
-      tchecker::parsing::declaration_t * clone() const;
-      
-      /*!
-       \brief Visit
-       \param v : visitor
-       \post this has been visited by v
-       */
-      void visit(tchecker::parsing::declaration_visitor_t & v) const;
-    private:
-      /*!
-       \brief Clone
-       */
-      virtual tchecker::parsing::declaration_t * do_clone() const = 0;
-      
-      /*!
-       \brief Visit
-       */
-      virtual void do_visit(tchecker::parsing::declaration_visitor_t & v) const = 0;
-      
-      /*!
-       \brief Output the declaration
-       \param os : output stream
-       */
-      virtual std::ostream & do_output(std::ostream & os) const = 0;
-      
-      friend std::ostream & operator<< (std::ostream & os, tchecker::parsing::declaration_t const & decl);
-    };
     
-    
-    /*!
-     \brief Output declaration
-     \param os : output stream
-     \param decl : declaration
-     \post decl has been output to os
-     \return os after outputing decl has been output
-     */
-    inline std::ostream & operator<< (std::ostream & os, tchecker::parsing::declaration_t const & decl)
-    {
-      return decl.do_output(os);
-    }
-    
-    
-    
-    
-    /*!
-     \class inner_declaration_t
-     */
-    class inner_declaration_t : public tchecker::parsing::declaration_t {
-    public:
-      /*!
-       \brief Destructor
-       */
-      virtual ~inner_declaration_t() = default;
-    };
-    
-    
-    
-    
-    /*!
-     \class clock_declaration_t
-     \brief Declaration of an (array of) clock variable
-     */
-    class clock_declaration_t final : public tchecker::parsing::inner_declaration_t {
-    public:
-      /*!
-       \brief Constructor
-       \param name : clock name
-       \param size : size of array
-       \pre name is not empty and size >= 1
-       \throw std::invalid_argument : if name is empty or size < 1
-       */
-      clock_declaration_t(std::string const & name, unsigned int size);
-      
-      /*!
-       \brief Destructor
-       */
-      virtual ~clock_declaration_t() = default;
-      
-      /*!
-       \brief Accessor
-       \return Name
-       */
-      inline std::string const & name() const
-      {
-        return _name;
-      }
-      
-      /*!
-       \brief Accessor
-       \return Size
-       */
-      inline unsigned int size() const
-      {
-        return _size;
-      }
-    private:
-      /*!
-       \brief Clone
-       \return A clone of this
-       */
-      virtual tchecker::parsing::declaration_t * do_clone() const;
-      
-      /*!
-       \brief Visit
-       \post this has been visited by v
-       */
-      virtual void do_visit(tchecker::parsing::declaration_visitor_t & v) const;
-      
-      /*!
-       \brief Output the declaration
-       \param os : output stream
-       \post this declaration has been output to os
-       \return os after this declaration has been output
-       */
-      virtual std::ostream & do_output(std::ostream & os) const;
-      
-      std::string const _name;    /*!< Name */
-      unsigned int const _size;   /*!< Size */
-    };
-    
-    
-    
-    
-    /*!
-     \class int_declaration_t
-     \brief Declaration of an (array of) int variable
-     */
-    class int_declaration_t final : public tchecker::parsing::inner_declaration_t {
-    public:
-      /*!
-       \brief Constructor
-       \param name : int name
-       \param size : size of array
-       \param min : minimal value
-       \param max : maximal value
-       \param init : initial value
-       \pre name is not empty, size >= 1, min <= init <= max
-       \throws std::invalid_argument : name is empty, or if size < 1, or
-       not (min <= init <= max)
-       */
-      int_declaration_t(std::string const & name,
-                        unsigned int size,
-                        tchecker::integer_t min,
-                        tchecker::integer_t max,
-                        tchecker::integer_t init);
-      
-      /*!
-       \brief Destructor
-       */
-      virtual ~int_declaration_t() = default;
-      
-      /*!
-       \brief Accessor
-       \return Name
-       */
-      inline std::string const & name() const
-      {
-        return _name;
-      }
-      
-      /*!
-       \brief Accessor
-       \return Size
-       */
-      inline unsigned int size() const
-      {
-        return _size;
-      }
-      
-      /*!
-       \brief Accessor
-       \return Min value
-       */
-      inline tchecker::integer_t min() const
-      {
-        return _min;
-      }
-      
-      /*!
-       \brief Accessor
-       \return Max value
-       */
-      inline tchecker::integer_t max() const
-      {
-        return _max;
-      }
-      
-      /*!
-       \brief Accessor
-       \return Initial value
-       */
-      inline tchecker::integer_t init() const
-      {
-        return _init;
-      }
-    private:
-      /*!
-       \brief Clone
-       \returns A clone of this
-       */
-      virtual tchecker::parsing::declaration_t * do_clone() const;
-      
-      /*!
-       \brief Visit
-       \post this has been visited by v
-       */
-      virtual void do_visit(tchecker::parsing::declaration_visitor_t & v) const;
-      
-      /*!
-       \brief Output the declaration
-       \param os : output stream
-       \post this declaration has been output to os
-       \return os after this declaration has been output
-       */
-      virtual std::ostream & do_output(std::ostream & os) const;
-      
-      std::string const _name;           /*!< Name */
-      unsigned int const _size;          /*!< Size */
-      tchecker::integer_t const _min;    /*!< Min value */
-      tchecker::integer_t const _max;    /*!< Max value */
-      tchecker::integer_t const _init;   /*!< Initial value */
-    };
-    
-    
-    
-    
-    /*
-     \class process_declaration_t
-     \brief Declaration of a process
-     */
-    class process_declaration_t final : public tchecker::parsing::inner_declaration_t {
-    public:
-      /*!
-       \brief Constructor
-       \param name : process name
-       \pre name is not empty
-       \throws std::invalid_argument : if name is empty
-       */
-      process_declaration_t(std::string const & name);
-      
-      /*!
-       \brief Destructor
-       */
-      virtual ~process_declaration_t() = default;
-      
-      /*!
-       \brief Accessor
-       \return Name
-       */
-      inline std::string const & name() const
-      {
-        return _name;
-      }
-    private:
-      /*!
-       \brief Clone
-       \return A clone of this
-       */
-      virtual tchecker::parsing::declaration_t * do_clone() const;
-      
-      /*!
-       \brief Visit
-       \post this has been visited by v
-       */
-      virtual void do_visit(tchecker::parsing::declaration_visitor_t & v) const;
-      
-      /*!
-       \brief Output the declaration
-       \param os : output stream
-       \post this declaration has been output to os
-       \return os after this declaration has been output
-       */
-      virtual std::ostream & do_output(std::ostream & os) const;
-      
-      std::string const _name;  /*!< Process name */
-    };
-    
-    
-    
-    
-    /*!
-     \class event_declaration_t
-     \brief Declaration of an event
-     */
-    class event_declaration_t final : public tchecker::parsing::inner_declaration_t {
-    public:
-      /*!
-       \brief Constructor
-       \param name : event name
-       \pre name is not empty
-       \throws std::invalid_argument : if name is empty
-       */
-      event_declaration_t(std::string const & name);
-      
-      /*!
-       \brief Destructor
-       */
-      virtual ~event_declaration_t() = default;
-      
-      /*!
-       \brief Accessor
-       \return Name
-       */
-      inline std::string const & name() const
-      {
-        return _name;
-      }
-    private:
-      /*!
-       \brief Clone
-       \return A clone of this
-       */
-      virtual tchecker::parsing::declaration_t * do_clone() const;
-      
-      /*!
-       \brief Visit
-       \post this has been visited by v
-       */
-      virtual void do_visit(tchecker::parsing::declaration_visitor_t & v) const;
-      
-      /*!
-       \brief Output the declaration
-       \param os : output stream
-       \post this declaration has been output to os
-       \return os after this declaration has been output
-       */
-      virtual std::ostream & do_output(std::ostream & os) const;
-      
-      std::string const _name;   /*!< Event name */
-    };
-    
-    
+    /* Attributes */
     
     
     /*!
      \class attr_t
-     \brief Attribute for locations and edges
+     \brief Attribute for declarations
      */
     class attr_t {
     public:
@@ -410,10 +49,8 @@ namespace tchecker {
        \brief Constructor
        \param key : attribute key
        \param value : attribute value
-       \param key_context : contextual information for key (position in input
-       file, etc)
-       \param value_context : contextual information for value (position in
-       input file, etc)
+       \param key_context : contextual information for key (position in input file, etc)
+       \param value_context : contextual information for value (position in input file, etc)
        */
       attr_t(std::string const & key,
              std::string const & value,
@@ -510,7 +147,7 @@ namespace tchecker {
     
     /*!
      \class attributes_t
-     \brief Attributes map for locations and edges
+     \brief Attributes map for declarations
      */
     class attributes_t {
     public:
@@ -523,7 +160,7 @@ namespace tchecker {
        \brief Constructor
        \post this is an empty attributes map
        */
-      attributes_t() = default;
+      attributes_t();
       
       /*!
        \brief Copy constructor
@@ -582,8 +219,7 @@ namespace tchecker {
       /*!
        \brief Insert
        \param attr : attribute to insert in the map
-       \return true if attr has been inserted in the map, false
-       otherwise (when an attribute with the same key is already in the map)
+       \return true if attr has been inserted in the map, false if an attribute with the same key already exists
        \note this takes ownership on attr
        */
       bool insert(tchecker::parsing::attr_t const * attr);
@@ -657,6 +293,403 @@ namespace tchecker {
     
     
     
+    
+    
+    /*!
+     \class declaration_t
+     \brief Declaration from input file
+     \note Abstract base class
+     */
+    class declaration_t : private boost::noncopyable {
+    public:
+      /*!
+       \brief Default constructor
+       */
+      declaration_t() = default;
+      
+      /*!
+       \brief Constructor
+       \param attr : attributes
+       \post attr has been moved to this
+       */
+      explicit declaration_t(tchecker::parsing::attributes_t && attr);
+            
+      /*!
+       \brief Destructor
+       */
+      virtual ~declaration_t() = default;
+      
+      /*!
+       \brief Assignment operator (DELETED)
+       */
+      tchecker::parsing::declaration_t & operator= (tchecker::parsing::declaration_t const &) = delete;
+      
+      /*!
+       \brief Move assignment operator (DELETED)
+       */
+      tchecker::parsing::declaration_t & operator= (tchecker::parsing::declaration_t &&) = delete;
+    
+      /*!
+       \brief Clone
+       \return Returns a clone of this
+       */
+      tchecker::parsing::declaration_t * clone() const;
+      
+      /*!
+       \brief Visit
+       \param v : visitor
+       \post this has been visited by v
+       */
+      void visit(tchecker::parsing::declaration_visitor_t & v) const;
+      
+      /*!
+       \brief Accessor
+       \return Attributes
+       */
+      inline tchecker::parsing::attributes_t const & attributes() const
+      {
+        return _attr;
+      }
+    private:
+      /*!
+       \brief Clone
+       */
+      virtual tchecker::parsing::declaration_t * do_clone() const = 0;
+      
+      /*!
+       \brief Visit
+       */
+      virtual void do_visit(tchecker::parsing::declaration_visitor_t & v) const = 0;
+      
+      /*!
+       \brief Output the declaration
+       \param os : output stream
+       */
+      virtual std::ostream & do_output(std::ostream & os) const = 0;
+      
+      friend std::ostream & operator<< (std::ostream & os, tchecker::parsing::declaration_t const & decl);
+    protected:
+      tchecker::parsing::attributes_t const _attr;                /*!< Attributes */
+    };
+    
+    
+    /*!
+     \brief Output declaration
+     \param os : output stream
+     \param decl : declaration
+     \post decl has been output to os
+     \return os after outputing decl has been output
+     */
+    inline std::ostream & operator<< (std::ostream & os, tchecker::parsing::declaration_t const & decl)
+    {
+      return decl.do_output(os);
+    }
+    
+    
+    
+    
+    /*!
+     \class inner_declaration_t
+     */
+    class inner_declaration_t : public tchecker::parsing::declaration_t {
+    public:
+      using tchecker::parsing::declaration_t::declaration_t;
+      
+      /*!
+       \brief Destructor
+       */
+      virtual ~inner_declaration_t() = default;
+    };
+    
+    
+    
+    
+    /*!
+     \class clock_declaration_t
+     \brief Declaration of an (array of) clock variable
+     */
+    class clock_declaration_t final : public tchecker::parsing::inner_declaration_t {
+    public:
+      /*!
+       \brief Constructor
+       \param name : clock name
+       \param size : size of array
+       \param attr : attributes
+       \pre name is not empty and size >= 1
+       \throw std::invalid_argument : if name is empty or size < 1
+       */
+      clock_declaration_t(std::string const & name,
+                          unsigned int size,
+                          tchecker::parsing::attributes_t && attr);
+      
+      /*!
+       \brief Destructor
+       */
+      virtual ~clock_declaration_t() = default;
+      
+      /*!
+       \brief Accessor
+       \return Name
+       */
+      inline std::string const & name() const
+      {
+        return _name;
+      }
+      
+      /*!
+       \brief Accessor
+       \return Size
+       */
+      inline unsigned int size() const
+      {
+        return _size;
+      }
+    private:
+      /*!
+       \brief Clone
+       \return A clone of this
+       */
+      virtual tchecker::parsing::declaration_t * do_clone() const;
+      
+      /*!
+       \brief Visit
+       \post this has been visited by v
+       */
+      virtual void do_visit(tchecker::parsing::declaration_visitor_t & v) const;
+      
+      /*!
+       \brief Output the declaration
+       \param os : output stream
+       \post this declaration has been output to os
+       \return os after this declaration has been output
+       */
+      virtual std::ostream & do_output(std::ostream & os) const;
+      
+      std::string const _name;    /*!< Name */
+      unsigned int const _size;   /*!< Size */
+    };
+    
+    
+    
+    
+    /*!
+     \class int_declaration_t
+     \brief Declaration of an (array of) int variable
+     */
+    class int_declaration_t final : public tchecker::parsing::inner_declaration_t {
+    public:
+      /*!
+       \brief Constructor
+       \param name : int name
+       \param size : size of array
+       \param min : minimal value
+       \param max : maximal value
+       \param init : initial value
+       \param attr : attributes
+       \pre name is not empty, size >= 1, min <= init <= max
+       \throws std::invalid_argument : name is empty, or if size < 1, or
+       not (min <= init <= max)
+       */
+      int_declaration_t(std::string const & name,
+                        unsigned int size,
+                        tchecker::integer_t min,
+                        tchecker::integer_t max,
+                        tchecker::integer_t init,
+                        tchecker::parsing::attributes_t && attr);
+      
+      /*!
+       \brief Destructor
+       */
+      virtual ~int_declaration_t() = default;
+      
+      /*!
+       \brief Accessor
+       \return Name
+       */
+      inline std::string const & name() const
+      {
+        return _name;
+      }
+      
+      /*!
+       \brief Accessor
+       \return Size
+       */
+      inline unsigned int size() const
+      {
+        return _size;
+      }
+      
+      /*!
+       \brief Accessor
+       \return Min value
+       */
+      inline tchecker::integer_t min() const
+      {
+        return _min;
+      }
+      
+      /*!
+       \brief Accessor
+       \return Max value
+       */
+      inline tchecker::integer_t max() const
+      {
+        return _max;
+      }
+      
+      /*!
+       \brief Accessor
+       \return Initial value
+       */
+      inline tchecker::integer_t init() const
+      {
+        return _init;
+      }
+    private:
+      /*!
+       \brief Clone
+       \returns A clone of this
+       */
+      virtual tchecker::parsing::declaration_t * do_clone() const;
+      
+      /*!
+       \brief Visit
+       \post this has been visited by v
+       */
+      virtual void do_visit(tchecker::parsing::declaration_visitor_t & v) const;
+      
+      /*!
+       \brief Output the declaration
+       \param os : output stream
+       \post this declaration has been output to os
+       \return os after this declaration has been output
+       */
+      virtual std::ostream & do_output(std::ostream & os) const;
+      
+      std::string const _name;           /*!< Name */
+      unsigned int const _size;          /*!< Size */
+      tchecker::integer_t const _min;    /*!< Min value */
+      tchecker::integer_t const _max;    /*!< Max value */
+      tchecker::integer_t const _init;   /*!< Initial value */
+    };
+    
+    
+    
+    
+    /*
+     \class process_declaration_t
+     \brief Declaration of a process
+     */
+    class process_declaration_t final : public tchecker::parsing::inner_declaration_t {
+    public:
+      /*!
+       \brief Constructor
+       \param name : process name
+       \param attr : attributes
+       \pre name is not empty
+       \throws std::invalid_argument : if name is empty
+       */
+      process_declaration_t(std::string const & name, tchecker::parsing::attributes_t && attr);
+      
+      /*!
+       \brief Destructor
+       */
+      virtual ~process_declaration_t() = default;
+      
+      /*!
+       \brief Accessor
+       \return Name
+       */
+      inline std::string const & name() const
+      {
+        return _name;
+      }
+    private:
+      /*!
+       \brief Clone
+       \return A clone of this
+       */
+      virtual tchecker::parsing::declaration_t * do_clone() const;
+      
+      /*!
+       \brief Visit
+       \post this has been visited by v
+       */
+      virtual void do_visit(tchecker::parsing::declaration_visitor_t & v) const;
+      
+      /*!
+       \brief Output the declaration
+       \param os : output stream
+       \post this declaration has been output to os
+       \return os after this declaration has been output
+       */
+      virtual std::ostream & do_output(std::ostream & os) const;
+      
+      std::string const _name;  /*!< Process name */
+    };
+    
+    
+    
+    
+    /*!
+     \class event_declaration_t
+     \brief Declaration of an event
+     */
+    class event_declaration_t final : public tchecker::parsing::inner_declaration_t {
+    public:
+      /*!
+       \brief Constructor
+       \param name : event name
+       \param attr : attributes
+       \pre name is not empty
+       \throws std::invalid_argument : if name is empty
+       */
+      event_declaration_t(std::string const & name, tchecker::parsing::attributes_t && attr);
+      
+      /*!
+       \brief Destructor
+       */
+      virtual ~event_declaration_t() = default;
+      
+      /*!
+       \brief Accessor
+       \return Name
+       */
+      inline std::string const & name() const
+      {
+        return _name;
+      }
+    private:
+      /*!
+       \brief Clone
+       \return A clone of this
+       */
+      virtual tchecker::parsing::declaration_t * do_clone() const;
+      
+      /*!
+       \brief Visit
+       \post this has been visited by v
+       */
+      virtual void do_visit(tchecker::parsing::declaration_visitor_t & v) const;
+      
+      /*!
+       \brief Output the declaration
+       \param os : output stream
+       \post this declaration has been output to os
+       \return os after this declaration has been output
+       */
+      virtual std::ostream & do_output(std::ostream & os) const;
+      
+      std::string const _name;   /*!< Event name */
+    };
+    
+    
+    
+    
+    
+    
+    
     /*!
      \class location_declaration_t
      \brief Declaration of a location
@@ -667,7 +700,7 @@ namespace tchecker {
        \brief Constructor
        \param name : location name
        \param process : location process
-       \param attr : location attributes
+       \param attr : attributes
        \pre name is not empty
        \throws std::invalid_argument : if name is empty
        \note attr is moved to this.
@@ -698,15 +731,6 @@ namespace tchecker {
       {
         return _process;
       }
-      
-      /*!
-       \brief Accessor
-       \return Attributes
-       */
-      inline tchecker::parsing::attributes_t const & attributes() const
-      {
-        return _attr;
-      }
     private:
       /*!
        \brief Clone
@@ -731,7 +755,6 @@ namespace tchecker {
       
       std::string const _name;                                    /*!< Name */
       tchecker::parsing::process_declaration_t const & _process;  /*!< Process */
-      tchecker::parsing::attributes_t const _attr;                /*!< Attributes */
     };
     
     
@@ -749,7 +772,7 @@ namespace tchecker {
        \param src : source location
        \param tgt : target location
        \param event : edge event
-       \param attr : edge attributes
+       \param attr : attributes
        \pre src and tgt belong to process
        \throws std::invalid_argument : if src and tgt do not belong to process
        \note attr is moved to this
@@ -800,15 +823,6 @@ namespace tchecker {
       {
         return _event;
       }
-      
-      /*!
-       \brief Accessor
-       \return Attributes
-       */
-      inline tchecker::parsing::attributes_t const & attributes() const
-      {
-        return _attr;
-      }
     private:
       /*!
        \brief Clone
@@ -835,7 +849,6 @@ namespace tchecker {
       tchecker::parsing::location_declaration_t const & _src;     /*!< Source loc */
       tchecker::parsing::location_declaration_t const & _tgt;     /*!< Target loc */
       tchecker::parsing::event_declaration_t const & _event;      /*!< Event */
-      tchecker::parsing::attributes_t const _attr;                /*!< Attributes */
     };
     
     
@@ -947,13 +960,15 @@ namespace tchecker {
       /*!
        \brief Constructor
        \param syncs : synchronization constraints
+       \param attr : attributes
        \pre syncs has size > 0, syncs does not contain nullptr, and there
        is no two events with the same process in syncs
        \throws std::invalid_argument : if syncs size == 0, or if syncs
        contains nullptr, or two events in syncs have the same process
        \note syncs has been moved to this
        */
-      sync_declaration_t(std::vector<tchecker::parsing::sync_constraint_t const *> && syncs);
+      sync_declaration_t(std::vector<tchecker::parsing::sync_constraint_t const *> && syncs,
+                         tchecker::parsing::attributes_t && attr);
       
       /*!
        \brief Destructor
@@ -1011,10 +1026,11 @@ namespace tchecker {
       /*!
        \brief Constructor
        \param name : system name
+       \param attr : attributes
        \pre name is not empty
        \throw std::invalid_argument : if name is empty
        */
-      system_declaration_t(std::string const & name);
+      system_declaration_t(std::string const & name, tchecker::parsing::attributes_t && attr);
       
       /*!
        \brief Destructor

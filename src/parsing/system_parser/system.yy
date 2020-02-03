@@ -108,8 +108,8 @@
 %%
 
 system:
-eol_sequence TOK_SYSTEM ":" TOK_ID {
-  system_declaration = new system_declaration_t($4);
+eol_sequence TOK_SYSTEM ":" TOK_ID attr_list {
+  system_declaration = new system_declaration_t($4, std::move($5));
 }
 "\n" eol_sequence declaration_list
 {
@@ -143,7 +143,7 @@ declaration
 
 
 declaration:
-TOK_CLOCK ":" uinteger ":" TOK_ID "\n"
+TOK_CLOCK ":" uinteger ":" TOK_ID attr_list "\n"
 {
   auto const * d = system_declaration->get_clock_declaration($5);
   if (d != nullptr)
@@ -154,7 +154,7 @@ TOK_CLOCK ":" uinteger ":" TOK_ID "\n"
     error(@5, "variable " + $5 + " already declared as an int");
     else {
       try {
-        d = new tchecker::parsing::clock_declaration_t($5, $3);
+        d = new tchecker::parsing::clock_declaration_t($5, $3, std::move($6));
         if ( ! system_declaration->insert_clock_declaration(d) ) {
           error(@$, "insertion of clock declaration failed");
           delete d;
@@ -201,14 +201,14 @@ TOK_CLOCK ":" uinteger ":" TOK_ID "\n"
   }
 }
 
-| TOK_EVENT ":" TOK_ID "\n"
+| TOK_EVENT ":" TOK_ID attr_list "\n"
 {
   auto const * d = system_declaration->get_event_declaration($3);
   if (d != nullptr)
     error(@3, "multiple declarations of event " + $3);
   else {
     try {
-      d = new tchecker::parsing::event_declaration_t($3);
+      d = new tchecker::parsing::event_declaration_t($3, std::move($4));
       if ( ! system_declaration->insert_event_declaration(d) ) {
         error(@$, "insertion of event declaration failed");
         delete d;
@@ -220,7 +220,7 @@ TOK_CLOCK ":" uinteger ":" TOK_ID "\n"
   }
 }
 
-| TOK_INT ":" uinteger ":" integer ":" integer ":" integer ":" TOK_ID "\n"
+| TOK_INT ":" uinteger ":" integer ":" integer ":" integer ":" TOK_ID attr_list "\n"
 {
   auto const * d = system_declaration->get_int_declaration($11);
   if (d != nullptr)
@@ -231,7 +231,7 @@ TOK_CLOCK ":" uinteger ":" TOK_ID "\n"
       error(@11, "variable " + $11 + " already declared as a clock");
     else {
       try {
-        d = new tchecker::parsing::int_declaration_t($11, $3, $5, $7, $9);
+        d = new tchecker::parsing::int_declaration_t($11, $3, $5, $7, $9, std::move($12));
         if ( ! system_declaration->insert_int_declaration(d) ) {
           error(@$, "insertion of int declaration failed");
           delete d;
@@ -268,14 +268,14 @@ TOK_CLOCK ":" uinteger ":" TOK_ID "\n"
   }
 }
 
-| TOK_PROCESS ":" TOK_ID "\n"
+| TOK_PROCESS ":" TOK_ID attr_list "\n"
 {
   auto const * d = system_declaration->get_process_declaration($3);
   if (d != nullptr)
     error(@3, "multiple declarations of process " + $3);
   else {
     try {
-      d = new tchecker::parsing::process_declaration_t($3);
+      d = new tchecker::parsing::process_declaration_t($3, std::move($4));
       if ( ! system_declaration->insert_process_declaration(d) ) {
         error(@$, "insertion of process declaration failed");
         delete d;
@@ -287,10 +287,10 @@ TOK_CLOCK ":" uinteger ":" TOK_ID "\n"
   }
 }
 
-| TOK_SYNC ":" sync_constraint_list "\n"
+| TOK_SYNC ":" sync_constraint_list attr_list "\n"
 {
   try {
-    auto const * d = new tchecker::parsing::sync_declaration_t(std::move($3));
+    auto const * d = new tchecker::parsing::sync_declaration_t(std::move($3), std::move($4));
     if ( ! system_declaration->insert_sync_declaration(d) ) {
       error(@$, "insertion of sync declaration failed");
       delete d;
