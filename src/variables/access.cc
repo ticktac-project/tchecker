@@ -55,8 +55,8 @@ void variable_access_map_t::add(tchecker::variable_id_t vid,
 
 bool variable_access_map_t::has_shared_variable() const
 {
-  for (auto && [k, pid_set] : _v2p_map)
-    if (pid_set.size() > 1)
+  for (auto && v2pid : _v2p_map)
+    if (v2pid.second.size() > 1)
       return true;
   return false;
 }

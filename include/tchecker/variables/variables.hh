@@ -192,7 +192,18 @@ namespace tchecker {
       return _index.key(*it);
     }
     
-    
+    /*!
+     \brief Accessor
+     \param name : variable name
+     \return true if the variable exists
+     */
+    inline bool exists(std::string const & name) const
+    {
+      auto it = _index.find_value(name);
+      return ! (it == _index.end_value_map());
+    }
+
+
     /*!
      \brief Accessor
      \param id : variable id
@@ -247,7 +258,7 @@ namespace tchecker {
     {
       try {
         _index.add(id, name);
-        auto && [it, ok] = _info.insert(std::make_pair(id, info));
+        auto && ok = _info.insert(std::make_pair(id, info)).second;
         if (! ok) {
           _index.erase(id);
           throw;

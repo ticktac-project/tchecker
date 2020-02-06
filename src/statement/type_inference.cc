@@ -35,5 +35,43 @@ namespace tchecker {
     
     return tchecker::STMT_TYPE_BAD;
   }
-  
+
+  enum tchecker::statement_type_t type_if(enum tchecker::expression_type_t cond,
+                                           enum tchecker::statement_type_t then_stmt,
+                                           enum tchecker::statement_type_t else_stmt)
+  {
+    if (tchecker::bool_valued(cond) &&
+        (then_stmt!= tchecker::STMT_TYPE_BAD) &&
+        (else_stmt!= tchecker::STMT_TYPE_BAD)
+        )
+      return tchecker::STMT_TYPE_IF;
+
+    return tchecker::STMT_TYPE_BAD;
+  }
+
+  enum tchecker::statement_type_t type_while(enum tchecker::expression_type_t cond,
+                                             enum tchecker::statement_type_t stmt)
+  {
+    if (tchecker::bool_valued(cond) && (stmt!= tchecker::STMT_TYPE_BAD))
+      return tchecker::STMT_TYPE_WHILE;
+
+    return tchecker::STMT_TYPE_BAD;
+  }
+
+  enum tchecker::statement_type_t type_local(enum tchecker::expression_type_t variable,
+                                             enum tchecker::expression_type_t init)
+  {
+    if (tchecker::integer_valued (init) && variable == tchecker::EXPR_TYPE_LOCALINTVAR)
+      return tchecker::STMT_TYPE_LOCAL_INT;
+    return tchecker::STMT_TYPE_BAD;
+  }
+
+  enum tchecker::statement_type_t type_local_array(enum tchecker::expression_type_t variable,
+                                                   enum tchecker::expression_type_t size)
+  {
+    if (tchecker::integer_valued (size) && variable == tchecker::EXPR_TYPE_LOCALINTARRAY)
+      return tchecker::STMT_TYPE_LOCAL_ARRAY;
+    return tchecker::STMT_TYPE_BAD;
+  }
+
 } // end of namespace tchecker

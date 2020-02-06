@@ -146,7 +146,14 @@
 %token                TOK_GE                ">="
 %token                TOK_LT                "<"
 %token                TOK_GT                ">"
+%token                TOK_IF                "if"
+%token                TOK_END               "end"
+%token                TOK_THEN              "then"
+%token                TOK_ELSE              "else"
+%token                TOK_WHILE             "while"
+%token                TOK_DO                "do"
 %token                TOK_NOP               "nop"
+%token                TOK_LOCAL             "local"
 %token <std::string>  TOK_ID                "identifier"
 %token <std::string>  TOK_INTEGER           "integer"
 %token                TOK_EOF          0    "end of file"
@@ -165,6 +172,11 @@
 %type <tchecker::statement_t *>             assignment
                                             sequence_statement
                                             statement
+                                            simple_statement
+                                            if_statement
+                                            loop_statement
+                                            local_statement
+
 %type <tchecker::expression_t *>            atomic_formula
                                             conjunctive_formula
                                             non_atomic_conjunctive_formula
@@ -217,11 +229,15 @@ sequence_statement
 }
 ;
 
+opt_semicolon :
+    ";"
+|
+;
 
 sequence_statement:
-statement
+statement opt_semicolon
 { $$ = $1; }
-| sequence_statement ";" statement
+|  statement ";" sequence_statement
 {
   try {
     $$ = new tchecker::sequence_statement_t($1, $3);
@@ -233,12 +249,43 @@ statement
 }
 ;
 
-
 statement:
-assignment
-{ $$ = $1; }
-| "nop"
-{ $$ = new tchecker::nop_statement_t(); }
+    simple_statement
+    { $$ = $1; }
+|   if_statement
+    { $$ = $1; }
+|   loop_statement
+    { $$ = $1; }
+;
+
+if_statement:
+    TOK_IF conjunctive_formula TOK_THEN sequence_statement TOK_END
+    {  $$ = new tchecker::if_statement_t($2, $4, new tchecker::nop_statement_t()); }
+|   TOK_IF conjunctive_formula TOK_THEN sequence_statement TOK_ELSE sequence_statement TOK_END
+    {  $$ = new tchecker::if_statement_t($2, $4, $6); }
+;
+
+loop_statement:
+    TOK_WHILE conjunctive_formula TOK_DO sequence_statement TOK_END
+    { $$ = new tchecker::while_statement_t($2, $4); }
+;
+
+local_statement:
+    TOK_LOCAL variable_term
+    { $$ = new tchecker::local_var_statement_t($2); }
+|   TOK_LOCAL variable_term TOK_ASSIGN term
+    { $$ = new tchecker::local_var_statement_t($2, $4); }
+|   TOK_LOCAL variable_term TOK_LBRACKET term TOK_RBRACKET
+    { $$ = new tchecker::local_array_statement_t($2, $4); }
+;
+
+simple_statement :
+    assignment
+    { $$ = $1; }
+|   "nop"
+    { $$ = new tchecker::nop_statement_t(); }
+|   local_statement
+    { $$ = $1; }
 ;
 
 
@@ -417,6 +464,16 @@ integer
 {
   try {
     $$ = new tchecker::binary_expression_t(tchecker::EXPR_OP_MOD, $1, $3);
+  }
+  catch (std::exception const & e) {
+    error(@$, e.what());
+    $$ = new fake_expression_t();
+  }
+}
+| TOK_LPAR TOK_IF conjunctive_formula TOK_THEN term TOK_ELSE term TOK_RPAR
+{
+  try {
+    $$ = new tchecker::ite_expression_t($3, $5, $7);
   }
   catch (std::exception const & e) {
     error(@$, e.what());

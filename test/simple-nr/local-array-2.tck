@@ -1,0 +1,44 @@
+system: S
+
+#clock:size:name
+#int:size:min:max:init:name
+#process:name
+#event:name
+#location:process:name{attributes}
+#edge:process:source:target:event:{attributes}
+#sync:events
+#   where
+#   attributes is a colon-separated list of key:value
+#   events is a colon-separated list of process@event
+
+int:1:5:5:5:n
+int:5:0:10:0:Array
+int:1:0:10:1:tmp
+
+process:P
+location:P:A{initial:}
+event: initArray
+event: revertArray
+edge:P:A:A:initArray{do:
+    local i;
+    i = 0;
+    while (i < n) do
+        Array[i] = i;
+        i = i+1
+    end
+}
+
+edge:P:A:A:revertArray{do:
+    local i;
+    local tmp[5];
+    i = 0;
+    while (i < n) do
+        tmp[i] = Array[n - i - 1];
+        i = i+1;
+    end;
+    i = 0;
+    while (i < n) do
+        Array[i] = tmp[i];
+        i = i+1
+    end
+}

@@ -18,6 +18,8 @@ namespace tchecker {
       case EXPR_TYPE_INTTERM:             return os << "INTTERM";
       case EXPR_TYPE_INTVAR:              return os << "INTVAR";
       case EXPR_TYPE_INTARRAY:            return os << "INTARRAY";
+      case EXPR_TYPE_LOCALINTVAR:         return os << "LOCALINTVAR";
+      case EXPR_TYPE_LOCALINTARRAY:       return os << "LOCALINTARRAY";
       case EXPR_TYPE_INTLVALUE:           return os << "INTLVALUE";
       case EXPR_TYPE_CLKVAR:              return os << "CLKVAR";
       case EXPR_TYPE_CLKARRAY:            return os << "CLKARRAY";
@@ -292,5 +294,68 @@ namespace tchecker {
   {
     v.visit(*this);
   }
-  
+
+  /* typed_ite_expression_t */
+
+  typed_ite_expression_t:: typed_ite_expression_t(tchecker::expression_type_t type,
+                                                  tchecker::typed_expression_t * cond,
+                                                  tchecker::typed_expression_t * then_value,
+                                                  tchecker::typed_expression_t * else_value)
+      : tchecker::make_typed_expression_t<tchecker::ite_expression_t>(type, cond, then_value, else_value)
+  {}
+
+
+  tchecker::typed_expression_t const & typed_ite_expression_t::condition () const
+  {
+    return dynamic_cast<tchecker::typed_expression_t const &>
+    (this->tchecker::make_typed_expression_t<tchecker::ite_expression_t>::condition());
+  }
+
+  tchecker::typed_expression_t const & typed_ite_expression_t::then_value() const
+  {
+    return dynamic_cast<tchecker::typed_expression_t const &>
+    (this->tchecker::make_typed_expression_t<tchecker::ite_expression_t>::then_value());
+  }
+
+
+  tchecker::typed_expression_t const & typed_ite_expression_t::else_value() const
+  {
+    return dynamic_cast<tchecker::typed_expression_t const &>
+    (this->tchecker::make_typed_expression_t<tchecker::ite_expression_t>::else_value());
+  }
+
+
+  tchecker::typed_expression_t * typed_ite_expression_t::condition_clone() const
+  {
+    return dynamic_cast<tchecker::typed_expression_t *>
+    (this->tchecker::make_typed_expression_t<tchecker::ite_expression_t>::condition().clone());
+  }
+
+  tchecker::typed_expression_t * typed_ite_expression_t::then_value_clone() const
+  {
+    return dynamic_cast<tchecker::typed_expression_t *>
+    (this->tchecker::make_typed_expression_t<tchecker::ite_expression_t>::then_value().clone());
+  }
+
+
+  tchecker::typed_expression_t * typed_ite_expression_t::else_value_clone () const
+  {
+    return dynamic_cast<tchecker::typed_expression_t *>
+    (this->tchecker::make_typed_expression_t<tchecker::ite_expression_t>::else_value().clone());
+  }
+
+
+  tchecker::expression_t * typed_ite_expression_t::do_clone() const
+  {
+    return new tchecker::typed_ite_expression_t(_type, condition_clone (),
+                                                then_value_clone (),
+                                                else_value_clone ());
+  }
+
+
+  void typed_ite_expression_t::do_visit(tchecker::typed_expression_visitor_t & v) const
+  {
+    v.visit(*this);
+  }
+
 } // end of namespace tchecker

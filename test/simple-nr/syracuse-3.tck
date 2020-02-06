@@ -1,0 +1,19 @@
+system: S
+
+#clock:size:name
+#int:size:min:max:init:name
+#process:name
+#event:name
+#location:process:name{attributes}
+#edge:process:source:target:event:{attributes}
+#sync:events
+#   where
+#   attributes is a colon-separated list of key:value
+#   events is a colon-separated list of process@event
+
+int:1:1:1000:115:Un
+
+process:P
+location:P:A{initial:}
+event: a
+edge:P:A:A:a{do: if Un % 2 == 0 then Un= Un/2 else Un = 3*Un+1 end }

@@ -385,7 +385,8 @@ namespace tchecker {
         virtual void visit(tchecker::typed_bounded_var_expression_t const &) {}
         virtual void visit(tchecker::typed_array_expression_t const &) {}
         virtual void visit(tchecker::typed_unary_expression_t const &) {}
-        
+        virtual void visit(tchecker::typed_ite_expression_t const &) {}
+
         /*!
          \brief Visitor
          \post first and second statements have been visited
@@ -396,6 +397,27 @@ namespace tchecker {
           stmt.second().visit(*this);
         }
         
+        /*!
+         \brief Visitor
+         \post condition expression, then_stmt, else_stmt are visited
+         */
+        virtual void visit(tchecker::typed_if_statement_t const & stmt)
+        {
+          stmt.condition().visit(*this);
+          stmt.then_stmt().visit(*this);
+          stmt.else_stmt().visit(*this);
+        }
+
+        /*!
+         \brief Visitor
+         \post condition expression and stmt statement are visited
+         */
+        virtual void visit(tchecker::typed_while_statement_t const & stmt)
+        {
+          stmt.condition().visit(*this);
+          stmt.statement().visit(*this);
+        }
+
         /*!
          \brief Visitor
          \post No constraint generated for clock assignment x:=c
@@ -436,7 +458,10 @@ namespace tchecker {
         // Other visitors on statements
         virtual void visit(tchecker::typed_nop_statement_t const &) {}
         virtual void visit(tchecker::typed_assign_statement_t const &) {}
-      protected:
+        virtual void visit(tchecker::typed_local_var_statement_t const & stmt) {}
+        virtual void visit(tchecker::typed_local_array_statement_t const & stmt) {}
+
+       protected:
         tchecker::loc_id_t _src;                                  /*!< Source location ID */
         tchecker::loc_id_t _tgt;                                  /*!< Target location ID */
         tchecker::clockbounds::diagonal_free::solver_t & _solver;  /*!< Solver */
@@ -497,6 +522,25 @@ namespace tchecker {
         
         /*!
          \brief Visitor
+         \post then_stmt and else_stmt statements have been visited
+         */
+        virtual void visit(tchecker::typed_if_statement_t const & stmt)
+        {
+          stmt.then_stmt ().visit(*this);
+          stmt.else_stmt ().visit(*this);
+        }
+
+        /*!
+         \brief Visitor
+         \post stmt statement has been visited
+         */
+        virtual void visit(tchecker::typed_while_statement_t const & stmt)
+        {
+          stmt.statement().visit(*this);
+        }
+
+        /*!
+         \brief Visitor
          \post the base clock of the lvalue of stmt has been inserted if its ID can be determined
          */
         virtual void visit(tchecker::typed_int_to_clock_assign_statement_t const & stmt)
@@ -531,7 +575,10 @@ namespace tchecker {
         // Other visitors
         virtual void visit(tchecker::typed_nop_statement_t const &) {}
         virtual void visit(tchecker::typed_assign_statement_t const &) {}
-      protected:
+        virtual void visit(tchecker::typed_local_var_statement_t const & stmt) {}
+        virtual void visit(tchecker::typed_local_array_statement_t const & stmt) {}
+
+       protected:
         INSERT_ITERATOR & _inserter;  /*!< Inserter for assigned clock IDs */
       };
       

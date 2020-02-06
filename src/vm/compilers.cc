@@ -7,13 +7,34 @@
 
 #include <limits>
 #include <vector>
+#include <tchecker/statement/static_analysis.hh>
 
 #include "tchecker/expression/type_inference.hh"
 #include "tchecker/variables/clocks.hh"
 #include "tchecker/vm/compilers.hh"
 
-namespace tchecker {
-  
+namespace tchecker
+{
+
+  // Forward declaration of utility routines
+  namespace details {
+
+      std::vector<tchecker::bytecode_t>::size_type
+      compile_tmp_statement (tchecker::typed_statement_t const &stmt,
+                             std::vector<tchecker::bytecode_t> &container);
+
+      std::vector<tchecker::bytecode_t>::size_type
+      compile_tmp_rvalue_expression (tchecker::typed_expression_t const &expr,
+                                     std::vector<tchecker::bytecode_t> &container);
+
+      template<class BYTECODE_BACK_INSERTER>
+      inline void append_bytecode (BYTECODE_BACK_INSERTER &bbi, std::vector<tchecker::bytecode_t> bytecode)
+      {
+        for(auto b : bytecode)
+          bbi = b;
+      }
+  } // end details namespace
+
   // Expression compiler
   
   namespace details {
@@ -83,9 +104,11 @@ namespace tchecker {
       {
         if ((expr.type() != tchecker::EXPR_TYPE_CLKVAR) &&
             (expr.type() != tchecker::EXPR_TYPE_INTVAR) &&
+            (expr.type() != tchecker::EXPR_TYPE_LOCALINTVAR) &&
             (expr.type() != tchecker::EXPR_TYPE_CLKARRAY) &&
-            (expr.type() != tchecker::EXPR_TYPE_INTARRAY))
-          throw std::invalid_argument("invalid expression");
+            (expr.type() != tchecker::EXPR_TYPE_INTARRAY) &&
+            (expr.type() != tchecker::EXPR_TYPE_LOCALINTARRAY))
+          invalid_expression (expr, "a variable");
         
         // Write bytecode
         _bytecode_back_inserter = tchecker::VM_PUSH;
@@ -113,8 +136,9 @@ namespace tchecker {
       virtual void visit(tchecker::typed_array_expression_t const & expr)
       {
         if ((expr.type() != tchecker::EXPR_TYPE_CLKLVALUE) &&
-            (expr.type() != tchecker::EXPR_TYPE_INTLVALUE))
-          throw std::invalid_argument("invalid expression");
+            (expr.type() != tchecker::EXPR_TYPE_INTLVALUE) &&
+            (expr.type() != tchecker::EXPR_TYPE_LOCALINTLVALUE))
+          invalid_expression (expr, "a lvalue");
         
         // offset bounds
         auto const id = expr.variable().id();
@@ -135,23 +159,37 @@ namespace tchecker {
       
       
       virtual void visit(tchecker::typed_int_expression_t const & expr)
-      { throw std::invalid_argument("not an lvalue expression"); }
+      { not_supported (expr); }
       
       virtual void visit(tchecker::typed_par_expression_t const & expr)
-      { throw std::invalid_argument("not an lvalue expression"); }
+      { not_supported (expr); }
       
       virtual void visit(tchecker::typed_binary_expression_t const & expr)
-      { throw std::invalid_argument("not an lvalue expression"); }
+      { not_supported (expr); }
       
       virtual void visit(tchecker::typed_unary_expression_t const & expr)
-      { throw std::invalid_argument("not an lvalue expression"); }
+      { not_supported (expr); }
       
       virtual void visit(tchecker::typed_simple_clkconstr_expression_t const & expr)
-      { throw std::invalid_argument("not a bounded variable"); }
+      { not_supported (expr); }
       
       virtual void visit(tchecker::typed_diagonal_clkconstr_expression_t const & expr)
-      { throw std::invalid_argument("not a bounded variable"); }
+      { not_supported (expr); }
+
+      virtual void visit(tchecker::typed_ite_expression_t const & expr)
+      { not_supported (expr); }
+
     protected:
+      void not_supported(tchecker::typed_expression_t const & expr) {
+        throw std::invalid_argument("not lvalue expression: "+expr.to_string ());
+      }
+
+      void invalid_expression(tchecker::typed_expression_t const & expr,
+                              std::string expected) {
+        throw std::invalid_argument("invalid expression '" + expr.to_string () +
+                                    "' where " + expected + " is expected.");
+      }
+
       BYTECODE_BACK_INSERTER _bytecode_back_inserter;  /*!< Bytecode */
     };
     
@@ -216,15 +254,21 @@ namespace tchecker {
       {
         if ((expr.type() != tchecker::EXPR_TYPE_CLKVAR) &&
             (expr.type() != tchecker::EXPR_TYPE_INTVAR) &&
+            (expr.type() != tchecker::EXPR_TYPE_LOCALINTVAR) &&
             (expr.type() != tchecker::EXPR_TYPE_CLKARRAY) &&
-            (expr.type() != tchecker::EXPR_TYPE_INTARRAY))
-          throw std::invalid_argument("invalid expression");
+            (expr.type() != tchecker::EXPR_TYPE_INTARRAY) &&
+            (expr.type() != tchecker::EXPR_TYPE_LOCALINTARRAY))
+          invalid_expression (expr, "a variable");
         
         // Write bytecode (similar to lvalue, except last instruction)
         tchecker::details::lvalue_expression_compiler_t<BYTECODE_BACK_INSERTER> lvalue_expression_compiler(_bytecode_back_inserter);
         
         expr.visit(lvalue_expression_compiler);
-        _bytecode_back_inserter = tchecker::VM_VALUEAT;
+        if ((expr.type() != tchecker::EXPR_TYPE_LOCALINTVAR) &&
+            (expr.type() != tchecker::EXPR_TYPE_LOCALINTARRAY))
+          _bytecode_back_inserter = tchecker::VM_VALUEAT;
+        else
+          _bytecode_back_inserter = tchecker::VM_VALUEAT_FRAME;
       }
       
       
@@ -250,14 +294,19 @@ namespace tchecker {
       virtual void visit(tchecker::typed_array_expression_t const & expr)
       {
         if ((expr.type() != tchecker::EXPR_TYPE_CLKLVALUE) &&
-            (expr.type() != tchecker::EXPR_TYPE_INTLVALUE))
-          throw std::invalid_argument("invalid expression");
+            (expr.type() != tchecker::EXPR_TYPE_INTLVALUE) &&
+            (expr.type() != tchecker::EXPR_TYPE_LOCALINTLVALUE)
+            )
+          invalid_expression (expr, "an lvalue");
         
         // Write bytecode (similar to lvalue, except last instruction)
         tchecker::details::lvalue_expression_compiler_t<BYTECODE_BACK_INSERTER> lvalue_expression_compiler(_bytecode_back_inserter);
         
         expr.visit(lvalue_expression_compiler);
-        _bytecode_back_inserter = tchecker::VM_VALUEAT;
+        if (expr.type() == tchecker::EXPR_TYPE_LOCALINTLVALUE)
+          _bytecode_back_inserter = tchecker::VM_VALUEAT_FRAME;
+        else
+          _bytecode_back_inserter = tchecker::VM_VALUEAT;
       }
       
       
@@ -267,7 +316,7 @@ namespace tchecker {
       virtual void visit(tchecker::typed_int_expression_t const & expr)
       {
         if (expr.type() != tchecker::EXPR_TYPE_INTTERM)
-          throw std::invalid_argument("invalid expression");
+          invalid_expression (expr, "a integer term");
         
         // Write bytecode
         _bytecode_back_inserter = tchecker::VM_PUSH;
@@ -281,8 +330,8 @@ namespace tchecker {
       virtual void visit(tchecker::typed_par_expression_t const & expr)
       {
         if (expr.type() == tchecker::EXPR_TYPE_BAD)
-          throw std::invalid_argument("invalid expression");
-        
+          invalid_expression (expr, "a parenthesized");
+
         // Write bytecode
         expr.expr().visit(*this);
       }
@@ -296,22 +345,21 @@ namespace tchecker {
         // LAND expression
         if (expr.binary_operator() == tchecker::EXPR_OP_LAND) {
           if (expr.type() != tchecker::EXPR_TYPE_CONJUNCTIVE_FORMULA)
-            throw std::invalid_argument("invalid expression");
+            invalid_expression (expr, "a conjunction");
           
-          compile_binary_expression(expr);
-          _bytecode_back_inserter = tchecker::VM_RETZ;   // optimization: return as soon as conjunct is false
+          compile_land_expression(expr);
         }
         // LT, LE, EQ, NEQ, GE, GT expression
         else if (tchecker::predicate(expr.binary_operator())) {
           if (expr.type() != tchecker::EXPR_TYPE_ATOMIC_PREDICATE)
-            throw std::invalid_argument("invalid expression");
+            invalid_expression (expr, "an atomic predicate");
           
           compile_binary_expression(expr);
         }
         // arithmetic operators
         else {
           if (expr.type() != tchecker::EXPR_TYPE_INTTERM)
-            throw std::invalid_argument("invalid expression");
+            invalid_expression (expr, "an integer expression");
           
           compile_binary_expression(expr);
         }
@@ -326,12 +374,12 @@ namespace tchecker {
         // NEG expresison
         if (expr.unary_operator() == tchecker::EXPR_OP_NEG) {
           if (expr.type() != tchecker::EXPR_TYPE_INTTERM)
-            throw std::invalid_argument("invalid expression");
+            invalid_expression (expr, "an unary expression");
         }
         // LNOT expression
         else if (expr.unary_operator() == tchecker::EXPR_OP_LNOT) {
           if (expr.type() != tchecker::EXPR_TYPE_ATOMIC_PREDICATE)
-            throw std::invalid_argument("invalid expression");
+            invalid_expression (expr, "an unary expression");
         }
         
         compile_unary_expression(expr);
@@ -344,8 +392,8 @@ namespace tchecker {
       virtual void visit(tchecker::typed_simple_clkconstr_expression_t const & expr)
       {
         if (expr.type() != tchecker::EXPR_TYPE_CLKCONSTR_SIMPLE)
-          throw std::invalid_argument("invalid expression");
-        
+          invalid_expression (expr, "a simple clock constraint");
+
         tchecker::typed_var_expression_t zero_clock(tchecker::EXPR_TYPE_CLKVAR, tchecker::zero_clock_name,
                                                     tchecker::zero_clock_id, 1);
         
@@ -359,12 +407,24 @@ namespace tchecker {
       virtual void visit(tchecker::typed_diagonal_clkconstr_expression_t const & expr)
       {
         if (expr.type() != tchecker::EXPR_TYPE_CLKCONSTR_DIAGONAL)
-          throw std::invalid_argument("invalid expression");
-        
+          invalid_expression (expr, "a diagonal clock constraint");
+
         compile_clock_predicate(expr.first_clock(), expr.second_clock(), expr.bound(),
                                 operator_to_instruction(expr.binary_operator()));
       }
-    private:
+
+      /*
+       see compile_ite_expression
+       */
+      virtual void visit(tchecker::typed_ite_expression_t const & expr)
+      {
+        if (expr.type() != tchecker::EXPR_TYPE_INTTERM)
+          invalid_expression (expr, "an if-then-else");
+
+        compile_ite_expression(expr.condition (), expr.then_value (), expr.else_value ());
+      }
+
+     private:
       /*
        \brief Translates expression binary operators into bytecode instructions
        \param op : operator
@@ -465,8 +525,19 @@ namespace tchecker {
         _bytecode_back_inserter = tchecker::VM_PUSH;
         _bytecode_back_inserter = 1;
       }
-      
-      
+
+      /*
+       * insert expr.left_operand() bytecode
+       * insert conditional jump JMPZ over second operand bytecode
+       * insert expr.right_operand() bytecode
+       */
+      void compile_land_expression(tchecker::typed_binary_expression_t const & expr)
+      {
+        tchecker::typed_int_expression_t zero(EXPR_TYPE_INTTERM, 0);
+        compile_ite_expression (expr.left_operand (), expr.right_operand (),
+                                zero);
+      }
+
       /*
        insert expr.left_operand() bytecode
        insert expr.right_operand() bytecode
@@ -489,8 +560,52 @@ namespace tchecker {
         expr.operand().visit(*this);
         _bytecode_back_inserter = operator_to_instruction(expr.unary_operator());
       }
-      
-      
+
+      /*
+       * insert cond bycode
+       *
+       insert expr.condition() bytecode
+       insert expr.then_value() bytecode
+       insert expr.else_value() bytecode
+       */
+      void compile_ite_expression(tchecker::typed_expression_t const & cond,
+                                  tchecker::typed_expression_t const & then_value,
+                                  tchecker::typed_expression_t const & else_value)
+      {
+        // pre-compute 'then' and 'else' bytecodes
+        std::vector<tchecker::bytecode_t> then_bytecode;
+        auto then_len = compile_tmp_rvalue_expression(then_value, then_bytecode);
+
+        std::vector<tchecker::bytecode_t> else_bytecode;
+        auto else_len = compile_tmp_rvalue_expression(else_value, else_bytecode);
+
+        // generation of ite bytecode
+        //  - insert guard bytecode
+        cond.visit (*this);
+
+        //  - insert a conditional jump over 'then' bytecode. Jump instruction
+        //    move IP relatively to the address following the JMP.
+        _bytecode_back_inserter = tchecker::VM_JMPZ;
+        _bytecode_back_inserter = then_len + 2;
+
+        //  - insert bytecode for the 'then' statement
+        append_bytecode (_bytecode_back_inserter, then_bytecode);
+
+        //  - insert a jump over 'else' bytecode.
+        _bytecode_back_inserter = tchecker::VM_JMP;
+        _bytecode_back_inserter = else_len;
+
+        //  - insert bytecode for the 'else' statement
+        append_bytecode (_bytecode_back_inserter, else_bytecode);
+      }
+
+
+      void invalid_expression(tchecker::typed_expression_t const & expr,
+                              std::string expected) {
+          throw std::invalid_argument("invalid expression '" + expr.to_string () +
+                                      "' where " + expected + " is expected.");
+      }
+
       BYTECODE_BACK_INSERTER _bytecode_back_inserter;  /*!< Bytecode */
     };
     
@@ -622,37 +737,43 @@ namespace tchecker {
       
       
       virtual void visit(tchecker::typed_int_expression_t const & expr)
-      { throw std::invalid_argument("not a bounded variable"); }
+      { not_supported (expr); }
       
       virtual void visit(tchecker::typed_var_expression_t const & expr)
-      { throw std::invalid_argument("not a bounded variable"); }
+      { not_supported (expr); }
       
       virtual void visit(tchecker::typed_par_expression_t const & expr)
-      { throw std::invalid_argument("not a bounded variable"); }
+      { not_supported (expr); }
       
       virtual void visit(tchecker::typed_binary_expression_t const & expr)
-      { throw std::invalid_argument("not a bounded variable"); }
+      { not_supported (expr); }
       
       virtual void visit(tchecker::typed_unary_expression_t const & expr)
-      { throw std::invalid_argument("not a bounded variable"); }
+      { not_supported (expr); }
       
       virtual void visit(tchecker::typed_simple_clkconstr_expression_t const & expr)
-      { throw std::invalid_argument("not a bounded variable"); }
+      { not_supported (expr); }
       
       virtual void visit(tchecker::typed_diagonal_clkconstr_expression_t const & expr)
-      { throw std::invalid_argument("not a bounded variable"); }
+      { not_supported (expr); }
+
+      virtual void visit(tchecker::typed_ite_expression_t const & expr)
+      { not_supported (expr); }
+
     protected:
+      void not_supported(tchecker::typed_expression_t const & expr) {
+        throw std::invalid_argument("not a bounded variable: " + expr.to_string ());
+      }
+
       tchecker::integer_t _min;  /*!< Variable minimal value */
       tchecker::integer_t _max;  /*!< Variable maximal value */
     };
-    
-    
-    
-    
-    /*!
-     \class statement_compiler_t
-     \brief Visitor for compilation of statements
-     */
+
+
+      /*!
+       \class statement_compiler_t
+       \brief Visitor for compilation of statements
+       */
     template <class BYTECODE_BACK_INSERTER>
     class statement_compiler_t final : public tchecker::typed_statement_visitor_t {
     public:
@@ -776,7 +897,53 @@ namespace tchecker {
         stmt.first().visit(*this);
         stmt.second().visit(*this);
       }
-    protected:
+
+      /*
+       * see compile_if_then_else
+       */
+      virtual void visit(tchecker::typed_if_statement_t const & stmt)
+      {
+        if (stmt.type() == tchecker::STMT_TYPE_BAD)
+          throw std::invalid_argument("invalid statement");
+
+        compile_if_then_else (stmt.condition (), stmt.then_stmt (), stmt.else_stmt ());
+      }
+
+      /*
+       * see compile_while
+       */
+      virtual void visit(tchecker::typed_while_statement_t const & stmt)
+      {
+        if (stmt.type() == tchecker::STMT_TYPE_BAD)
+          throw std::invalid_argument("invalid statement");
+
+        compile_while (stmt.condition (), stmt.statement ());
+      }
+
+      virtual void visit(tchecker::typed_local_var_statement_t const & stmt)
+      {
+	    tchecker::details::lvalue_expression_compiler_t<BYTECODE_BACK_INSERTER> lvalue_compiler(_bytecode_back_inserter);
+	    stmt.variable ().visit (lvalue_compiler);
+        tchecker::details::rvalue_expression_compiler_t<BYTECODE_BACK_INSERTER> rvalue_compiler(_bytecode_back_inserter);
+        stmt.initial_value ().visit (rvalue_compiler);
+        _bytecode_back_inserter = VM_INIT_FRAME;
+      }
+
+      virtual void visit(tchecker::typed_local_array_statement_t const & stmt)
+      {
+        tchecker::variable_size_t id = stmt.variable().id();
+        tchecker::variable_size_t asize = stmt.variable().size ();
+
+        for(tchecker::variable_size_t i = 0; i < asize; i++) {
+            _bytecode_back_inserter = VM_PUSH;
+            _bytecode_back_inserter = id+i;
+            _bytecode_back_inserter = VM_PUSH;
+            _bytecode_back_inserter = 0;
+            _bytecode_back_inserter = VM_INIT_FRAME;
+        }
+      }
+
+     protected:
       /*
        Compiler for clock reset:  lvalue = int_rvalue + clock_rvalue
        
@@ -820,29 +987,148 @@ namespace tchecker {
         _bytecode_back_inserter = tchecker::VM_FAILNOTIN;
         _bytecode_back_inserter = bounds_visitor.min();
         _bytecode_back_inserter = bounds_visitor.max();
-        _bytecode_back_inserter = tchecker::VM_ASSIGN;
+        if (lvalue.type () == EXPR_TYPE_LOCALINTLVALUE || lvalue.type () == EXPR_TYPE_LOCALINTVAR)
+          _bytecode_back_inserter = tchecker::VM_ASSIGN_FRAME;
+        else
+          _bytecode_back_inserter = tchecker::VM_ASSIGN;
       }
-      
-      
+
+      /*
+       * insert cond bytecode
+       * VM_JMPZ over 'then' bytecode to 'else' bytecode
+       * insert 'then' bytecode
+       * VM_JMP over 'else' bytecode
+       * insert 'else' bytecode
+       */
+      void compile_if_then_else (tchecker::typed_expression_t const &cond,
+                                 tchecker::typed_statement_t const &then_stmt,
+                                 tchecker::typed_statement_t const &else_stmt)
+      {
+        tchecker::details::rvalue_expression_compiler_t<BYTECODE_BACK_INSERTER> rvalue_compiler(_bytecode_back_inserter);
+
+        // pre-compute then an else bytecodes
+        std::vector<tchecker::bytecode_t> then_bytecode;
+        auto then_len = compile_tmp_statement(then_stmt, then_bytecode);
+
+        std::vector<tchecker::bytecode_t> else_bytecode;
+        auto else_len = compile_tmp_statement(else_stmt, else_bytecode);
+
+        // generation of ite bytecode
+        //  - insert guard bytecode
+        cond.visit (rvalue_compiler);
+
+        //  - insert a conditional jump over 'then' bytecode. Jump instruction
+        //    move IP relatively to the address following the JMP.
+        _bytecode_back_inserter = tchecker::VM_JMPZ;
+        _bytecode_back_inserter = then_len + 2;
+
+        //  - insert bytecode for the 'then' statement
+        append_bytecode (_bytecode_back_inserter, then_bytecode);
+
+        //  - insert a jump over 'else' bytecode.
+        _bytecode_back_inserter = tchecker::VM_JMP;
+        _bytecode_back_inserter = else_len;
+
+        //  - insert bytecode for the 'else' statement
+        append_bytecode (_bytecode_back_inserter, else_bytecode);
+      }
+
+      /*
+       * insert cond bytecode
+       * VM_JMPZ over 'stmt' bytecode and unconditional loop instruction
+       * insert 'stmt' bytecode
+       * VM_JMP back to cond bytecode
+       */
+      void compile_while (tchecker::typed_expression_t const &cond,
+                          tchecker::typed_statement_t const &stmt)
+      {
+        // pre-compute cond and stmt bytecodes to get their respective lengths
+
+        std::vector<tchecker::bytecode_t> cond_bytecode;
+        auto cond_len = compile_tmp_rvalue_expression(cond, cond_bytecode);
+
+        std::vector<tchecker::bytecode_t> stmt_bytecode;
+        auto stmt_len = compile_tmp_statement(stmt, stmt_bytecode);
+
+
+        // generation of while bytecode
+        //  - insert 'cond' bytecode
+        append_bytecode (_bytecode_back_inserter, cond_bytecode);
+
+        //  - insert a conditional jump over 'stmt' bytecode and loop instruction
+        _bytecode_back_inserter = tchecker::VM_JMPZ;
+        _bytecode_back_inserter = stmt_len + 2;
+
+        //  - insert bytecode for the 'stmt' statement
+        append_bytecode (_bytecode_back_inserter, stmt_bytecode);
+
+        //  - insert a loop back to 'cond' bytecode
+        _bytecode_back_inserter = tchecker::VM_JMP;
+        _bytecode_back_inserter = -(cond_len + 2 + stmt_len + 2);
+      }
+
       BYTECODE_BACK_INSERTER _bytecode_back_inserter;  /*!< Bytecode back ins. */
     };
     
   } // end of namespace details
-  
-  
-  
-  
-  tchecker::bytecode_t * compile(tchecker::typed_statement_t const & stmt)
+
+    // Utility routines
+    namespace details {
+        std::vector<tchecker::bytecode_t>::size_type
+        compile_tmp_statement(tchecker::typed_statement_t const &stmt,
+                              std::vector<tchecker::bytecode_t> &container)
+        {
+          auto sz = container.size();
+          auto back_inserter = std::back_inserter(container);
+          bool localdecl = tchecker::has_local_declarations (stmt);
+          if (localdecl)
+            back_inserter = VM_PUSH_FRAME;
+
+          tchecker::details::statement_compiler_t<decltype(back_inserter)> compiler(back_inserter);
+          stmt.visit (compiler);
+          if (localdecl)
+            back_inserter = VM_POP_FRAME;
+
+          if (container.size () - sz == 0)
+            throw std::runtime_error("compilation produced no bytecode");
+
+          return container.size() - sz;
+        }
+
+        std::vector<tchecker::bytecode_t>::size_type
+        compile_tmp_rvalue_expression(tchecker::typed_expression_t const &expr,
+                                      std::vector<tchecker::bytecode_t> &container)
+        {
+          auto sz = container.size();
+          auto back_inserter = std::back_inserter(container);
+          tchecker::details::rvalue_expression_compiler_t<decltype(back_inserter)> compiler(back_inserter);
+
+          expr.visit (compiler);
+
+          if (container.size () - sz == 0)
+            throw std::runtime_error("compilation produced no bytecode");
+
+          return container.size() - sz;
+        }
+    } // end of namespace details
+
+
+    tchecker::bytecode_t * compile(tchecker::typed_statement_t const & stmt)
   {
     try {
       if (stmt.type() == tchecker::STMT_TYPE_BAD)
         throw std::invalid_argument("invalid statement");
-      
+
       std::vector<tchecker::bytecode_t> bytecode;
       auto back_inserter = std::back_inserter(bytecode);
-      
+
+      bool localdecl = tchecker::has_local_declarations (stmt);
+      if (localdecl)
+        back_inserter = VM_PUSH_FRAME;
       tchecker::details::statement_compiler_t<decltype(back_inserter)> compiler(back_inserter);
       stmt.visit(compiler);
+      if (localdecl)
+        back_inserter = VM_POP_FRAME;
       back_inserter = tchecker::VM_PUSH;  // return code...
       back_inserter = 1;                  // ...for statement
       back_inserter = tchecker::VM_RET;
@@ -854,7 +1140,7 @@ namespace tchecker {
       
       tchecker::bytecode_t * b = new tchecker::bytecode_t[bytecode.size()];
       std::memcpy(b, bytecode.data(), bytecode.size() * sizeof(tchecker::bytecode_t));
-      
+
       return b;
     }
     catch (std::invalid_argument const & e) {

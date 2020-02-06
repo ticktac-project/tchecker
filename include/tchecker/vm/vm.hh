@@ -36,6 +36,10 @@ namespace tchecker {
     VM_RETZ,         // end of operation when vK==0, return vK
     VM_FAILNOTIN,    // raise exception when (l <= vK <= h) does not hold, for parameters l and h of VM_FAILNOTIN
     //
+    VM_JMP,          // unconditional jump relatively to next instruction;
+    //                  offset is a parameter of the instruction
+    VM_JMPZ,         // stack = v1 ... vK   jump if vK == 0
+    //                  offset is a parameter of the instruction
     VM_PUSH,         // stack = v1 ... vK v                   where v is a parameter of VM_PUSH
     //
     VM_VALUEAT,      // stack = v1 ... vK-1 [vK]              vK replaced by value at addr vK
@@ -60,6 +64,14 @@ namespace tchecker {
     //                                                         s is a parameter of VM_CLKCONSTR (strictness)
     VM_CLKRESET,     // stack = v1 ... vK-3                    output (vK-2 vK-1 vK)
     //
+    VM_PUSH_FRAME,   // push a new frame for local variables
+    VM_POP_FRAME,    // pop the top-level frame
+    VM_VALUEAT_FRAME,// stack = v1 ... vK-1 [vK] 
+                     // vK is replaced by the value of the local variable identified by vK.
+    VM_ASSIGN_FRAME, // stack = v1 ... vK-2 
+                     // [vK-1] is assigned vK where vK-1 identifies a local variables.
+    VM_INIT_FRAME,   // stack = v1 ... vK-2
+                     // [vK-1] is initialized with vK where vK-1 identifies a local variables.
     VM_NOP,          // SHOULD BE LAST INSTRUCTION
   };
   
@@ -109,7 +121,18 @@ namespace tchecker {
    */
   std::ostream & output(std::ostream & os, tchecker::bytecode_t const * bytecode);
   
-  
+  /*!
+   \brief Output
+   \param os : output stream
+   \param bytecode : sequence of bytecode intructions
+   \pre bytecode is null-terminated (i.e. RET terminated), and well-formed
+   (i.e. instructions have the expected parameters)
+   \post the instruction pointed by bytecode has been output to os
+   \return the number of bytes of the instruction
+   */
+  std::size_t output_instruction(std::ostream & os, tchecker::bytecode_t const *bytecode);
+
+
   
   
   // Virtual machine (VM)
@@ -273,13 +296,43 @@ namespace tchecker {
           assert( contains_value<tchecker::integer_t>(l) );
           assert( contains_value<tchecker::integer_t>(h) );
           assert( contains_value<tchecker::integer_t>(offset) );
-          if ( (offset < l) || (offset > h) )
-            throw std::out_of_range("out-of-bounds value");
-          
+          if ( (offset < l) || (offset > h) ) {
+              std::stringstream ss;
+              ss << offset << " out of [" << l << ", " << h << "]";
+              throw std::out_of_range("out-of-bounds value: " + ss.str());
+          }
+
           return top<tchecker::integer_t>();
         }
-          
-          
+
+          // unconditional jump relatively to next instruction;
+          // offset is a parameter of the instruction
+        case VM_JMP:
+        {
+          tchecker::bytecode_t const shift = * ++bytecode;
+          // jump is relative to the address of the next instruction:
+          // - bytecode++;
+          // but we have to handle the increment of the IP in the main loop:
+          // - bytecode += shift - 1;
+          // so:
+          bytecode += shift;
+
+          return 1;
+        }
+          // stack = v1 ... vK   jump if vK == 0
+          // offset is a parameter of the instruction
+        case VM_JMPZ:
+        {
+          tchecker::bytecode_t const shift = * ++bytecode;
+
+          if (top_and_pop<tchecker::integer_t>() == 0)
+            {
+              bytecode += shift;
+              return 0;
+            }
+          return 1;
+        }
+
           // stack = v1 ... vK v   where v is a parameter of instruction VM_PUSH
         case VM_PUSH:
         {
@@ -448,8 +501,7 @@ namespace tchecker {
           push<tchecker::integer_t>(! v);
           return top<tchecker::integer_t>();
         }
-          
-          
+
           // no-operation
         case VM_NOP:
           return 1;
@@ -486,15 +538,74 @@ namespace tchecker {
           clkreset.emplace_back(left_id, right_id, value);
           return 1;
         }
+
+          // push a new frame for local variables
+        case VM_PUSH_FRAME:
+        {
+          _frames.emplace_back ();
+          return 1;
+        }
+          // pop the top-level frame
+        case VM_POP_FRAME:
+        {
+          _frames.pop_back ();
+          return 1;
+        }
+
+          // stack = v1 ... vK-1 [vK]
+          // vK is replaced by the value of the local variable identified by vK.
+        case VM_VALUEAT_FRAME:
+        {
+          auto const id = top_and_pop<tchecker::bytecode_t> ();
+          push<tchecker::integer_t> (slot_of (id));
+          return top<tchecker::integer_t> ();
+        }
+
+          // stack = v1 ... vK-2
+          // [vK-1] is assigned vK where vK-1 identifies a local variables.
+        case VM_ASSIGN_FRAME:
+        {
+          auto const value = top_and_pop<tchecker::integer_t> ();
+          auto const id = top_and_pop<tchecker::intvar_id_t> ();
+          slot_of (id) = value;
+          return value;
+        }
+
+          // stack = v1 ... vK-2
+          // [vK-1] is initialized with vK where vK-1 identifies a local variables.
+        case VM_INIT_FRAME:
+        {
+          auto const value = top_and_pop<tchecker::intvar_id_t> ();
+          auto const id = top_and_pop<tchecker::intvar_id_t> ();
+          _frames.back ()[id] = value;
+
+          return 0;
+        }
       }
       
       // should never be reached
       throw std::runtime_error("incomplete switch statement");
     }
-    
-    
-    
-    
+
+    using frame_t = std::map<tchecker::bytecode_t, tchecker::integer_t>;
+
+    /*!
+     \brief Look for a local variable in the stack of frames
+     \param id the identifier of the local variable
+     \return the lvalue of this variable
+     \throw std::out_of_range is the variable is not found.s
+     */
+    tchecker::integer_t &slot_of (tchecker::bytecode_t id) {
+      for(auto it = _frames.rbegin (); it != _frames.rend (); ++it)
+        {
+          auto kv = it->find (id);
+          if (kv != it->end ())
+            return kv->second;
+      }
+      throw std::out_of_range("unknown local variable ID");
+    }
+
+
     // integer domain checking
     
     /*!
@@ -587,12 +698,14 @@ namespace tchecker {
       return _stack.size();
     }
     
-    
+
     std::size_t const _flat_intvars_size;          /*!< Number of flat bounded integer variables */
     std::size_t const _flat_clocks_size;           /*!< Number of flat clock variables */
     bool _return;                                  /*!< Return flag */
     std::vector<tchecker::bytecode_t> _stack;      /*!< Interpretation stack */
     // NB: implemented as an std::vector for methods clear() and size()
+
+    std::vector<frame_t> _frames;
   };
   
 } // end of namespace tchecker

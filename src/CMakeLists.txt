@@ -6,6 +6,7 @@ find_package(Boost REQUIRED)
 
 option(LIBTCHECKER_ENABLE_SHARED "Build TChecker shared library" OFF)
 
+message(STATUS "Build type for tchecker: ${CMAKE_BUILD_TYPE}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 
 if(${CMAKE_HOST_SYSTEM_NAME} MATCHES "Linux")
@@ -16,7 +17,7 @@ set(CMAKE_MACOSX_RPATH 1)
 
 tck_check_cxx_flags("-ferror-limit=150" ERROR_LIMIT)
 tck_check_cxx_flags("-fstrict-vtable-pointers" STRICT_VTABLE_POINTERS)
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g ${ERROR_LIMIT}")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g3 ${ERROR_LIMIT}")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DNDEBUG -O2 -flto ${STRICT_VTABLE_POINTERS}")
 
 set(TCHECKER_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../include")

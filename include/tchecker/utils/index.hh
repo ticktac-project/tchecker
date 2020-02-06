@@ -95,7 +95,7 @@ namespace tchecker {
       if (! ok)
         throw std::invalid_argument("key is already indexed");
       
-      auto && [it2, ok2] = _value_map.insert(typename value_map_t::value_type(t, k));
+      auto && ok2 = _value_map.insert(typename value_map_t::value_type(t, k)).second;
       if (! ok2) {
         _key_map.erase(it);
         assert( _key_map.size() == _value_map.size() );

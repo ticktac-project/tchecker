@@ -26,6 +26,7 @@ namespace tchecker {
   /*!
    \brief Type checking for expressions
    \param expr : expression
+   \param localvars : local vsariables
    \param intvars : integer variables
    \param clocks : clock variables
    \param error : error logging function
@@ -34,6 +35,7 @@ namespace tchecker {
    \note the returned expression should be deleted by the caller
    */
   tchecker::typed_expression_t * typecheck(tchecker::expression_t const & expr,
+                                           tchecker::integer_variables_t const & localvars,
                                            tchecker::integer_variables_t const & intvars,
                                            tchecker::clock_variables_t const & clocks,
                                            std::function<void(std::string const &)> error = [](std::string const &){});

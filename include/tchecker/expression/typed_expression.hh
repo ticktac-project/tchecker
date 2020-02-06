@@ -30,7 +30,10 @@ namespace tchecker {
     EXPR_TYPE_INTTERM,              // Term with integer value
     EXPR_TYPE_INTVAR,               // Integer variable (with size=1)
     EXPR_TYPE_INTARRAY,             // Array of integer variables (with size>1)
+    EXPR_TYPE_LOCALINTVAR,          // Local integer variable (with size=1)
+    EXPR_TYPE_LOCALINTARRAY,        // Local array of integer variables (with size>1)
     EXPR_TYPE_INTLVALUE,            // Assignable integer expr (left value)
+    EXPR_TYPE_LOCALINTLVALUE,       // Assignable local sinteger expr (left value)
     EXPR_TYPE_CLKVAR,               // Clock variable (with size=1)
     EXPR_TYPE_CLKARRAY,             // Array of clock variables (with size>1)
     EXPR_TYPE_CLKLVALUE,            // Assignable clock expr (left value)
@@ -66,7 +69,8 @@ namespace tchecker {
   class typed_unary_expression_t;
   class typed_simple_clkconstr_expression_t;
   class typed_diagonal_clkconstr_expression_t;
-  
+  class typed_ite_expression_t;
+
   
   
   
@@ -114,6 +118,7 @@ namespace tchecker {
     virtual void visit(tchecker::typed_unary_expression_t const &) = 0;
     virtual void visit(tchecker::typed_simple_clkconstr_expression_t const &) = 0;
     virtual void visit(tchecker::typed_diagonal_clkconstr_expression_t const &) = 0;
+    virtual void visit(tchecker::typed_ite_expression_t const &) = 0;
   };
   
   
@@ -787,7 +792,81 @@ namespace tchecker {
     
     using tchecker::typed_binary_expression_t::do_visit;
   };
-  
+
+    /*!
+     \class typed_ite_expression_t
+     \brief Typed binary expression
+     */
+    class typed_ite_expression_t : public tchecker::make_typed_expression_t<tchecker::ite_expression_t> {
+     public:
+      /*!
+       \brief Constructor
+       \param type : type of expression
+       \param cond : condition expression
+       \param then_value : value if cond is true
+       \param else_value : value if cond is false
+       */
+      typed_ite_expression_t(tchecker::expression_type_t type,
+                             tchecker::typed_expression_t * cond,
+                             tchecker::typed_expression_t * then_value,
+                             tchecker::typed_expression_t * else_value);
+
+
+      /*!
+       \brief Accessor
+       \return condition expression
+       */
+      tchecker::typed_expression_t const & condition() const;
+
+
+      /*!
+       \brief Accessor
+       \return THEN value
+       */
+      tchecker::typed_expression_t const & then_value() const;
+
+
+      /*!
+       \brief Accessor
+       \return ELSE value
+       */
+      tchecker::typed_expression_t const & else_value() const;
+     protected:
+      /*!
+       \brief Clone (cast to typed_expression_t)
+       \return typed condition clone
+       */
+      tchecker::typed_expression_t * condition_clone() const;
+
+      /*!
+       \brief Clone (cast to typed_expression_t)
+       \return typed then value clone
+       */
+      tchecker::typed_expression_t * then_value_clone() const;
+
+
+      /*!
+       \brief Clone (cast to typed_expression_t)
+       \return typed else expression clone
+       */
+      tchecker::typed_expression_t * else_value_clone() const;
+
+
+      /*!
+       \brief Clone
+       \return clone of this
+       */
+      virtual tchecker::expression_t * do_clone() const;
+
+      /*!
+       \brief Visit
+       \param v : visitor
+       */
+      virtual void do_visit(tchecker::typed_expression_visitor_t & v) const;
+
+      using tchecker::make_typed_expression_t<tchecker::ite_expression_t>::do_visit;
+    };
+
 } // end of namespace tchecker
 
 #endif // TCHECKER_EXPRESSION_TYPED_HH

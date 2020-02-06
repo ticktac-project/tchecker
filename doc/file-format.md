@@ -377,6 +377,7 @@ int_term ::= INTEGER
            | int_term * int_term
            | int_term / int_term
            | int_term % int_term
+           | (if expr then int_term else int_term)
 
 lvalue_int ::= INT_VAR_ID
              | INT_VAR_ID [ term ]
@@ -413,12 +414,20 @@ where `CLOCK_ID` is a clock identifier.
 Statements are sequences of assignements or `nop`:
 
 ```
-stmt ::= statement
+stmt ::= statement [;]
        | statement ; stmt
 
-statement ::= int_assignment
-            | clock_assignment
-	    | nop
+statement ::= if_statement
+           |  loop_statement
+           |  simple_statement
+
+statement ::= if expr then stmt end
+           |  if expr then stmt else stmt end
+           |  while expr do stmt end
+           |  local_declaration
+           |  int_assignment
+           |  clock_assignment
+    	   |  nop    	           
 
 int_assignement ::= lvalue_int = int_term
 ```
@@ -432,7 +441,15 @@ clock_assignment ::= lvalue_clock = int_term
 		   | lvalue_clock = lvalue_clock + int_term
 ```
 
-
+It is possible to declare local variables using the keyword `local`. Even if 
+local declarations may occur anywhere in an attribute, variables must not 
+conflict with an existing variable (global or local). Size of 
+local arrays must be computable at compilation time.
+```
+local_declaration ::= local var
+                   |  local var = expr
+                   |  local var [ expr ] 
+```
 # Semantics
 
 ## Finite-state machines

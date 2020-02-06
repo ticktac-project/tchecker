@@ -228,8 +228,10 @@ namespace tchecker {
 
           compile(*this->_system, log);
                                      
-          if (log.error_count() > 0)
-            throw std::runtime_error("System compilation failure");
+          if (log.error_count() > 0) {
+              free_memory();
+              throw std::runtime_error ("System compilation failure");
+          }
         }
         
         /*!
@@ -351,7 +353,9 @@ namespace tchecker {
                                                  tchecker::log_t & log,
                                                  std::string const & context_msg)
         {
+          tchecker::integer_variables_t localvars;
           return tchecker::typecheck(expr,
+                                     localvars,
                                      VARIABLES::system_integer_variables(*this->_system),
                                      VARIABLES::system_clock_variables(*this->_system),
                                      [&] (std::string const & msg) { log.error(context_msg, msg); });
@@ -368,7 +372,9 @@ namespace tchecker {
                                                 tchecker::log_t & log,
                                                 std::string const & context_msg)
         {
+          tchecker::integer_variables_t localvars;
           return tchecker::typecheck(stmt,
+                                     localvars,
                                      VARIABLES::system_integer_variables(*this->_system),
                                      VARIABLES::system_clock_variables(*this->_system),
                                      [&] (std::string const & msg) { log.error(context_msg, msg); });

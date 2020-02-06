@@ -119,7 +119,13 @@ integer   [-+]?[0-9]+
 [ \t]*"}"      { BEGIN INITIAL;
                  return system::parser_t::make_TOK_RBRACE(loc); }
 [\n]+          { loc.lines(static_cast<int>(spyyleng)); loc.step(); }
-[^:{}#\n]*     { return system::parser_t::make_TOK_TEXT(spyytext, loc); }
+[^:{}#]*       {
+                 std::string s(spyytext);
+                 size_t nb_nl = std::count(s.begin(), s.end(), '\n');
+                 auto res = system::parser_t::make_TOK_TEXT(spyytext, loc);
+                 loc.lines(static_cast<int>(nb_nl));
+                 return res;
+                }
 }
 
 

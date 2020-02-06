@@ -62,6 +62,14 @@ integer  [0-9]+
 	loc.step();
 %}
 
+"if"           { return program::parser_t::make_TOK_IF(loc); }
+"end"          { return program::parser_t::make_TOK_END(loc); }
+"then"         { return program::parser_t::make_TOK_THEN(loc); }
+"else"         { return program::parser_t::make_TOK_ELSE(loc); }
+"while"        { return program::parser_t::make_TOK_WHILE(loc); }
+"do"           { return program::parser_t::make_TOK_DO(loc); }
+"local"        { return program::parser_t::make_TOK_LOCAL(loc); }
+
 "="            { return program::parser_t::make_TOK_ASSIGN(loc); }
 "("            { return program::parser_t::make_TOK_LPAR(loc); }
 ")"            { return program::parser_t::make_TOK_RPAR(loc); }

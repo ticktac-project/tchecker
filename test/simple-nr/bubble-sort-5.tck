@@ -1,0 +1,25 @@
+# File generated with the following setting:
+# N = 13 SEED = 9875 MAX = 101
+# Multi-lines do = no
+# Sequential and = yes
+
+system: S
+int:1:13:13:13:n
+int:13:0:101:0:A
+int:1:0:14:0:i
+int:1:0:14:0:j
+int:1:0:101:0:tmp
+int:1:0:1:0:error
+
+process:P
+location:P:init{initial:}
+location:P:A{}
+location:P:B{}
+location:P:ERR{}
+event: initA
+event: sortA
+event: checkA
+edge:P:init:A:initA{do:A[0]=10;A[1]=39;A[2]=95;A[3]=73;A[4]=64;A[5]=83;A[6]=6;A[7]=45;A[8]=68;A[9]=70;A[10]=85;A[11]=72;A[12]=60 }
+edge:P:A:B:sortA{do: while (i < n - 1) do j = 0; while (j < n-i-1) do if (A[j] > A[j+1]) then tmp = A[j]; A[j] = A[j+1]; A[j+1] = tmp; tmp = 0 end ; j = j + 1 end; i = i + 1 end; i = 0 }
+edge:P:B:B:checkA{provided: i < n-1 && A[i] <= A[i+1] : do : i = i+1 }
+edge:P:B:ERR:checkA{provided: i < n-1 && A[i] > A[i+1] }
