@@ -318,21 +318,13 @@ attr_list:
 non_empty_attr_list:
 attr
 {
-  if ($1 != nullptr) {
-    if ( ! $$.insert($1) ) {
-      error(@1, "multiple instances of attribute " + $1->key());
-      delete $1;
-    }
-  }
+  if ($1 != nullptr)
+    $$.insert($1);
 }
 | non_empty_attr_list ":" attr
 {
-  if ($3 != nullptr) {
-    if ( ! $1.insert($3) ) {
-      error(@3, "multiple instances of attribute " + $3->key());
-      delete $3;
-    }
-  }
+  if ($3 != nullptr)
+    $1.insert($3);
   $$ = std::move($1);
 }
 ;

@@ -5,8 +5,16 @@
  *
  */
 
+#include <functional>
 #include <stdexcept>
 
+#if BOOST_VERSION <= 106600
+# include <boost/functional/hash.hpp>
+#else
+# include <boost/container_hash/hash.hpp>
+#endif
+
+#include "tchecker/utils/ordering.hh"
 #include "tchecker/variables/clocks.hh"
 
 namespace tchecker {
@@ -19,6 +27,32 @@ namespace tchecker {
                                          tchecker::integer_t value)
   : _id1(id1), _id2(id2), _cmp(cmp), _value(value)
   {}
+  
+  
+  bool operator== (tchecker::clock_constraint_t const & c1, tchecker::clock_constraint_t const & c2)
+  {
+    return (c1.id1() == c2.id1() &&
+            c1.id2() == c2.id2() &&
+            c1.comparator() == c2.comparator() &&
+            c1.value() == c2.value());
+  }
+  
+  
+  bool operator!= (tchecker::clock_constraint_t const & c1, tchecker::clock_constraint_t const & c2)
+  {
+    return !(c1 == c2);
+  }
+  
+  
+  std::size_t hash_value(tchecker::clock_constraint_t const & c)
+  {
+    std::size_t h = 0;
+    boost::hash_combine(h, c.id1());
+    boost::hash_combine(h, c.id2());
+    boost::hash_combine(h, c.comparator());
+    boost::hash_combine(h, c.value());
+    return h;
+  }
   
   
   std::ostream & operator<< (std::ostream & os, tchecker::clock_constraint_t const & c)
@@ -47,6 +81,29 @@ namespace tchecker {
   }
   
   
+  int lexical_cmp(tchecker::clock_constraint_t const & c1, tchecker::clock_constraint_t const & c2)
+  {
+    if (c1.id1() != c2.id1())
+      return (c1.id1() < c2.id2() ? -1 : 1);
+    if (c1.id2() != c2.id2())
+      return (c1.id2() < c2.id2() ? -1 : 1);
+    if (c1.comparator() != c2.comparator())
+      return (c1.comparator() == tchecker::clock_constraint_t::LT ? -1 : 1);
+    return (c1.value() == c2.value() ? 0 : (c1.value() < c2.value() ? -1 : 1));
+  }
+  
+  
+  int lexical_cmp(tchecker::clock_constraint_container_t const & c1,
+                  tchecker::clock_constraint_container_t const & c2)
+  {
+    return tchecker::lexical_cmp
+    <tchecker::clock_constraint_container_const_iterator_t,
+    tchecker::clock_constraint_container_const_iterator_t,
+    int (*) (tchecker::clock_constraint_t const &, tchecker::clock_constraint_t const &)
+    >
+    (c1.begin(), c1.end(), c2.begin(), c2.end(), tchecker::lexical_cmp);
+  }
+  
   
   
   /* clock_reset_t */
@@ -63,6 +120,30 @@ namespace tchecker {
     
     if (_value < 0)
       throw std::invalid_argument("reset value should be >= 0");
+  }
+  
+  
+  bool operator== (tchecker::clock_reset_t const & r1, tchecker::clock_reset_t const & r2)
+  {
+    return (r1.left_id() == r2.left_id() &&
+            r1.right_id() == r2.right_id() &&
+            r1.value() == r2.value());
+  }
+  
+  
+  bool operator!= (tchecker::clock_reset_t const & r1, tchecker::clock_reset_t const & r2)
+  {
+    return !(r1 == r2);
+  }
+  
+  
+  std::size_t hash_value(tchecker::clock_reset_t const & r)
+  {
+    std::size_t h = 0;
+    boost::hash_combine(h, r.left_id());
+    boost::hash_combine(h, r.right_id());
+    boost::hash_combine(h, r.value());
+    return h;
   }
   
   
@@ -87,6 +168,28 @@ namespace tchecker {
     else
       os << value;
     return os;
+  }
+  
+  
+  int lexical_cmp(tchecker::clock_reset_t const & r1, tchecker::clock_reset_t const & r2)
+  {
+    if (r1.left_id() != r2.left_id())
+      return (r1.left_id() < r2.left_id() ? -1 : 1);
+    if (r1.right_id() != r2.right_id())
+      return (r1.right_id() < r2.right_id() ? -1 : 1);
+    return (r1.value() == r2.value() ? 0 : (r1.value() < r2.value() ? -1 : 1));
+  }
+  
+  
+  int lexical_cmp(tchecker::clock_reset_container_t const & c1,
+                  tchecker::clock_reset_container_t const & c2)
+  {
+    return tchecker::lexical_cmp
+    <tchecker::clock_reset_container_const_iterator_t,
+    tchecker::clock_reset_container_const_iterator_t,
+    int (*) (tchecker::clock_reset_t const &, tchecker::clock_reset_t const &)
+    >
+    (c1.begin(), c1.end(), c2.begin(), c2.end(), tchecker::lexical_cmp);
   }
   
 } // end of namespace tchecker

@@ -106,6 +106,18 @@ namespace tchecker {
       }
       
       /*!
+       \brief Copy-construct state
+       \param state : a state
+       \param args : arguments to a constructor of STATE beyond state
+       \return a new instance of STATE constructed from state and args
+       */
+      template <class ... ARGS>
+      tchecker::intrusive_shared_ptr_t<STATE> construct_from_state(STATE const & state, ARGS && ... args)
+      {
+        return _state_pool.construct(state, std::forward<ARGS>(args)...);
+      }
+      
+      /*!
        \brief Destruct state
        \param p : pointer to a state
        \pre p has been constructed by this allocator
@@ -175,14 +187,161 @@ namespace tchecker {
     
     
     /*!
-     \brief Singleton allocator for transitions
-     \tparam TRANSITION : type of transition, should derive from tchecker::ts::transition_t
+     \class transition_pool_allocator_t
+     \brief Pool allocator of transitions
+     \tparam TRANSITION : type of transitions, should inherit from tchecker::ts::transition_t
      */
     template <class TRANSITION>
-    class transition_singleton_allocator_t : public tchecker::singleton_pool_t<TRANSITION> {
+    class transition_pool_allocator_t {
+      
       static_assert(std::is_base_of<tchecker::ts::transition_t, TRANSITION>::value, "");
+      
     public:
-      using tchecker::singleton_pool_t<TRANSITION>::singleton_pool_t;
+      /*!
+       \brief Type of allocated transitions
+       */
+      using transition_t = TRANSITION;
+      
+      /*!
+       \brief Type of pointer to transitions
+       */
+      using transition_ptr_t = typename tchecker::intrusive_shared_ptr_t<TRANSITION>;
+      
+      /*!
+       \brief Type of allocated objects
+       */
+      using t = transition_t;
+      
+      /*!
+       \brief Type of pointer to allocated objects
+       */
+      using ptr_t = transition_ptr_t;
+      
+      /*!
+       \brief Constructor
+       \param alloc_nb : number of transitions allocated in one block
+       */
+      transition_pool_allocator_t(std::size_t alloc_nb)
+      : _transition_pool(alloc_nb, tchecker::allocation_size_t<TRANSITION>::alloc_size())
+      {}
+      
+      /*!
+       \brief Copy constructor (deleted)
+       */
+      transition_pool_allocator_t(tchecker::ts::transition_pool_allocator_t<TRANSITION> const &) = delete;
+      
+      /*!
+       \brief Move constructor (deleted)
+       */
+      transition_pool_allocator_t(tchecker::ts::transition_pool_allocator_t<TRANSITION> &&) = delete;
+      
+      /*!
+       \brief Destructor
+       */
+      ~transition_pool_allocator_t()
+      {
+        destruct_all();
+      }
+      
+      /*!
+       \brief Assignment operator (deleted)
+       */
+      tchecker::ts::transition_pool_allocator_t<TRANSITION> &
+      operator= (tchecker::ts::transition_pool_allocator_t<TRANSITION> const &) = delete;
+      
+      /*!
+       \brief Move-assignment operator (deleted)
+       */
+      tchecker::ts::transition_pool_allocator_t<TRANSITION> &
+      operator= (tchecker::ts::transition_pool_allocator_t<TRANSITION> &&) = delete;
+      
+      /*!
+       \brief Construct transition
+       \param args : arguments to a constructor of TRANSITION
+       \return a new instance of TRANSITION constructed from args
+       */
+      template <class ... ARGS>
+      tchecker::intrusive_shared_ptr_t<TRANSITION> construct(ARGS && ... args)
+      {
+        return _transition_pool.construct(std::forward<ARGS>(args)...);
+      }
+      
+      /*!
+       \brief Copy-construct transition
+       \param transition : a transition
+       \param args : arguments to a constructor of TRANSITION beyond transition
+       \return a new instance of TRANSITION constructed from transition and args
+       */
+      template <class ... ARGS>
+      tchecker::intrusive_shared_ptr_t<TRANSITION>
+      construct_from_transition(TRANSITION const & transition, ARGS && ... args)                                
+      {
+        return _transition_pool.construct(transition, std::forward<ARGS>(args)...);
+      }
+      
+      /*!
+       \brief Destruct transition
+       \param p : pointer to a transition
+       \pre p has been constructed by this allocator
+       p is not nullptr
+       \post the object pointed by p has been destructed if its reference counter is 1
+       (i.e. p is the only pointer to the object), and p points to nullptr. Does nothing otherwise
+       \return true if the state has been destructed, false otherwise
+       */
+      bool destruct(tchecker::intrusive_shared_ptr_t<TRANSITION> & p)
+      {
+        return _transition_pool.destruct(p);
+      }
+      
+      /*!
+       \brief Collect unused transitions
+       \post Unused transitions have been deleted
+       \note Use method enroll() to enroll on a tchecker::gc_t garbage collector
+       */
+      void collect()
+      {
+        _transition_pool.collect();
+      }
+      
+      /*!
+       \brief Destruct all allocated transitions
+       \post All allocated transitions have been destructed
+       */
+      void destruct_all()
+      {
+        _transition_pool.destruct_all();
+      }
+      
+      /*!
+       \brief Free all allocated memory
+       \post All allocated memory have been deleted, but not destructor has been called
+       */
+      void free_all()
+      {
+        _transition_pool.free_all();
+      }
+      
+      /*!
+       \brief Accessor
+       \return Memory used by this transition allocator
+       */
+      std::size_t memsize() const
+      {
+        return _transition_pool.memsize();
+      }
+      
+      /*!
+       \brief Enroll on garbage collector
+       \param gc : garbage collector
+       \post The transition pool allocator has been enrolled on gc
+       \note this should be enrolled on at most one GC
+       */
+      void enroll(tchecker::gc_t & gc)
+      {
+        _transition_pool.enroll(gc);
+      }
+    protected:
+      tchecker::pool_t<TRANSITION> _transition_pool;   /*!< Pool of transitions */
     };
     
     

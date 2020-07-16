@@ -12,6 +12,7 @@
 #include <iostream>
 #include <limits>
 #include <tchecker/config.hh>
+
 /*!
  \file basictypes.hh
  \brief Definition of basic types for models
@@ -93,15 +94,45 @@ const integer_t int_minval = INT16_MIN;
    */
   using label_id_t = uint32_t;
   
+  
+  
   /*!
    \brief Type of location identifiers
    */
   using loc_id_t = uint32_t;
   
   /*!
+   \brief Location identifier representing absence of location
+   */
+  extern tchecker::loc_id_t const NO_LOC;
+  
+  /*!
+   \brief Checs if a location identifier is valid
+   \param id : a location identifier
+   \return true if id != NO_LOC, false otherwise;
+   */
+  bool valid_loc_id(tchecker::loc_id_t id);
+  
+  
+  
+  /*!
    \brief Type of edge identifiers
    */
   using edge_id_t = uint32_t;
+  
+  /*!
+   \brief Edge identifier representing absence of edge
+   */
+  extern tchecker::edge_id_t const NO_EDGE;
+  
+  /*!
+   \brief Checks if an edge identifier is valid
+   \param id : an edge identifier
+   \return true if id != NO_EDGE, false otherwise
+   */
+  bool valid_edge_id(tchecker::edge_id_t id);
+  
+  
   
   /*!
    \brief Type of synchronization identifiers

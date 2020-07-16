@@ -242,10 +242,10 @@ namespace tchecker {
         enum tchecker::statement_type_t stmt_type;
 
         std::string name = stmt.variable().name();
-        if (_localvars.exists(name)) {
+        if (_localvars.is_variable(name)) {
           stmt_type = tchecker::STMT_TYPE_BAD;
           _error ("local variable already exists: " + name);
-        } else if (_intvars.exists(name)) {
+        } else if (_intvars.is_variable(name)) {
           stmt_type = tchecker::STMT_TYPE_BAD;
           _error ("local variable already exists: " + name);
         } else {
@@ -281,9 +281,9 @@ namespace tchecker {
 
         if (! integer_valued (szexpr->type ())) {
           _error ("array size is not an integer: " + szexpr->to_string ());
-        } else if (_localvars.exists(name)) {
+        } else if (_localvars.is_variable(name)) {
           _error ("local variable already exists: " + name);
-        } else if (_intvars.exists(name)) {
+        } else if (_intvars.is_variable(name)) {
           _error ("local variable already exists as a global one: " + name);
         } else {
           try {

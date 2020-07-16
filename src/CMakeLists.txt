@@ -32,11 +32,10 @@ add_subdirectory(async_zg)
 add_subdirectory(clockbounds)
 add_subdirectory(dbm)
 add_subdirectory(expression)
-add_subdirectory(flat_system)
-add_subdirectory(fsm)
 add_subdirectory(graph)
 add_subdirectory(parsing)
 add_subdirectory(statement)
+add_subdirectory(syncprod)
 add_subdirectory(system)
 add_subdirectory(ta)
 add_subdirectory(ts)
@@ -57,13 +56,11 @@ ${ASYNC_ZG_SRC}
 ${CLOCKBOUNDS_SRC}
 ${DBM_SRC}
 ${EXPRESSION_SRC}
-${FSM_SRC}
-${FLAT_SYSTEM_SRC}
+${SYNCPROD_SRC}
 ${GRAPH_SRC}
 ${OTHER_SRC}
 ${PARSING_SRC}
 ${STATEMENT_SRC}
-${SYNTAX_SRC}
 ${SYSTEM_SRC}
 ${TA_SRC}
 ${TS_SRC}
@@ -96,6 +93,15 @@ if(LIBTCHECKER_ENABLE_SHARED)
   endif()
 endif()
 
+# TO BE REMOVED
+# FAKE static library for refactoring
+add_library(librefactor STATIC ${EXPRESSION_SRC} ${OTHER_SRC} ${PARSING_SRC} ${STATEMENT_SRC} ${SYNCPROD_SRC} ${SYSTEM_SRC} ${TA_SRC} ${UTILS_SRC} ${VARIABLES_SRC} ${VM_SRC}
+            $<TARGET_OBJECTS:program_parsing_static>
+            $<TARGET_OBJECTS:system_parsing_static>)
+set_property(TARGET librefactor PROPERTY OUTPUT_NAME refactor)
+set_property(TARGET librefactor PROPERTY CXX_STANDARD 17)
+set_property(TARGET librefactor PROPERTY CXX_STANDARD_REQUIRED ON)
+# / TO BE REMOVED
 
 # Build TChecker executable
 add_executable(tchecker ${CMAKE_CURRENT_SOURCE_DIR}/tchecker/tchecker.cc)
@@ -103,6 +109,11 @@ target_link_libraries(tchecker libtchecker_static)
 set_property(TARGET tchecker PROPERTY CXX_STANDARD 17)
 set_property(TARGET tchecker PROPERTY CXX_STANDARD_REQUIRED ON)
 
+# Build tck-syntax executable
+add_executable(tck-syntax ${CMAKE_CURRENT_SOURCE_DIR}/tck-syntax/tck-syntax.cc)
+target_link_libraries(tck-syntax librefactor)  # Update to libtchecker_static
+set_property(TARGET tck-syntax PROPERTY CXX_STANDARD 17)
+set_property(TARGET tck-syntax PROPERTY CXX_STANDARD_REQUIRED ON)
 
 # Project view in IDEs (Xcode, etc)
 foreach(FILE ${LIBTCHECKER_SRC}) 
@@ -121,7 +132,7 @@ foreach(FILE ${LIBTCHECKER_SRC})
 endforeach()
 
 # Install rule for binaries, lib and header files
-install(TARGETS tchecker libtchecker_static
+install(TARGETS tchecker tck-syntax libtchecker_static
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib)
 

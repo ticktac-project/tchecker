@@ -313,7 +313,7 @@ namespace tchecker {
     /*!
      \brief Finds a key
      \param key : key
-     return iterator to key if found, key_map_end() otherwise
+     \return iterator to key if found, key_map_end() otherwise
      */
     inline const_key_map_iterator_t find_key(KEY const & key) const
     {

@@ -49,4 +49,11 @@ namespace tchecker {
     _warning_count = 0;
   }
   
+  
+  
+  
+  /* Global log */
+  
+  tchecker::log_t log(&std::cerr);
+  
 } // end of namespace tchecker

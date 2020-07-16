@@ -145,11 +145,8 @@ namespace tchecker {
   public:
     /*!
      \brief Constructor
-     \param vm_variables : virtual machine variables
      */
-    vm_t(std::size_t flat_intvars_size, std::size_t flat_clocks_size)
-    : _flat_intvars_size(flat_intvars_size), _flat_clocks_size(flat_clocks_size)
-    {}
+    vm_t() = default;
     
     /*!
      \brief Copy constructor
@@ -171,61 +168,44 @@ namespace tchecker {
     ~vm_t() = default;
     
     /*!
-     \brief Assignment operator (deleted)
+     \brief Assignment operator
      */
-    tchecker::vm_t & operator= (tchecker::vm_t const &) = delete;
-    // NB: deleted due to const member
+    tchecker::vm_t & operator= (tchecker::vm_t const &) = default;
     
     /*!
-     \brief Move assignment operator (deleted)
+     \brief Move assignment operator
      */
-    tchecker::vm_t & operator= (tchecker::vm_t &&) = delete;
-    // NB: deleted due to const member
-    
-    /*!
-     \brief Bounded integer variables valuation compatibility check
-     \param intvars_val : bounded  integer variables valuation
-     \return true if intvars_val can store a valuation of bounded integer variables from this VM
-     */
-    inline constexpr bool compatible(tchecker::intvars_valuation_t const & intvars_val) const
-    {
-      return (intvars_val.size() >= _flat_intvars_size);
-    }
+    tchecker::vm_t & operator= (tchecker::vm_t &&) = default;
     
     /*!
      \brief Bytecode interpreter
      \param bytecode : tchecker bytecode
-     \param intvars_val : valuation of integer variables
+     \param intval : valuation of bounded integer variables
      \param clkconstr : container of clock constraints
      \param clkreset : container of clock resets
-     \pre bytecode is null-terminated (i.e. VM_RET) and
-     intvars_val.size() <= intvars_layout_size
+     \pre bytecode is null-terminated (i.e. VM_RET).
+     Variables identifiers in bytecode are less than intval.size() (checked by assertion)
      \return value computed by the last instruction in bytecode
-     \post bytecode has been executed: intvars_val has been updated, clock
-     constraints have been pushed into clkconstr and clock resets have
-     been pushed into clkreset
+     \post bytecode has been executed:
+     intval has been updated,
+     clock constraints have been pushed into clkconstr,
+     and clock resets have been pushed into clkreset
      \throw std::runtime_error : if bytecode interpretation fails
-     \throw std::invalid_argument : if the size of intvars_val is too small
-     (precondition is violated)
-     \throw std::out_of_range : if access to inexisting variable or
-     out-of-bound array access
+     \throw std::out_of_range : if out-of-bound array access
      */
     tchecker::integer_t run(tchecker::bytecode_t const * bytecode,
-                            tchecker::intvars_valuation_t & intvars_val,
+                            tchecker::intvars_valuation_t & intval,
                             tchecker::clock_constraint_container_t & clkconstr,
                             tchecker::clock_reset_container_t & clkreset)
     {
       assert( size() == 0 );    // stack should be empty
-      
-      if ( intvars_val.capacity() > _flat_intvars_size )
-        throw std::invalid_argument("intvars valuation is too large");
       
       tchecker::integer_t eval = 0;
       _return = false;
       
       do {
         try {
-          eval = interpret_instruction(bytecode, intvars_val, clkconstr, clkreset);
+          eval = interpret_instruction(bytecode, intval, clkconstr, clkreset);
         }
         catch (...) {
           clear();
@@ -244,20 +224,19 @@ namespace tchecker {
     /*!
      \brief Single instruction interpreter
      \param bytecode : tchecker bytecode
-     \param intvars_val : valuation of integer variables
+     \param intval : valuation of integer variables
      \param clkconstr : container of clock constraints
      \param clkreset : container of clock resets
      \return computed value
-     \pre intvars_val.size() > max_intvar_id
-     \post the instruction pointed by bytecode has been interpreted, intvars_val
-     and the stack have been updated. All clock constraints have been pushed into
-     clkconstr and all clock resets have been pushed into clkreset
+     \pre all integer variable indentifiers in bytecode are less than intval.size() (checked by assertion)
+     \post the instruction pointed by bytecode has been interpreted:
+     intval and the stack have been updated,
+     and all clock constraints have been pushed into clkconstr and all clock resets have been pushed into clkreset
      \throw std::runtime_error : if bytecode interpretation fails
-     \throw std::out_of_range : if access to inexisting variable or
-     out-of-bound array access
+     \throw std::out_of_range : if out-of-bound array access
      */
     inline tchecker::integer_t interpret_instruction(tchecker::bytecode_t const * & bytecode,
-                                                     tchecker::intvars_valuation_t & intvars_val,
+                                                     tchecker::intvars_valuation_t & intval,
                                                      tchecker::clock_constraint_container_t & clkconstr,
                                                      tchecker::clock_reset_container_t & clkreset)
     {
@@ -347,9 +326,8 @@ namespace tchecker {
         case VM_VALUEAT:
         {
           auto const id = top_and_pop<tchecker::intvar_id_t>();
-          if (id >= _flat_intvars_size)
-            throw std::out_of_range("invalid variable ID");
-          push<tchecker::integer_t>(intvars_val[id]);
+          assert(id < intval.size());
+          push<tchecker::integer_t>(intval[id]);
           return top<tchecker::integer_t>();
         }
           
@@ -359,9 +337,8 @@ namespace tchecker {
         {
           auto const value = top_and_pop<tchecker::integer_t>();
           auto const id = top_and_pop<tchecker::intvar_id_t>();
-          if (id >= _flat_intvars_size)
-            throw std::out_of_range("invalid variable ID");
-          intvars_val[id] = value;
+          assert(id < intval.size());
+          intval[id] = value;
           return value;
         }
           
@@ -515,12 +492,11 @@ namespace tchecker {
           auto const bound = top_and_pop<tchecker::integer_t>();
           auto const id2 = top_and_pop<tchecker::clock_id_t>();
           auto const id1 = top_and_pop<tchecker::clock_id_t>();
-          if (id1 >= _flat_clocks_size)
-            throw std::out_of_range("invalid first clock ID");
-          if (id2 >= _flat_clocks_size)
-            throw std::out_of_range("invalid second clock ID");
           static_assert(tchecker::clock_constraint_t::LT == 0, "");
-          clkconstr.emplace_back(id1, id2, (cmp == 0 ? tchecker::clock_constraint_t::LT : tchecker::clock_constraint_t::LE), bound);
+          clkconstr.emplace_back(id1,
+                                 id2,
+                                 (cmp == 0 ? tchecker::clock_constraint_t::LT : tchecker::clock_constraint_t::LE),
+                                 bound);
           return 1;
         }
           
@@ -531,10 +507,6 @@ namespace tchecker {
           auto const value = top_and_pop<tchecker::integer_t>();
           auto const right_id = top_and_pop<tchecker::clock_id_t>();
           auto const left_id = top_and_pop<tchecker::clock_id_t>();
-          if (right_id >= _flat_clocks_size)
-            throw std::out_of_range("invalid first clock ID");
-          if (left_id >= _flat_clocks_size)
-            throw std::out_of_range("invalid second clock ID");
           clkreset.emplace_back(left_id, right_id, value);
           return 1;
         }
@@ -699,8 +671,6 @@ namespace tchecker {
     }
     
 
-    std::size_t const _flat_intvars_size;          /*!< Number of flat bounded integer variables */
-    std::size_t const _flat_clocks_size;           /*!< Number of flat clock variables */
     bool _return;                                  /*!< Return flag */
     std::vector<tchecker::bytecode_t> _stack;      /*!< Interpretation stack */
     // NB: implemented as an std::vector for methods clear() and size()

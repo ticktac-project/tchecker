@@ -193,14 +193,13 @@ namespace tchecker {
     }
     
     /*!
-     \brief Accessor
+     \brief Checks if a variable exists
      \param name : variable name
      \return true if the variable exists
      */
-    inline bool exists(std::string const & name) const
+    inline bool is_variable(std::string const & name) const
     {
-      auto it = _index.find_value(name);
-      return ! (it == _index.end_value_map());
+      return _index.find_value(name) != _index.end_value_map();
     }
 
 

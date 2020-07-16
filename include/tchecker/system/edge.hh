@@ -8,7 +8,15 @@
 #ifndef TCHECKER_SYSTEM_EDGE_HH
 #define TCHECKER_SYSTEM_EDGE_HH
 
+#include <cassert>
+#include <memory>
+#include <vector>
+
+#include <boost/dynamic_bitset/dynamic_bitset.hpp>
+
 #include "tchecker/basictypes.hh"
+#include "tchecker/system/attribute.hh"
+#include "tchecker/utils/iterator.hh"
 
 /*!
  \file edge.hh
@@ -17,167 +25,413 @@
 
 namespace tchecker {
   
-  // forward declaration
-  template <class L, class E> class system_t;
-  
-  
-  
-  /*!
-   \class edge_t
-   \tparam LOC : type of location, should derive from tchecker::loc_t
-   \brief An edge
-   */
-  template <class LOC>
-  class edge_t {
-  public:
-    /*!
-     \brief Type of location
-     */
-    using loc_t = LOC;
+  namespace system {
     
     /*!
-     \brief Constructor
-     \param pid : process identifier
-     \param id : identifier
-     \param src : source location
-     \param tgt : target location
-     \param event_id :  event identifier
-     \pre src!=nullptr, tgt!=nullptr, and src and tgt belong to process pid
-     \throw std::invalid_argument : if the precondition is violated
+     \class edge_t
+     \brief System edge
      */
-    edge_t(tchecker::process_id_t pid, tchecker::edge_id_t id, LOC const * src, LOC const * tgt, tchecker::event_id_t event_id)
-    : _pid(pid), _id(id), _src(src), _tgt(tgt), _event_id(event_id)
-    {
-      if (_src == nullptr)
-        throw std::invalid_argument("nullptr source location");
+    class edge_t {
+    public:
+      /*!
+       \brief Constructor
+       \param pid : process identifier
+       \param id : identifier
+       \param src : source location
+       \param tgt : target location
+       \param event_id :  event identifier
+       \param attr : edge attributes
+       \pre src!=nullptr, tgt!=nullptr, and src and tgt belong to process pid
+       \throw std::invalid_argument : if the precondition is violated
+       */
+      edge_t(tchecker::process_id_t pid,
+             tchecker::edge_id_t id,
+             tchecker::loc_id_t src,
+             tchecker::loc_id_t tgt,
+             tchecker::event_id_t event_id,
+             tchecker::system::attributes_t const & attr);
       
-      if (_tgt == nullptr)
-        throw std::invalid_argument("nullptr target location");
+      /*!
+       \brief Copy constructor
+       \param e : edge
+       \post this is a copy of e
+       */
+      edge_t(tchecker::system::edge_t const & e) = default;
       
-      if (_src->pid() != pid)
-        throw std::invalid_argument("bad source location");
+      /*!
+       \brief Move constructor
+       \param e : edge
+       \post e has been moved to this
+       */
+      edge_t(tchecker::system::edge_t && e) = default;
       
-      if (_tgt->pid() != pid)
-        throw std::invalid_argument("bad target location");
-    }
+      /*!
+       \brief Destructor
+       */
+      ~edge_t() = default;
+      
+      /*!
+       \brief Assignement operator
+       \param e : edge
+       \post this is a copy of e
+       */
+      tchecker::system::edge_t & operator = (tchecker::system::edge_t const & e) = default;
+      
+      /*!
+       \brief Move assignement operator
+       \param e : edge
+       \post this is a copy of e
+       */
+      tchecker::system::edge_t & operator = (tchecker::system::edge_t && e) = default;
+      
+      /*!
+       \brief Accessor
+       \return process identifier
+       */
+      inline tchecker::process_id_t pid() const
+      {
+        return _pid;
+      }
+      
+      /*!
+       \brief Accessor
+       \return Identifier
+       */
+      inline tchecker::edge_id_t id() const
+      {
+        return _id;
+      }
+      
+      /*!
+       \brief Accessor
+       \return Source location
+       */
+      inline tchecker::loc_id_t src() const
+      {
+        return _src;
+      }
+      
+      /*!
+       \brief Accessor
+       \return Target location
+       */
+      inline tchecker::loc_id_t tgt() const
+      {
+        return _tgt;
+      }
+      
+      /*!
+       \brief Accessor
+       \return Event
+       */
+      inline tchecker::event_id_t event_id() const
+      {
+        return _event_id;
+      }
+      
+      /*!
+       \brief Accessor
+       \return Attributes
+       */
+      inline tchecker::system::attributes_t const & attributes() const
+      {
+        return _attr;
+      }
+    private:
+      tchecker::process_id_t _pid;           /*!< Process ID */
+      tchecker::edge_id_t _id;               /*!< Identifier */
+      tchecker::loc_id_t _src;               /*!< Source location */
+      tchecker::loc_id_t _tgt;               /*!< Target location */
+      tchecker::event_id_t _event_id;        /*!< Event */
+      tchecker::system::attributes_t _attr;  /*!< Attributes */
+    };
+    
+    
+    
     
     /*!
-     \brief Copy constructor
-     \param e : edge
-     \post this is a copy of e
+     \brief Type of shared pointer to edge
      */
-    edge_t(tchecker::edge_t<LOC> const & e) = default;
-    // NB: _src and _tgt are not cloned (references)
+    using edge_shared_ptr_t = std::shared_ptr<tchecker::system::edge_t>;
     
     /*!
-     \brief Move constructor
-     \param e : edge
-     \post e has been moved to this
+     \brief Type of shared pointer to constant edge
      */
-    edge_t(tchecker::edge_t<LOC> && e) = default;
+    using edge_const_shared_ptr_t = std::shared_ptr<tchecker::system::edge_t const>;
     
     /*!
-     \brief Destructor
+     \brief Type of collection of edges
      */
-    ~edge_t() = default;
-    // NB: do not delete _src and _tgt (references)
+    using edges_collection_t = std::vector<tchecker::system::edge_shared_ptr_t>;
     
     /*!
-     \brief Assignement operator
-     \param e : edge
-     \post this is a copy of e
+     \class edges_collection_const_iterator_t
+     \brief Type of iterator over collection of edges
      */
-    tchecker::edge_t<LOC> & operator = (tchecker::edge_t<LOC> const & e) = default;
-    // NB: _src and _tgt are not cloned (references)
+    class edges_collection_const_iterator_t : public tchecker::system::edges_collection_t::const_iterator {
+    public:
+      /*!
+       \brief Constructor
+       */
+      edges_collection_const_iterator_t(tchecker::system::edges_collection_t::const_iterator const & it);
+      
+      /*!
+       \brief Dereference operator
+       \return edge marked const
+       */
+      inline tchecker::system::edge_const_shared_ptr_t operator* () const
+      {
+        return edges_collection_t::const_iterator::operator*();
+      }
+    };
+    
+    
+    
     
     /*!
-     \brief Move assignement operator
-     \param e : edge
-     \post this is a copy of e
+     \class loc_edges_maps_t
+     \brief Maps from location IDs to collection of edges and events
      */
-    tchecker::edge_t<LOC> & operator = (tchecker::edge_t<LOC> && e) = default;
+    class loc_edges_maps_t {
+    private:
+      /*!
+       \brief Type of collection of events
+       */
+      using events_collection_t = boost::dynamic_bitset<>;
+    public:
+      /*!
+       \brief Clear all maps
+       */
+      void clear();
+      
+      /*!
+       \brief Add an edge
+       \param loc : location identifer
+       \param edge : an edge
+       \post edge has been added to the maps
+       */
+      void add_edge(tchecker::loc_id_t loc, tchecker::system::edge_shared_ptr_t const & edge);
+      
+      /*!
+       \brief Accessor
+       \param loc : location identifier
+       \return range of edges associated to location loc
+       */
+      tchecker::range_t<tchecker::system::edges_collection_const_iterator_t>
+      edges(tchecker::loc_id_t loc) const;
+      
+      /*!
+       \brief Accessor
+       \param loc : location identifier
+       \param event : event identifier
+       \return range of edges with event and associated to location loc
+       */
+      tchecker::range_t<tchecker::system::edges_collection_const_iterator_t>
+      edges(tchecker::loc_id_t loc, tchecker::event_id_t event) const;
+      
+      /*!
+       \brief Accessor
+       \param loc : location identifier
+       \param event : event identifier
+       \return true if loc is mapped to event, false otherwise
+       */
+      bool event(tchecker::loc_id_t loc, tchecker::event_id_t event) const;
+    private:
+      std::vector<tchecker::system::edges_collection_t> _loc_to_edges;  /*!< Map : loc ID -> edges */
+      std::vector<events_collection_t> _loc_to_events;                  /*!< Map : loc ID -> events */
+      std::vector<std::vector<edges_collection_t>> _loc_event_to_edges; /*!< Map : (loc ID, event ID) -> edges */
+      static tchecker::system::edges_collection_t const _empty_edges;   /*!< Empty collection of edges */
+    };
+    
+    
+    
     
     /*!
-     \brief Accessor
-     \return process identifier
+     \brief Direction of edges
      */
-    inline tchecker::process_id_t pid() const
-    {
-      return _pid;
-    }
+    enum edge_direction_t {
+      INCOMING_EDGE = 0,
+      OUTGOING_EDGE = 1,
+    };
     
+    
+  
     /*!
-     \brief Accessor
-     \return Identifier
+     \class edges_t
+     \brief Collection of edges
      */
-    inline tchecker::edge_id_t id() const
-    {
-      return _id;
-    }
+    class edges_t {
+    public:
+      /*!
+       \brief Constructor
+       */
+      edges_t();
+      
+      /*!
+       \brief Copy constructor
+       */
+      edges_t(tchecker::system::edges_t const &);
+      
+      /*!
+       \brief Move constructor
+       */
+      edges_t(tchecker::system::edges_t &&);
+      
+      /*!
+       \brief Destructor
+       */
+      ~edges_t();
+      
+      /*!
+       \brief Assignment operator
+       */
+      tchecker::system::edges_t & operator= (tchecker::system::edges_t const &);
+      
+      /*!
+       \brief Move-assignment operator
+       */
+      tchecker::system::edges_t & operator= (tchecker::system::edges_t &&);
+      
+      /*!
+       \brief Clear
+       \post this is an empty collection of edges
+       */
+      void clear();
+      
+      /*!
+       \brief Add edge
+       \param pid : process identifier
+       \param src : source location
+       \param tgt : target location
+       \param event_id : event identifier
+       \param attr : edge attributes
+       \pre src and tgt belong to process pid
+       \post edge src -> tgt with event event_id in process pid has been added
+       \throw std::runtime_error : if edge identifiers have been exhausted
+       */
+      void add_edge(tchecker::process_id_t pid,
+                    tchecker::loc_id_t src,
+                    tchecker::loc_id_t tgt,
+                    tchecker::event_id_t event_id,
+                    tchecker::system::attributes_t const & attr);
+      
+      /*!
+       \brief Accessor
+       \return number of edges
+       */
+      inline tchecker::edge_id_t edges_count() const
+      {
+        return _edges.size();
+      }
+      
+      /*!
+       \brief Accessor
+       \param edge_id : edge identifier
+       \pre edge_id is a valid edge identifier (checked by assertion)
+       \return edge with identifier edge_id
+       */
+      inline tchecker::system::edge_const_shared_ptr_t edge(tchecker::edge_id_t edge_id) const
+      {
+        assert(edge_id < _edges.size());
+        return _edges[edge_id];
+      }
+      
+      /*!
+       \brief Type of const iterator over edges
+       */
+      using const_iterator_t = tchecker::system::edges_collection_const_iterator_t;
+      
+      /*!
+       \brief Accessor
+       \return range of edges
+       */
+      tchecker::range_t<tchecker::system::edges_t::const_iterator_t> edges() const;
+      
+      /*!
+       \brief Accessor
+       \param loc : location identifier
+       \return range of outgoing edges of location loc
+       */
+      tchecker::range_t<tchecker::system::edges_t::const_iterator_t>
+      outgoing_edges(tchecker::loc_id_t loc) const;
+      
+      /*!
+       \brief Accessor
+       \param loc : location identifier
+       \param event : event identifier
+       \return range of outgoing edges labelled event from loc
+       \note the range follows the order of addition of edges
+       */
+      tchecker::range_t<tchecker::system::edges_t::const_iterator_t>
+      outgoing_edges(tchecker::loc_id_t loc, tchecker::event_id_t event) const;
+      
+      /*!
+       \brief Accessor
+       \param loc : location identifier
+       \return range of incoming edges of location loc
+       */
+      tchecker::range_t<tchecker::system::edges_t::const_iterator_t>
+      incoming_edges(tchecker::loc_id_t loc) const;
+      
+      /*!
+       \brief Accessor
+       \param loc : location identifier
+       \param event : event identifier
+       \return range of incoming edges labelled event to loc
+       \note the range follows the order of addition of edges
+       */
+      tchecker::range_t<tchecker::system::edges_t::const_iterator_t>
+      incoming_edges(tchecker::loc_id_t loc, tchecker::event_id_t event) const;
+      
+      /*!
+       \brief Accessor
+       \param loc : location identifier
+       \param event : event identifier
+       \return true if loc has an outgoing edge labelled event, false otherwise
+       \note Constant-time complexity
+       */
+      bool outgoing_event(tchecker::loc_id_t loc, tchecker::event_id_t event) const;
+      
+      /*!
+       \brief Accessor
+       \param loc : location identifier
+       \param event : event identifier
+       \return true if loc has an incoming edge labelled event, false otherwise
+       \note Constant-time complexity
+       */
+      bool incoming_event(tchecker::loc_id_t loc, tchecker::event_id_t event) const;
+      
+      /*!
+       \brief Accessor
+       \return Maps : loc ID -> outgoing edges/events
+       */
+      tchecker::system::loc_edges_maps_t const & outgoing_edges_maps() const;
+      
+      /*!
+       \brief Accessor
+       \return Maps : loc ID -> incoming edges/events
+       */
+      tchecker::system::loc_edges_maps_t const & incoming_edges_maps() const;
+      
+      /*!
+       \brief Check validity of edge identifier
+       \param id : edge identifier
+       \return true is id is an edge identifier, false otherwise
+       */
+      bool is_edge(tchecker::edge_id_t id) const;
+    private:
+      /*!
+       \brief Add edges from a collection of edges
+       \param edges : collection of edges
+       \post all edges have been added to this collection
+       */
+      void add_edges(tchecker::system::edges_t const & edges);
+      
+      tchecker::system::edges_collection_t _edges;                     /*!< Collection of edges */
+      std::vector<tchecker::system::loc_edges_maps_t> _loc_edges_maps; /*!< Maps : loc ID to incoming/outgoing edges/events */
+    };
     
-    /*!
-     \brief Accessor
-     \return Source location
-     */
-    inline LOC const * src() const
-    {
-      return _src;
-    }
-    
-    /*!
-     \brief Accessor
-     \return Target location
-     */
-    inline LOC const * tgt() const
-    {
-      return _tgt;
-    }
-    
-    /*!
-     \brief Accessor
-     \return Event
-     */
-    inline tchecker::event_id_t event_id() const
-    {
-      return _event_id;
-    }
-  private:
-    template <class L, class E> friend class tchecker::system_t;
-    
-    /*!
-     \brief Reset edge source location
-     \param new_src : new source location
-     \pre new_src != nullptr
-     \post this edge has source location new_src
-     \throw std::invalid_argument : if new_src is nullptr
-     */
-    inline void reset_src(LOC const * new_src)
-    {
-      if (new_src == nullptr)
-        throw std::invalid_argument("nullptr source location");
-      _src = new_src;
-    }
-    
-    /*!
-     \brief Reset edge target location
-     \param new_tgt : new target location
-     \pre new_tgt != nullptr
-     \post this edge has target location new_tgt
-     \throw std::invalid_argument : if new_tgt is nullptr
-     */
-    inline void reset_tgt(LOC const * new_tgt)
-    {
-      if (new_tgt == nullptr)
-        throw std::invalid_argument("nullptr target location");
-      _tgt = new_tgt;
-    }
-    
-    tchecker::process_id_t _pid;                 /*!< Process ID */
-    tchecker::edge_id_t _id;                     /*!< Identifier */
-    LOC const * _src;                            /*!< Source location */
-    LOC const * _tgt;                            /*!< Target location */
-    tchecker::event_id_t _event_id;              /*!< Event ID */
-  };
+  } // end of namespace system
   
 } // end of namespace tchecker
 

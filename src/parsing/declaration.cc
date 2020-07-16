@@ -105,23 +105,9 @@ namespace tchecker {
     
     
     
-    bool attributes_t::insert(tchecker::parsing::attr_t const * attr)
+    void attributes_t::insert(tchecker::parsing::attr_t const * attr)
     {
-      return _attr.insert({attr->key(), attr}).second;
-    }
-    
-    
-    
-    tchecker::parsing::attr_t const & attributes_t::at(std::string const & key) const
-    {
-      return * _attr.at(key);
-    }
-    
-    
-    
-    tchecker::parsing::attributes_t::const_iterator_t attributes_t::find(std::string const & key) const
-    {
-      return tchecker::parsing::attributes_t::const_iterator_t(_attr.find(key));
+      _attr.insert({attr->key(), attr});
     }
     
     
@@ -144,6 +130,24 @@ namespace tchecker {
     {
       return tchecker::parsing::attributes_t::const_iterator_t(_attr.end());
     }
+    
+    
+    
+    tchecker::range_t<tchecker::parsing::attributes_t::const_iterator_t> attributes_t::attributes() const
+    {
+      return tchecker::make_range(begin(), end());
+    }
+    
+    
+    
+    tchecker::range_t<tchecker::parsing::attributes_t::const_iterator_t>
+    attributes_t::attributes(std::string const & key) const
+    {
+      auto range = _attr.equal_range(key);
+      return tchecker::make_range(tchecker::parsing::attributes_t::const_iterator_t(range.first),
+                                  tchecker::parsing::attributes_t::const_iterator_t(range.second));
+    }
+    
     
     
     

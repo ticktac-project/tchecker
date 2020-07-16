@@ -237,6 +237,34 @@ namespace tchecker {
   
   
   /*!
+   \brief Equality predicate
+   \param c1 : first clock constraint
+   \param c2 : second clock constraint
+   \return true if c1 and c2 have same: 1st clock, 2nd clock, comparator and value,
+   false otherwise
+   */
+  bool operator== (tchecker::clock_constraint_t const & c1, tchecker::clock_constraint_t const & c2);
+  
+  
+  /*!
+   \brief Disequality predicate
+   \param c1 : first clock constraint
+   \param c2 : second clock constraint
+   \return false if c1 and c2 have same: 1st clock, 2nd clock, comparator and value,
+   true otherwise
+   */
+  bool operator!= (tchecker::clock_constraint_t const & c1, tchecker::clock_constraint_t const & c2);
+  
+  
+  /*!
+   \brief Hash function
+   \param c : clock constraint
+   \return hash value for clock constraint c
+   */
+  std::size_t hash_value(tchecker::clock_constraint_t const & c);
+  
+  
+  /*!
    \brief Output operator
    \param os : output stream
    \param c : clock constraint
@@ -254,7 +282,8 @@ namespace tchecker {
    \post c has been output to os with clock names from index
    \return os after c has been output
    */
-  std::ostream & output(std::ostream & os, tchecker::clock_constraint_t const & c, tchecker::clock_index_t const & index);
+  std::ostream & output(std::ostream & os, tchecker::clock_constraint_t const & c,
+                        tchecker::clock_index_t const & index);
   
   
   /*!
@@ -280,6 +309,15 @@ namespace tchecker {
   }
   
   
+  /*!
+   \brief Lexical ordering on clock constraints
+   \param c1 : first clock constraint
+   \param c2 : second clock constraint
+   \return 0 if c1 and c2 are equal, a negative value if c1 is smaller than c2 w.r.t. lexical ordering, a positive value otherwise
+   */
+  int lexical_cmp(tchecker::clock_constraint_t const & c1, tchecker::clock_constraint_t const & c2);
+  
+  
   
   
   /*!
@@ -291,6 +329,16 @@ namespace tchecker {
    \brief Const iterator over clock constraint container
    */
   using clock_constraint_container_const_iterator_t = tchecker::clock_constraint_container_t::const_iterator;
+  
+  
+  /*!
+   \brief Lexical ordering on clock constraint containers
+   \param c1 : first clock constraint container
+   \param c2 : second clock constraint container
+   \return 0 if c1 and c2 are equal, a negative value if c1 is smaller than c2 w.r.t. lexical ordering, a positive value otherwise
+   */
+  int lexical_cmp(tchecker::clock_constraint_container_t const & c1,
+                  tchecker::clock_constraint_container_t const & c2);
   
   
   
@@ -440,6 +488,34 @@ namespace tchecker {
   
   
   /*!
+   \brief Equality predicate
+   \param r1 : first clock reset
+   \param r2 : second clock reset
+   \return true if r1 and r2 have same: left id, right id, and value,
+   false otherwise
+   */
+  bool operator== (tchecker::clock_reset_t const & r1, tchecker::clock_reset_t const & r2);
+  
+  
+  /*!
+   \brief Disequality predicate
+   \param r1 : first clock reset
+   \param r2 : second clock reset
+   \return false if r1 and r2 have same: left id, right id, and value,
+   true otherwise
+   */
+  bool operator!= (tchecker::clock_reset_t const & r1, tchecker::clock_reset_t const & r2);
+  
+  
+  /*!
+   \brief Hash function
+   \param r : clock reset
+   \return hash value for clock reset r
+   */
+  std::size_t hash_value(tchecker::clock_reset_t const & r);
+  
+  
+  /*!
    \brief Output operator
    \param os : output stream
    \param r : clock reset
@@ -457,7 +533,8 @@ namespace tchecker {
    \post r has been output to os with clock names from index
    \return os after r has been output
    */
-  std::ostream & output(std::ostream & os, tchecker::clock_reset_t const & r, tchecker::clock_index_t const & index);
+  std::ostream & output(std::ostream & os, tchecker::clock_reset_t const & r,
+                        tchecker::clock_index_t const & index);
   
   
   /*!
@@ -483,6 +560,15 @@ namespace tchecker {
   }
   
   
+  /*!
+   \brief Lexical ordering on clock resets
+   \param r1 : first clock reset
+   \param r2 : second clock reset
+   \return 0 if r1 and r2 are equal, a negative value if r1 is smaller than r2 w.r.t. lexical ordering, a positive value otherwise
+   */
+  int lexical_cmp(tchecker::clock_reset_t const & r1, tchecker::clock_reset_t const & r2);
+  
+  
   
   
   /*!
@@ -494,6 +580,15 @@ namespace tchecker {
    \brief Const iterator over clock reset container
    */
   using clock_reset_container_const_iterator_t = tchecker::clock_reset_container_t::const_iterator;
+  
+  /*!
+   \brief Lexical ordering on clock reset containers
+   \param c1 : first clock reset container
+   \param c2 : second clock reset container
+   \return 0 if c1 and c2 are equal, a negative value if c1 is smaller than c2 w.r.t. lexical ordering, a positive value otherwise
+   */
+  int lexical_cmp(tchecker::clock_reset_container_t const & c1,
+                  tchecker::clock_reset_container_t const & c2);
   
 } // end of namespace tchecker
 

@@ -3,23 +3,17 @@
 # See files AUTHORS and LICENSE for copyright details.
 
 set(TA_SRC
-${CMAKE_CURRENT_SOURCE_DIR}/details/builder.cc
-${CMAKE_CURRENT_SOURCE_DIR}/details/output.cc
-${CMAKE_CURRENT_SOURCE_DIR}/details/transition.cc
+${CMAKE_CURRENT_SOURCE_DIR}/label.cc
+${CMAKE_CURRENT_SOURCE_DIR}/state.cc
+${CMAKE_CURRENT_SOURCE_DIR}/static_analysis.cc
 ${CMAKE_CURRENT_SOURCE_DIR}/system.cc
 ${CMAKE_CURRENT_SOURCE_DIR}/ta.cc
-${TCHECKER_INCLUDE_DIR}/tchecker/ta/details/allocators.hh
-${TCHECKER_INCLUDE_DIR}/tchecker/ta/details/builder.hh
-${TCHECKER_INCLUDE_DIR}/tchecker/ta/details/edge.hh
-${TCHECKER_INCLUDE_DIR}/tchecker/ta/details/loc.hh
-${TCHECKER_INCLUDE_DIR}/tchecker/ta/details/model.hh
-${TCHECKER_INCLUDE_DIR}/tchecker/ta/details/output.hh
-${TCHECKER_INCLUDE_DIR}/tchecker/ta/details/state.hh
-${TCHECKER_INCLUDE_DIR}/tchecker/ta/details/system.hh
-${TCHECKER_INCLUDE_DIR}/tchecker/ta/details/ta.hh
-${TCHECKER_INCLUDE_DIR}/tchecker/ta/details/transition.hh
-${TCHECKER_INCLUDE_DIR}/tchecker/ta/details/ts.hh
-${TCHECKER_INCLUDE_DIR}/tchecker/ta/details/variables.hh
+${CMAKE_CURRENT_SOURCE_DIR}/transition.cc
+${TCHECKER_INCLUDE_DIR}/tchecker/ta/allocators.hh
+${TCHECKER_INCLUDE_DIR}/tchecker/ta/label.hh
+${TCHECKER_INCLUDE_DIR}/tchecker/ta/state.hh
+${TCHECKER_INCLUDE_DIR}/tchecker/ta/static_analysis.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/ta/system.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/ta/ta.hh
+${TCHECKER_INCLUDE_DIR}/tchecker/ta/transition.hh
 PARENT_SCOPE)

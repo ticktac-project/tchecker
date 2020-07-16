@@ -154,7 +154,7 @@ namespace tchecker {
       /*!
        \brief Type of attributes map
        */
-      using map_t = std::unordered_map<std::string, tchecker::parsing::attr_t const *>;
+      using map_t = std::unordered_multimap<std::string, tchecker::parsing::attr_t const *>;
       
       /*!
        \brief Constructor
@@ -219,10 +219,10 @@ namespace tchecker {
       /*!
        \brief Insert
        \param attr : attribute to insert in the map
-       \return true if attr has been inserted in the map, false if an attribute with the same key already exists
+       \post attr has been inserted
        \note this takes ownership on attr
        */
-      bool insert(tchecker::parsing::attr_t const * attr);
+      void insert(tchecker::parsing::attr_t const * attr);
       
       
       /*!
@@ -250,23 +250,6 @@ namespace tchecker {
       
       /*!
        \brief Accessor
-       \param key : key of attribute to access
-       \return attribute at key in the map if any
-       \throw std::out_of_range if there is no attibute with
-       key in map
-       */
-      tchecker::parsing::attr_t const & at(std::string const & key) const;
-      
-      /*!
-       \brief Accessor
-       \param key : key of attribute to access
-       \return iterator on atribute at key if any, end()
-       otherwise
-       */
-      const_iterator_t find(std::string const & key) const;
-      
-      /*!
-       \brief Accessor
        \return iterator to the first entry of the map (if any)
        */
       const_iterator_t begin() const;
@@ -276,6 +259,19 @@ namespace tchecker {
        \return iteratot to the past-the-end "entry" of the map
        */
       const_iterator_t end() const;
+      
+      /*!
+       \brief Accessor
+       \return range of attributes in this map
+       */
+      tchecker::range_t<const_iterator_t> attributes() const;
+      
+      /*!
+       \brief Accessor
+       \param key : key of attribute
+       \return range of attributes with key in this map
+       */
+      tchecker::range_t<const_iterator_t> attributes(std::string const & key) const;
     private:
       map_t _attr;  /*!< Attributes */
     };

@@ -195,6 +195,9 @@ namespace tchecker {
   };
   
   
+
+  extern tchecker::log_t log;  /*!< Global log */
+  
 } // end of namespace tchecker
 
 #endif // TCHECKER_LOG_HH
