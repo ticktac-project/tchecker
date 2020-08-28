@@ -36,7 +36,5 @@ n12 -> n14
 n15 [label="<idle,done,idle,idle,idle,idle,error>  (150<x1_1 & 50<x1_2 & 0<=x2_1 & 0<=x2_2 & 150<z & 0<=x1_1-z & -100<=x1_2-z)"]
 n12 -> n15
 n13 -> n15
-n16 [label="<idle,idle,idle,idle,idle,idle,idle>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & 0<=z & 0<=x1_1-z & -100<=x1_2-z & -150<=x2_1-z & -150<=x2_2-z)"]
-n14 -> n16
-n16 -> n1
+n14 -> n0
 }
