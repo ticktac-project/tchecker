@@ -92,7 +92,7 @@ addons:
   homebrew:
     packages:
     - boost
-    - bison@3.5
+    - bison@3.7
     update: true
 
 notifications:

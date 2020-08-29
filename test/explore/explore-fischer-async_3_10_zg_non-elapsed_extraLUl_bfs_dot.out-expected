@@ -129,102 +129,60 @@ n55 [label="<A,req,wait,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)"]
 n46 -> n55
 n46 -> n3
 n47 -> n5
-n56 [label="<wait,wait,A,l> id=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
+n47 -> n20
+n56 [label="<wait,req,req,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)"]
 n47 -> n56
-n57 [label="<wait,req,req,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)"]
-n47 -> n57
 n48 -> n6
-n48 -> n57
-n58 [label="<wait,A,wait,l> id=3 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
-n48 -> n58
-n59 [label="<wait,wait,A,l> id=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
-n49 -> n59
+n48 -> n56
+n48 -> n25
+n49 -> n21
 n49 -> n5
-n60 [label="<req,wait,req,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)"]
-n49 -> n60
-n50 -> n60
+n57 [label="<req,wait,req,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n49 -> n57
+n50 -> n57
 n50 -> n8
-n61 [label="<A,wait,wait,l> id=3 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
-n50 -> n61
-n62 [label="<wait,wait,A,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)"]
-n51 -> n62
-n63 [label="<wait,A,wait,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)"]
-n52 -> n63
-n64 [label="<A,wait,wait,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)"]
-n53 -> n64
-n65 [label="<wait,A,wait,l> id=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
-n54 -> n65
-n66 [label="<req,req,wait,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)"]
-n54 -> n66
+n50 -> n27
+n58 [label="<wait,wait,A,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n51 -> n58
+n59 [label="<wait,A,wait,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n52 -> n59
+n60 [label="<A,wait,wait,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n53 -> n60
+n54 -> n26
+n61 [label="<req,req,wait,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n54 -> n61
 n54 -> n6
-n55 -> n66
-n67 [label="<A,wait,wait,l> id=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
-n55 -> n67
+n55 -> n61
+n55 -> n28
 n55 -> n8
-n56 -> n29
+n56 -> n13
+n56 -> n31
+n56 -> n32
+n57 -> n33
 n57 -> n13
-n68 [label="<wait,wait,req,l> id=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
-n57 -> n68
-n69 [label="<wait,req,wait,l> id=3 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
-n57 -> n69
-n58 -> n37
-n59 -> n30
-n70 [label="<wait,wait,req,l> id=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
-n60 -> n70
-n60 -> n13
-n71 [label="<req,wait,wait,l> id=3 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
-n60 -> n71
-n61 -> n39
-n62 -> n49
-n62 -> n47
-n72 [label="<wait,wait,req,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)"]
-n62 -> n72
-n63 -> n54
-n73 [label="<wait,req,wait,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)"]
-n63 -> n73
-n63 -> n48
-n74 [label="<req,wait,wait,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)"]
-n64 -> n74
-n64 -> n55
-n64 -> n50
-n65 -> n38
-n75 [label="<wait,req,wait,l> id=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
-n66 -> n75
-n76 [label="<req,wait,wait,l> id=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
-n66 -> n76
-n66 -> n13
-n67 -> n40
-n77 [label="<wait,wait,wait,l> id=3 (0<=x1 & 0<=x2<=10 & x3=0 & -10<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=10)"]
-n68 -> n77
-n78 [label="<wait,wait,wait,l> id=2 (0<=x1 & x2=0 & 0<=x3<=10 & 0<=x1-x2 & -10<=x1-x3 & -10<=x2-x3<=0)"]
-n69 -> n78
-n79 [label="<wait,wait,wait,l> id=3 (0<=x1<=10 & 0<=x2 & x3=0 & x1-x2<=10 & 0<=x1-x3<=10 & 0<=x2-x3)"]
-n70 -> n79
-n80 [label="<wait,wait,wait,l> id=1 (x1=0 & 0<=x2 & 0<=x3<=10 & x1-x2<=0 & -10<=x1-x3<=0 & -10<=x2-x3)"]
-n71 -> n80
-n72 -> n60
-n72 -> n57
-n81 [label="<wait,wait,wait,l> id=3 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)"]
-n72 -> n81
-n73 -> n66
-n82 [label="<wait,wait,wait,l> id=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)"]
-n73 -> n82
-n73 -> n57
-n83 [label="<wait,wait,wait,l> id=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)"]
-n74 -> n83
-n74 -> n66
-n74 -> n60
-n84 [label="<wait,wait,wait,l> id=2 (0<=x1<=10 & x2=0 & 0<=x3 & 0<=x1-x2<=10 & x1-x3<=10 & x2-x3<=0)"]
-n75 -> n84
-n85 [label="<wait,wait,wait,l> id=1 (x1=0 & 0<=x2<=10 & 0<=x3 & -10<=x1-x2<=0 & x1-x3<=0 & x2-x3<=10)"]
-n76 -> n85
-n77 -> n51
-n78 -> n52
-n79 -> n51
-n80 -> n53
-n81 -> n51
-n82 -> n52
-n83 -> n53
-n84 -> n52
-n85 -> n53
+n57 -> n34
+n58 -> n49
+n58 -> n47
+n62 [label="<wait,wait,req,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n58 -> n62
+n59 -> n54
+n63 [label="<wait,req,wait,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n59 -> n63
+n59 -> n48
+n64 [label="<req,wait,wait,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)"]
+n60 -> n64
+n60 -> n55
+n60 -> n50
+n61 -> n35
+n61 -> n36
+n61 -> n13
+n62 -> n57
+n62 -> n56
+n62 -> n43
+n63 -> n61
+n63 -> n44
+n63 -> n56
+n64 -> n45
+n64 -> n61
+n64 -> n57
 }

@@ -25,20 +25,16 @@ n10 [label="<idle,processing,idle,idle,idle,processing,finished>  (0<=x1_1 & 0<=
 n8 -> n10
 n11 [label="<idle,processing,idle,idle,processing,idle,error>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1<=100 & 0<=x2_2 & 0<=z & -100<=x1_1-x2_1 & -100<=x1_2-x2_1 & x2_1-x2_2<=100 & x2_1-z<=100)"]
 n8 -> n11
-n12 [label="<idle,processing,idle,idle,processing,idle,error>  (0<=x1_1 & 0<=x1_2 & x2_1=0 & 0<=x2_2 & 0<=z & 0<=x1_1-x2_1 & 0<=x1_2-x2_1 & x2_1-x2_2<=0 & x2_1-z<=0)"]
-n9 -> n12
-n13 [label="<idle,done,idle,idle,idle,idle,finished>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & 0<=z)"]
+n9 -> n11
+n12 [label="<idle,done,idle,idle,idle,idle,finished>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & 0<=z)"]
+n10 -> n12
+n13 [label="<idle,processing,idle,idle,idle,processing,error>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2<=100 & 0<=z & -100<=x1_1-x2_2 & -100<=x1_2-x2_2 & -100<=x2_1-x2_2 & x2_2-z<=100)"]
 n10 -> n13
-n14 [label="<idle,processing,idle,idle,idle,processing,error>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2<=100 & 0<=z & -100<=x1_1-x2_2 & -100<=x1_2-x2_2 & -100<=x2_1-x2_2 & x2_2-z<=100)"]
-n10 -> n14
-n15 [label="<idle,processing,idle,idle,idle,processing,error>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & x2_2=0 & 0<=z & 0<=x1_1-x2_2 & 0<=x1_2-x2_2 & 0<=x2_1-x2_2 & x2_2-z<=0)"]
-n11 -> n15
+n11 -> n13
+n14 [label="<idle,idle,idle,idle,idle,idle,ok>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & 0<=z)"]
+n12 -> n14
+n15 [label="<idle,done,idle,idle,idle,idle,error>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & 0<=z)"]
 n12 -> n15
-n16 [label="<idle,idle,idle,idle,idle,idle,ok>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & 0<=z)"]
-n13 -> n16
-n17 [label="<idle,done,idle,idle,idle,idle,error>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & 0<=z)"]
-n13 -> n17
-n14 -> n17
-n15 -> n17
-n16 -> n0
+n13 -> n15
+n14 -> n0
 }

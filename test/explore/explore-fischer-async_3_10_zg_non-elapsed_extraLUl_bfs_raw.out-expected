@@ -128,101 +128,59 @@ fischer_async_3_10
 46 -> 55  reset: x2=0 tgt inv: x2<=10
 46 -> 3  reset: x3=0 tgt inv: x3<=10
 47 -> 5 src inv: x2<=10 reset: x1=0 tgt inv: x1<=10 & x2<=10
-56: <wait,wait,A,l> id=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
-47 -> 56 src inv: x2<=10 guard: x2<=10 reset: x2=0
-57: <wait,req,req,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)
-47 -> 57 src inv: x2<=10 reset: x3=0 tgt inv: x2<=10 & x3<=10
+47 -> 20 src inv: x2<=10 guard: x2<=10 reset: x2=0
+56: <wait,req,req,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)
+47 -> 56 src inv: x2<=10 reset: x3=0 tgt inv: x2<=10 & x3<=10
 48 -> 6 src inv: x3<=10 reset: x1=0 tgt inv: x1<=10 & x3<=10
-48 -> 57 src inv: x3<=10 reset: x2=0 tgt inv: x2<=10 & x3<=10
-58: <wait,A,wait,l> id=3 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
-48 -> 58 src inv: x3<=10 guard: x3<=10 reset: x3=0
-59: <wait,wait,A,l> id=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
-49 -> 59 src inv: x1<=10 guard: x1<=10 reset: x1=0
+48 -> 56 src inv: x3<=10 reset: x2=0 tgt inv: x2<=10 & x3<=10
+48 -> 25 src inv: x3<=10 guard: x3<=10 reset: x3=0
+49 -> 21 src inv: x1<=10 guard: x1<=10 reset: x1=0
 49 -> 5 src inv: x1<=10 reset: x2=0 tgt inv: x1<=10 & x2<=10
-60: <req,wait,req,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)
-49 -> 60 src inv: x1<=10 reset: x3=0 tgt inv: x1<=10 & x3<=10
-50 -> 60 src inv: x3<=10 reset: x1=0 tgt inv: x1<=10 & x3<=10
+57: <req,wait,req,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)
+49 -> 57 src inv: x1<=10 reset: x3=0 tgt inv: x1<=10 & x3<=10
+50 -> 57 src inv: x3<=10 reset: x1=0 tgt inv: x1<=10 & x3<=10
 50 -> 8 src inv: x3<=10 reset: x2=0 tgt inv: x2<=10 & x3<=10
-61: <A,wait,wait,l> id=3 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
-50 -> 61 src inv: x3<=10 guard: x3<=10 reset: x3=0
-62: <wait,wait,A,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)
-51 -> 62 
-63: <wait,A,wait,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)
-52 -> 63 
-64: <A,wait,wait,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)
-53 -> 64 
-65: <wait,A,wait,l> id=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
-54 -> 65 src inv: x1<=10 guard: x1<=10 reset: x1=0
-66: <req,req,wait,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)
-54 -> 66 src inv: x1<=10 reset: x2=0 tgt inv: x1<=10 & x2<=10
+50 -> 27 src inv: x3<=10 guard: x3<=10 reset: x3=0
+58: <wait,wait,A,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)
+51 -> 58 
+59: <wait,A,wait,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)
+52 -> 59 
+60: <A,wait,wait,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)
+53 -> 60 
+54 -> 26 src inv: x1<=10 guard: x1<=10 reset: x1=0
+61: <req,req,wait,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)
+54 -> 61 src inv: x1<=10 reset: x2=0 tgt inv: x1<=10 & x2<=10
 54 -> 6 src inv: x1<=10 reset: x3=0 tgt inv: x1<=10 & x3<=10
-55 -> 66 src inv: x2<=10 reset: x1=0 tgt inv: x1<=10 & x2<=10
-67: <A,wait,wait,l> id=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
-55 -> 67 src inv: x2<=10 guard: x2<=10 reset: x2=0
+55 -> 61 src inv: x2<=10 reset: x1=0 tgt inv: x1<=10 & x2<=10
+55 -> 28 src inv: x2<=10 guard: x2<=10 reset: x2=0
 55 -> 8 src inv: x2<=10 reset: x3=0 tgt inv: x2<=10 & x3<=10
-56 -> 29  guard: x2>10
-57 -> 13 src inv: x2<=10 & x3<=10 reset: x1=0 tgt inv: x1<=10 & x2<=10 & x3<=10
-68: <wait,wait,req,l> id=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
-57 -> 68 src inv: x2<=10 & x3<=10 guard: x2<=10 reset: x2=0 tgt inv: x3<=10
-69: <wait,req,wait,l> id=3 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
-57 -> 69 src inv: x2<=10 & x3<=10 guard: x3<=10 reset: x3=0 tgt inv: x2<=10
-58 -> 37  guard: x3>10
-59 -> 30  guard: x1>10
-70: <wait,wait,req,l> id=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
-60 -> 70 src inv: x1<=10 & x3<=10 guard: x1<=10 reset: x1=0 tgt inv: x3<=10
-60 -> 13 src inv: x1<=10 & x3<=10 reset: x2=0 tgt inv: x1<=10 & x2<=10 & x3<=10
-71: <req,wait,wait,l> id=3 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
-60 -> 71 src inv: x1<=10 & x3<=10 guard: x3<=10 reset: x3=0 tgt inv: x1<=10
-61 -> 39  guard: x3>10
-62 -> 49  reset: x1=0 tgt inv: x1<=10
-62 -> 47  reset: x2=0 tgt inv: x2<=10
-72: <wait,wait,req,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)
-62 -> 72  reset: x3=0 tgt inv: x3<=10
-63 -> 54  reset: x1=0 tgt inv: x1<=10
-73: <wait,req,wait,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)
-63 -> 73  reset: x2=0 tgt inv: x2<=10
-63 -> 48  reset: x3=0 tgt inv: x3<=10
-74: <req,wait,wait,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)
-64 -> 74  reset: x1=0 tgt inv: x1<=10
-64 -> 55  reset: x2=0 tgt inv: x2<=10
-64 -> 50  reset: x3=0 tgt inv: x3<=10
-65 -> 38  guard: x1>10
-75: <wait,req,wait,l> id=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
-66 -> 75 src inv: x1<=10 & x2<=10 guard: x1<=10 reset: x1=0 tgt inv: x2<=10
-76: <req,wait,wait,l> id=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
-66 -> 76 src inv: x1<=10 & x2<=10 guard: x2<=10 reset: x2=0 tgt inv: x1<=10
-66 -> 13 src inv: x1<=10 & x2<=10 reset: x3=0 tgt inv: x1<=10 & x2<=10 & x3<=10
-67 -> 40  guard: x2>10
-77: <wait,wait,wait,l> id=3 (0<=x1 & 0<=x2<=10 & x3=0 & -10<=x1-x2 & 0<=x1-x3 & 0<=x2-x3<=10)
-68 -> 77 src inv: x3<=10 guard: x3<=10 reset: x3=0
-78: <wait,wait,wait,l> id=2 (0<=x1 & x2=0 & 0<=x3<=10 & 0<=x1-x2 & -10<=x1-x3 & -10<=x2-x3<=0)
-69 -> 78 src inv: x2<=10 guard: x2<=10 reset: x2=0
-79: <wait,wait,wait,l> id=3 (0<=x1<=10 & 0<=x2 & x3=0 & x1-x2<=10 & 0<=x1-x3<=10 & 0<=x2-x3)
-70 -> 79 src inv: x3<=10 guard: x3<=10 reset: x3=0
-80: <wait,wait,wait,l> id=1 (x1=0 & 0<=x2 & 0<=x3<=10 & x1-x2<=0 & -10<=x1-x3<=0 & -10<=x2-x3)
-71 -> 80 src inv: x1<=10 guard: x1<=10 reset: x1=0
-72 -> 60 src inv: x3<=10 reset: x1=0 tgt inv: x1<=10 & x3<=10
-72 -> 57 src inv: x3<=10 reset: x2=0 tgt inv: x2<=10 & x3<=10
-81: <wait,wait,wait,l> id=3 (0<=x1 & 0<=x2 & x3=0 & 0<=x1-x3 & 0<=x2-x3)
-72 -> 81 src inv: x3<=10 guard: x3<=10 reset: x3=0
-73 -> 66 src inv: x2<=10 reset: x1=0 tgt inv: x1<=10 & x2<=10
-82: <wait,wait,wait,l> id=2 (0<=x1 & x2=0 & 0<=x3 & 0<=x1-x2 & x2-x3<=0)
-73 -> 82 src inv: x2<=10 guard: x2<=10 reset: x2=0
-73 -> 57 src inv: x2<=10 reset: x3=0 tgt inv: x2<=10 & x3<=10
-83: <wait,wait,wait,l> id=1 (x1=0 & 0<=x2 & 0<=x3 & x1-x2<=0 & x1-x3<=0)
-74 -> 83 src inv: x1<=10 guard: x1<=10 reset: x1=0
-74 -> 66 src inv: x1<=10 reset: x2=0 tgt inv: x1<=10 & x2<=10
-74 -> 60 src inv: x1<=10 reset: x3=0 tgt inv: x1<=10 & x3<=10
-84: <wait,wait,wait,l> id=2 (0<=x1<=10 & x2=0 & 0<=x3 & 0<=x1-x2<=10 & x1-x3<=10 & x2-x3<=0)
-75 -> 84 src inv: x2<=10 guard: x2<=10 reset: x2=0
-85: <wait,wait,wait,l> id=1 (x1=0 & 0<=x2<=10 & 0<=x3 & -10<=x1-x2<=0 & x1-x3<=0 & x2-x3<=10)
-76 -> 85 src inv: x1<=10 guard: x1<=10 reset: x1=0
-77 -> 51  guard: x3>10
-78 -> 52  guard: x2>10
-79 -> 51  guard: x3>10
-80 -> 53  guard: x1>10
-81 -> 51  guard: x3>10
-82 -> 52  guard: x2>10
-83 -> 53  guard: x1>10
-84 -> 52  guard: x2>10
-85 -> 53  guard: x1>10
+56 -> 13 src inv: x2<=10 & x3<=10 reset: x1=0 tgt inv: x1<=10 & x2<=10 & x3<=10
+56 -> 31 src inv: x2<=10 & x3<=10 guard: x2<=10 reset: x2=0 tgt inv: x3<=10
+56 -> 32 src inv: x2<=10 & x3<=10 guard: x3<=10 reset: x3=0 tgt inv: x2<=10
+57 -> 33 src inv: x1<=10 & x3<=10 guard: x1<=10 reset: x1=0 tgt inv: x3<=10
+57 -> 13 src inv: x1<=10 & x3<=10 reset: x2=0 tgt inv: x1<=10 & x2<=10 & x3<=10
+57 -> 34 src inv: x1<=10 & x3<=10 guard: x3<=10 reset: x3=0 tgt inv: x1<=10
+58 -> 49  reset: x1=0 tgt inv: x1<=10
+58 -> 47  reset: x2=0 tgt inv: x2<=10
+62: <wait,wait,req,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)
+58 -> 62  reset: x3=0 tgt inv: x3<=10
+59 -> 54  reset: x1=0 tgt inv: x1<=10
+63: <wait,req,wait,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)
+59 -> 63  reset: x2=0 tgt inv: x2<=10
+59 -> 48  reset: x3=0 tgt inv: x3<=10
+64: <req,wait,wait,l> id=0 (0<=x1 & 0<=x2 & 0<=x3)
+60 -> 64  reset: x1=0 tgt inv: x1<=10
+60 -> 55  reset: x2=0 tgt inv: x2<=10
+60 -> 50  reset: x3=0 tgt inv: x3<=10
+61 -> 35 src inv: x1<=10 & x2<=10 guard: x1<=10 reset: x1=0 tgt inv: x2<=10
+61 -> 36 src inv: x1<=10 & x2<=10 guard: x2<=10 reset: x2=0 tgt inv: x1<=10
+61 -> 13 src inv: x1<=10 & x2<=10 reset: x3=0 tgt inv: x1<=10 & x2<=10 & x3<=10
+62 -> 57 src inv: x3<=10 reset: x1=0 tgt inv: x1<=10 & x3<=10
+62 -> 56 src inv: x3<=10 reset: x2=0 tgt inv: x2<=10 & x3<=10
+62 -> 43 src inv: x3<=10 guard: x3<=10 reset: x3=0
+63 -> 61 src inv: x2<=10 reset: x1=0 tgt inv: x1<=10 & x2<=10
+63 -> 44 src inv: x2<=10 guard: x2<=10 reset: x2=0
+63 -> 56 src inv: x2<=10 reset: x3=0 tgt inv: x2<=10 & x3<=10
+64 -> 45 src inv: x1<=10 guard: x1<=10 reset: x1=0
+64 -> 61 src inv: x1<=10 reset: x2=0 tgt inv: x1<=10 & x2<=10
+64 -> 57 src inv: x1<=10 reset: x3=0 tgt inv: x1<=10 & x3<=10

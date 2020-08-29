@@ -6,6 +6,7 @@
  */
 
 #include <cassert>
+#include <stdexcept>
 
 #include "tchecker/utils/gc.hh"
 

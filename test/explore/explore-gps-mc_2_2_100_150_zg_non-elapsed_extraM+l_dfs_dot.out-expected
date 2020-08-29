@@ -29,16 +29,12 @@ n11 -> n12
 n11 -> n7
 n13 [label="<idle,processing,idle,idle,idle,processing,finished>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & x2_2=0 & 0<=z & 0<=x1_1-x2_2 & 0<=x1_2-x2_2 & 0<=x2_1-x2_2 & x2_2-z<=0)"]
 n12 -> n13
-n14 [label="<idle,processing,idle,idle,processing,idle,error>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1<=100 & 0<=x2_2 & 0<=z & -100<=x1_1-x2_1 & -100<=x1_2-x2_1 & x2_1-x2_2<=100 & x2_1-z<=100)"]
-n12 -> n14
-n14 -> n9
-n15 [label="<idle,done,idle,idle,idle,idle,finished>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & 0<=z)"]
-n13 -> n15
-n16 [label="<idle,processing,idle,idle,idle,processing,error>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2<=100 & 0<=z & -100<=x1_1-x2_2 & -100<=x1_2-x2_2 & -100<=x2_1-x2_2 & x2_2-z<=100)"]
-n13 -> n16
-n16 -> n10
-n17 [label="<idle,idle,idle,idle,idle,idle,ok>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & 0<=z)"]
-n15 -> n17
-n15 -> n10
-n17 -> n0
+n12 -> n8
+n14 [label="<idle,done,idle,idle,idle,idle,finished>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & 0<=z)"]
+n13 -> n14
+n13 -> n9
+n15 [label="<idle,idle,idle,idle,idle,idle,ok>  (0<=x1_1 & 0<=x1_2 & 0<=x2_1 & 0<=x2_2 & 0<=z)"]
+n14 -> n15
+n14 -> n10
+n15 -> n0
 }
