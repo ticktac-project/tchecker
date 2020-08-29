@@ -95,7 +95,7 @@ endif()
 
 # TO BE REMOVED
 # FAKE static library for refactoring
-add_library(librefactor STATIC ${EXPRESSION_SRC} ${OTHER_SRC} ${PARSING_SRC} ${STATEMENT_SRC} ${SYNCPROD_SRC} ${SYSTEM_SRC} ${TA_SRC} ${UTILS_SRC} ${VARIABLES_SRC} ${VM_SRC}
+add_library(librefactor STATIC ${CLOCKBOUNDS_SRC} ${DBM_SRC} ${EXPRESSION_SRC} ${OTHER_SRC} ${PARSING_SRC} ${STATEMENT_SRC} ${SYNCPROD_SRC} ${SYSTEM_SRC} ${TA_SRC} ${UTILS_SRC} ${VARIABLES_SRC} ${VM_SRC}
             $<TARGET_OBJECTS:program_parsing_static>
             $<TARGET_OBJECTS:system_parsing_static>)
 set_property(TARGET librefactor PROPERTY OUTPUT_NAME refactor)

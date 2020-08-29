@@ -10,36 +10,28 @@
 #include "tchecker/system/clock.hh"
 
 namespace tchecker {
-  
-  namespace system {
-    
-    /* clocks_t */
-    
-    void clocks_t::add_clock(std::string const & name,
-                             tchecker::clock_id_t size,
-                             tchecker::system::attributes_t const & attr)
-    {
-      _clock_variables.declare(name, size);
-      _clock_variables_attr.emplace_back(attr);
-      assert(_clock_variables.size() == _clock_variables_attr.size());
-      assert(_clock_variables.id(name) == _clock_variables_attr.size() - 1);
-    }
-    
-    
-    tchecker::system::attributes_t const & clocks_t::clock_attributes(tchecker::clock_id_t id) const
-    {
-      if (id >= _clock_variables_attr.size())
-        throw std::invalid_argument("Unknown clock identifier");
-      return _clock_variables_attr[id];
-    }
-    
-    
-    bool clocks_t::is_clock(std::string const & name) const
-    {
-      return _clock_variables.is_variable(name);
-    }
-    
-  } // end of namespace system
-  
-} // end of namespace tchecker
 
+namespace system {
+
+/* clocks_t */
+
+void clocks_t::add_clock(std::string const & name, tchecker::clock_id_t size, tchecker::system::attributes_t const & attr)
+{
+  _clock_variables.declare(name, size);
+  _clock_variables_attr.emplace_back(attr);
+  assert(_clock_variables.size(tchecker::VK_DECLARED) == _clock_variables_attr.size());
+  assert(_clock_variables.id(name) == _clock_variables_attr.size() - 1);
+}
+
+tchecker::system::attributes_t const & clocks_t::clock_attributes(tchecker::clock_id_t id) const
+{
+  if (id >= _clock_variables_attr.size())
+    throw std::invalid_argument("Unknown clock identifier");
+  return _clock_variables_attr[id];
+}
+
+bool clocks_t::is_clock(std::string const & name) const { return _clock_variables.is_variable(name); }
+
+} // end of namespace system
+
+} // end of namespace tchecker

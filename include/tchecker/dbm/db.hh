@@ -57,13 +57,20 @@ namespace tchecker {
 
 
     tchecker::dbm::db_t const INF_VALUE = tchecker::int_maxval >> 1;   /*!< Infinity value */
-    tchecker::dbm::db_t const MAX_VALUE = INF_VALUE - 1;   /*!< Maximum value */
-    tchecker::dbm::db_t const MIN_VALUE = tchecker::int_minval >> 1;  /*!< Minimum value */
+    tchecker::dbm::db_t const MAX_VALUE = INF_VALUE - 1;               /*!< Maximum value */
+    tchecker::dbm::db_t const MIN_VALUE = tchecker::int_minval >> 1;   /*!< Minimum value */
     
-    
+    static_assert(tchecker::dbm::INF_VALUE != tchecker::dbm::MAX_VALUE, "");
+    static_assert(tchecker::dbm::INF_VALUE != tchecker::dbm::MIN_VALUE, "");
+    static_assert(tchecker::dbm::MAX_VALUE != tchecker::dbm::MIN_VALUE, "");
+
     tchecker::dbm::db_t const LE_ZERO = (0 << 1) | tchecker::dbm::LE;             /*!< <=0 */
     tchecker::dbm::db_t const LT_ZERO = (0 << 1) | tchecker::dbm::LT;             /*!< <0 */
     tchecker::dbm::db_t const LT_INFINITY = (INF_VALUE << 1) | tchecker::dbm::LT; /*!< <inf */
+
+    static_assert(tchecker::dbm::LE_ZERO != tchecker::dbm::LT_ZERO, "");
+    static_assert(tchecker::dbm::LT_ZERO != tchecker::dbm::LT_INFINITY, "");
+    static_assert(tchecker::dbm::LE_ZERO != tchecker::dbm::LT_INFINITY, "");
     
     /*!
      \brief Build a difference bound
