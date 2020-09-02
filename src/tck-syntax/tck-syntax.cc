@@ -114,9 +114,6 @@ void do_check_syntax(tchecker::parsing::system_declaration_t const & sysdecl)
   try {
     tchecker::ta::system_t system(sysdecl);
     std::cout << "Syntax OK" << std::endl;
-    // REMOVE
-    std::cout << system.clockbounds().local_lu_map() << std::endl;
-    // REMOVE
   }
   catch (std::exception & e) {
     tchecker::log.error(e.what());
