@@ -501,6 +501,9 @@ int lexical_cmp(tchecker::clock_reset_container_t const & c1, tchecker::clock_re
  \note Reference clocks allow to model polychronous time. Each reference clock has its own time scale. Clocks
  that are mapped to the same reference clock evolve on the same time scale. The standard semantics for timed
  automata rely on a single time scale: a single reference clock usually denoted 0.
+ We distinguish between system clock variables with have IDs 0..N-1 and are all actual clocks on the one
+ hand, and reference clock variables with the first 0..refcount-1 clocks which are reference clocks, followed
+ by N actual clocks.
  */
 class reference_clock_variables_t : public tchecker::clock_variables_t {
 public:
@@ -573,7 +576,7 @@ public:
   /*!
     \brief Translate a clock constraint w.r.t. reference clocks
     \param c : a clock constraint
-    \pre c is expressed over standard clock IDs 0..size() - refcount() plus tchecker::REFCLOCK_ID (checked by assertion)
+    \pre c is expressed over system clocks 0..size() - refcount() plus tchecker::REFCLOCK_ID (checked by assertion)
     \post c has been re-expressed over this reference clocks
    */
   void translate(tchecker::clock_constraint_t & c) const;
@@ -581,7 +584,7 @@ public:
   /*!
     \brief Translate a clock reset w.r.t reference clocks
     \param r : a clock reset
-    \pre r is expressed over standard clock IDs 0..size() - refcount() plus tchecker::REFCLOCK_ID (checked by assertion)
+    \pre r is expressed over system clocks 0..size() - refcount() plus tchecker::REFCLOCK_ID (checked by assertion)
     \post r has been re-expressed over this reference clocks
   */
   void translate(tchecker::clock_reset_t & r) const;
@@ -590,27 +593,27 @@ private:
   using tchecker::clock_variables_t::declare;
 
   /*!
-    \brief Translate standard clock ID to this reference map
-    \brief id : clock ID
+    \brief Translate system clock ID to this reference map
+    \brief id : system clock ID
     \pre id belongs to 0..size(tchecker::VK_FLATTENED) - _refcount (checked by assertion)
     \return the identifier of clock id in this reference map
   */
-  constexpr inline tchecker::clock_id_t translate_from_standard(tchecker::clock_id_t id) const
+  constexpr inline tchecker::clock_id_t translate_system_clock(tchecker::clock_id_t id) const
   {
     assert(id < size(tchecker::VK_FLATTENED) - _refcount);
     return id + _refcount;
   }
 
   /*!
-    \brief Returns reference clock of a standard clock
-    \brief id : clock id
+    \brief Returns reference clock of a system clock
+    \brief id : system clock ID
     \pre id belongs to 0..size(tchecker::VK_FLATTENED) - _refcount (checked by assertion)
     \return the ID of the reference clock of id in this reference map
    */
-  constexpr inline tchecker::clock_id_t refclock_from_standard(tchecker::clock_id_t id) const
+  constexpr inline tchecker::clock_id_t refclock_of_system_clock(tchecker::clock_id_t id) const
   {
     assert(id < size(tchecker::VK_FLATTENED) - _refcount);
-    return _refmap[translate_from_standard(id)];
+    return _refmap[translate_system_clock(id)];
   }
 
   /*!
@@ -645,7 +648,7 @@ private:
 
 /*!
  \brief Build reference clock variables w.r.t to single reference clock 0
- \param flat_clocks : clat clock variables
+ \param flat_clocks : flat clock variables
  \return reference clocks with a single reference clock 0, and clock variables as in flat_clocks, all mapped to
  reference clock 0
 */
