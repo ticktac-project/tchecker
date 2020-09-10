@@ -24,16 +24,19 @@ set(TEST_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/test-dbm.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-extract_variables.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-guard_weak_sync.hh
-#    ${CMAKE_CURRENT_SOURCE_DIR}/test-offset_clock_variables.hh # TO BE FIXED
     ${CMAKE_CURRENT_SOURCE_DIR}/test-offset_dbm.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-ordering.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/test-reference_clock_variables.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-variables-access.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/unittest.cc
     )
 
 add_executable(unittest ${TEST_SRC})
 target_link_libraries(unittest testutils)
-target_link_libraries(unittest libtchecker_static)
+ # TO BE REMOVED
+# target_link_libraries(unittest libtchecker_static)
+target_link_libraries(unittest librefactor)
+# / TO BE REMOVED
 target_link_libraries(unittest Catch2::Catch2)
 
 set_property(TARGET unittest PROPERTY CXX_STANDARD 17)

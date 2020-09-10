@@ -24,13 +24,14 @@ namespace tchecker {
 
 /* clock_variables_t */
 
-void clock_variables_t::declare(std::string const & name, tchecker::clock_id_t size)
+tchecker::clock_id_t clock_variables_t::declare(std::string const & name, tchecker::clock_id_t size)
 {
   tchecker::clock_info_t info{size};
   tchecker::clock_id_t id =
       tchecker::array_variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t>::declare(name, info);
   if (id >= tchecker::REFCLOCK_ID || (tchecker::REFCLOCK_ID - id < size))
     throw std::runtime_error("no clock identifier left");
+  return id;
 }
 
 /* clock_constraint_t */
@@ -172,7 +173,8 @@ int lexical_cmp(tchecker::clock_reset_container_t const & c1, tchecker::clock_re
 
 /* reference_clock_variables_t */
 
-void reference_clock_variables_t::declare(std::string const & name, tchecker::clock_id_t dim, std::string const & refclock)
+tchecker::clock_id_t reference_clock_variables_t::declare(std::string const & name, tchecker::clock_id_t dim,
+                                                          std::string const & refclock)
 {
   tchecker::clock_id_t refid = 0;
   try {
@@ -182,7 +184,8 @@ void reference_clock_variables_t::declare(std::string const & name, tchecker::cl
     throw std::invalid_argument("unknown reference clock " + refclock);
   }
   assert(refid < _refcount);
-  declare(name, dim, refid);
+  tchecker::clock_id_t id = declare(name, dim, refid);
+  return id;
 }
 
 void reference_clock_variables_t::translate(tchecker::clock_constraint_t & c) const
@@ -211,28 +214,33 @@ void reference_clock_variables_t::translate(tchecker::clock_reset_t & r) const
   r.right_id() = right_id;
 }
 
-void reference_clock_variables_t::declare(std::string const & name, tchecker::clock_id_t dim, tchecker::clock_id_t refid)
+tchecker::clock_id_t reference_clock_variables_t::declare(std::string const & name, tchecker::clock_id_t dim,
+                                                          tchecker::clock_id_t refid)
 {
-  assert(refid < _refcount);
-
   tchecker::clock_id_t size = tchecker::clock_variables_t::size(tchecker::VK_FLATTENED);
+  assert(refid < _refcount || refid == size); // declared reference clock or declaring a reference clock
 
   tchecker::clock_id_t id = size;
   tchecker::clock_info_t info{dim};
   tchecker::clock_variables_t::declare(id, name, info);
 
-  _refmap.reserve(id + dim);
+  _refmap.resize(id + dim);
   for (tchecker::clock_id_t i = 0; i < dim; ++i)
     _refmap[id + i] = refid;
+
+  return id;
 }
 
-void reference_clock_variables_t::declare_reference_clock(std::string const & name)
+tchecker::clock_id_t reference_clock_variables_t::declare_reference_clock(std::string const & name)
 {
   if (_refcount != tchecker::clock_variables_t::size(tchecker::VK_DECLARED))
     throw std::runtime_error("Reference clocks must be declared before clock variables");
 
-  declare(name, 1, _refcount);
+  tchecker::clock_id_t id = declare(name, 1, _refcount);
+  assert(id == _refcount);
   ++_refcount;
+
+  return id;
 }
 
 /* Reference clock builders */
@@ -283,7 +291,7 @@ tchecker::reference_clock_variables_t process_reference_clocks(tchecker::variabl
     auto accessing_processes = vaccess_map.accessing_processes(clock_id, tchecker::VTYPE_CLOCK, tchecker::VACCESS_ANY);
 
     if (std::distance(accessing_processes.begin(), accessing_processes.end()) != 1)
-      throw std::invalid_argument("bad clock access, cannot build offset clocks");
+      throw std::invalid_argument("bad clock access, cannot build reference clocks");
 
     tchecker::process_id_t pid = *accessing_processes.begin();
     std::string const & clock_name = flat_clocks.index().value(clock_id);

@@ -15,6 +15,7 @@
 #include "tchecker/parsing/parsing.hh"
 #include "tchecker/statement/statement.hh"
 #include "tchecker/statement/typechecking.hh"
+#include "tchecker/ta/static_analysis.hh"
 #include "tchecker/ta/system.hh"
 #include "tchecker/utils/log.hh"
 #include "tchecker/vm/compilers.hh"
@@ -142,6 +143,9 @@ void system_t::compute_from_syncprod_system()
     set_guards(id, attr.values("provided"));
     set_statements(id, attr.values("do"));
   }
+
+  if (tchecker::ta::has_guarded_weakly_synchronized_event(*this))
+    throw std::invalid_argument("Transitions over weakly synchronized events should not have guards");
 
   compute_clockbounds();
 }

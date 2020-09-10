@@ -10,7 +10,7 @@
 
 #include <stdexcept>
 #include <string>
-#include <vector>
+#include <unordered_map>
 
 #include "tchecker/basictypes.hh"
 #include "tchecker/system/attribute.hh"
@@ -89,8 +89,8 @@ public:
   inline tchecker::clock_variables_t const & clock_variables() const { return _clock_variables; }
 
 private:
-  tchecker::clock_variables_t _clock_variables;                      /*!< Clock variables */
-  std::vector<tchecker::system::attributes_t> _clock_variables_attr; /*!< Clocks attributes */
+  tchecker::clock_variables_t _clock_variables;                                                   /*!< Clock variables */
+  std::unordered_map<tchecker::clock_id_t, tchecker::system::attributes_t> _clock_variables_attr; /*!< Clocks attributes */
 };
 
 } // end of namespace system

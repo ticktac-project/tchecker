@@ -46,13 +46,14 @@ public:
   /*!
    \brief Constructor
    \param sysdecl : system declaration
+   \throw std::invalid_argument : if sysdecl has a transitions over a weakly synchronized event
    */
   system_t(tchecker::parsing::system_declaration_t const & sysdecl);
-
   /*!
    \brief Constructor
    \param system : system of timed processes
    \post this is a copy of system
+   \throw std::invalid_argument : if system has a transitions over a weakly synchronized event
    */
   system_t(tchecker::system::system_t const & system);
 
@@ -60,6 +61,7 @@ public:
    \brief Constructor
    \param system : system of timed processes
    \post this is a copy of system
+   \throw std::invalid_argument : if system has a transitions over a weakly synchronized event
    */
   system_t(tchecker::syncprod::system_t const & system);
 
@@ -291,6 +293,7 @@ private:
 
   /*!
    \brief Compute data from syncprod::system_t
+   \throw std::invalid_argument : if system has a transition over a weakly synchronized event
    */
   void compute_from_syncprod_system();
 

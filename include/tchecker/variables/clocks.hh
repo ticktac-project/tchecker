@@ -55,10 +55,11 @@ public:
    \pre 'name' is not a declared variable
    size > 0
    \post a clock variable with base name 'name' and with size 'size' has been declared
+   \return the identifier of the declared clock
    \throw std::invalid_argument : if the precondition is violated
    \throw std::runtime_error : if there is no clock identifier left
    */
-  void declare(std::string const & name, tchecker::clock_id_t size);
+  tchecker::clock_id_t declare(std::string const & name, tchecker::clock_id_t size);
 
 protected:
   using tchecker::array_variables_t<tchecker::clock_id_t, tchecker::clock_info_t, tchecker::clock_index_t>::declare;
@@ -556,9 +557,10 @@ public:
    dim > 0
    'refclock' is the name of a declared reference clock
    \post a clock variable with base name 'name', dimension 'dim' and reference clock 'refclock' has been declared
+   \return identifier of the declared clock
    \throw std::invalid_argument : if the precondition is violated
    */
-  void declare(std::string const & name, tchecker::clock_id_t dim, std::string const & refclock);
+  tchecker::clock_id_t declare(std::string const & name, tchecker::clock_id_t dim, std::string const & refclock);
 
   /*!
    \brief Accessor
@@ -589,9 +591,6 @@ public:
   */
   void translate(tchecker::clock_reset_t & r) const;
 
-private:
-  using tchecker::clock_variables_t::declare;
-
   /*!
     \brief Translate system clock ID to this reference map
     \brief id : system clock ID
@@ -616,6 +615,9 @@ private:
     return _refmap[translate_system_clock(id)];
   }
 
+private:
+  using tchecker::clock_variables_t::declare;
+
   /*!
    \brief Declare a variable
    \param name : variable name
@@ -625,9 +627,10 @@ private:
    dim > 0
    'refid' is a valid reference clock identifier (checked by assertion)
    \post an offset variable with base name 'name', dimension 'dim' and reference clock 'refid' has been declared
+   \return identifier of declared clock
    \throw std::invalid_argument : if a variable 'name' has already been declared or if dim <= 0
    */
-  void declare(std::string const & name, tchecker::clock_id_t dim, tchecker::clock_id_t refid);
+  tchecker::clock_id_t declare(std::string const & name, tchecker::clock_id_t dim, tchecker::clock_id_t refid);
 
   /*!
    \brief Declare a reference clock
@@ -635,10 +638,11 @@ private:
    \pre 'name' is not a declared variable
    \post a reference clock with base name 'name' has been declared. The identifier of the reference clock is
    refcount() - 1
+   \return identifier of declared reference clock
    \throw std::invalid_argument : if a variable with base name 'name' has already been declared
    \throw std::runtime_error : if an offset variable has already been declared
    */
-  void declare_reference_clock(std::string const & name);
+  tchecker::clock_id_t declare_reference_clock(std::string const & name);
 
   tchecker::clock_id_t _refcount;            /*!< Number of reference clocks */
   std::vector<tchecker::clock_id_t> _refmap; /*!< Map : offset clock ID -> reference clock ID */

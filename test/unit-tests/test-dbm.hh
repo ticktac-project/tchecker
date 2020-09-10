@@ -10,9 +10,10 @@
 #define DBM(i, j)  dbm[(i)*dim + (j)]
 #define DBM1(i, j) dbm1[(i)*dim + (j)]
 #define DBM2(i, j) dbm2[(i)*dim + (j)]
-#define M(i)       (i == 0 ? 0 : M[i - 1])
-#define L(i)       (i == 0 ? 0 : L[i - 1])
-#define U(i)       (i == 0 ? 0 : U[i - 1])
+
+#define CB_M(i) (i == 0 ? 0 : m[i - 1])
+#define CB_L(i) (i == 0 ? 0 : l[i - 1])
+#define CB_U(i) (i == 0 ? 0 : u[i - 1])
 
 TEST_CASE("is_universal, structural tests", "[dbm]")
 {
@@ -1164,7 +1165,7 @@ TEST_CASE("DBM intersection", "[dbm]")
 
 TEST_CASE("Checking tightness when the 0-row is modified", "[dbm]")
 {
-  // inspired from AD94 amd a bug report submitted by Philipp Schlehuber
+  // inspired from AD94 and a bug report submitted by Philipp Schlehuber
 
   tchecker::clock_id_t const dim = 3;
 
@@ -1189,7 +1190,7 @@ TEST_CASE("Checking tightness when the 0-row is modified", "[dbm]")
   {
     tchecker::dbm::db_t dbm2[dim * dim];
     memcpy(dbm2, dbm, dim * dim * sizeof(tchecker::dbm::db_t));
-    DBM2(0, 1) = tchecker::dbm::db(tchecker::dbm::LT, -M(1));
+    DBM2(0, 1) = tchecker::dbm::db(tchecker::dbm::LT, -CB_M(1));
     tchecker::dbm::tighten(dbm2, dim);
 
     tchecker::dbm::extra_m(dbm, dim, m);
@@ -1201,7 +1202,7 @@ TEST_CASE("Checking tightness when the 0-row is modified", "[dbm]")
   {
     tchecker::dbm::db_t dbm2[dim * dim];
     memcpy(dbm2, dbm, dim * dim * sizeof(tchecker::dbm::db_t));
-    DBM2(0, 1) = tchecker::dbm::db(tchecker::dbm::LT, -M(1));
+    DBM2(0, 1) = tchecker::dbm::db(tchecker::dbm::LT, -CB_M(1));
     DBM2(2, 1) = tchecker::dbm::LT_INFINITY;
     tchecker::dbm::tighten(dbm2, dim);
 
@@ -1214,7 +1215,7 @@ TEST_CASE("Checking tightness when the 0-row is modified", "[dbm]")
   {
     tchecker::dbm::db_t dbm2[dim * dim];
     memcpy(dbm2, dbm, dim * dim * sizeof(tchecker::dbm::db_t));
-    DBM2(0, 1) = tchecker::dbm::db(tchecker::dbm::LT, -M(1));
+    DBM2(0, 1) = tchecker::dbm::db(tchecker::dbm::LT, -CB_M(1));
     tchecker::dbm::tighten(dbm2, dim);
 
     tchecker::dbm::extra_lu(dbm, dim, m, m);
@@ -1226,7 +1227,7 @@ TEST_CASE("Checking tightness when the 0-row is modified", "[dbm]")
   {
     tchecker::dbm::db_t dbm2[dim * dim];
     memcpy(dbm2, dbm, dim * dim * sizeof(tchecker::dbm::db_t));
-    DBM2(0, 1) = tchecker::dbm::db(tchecker::dbm::LT, -M(1));
+    DBM2(0, 1) = tchecker::dbm::db(tchecker::dbm::LT, -CB_M(1));
     DBM2(2, 1) = tchecker::dbm::LT_INFINITY;
     tchecker::dbm::tighten(dbm2, dim);
 
@@ -1262,7 +1263,7 @@ TEST_CASE("Extrapolations from STTT06", "[dbm]")
   {
     tchecker::dbm::db_t dbm2[dim * dim];
     memcpy(dbm2, dbm, dim * dim * sizeof(tchecker::dbm::db_t));
-    DBM2(0, x) = tchecker::dbm::db(tchecker::dbm::LT, -M(x));
+    DBM2(0, x) = tchecker::dbm::db(tchecker::dbm::LT, -CB_M(x));
     DBM2(x, 0) = tchecker::dbm::LT_INFINITY;
     tchecker::dbm::tighten(dbm2, dim);
 
@@ -1275,7 +1276,7 @@ TEST_CASE("Extrapolations from STTT06", "[dbm]")
   {
     tchecker::dbm::db_t dbm2[dim * dim];
     memcpy(dbm2, dbm, dim * dim * sizeof(tchecker::dbm::db_t));
-    DBM2(0, x) = tchecker::dbm::db(tchecker::dbm::LT, -M(x));
+    DBM2(0, x) = tchecker::dbm::db(tchecker::dbm::LT, -CB_M(x));
     DBM2(x, 0) = tchecker::dbm::LT_INFINITY;
     DBM2(x, y) = tchecker::dbm::LT_INFINITY;
     DBM2(y, x) = tchecker::dbm::LT_INFINITY;
@@ -1290,7 +1291,7 @@ TEST_CASE("Extrapolations from STTT06", "[dbm]")
   {
     tchecker::dbm::db_t dbm2[dim * dim];
     memcpy(dbm2, dbm, dim * dim * sizeof(tchecker::dbm::db_t));
-    DBM2(0, x) = tchecker::dbm::db(tchecker::dbm::LT, -U(x));
+    DBM2(0, x) = tchecker::dbm::db(tchecker::dbm::LT, -CB_U(x));
     DBM2(x, 0) = tchecker::dbm::LT_INFINITY;
     DBM2(y, 0) = tchecker::dbm::LT_INFINITY;
     DBM2(y, x) = tchecker::dbm::LT_INFINITY;
@@ -1305,7 +1306,7 @@ TEST_CASE("Extrapolations from STTT06", "[dbm]")
   {
     tchecker::dbm::db_t dbm2[dim * dim];
     memcpy(dbm2, dbm, dim * dim * sizeof(tchecker::dbm::db_t));
-    DBM2(0, x) = tchecker::dbm::db(tchecker::dbm::LT, -U(x));
+    DBM2(0, x) = tchecker::dbm::db(tchecker::dbm::LT, -CB_U(x));
     DBM2(x, 0) = tchecker::dbm::LT_INFINITY;
     DBM2(y, 0) = tchecker::dbm::LT_INFINITY;
     DBM2(x, y) = tchecker::dbm::LT_INFINITY;
