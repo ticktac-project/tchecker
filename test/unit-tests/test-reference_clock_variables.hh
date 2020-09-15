@@ -5,8 +5,6 @@
  *
  */
 
-// TODO: Update to reference clocks, and systems (instead of models)
-
 #include <stdexcept>
 
 #include "tchecker/basictypes.hh"
@@ -27,7 +25,7 @@ TEST_CASE("Reference clock variables from empty access map", "[reference clock v
     tchecker::reference_clock_variables_t reference_clocks = tchecker::single_reference_clocks(flat_clocks);
 
     REQUIRE(reference_clocks.refcount() == 1);
-    REQUIRE(reference_clocks.size(tchecker::VK_FLATTENED) - reference_clocks.refcount() == 0);
+    REQUIRE(reference_clocks.size() - reference_clocks.refcount() == 0);
   }
 
   SECTION("No clock - process reference clocks")
@@ -36,7 +34,7 @@ TEST_CASE("Reference clock variables from empty access map", "[reference clock v
     tchecker::reference_clock_variables_t reference_clocks = tchecker::process_reference_clocks(m, proc_count, flat_clocks);
 
     REQUIRE(reference_clocks.refcount() == proc_count);
-    REQUIRE(reference_clocks.size(tchecker::VK_FLATTENED) - reference_clocks.refcount() == 0);
+    REQUIRE(reference_clocks.size() - reference_clocks.refcount() == 0);
   }
 
   SECTION("Unaccessed clocks - single reference clocks")
@@ -45,7 +43,7 @@ TEST_CASE("Reference clock variables from empty access map", "[reference clock v
     tchecker::reference_clock_variables_t reference_clocks = tchecker::single_reference_clocks(flat_clocks);
 
     REQUIRE(reference_clocks.refcount() == 1);
-    REQUIRE(reference_clocks.size(tchecker::VK_FLATTENED) - reference_clocks.refcount() == 1);
+    REQUIRE(reference_clocks.size() - reference_clocks.refcount() == 1);
   }
 
   SECTION("Unaccessed clocks - process reference clocks")
@@ -103,7 +101,7 @@ TEST_CASE("Reference clock variables from system - no array", "[reference clock 
 
   SECTION("Check clocks")
   {
-    REQUIRE(reference_clocks.size(tchecker::VK_FLATTENED) == reference_clocks.refcount() + 2); // x, y
+    REQUIRE(reference_clocks.size() == reference_clocks.refcount() + 2); // x, y
 
     tchecker::clock_id_t xx = reference_clocks.refcount() + x;
     tchecker::clock_id_t yy = reference_clocks.refcount() + y;
@@ -179,7 +177,7 @@ TEST_CASE("Offset clock variables from system - array", "[offset clock variables
 
   SECTION("Check offset clocks")
   {
-    REQUIRE(reference_clocks.size(tchecker::VK_FLATTENED) == reference_clocks.refcount() + 4); // x, y[], z
+    REQUIRE(reference_clocks.size() == reference_clocks.refcount() + 4); // x, y[], z
 
     tchecker::clock_id_t xx = reference_clocks.refcount() + x;
     tchecker::clock_id_t yy0 = reference_clocks.refcount() + y0;

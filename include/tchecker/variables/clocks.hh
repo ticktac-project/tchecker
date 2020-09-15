@@ -506,7 +506,7 @@ int lexical_cmp(tchecker::clock_reset_container_t const & c1, tchecker::clock_re
  hand, and reference clock variables with the first 0..refcount-1 clocks which are reference clocks, followed
  by N actual clocks.
  */
-class reference_clock_variables_t : public tchecker::clock_variables_t {
+class reference_clock_variables_t : public tchecker::flat_clock_variables_t {
 public:
   /*!
    \brief Constructor
@@ -551,16 +551,14 @@ public:
   /*!
    \brief Declare a clock
    \param name : clock name
-   \param dim : dimension (array)
    \param refclock : name of reference clock
    \pre 'name' is not a declared variable
-   dim > 0
    'refclock' is the name of a declared reference clock
-   \post a clock variable with base name 'name', dimension 'dim' and reference clock 'refclock' has been declared
+   \post a clock variable with base name 'name', dimension 1 and reference clock 'refclock' has been declared
    \return identifier of the declared clock
    \throw std::invalid_argument : if the precondition is violated
    */
-  tchecker::clock_id_t declare(std::string const & name, tchecker::clock_id_t dim, std::string const & refclock);
+  tchecker::clock_id_t declare(std::string const & name, std::string const & refclock);
 
   /*!
    \brief Accessor
@@ -599,7 +597,7 @@ public:
   */
   constexpr inline tchecker::clock_id_t translate_system_clock(tchecker::clock_id_t id) const
   {
-    assert(id < size(tchecker::VK_FLATTENED) - _refcount);
+    assert(id < size() - _refcount);
     return id + _refcount;
   }
 
@@ -611,26 +609,24 @@ public:
    */
   constexpr inline tchecker::clock_id_t refclock_of_system_clock(tchecker::clock_id_t id) const
   {
-    assert(id < size(tchecker::VK_FLATTENED) - _refcount);
+    assert(id < size() - _refcount);
     return _refmap[translate_system_clock(id)];
   }
 
 private:
-  using tchecker::clock_variables_t::declare;
+  using tchecker::flat_clock_variables_t::declare;
 
   /*!
    \brief Declare a variable
    \param name : variable name
-   \param dim : dimension (array)
    \param refid : ID of reference clock
    \pre 'name' is not a declared variable
-   dim > 0
    'refid' is a valid reference clock identifier (checked by assertion)
-   \post an offset variable with base name 'name', dimension 'dim' and reference clock 'refid' has been declared
+   \post an offset variable with base name 'name', dimension 1 and reference clock 'refid' has been declared
    \return identifier of declared clock
-   \throw std::invalid_argument : if a variable 'name' has already been declared or if dim <= 0
+   \throw std::invalid_argument : if a variable 'name' has already been declared
    */
-  tchecker::clock_id_t declare(std::string const & name, tchecker::clock_id_t dim, tchecker::clock_id_t refid);
+  tchecker::clock_id_t declare(std::string const & name, tchecker::clock_id_t refid);
 
   /*!
    \brief Declare a reference clock

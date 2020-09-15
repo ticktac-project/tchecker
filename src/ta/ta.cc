@@ -44,7 +44,7 @@ enum tchecker::state_status_t initialize(tchecker::ta::system_t const & system,
 
   // initialize intval
   auto const & intvars = system.integer_variables().flattened();
-  tchecker::intvar_id_t intvars_size = intvars.size(tchecker::VK_FLATTENED);
+  tchecker::intvar_id_t intvars_size = intvars.size();
   for (tchecker::intvar_id_t id = 0; id < intvars_size; ++id)
     (*intval)[id] = intvars.info(id).initial_value();
 

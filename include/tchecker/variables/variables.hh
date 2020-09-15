@@ -419,7 +419,7 @@ protected:
 
   ID _first_id; /*!< First used variable identifier */
   ID _next_id;  /*!< Next available variable identifier */
-};              // namespace tchecker
+};
 
 /*!
  \class flat_variables_t
@@ -520,8 +520,18 @@ public:
     tchecker::size_variables_t<ID, INFO, INDEX>::declare(id, name, info);
   }
 
+  /*!
+   \brief Accessor
+   \return Number of variables
+   */
+  inline constexpr std::size_t size() const
+  {
+    return tchecker::size_variables_t<ID, INFO, INDEX>::size(tchecker::VK_FLATTENED);
+  }
+
 private:
   using tchecker::size_variables_t<ID, INFO, INDEX>::declare;
+  using tchecker::size_variables_t<ID, INFO, INDEX>::size;
 };
 
 /*!
