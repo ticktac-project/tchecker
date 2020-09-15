@@ -6,6 +6,8 @@
  */
 
 #include <stdexcept>
+#include <string>
+#include <vector>
 
 #include "tchecker/basictypes.hh"
 #include "tchecker/parsing/parsing.hh"
@@ -14,6 +16,12 @@
 #include "tchecker/variables/access.hh"
 #include "tchecker/variables/clocks.hh"
 #include "tchecker/variables/static_analysis.hh"
+
+TEST_CASE("Reference clock variables with no reference clock")
+{
+  std::vector<std::string> refclocks;
+  REQUIRE_THROWS_AS(tchecker::reference_clock_variables_t(refclocks.begin(), refclocks.end()), std::invalid_argument);
+}
 
 TEST_CASE("Reference clock variables from empty access map", "[reference clock variables]")
 {

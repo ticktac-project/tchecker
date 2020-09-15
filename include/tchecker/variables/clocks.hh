@@ -513,12 +513,17 @@ public:
    \tparam REFCLOCK_NAME_ITERATOR : forward iterator that dereference to std::string
    \param begin : iterator to the name of the first reference clock
    \param end : past-the-end iterator on reference clock names
+   \pre the range [begin, end) is not empty
    \post All reference clocks in the range [begin,end) have been declared.
-   The ID of each reference clock corresponds to its rank in the range [begin,end), staring from 0
+   The ID of each reference clock corresponds to its rank in the range
+   [begin,end), staring from 0
+   \throw std::invalid_argument : if the range [begin, end) is empty
    */
   template <class REFCLOCK_NAME_ITERATOR>
   reference_clock_variables_t(REFCLOCK_NAME_ITERATOR const & begin, REFCLOCK_NAME_ITERATOR const & end) : _refcount(0)
   {
+    if (begin == end)
+      throw std::invalid_argument("Empty reference clocks not allowed");
     for (auto it = begin; it != end; ++it)
       declare_reference_clock(*it);
   }
