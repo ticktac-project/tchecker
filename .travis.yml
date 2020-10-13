@@ -6,6 +6,7 @@ language: cpp
 env:
   global:
   - CATCH2_REPO=${HOME}/Catch2
+  - CATCH2_BRANCH=v2.13.2
 
 before_cache:
 - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then brew cleanup; fi
