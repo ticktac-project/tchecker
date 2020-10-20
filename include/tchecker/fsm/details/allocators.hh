@@ -157,7 +157,7 @@ namespace tchecker {
             return false;
           
           auto vloc_ptr = p->vloc_ptr();
-          auto intvars_val_ptr = p->intvars_val_ptr();
+          auto intvars_val_ptr = p->intvars_valuation_ptr();
           
           if ( ! tchecker::ts::state_pool_allocator_t<STATE>::destruct(p) )
             return false;
