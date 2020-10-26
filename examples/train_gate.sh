@@ -21,7 +21,7 @@ fi
 # Labels
 labels="cross1"
 for pid in `seq 2 $N`; do
-    labels="${labels},cross${pid}"
+    labels="${labels}:cross${pid}"
 done
 echo "#labels=${labels}"
 

@@ -61,7 +61,7 @@ done
 # Labels
 labels="access1"
 for pid in `seq 2 $N`; do
-    labels="${labels},access${pid}"
+    labels="${labels}:access${pid}"
 done
 echo "#labels=${labels}"
 
