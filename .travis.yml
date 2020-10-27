@@ -26,38 +26,48 @@ dist: focal
 
 jobs:
   include:
-  - os: linux
+  - name : "linux-gcc-int64-covreach"
+    os: linux
     compiler: gcc
     env: CONFNAME="covreach:int64:memcheck"
-  - os: linux
+  - name : "linux-gcc-covreach"
+    os: linux
     compiler: gcc
     env: CONFNAME="covreach:int32:memcheck"
-  - os: linux
+  - name : "linux-gcc-explore"
+    os: linux
     compiler: gcc
     env: CONFNAME="explore:int32:memcheck"
-  - os: linux
+  - name : "linux-gcc-simple_tests+memcheck"
+    os: linux
     compiler: gcc
     env: CONFNAME="smallest:int32:memcheck"
-  - os: linux
+  - name : "linux-gcc-int16-simple_tests+memcheck"
+    os: linux
     compiler: gcc
     env: CONFNAME="smallest:int16:memcheck"
-  - os: linux
+  - name : "linux-gcc-int64-simple_tests+memcheck"
+    os: linux
     compiler: gcc
     env: CONFNAME="smallest:int64:memcheck"
 
-  - os: linux
+  - name : "linux-clang-simple_tests+memcheck"
+    os: linux
     compiler: clang
     env: CONFNAME="smallest:int32:memcheck"
 
-  - os: osx
+  - name : "macos-gcc-simple_tests"
+    os: osx
     osx_image: xcode12.2
     compiler: gcc
     env: CONFNAME="smallest:int32:no-memcheck"
-  - os: osx
+  - name : "macos-gcc-int64-simple_tests"
+    os: osx
     osx_image: xcode12.2
     compiler: gcc
     env: CONFNAME="smallest:int64:no-memcheck"
-  - os: osx
+  - name : "macos-clang-simple_tests"
+    os: osx
     osx_image: xcode12.2
     compiler: clang
     env: CONFNAME="smallest:int32:no-memcheck"
