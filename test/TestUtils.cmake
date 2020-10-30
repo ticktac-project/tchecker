@@ -107,7 +107,7 @@ function(tck_add_savelist targetname)
         return()
     endif ()
 
-    message(STATUS "Writing save list")
+    message(STATUS "Writing save list for target ${targetname}")
 
     set(SAVE_FILE "${CMAKE_CURRENT_BINARY_DIR}/save_tests.txt")
     file(RELATIVE_PATH here ${CMAKE_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR})
