@@ -61,7 +61,7 @@ fi
 # Labels
 labels="eating1"
 for pid in `seq 2 $N`; do
-    labels="${labels},eating${pid}"
+    labels="${labels}:eating${pid}"
 done
 echo "#labels=${labels}"
 

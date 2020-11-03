@@ -1,0 +1,7 @@
+system:bug045
+int:1:0:10:0:count
+process:P
+event: a
+location:P:l0{initial:}
+edge:P:l0:l0:a{provided: ! count : do : count = (count+1)%10 }
+edge:P:l0:l0:a{provided: count : do : count = (count+1)%10 }

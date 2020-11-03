@@ -30,7 +30,7 @@ fi
 # Labels
 labels="cs1"
 for pid in `seq 2 $N`; do
-    labels="${labels},cs${pid}"
+    labels="${labels}:cs${pid}"
 done
 echo "#labels=${labels}"
 

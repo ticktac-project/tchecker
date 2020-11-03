@@ -20,7 +20,7 @@ TMPDOTFILE="tmpdotfile.$$.dot"
 INPUTFILE="$1"
 if test -f ${INPUFILE};
 then
-    LABELS=$(grep -e "^# *labels *= *\([a-zA-Z0-9_,]*\) *\$" ${INPUTFILE} | sed -e 's/^# *labels *= *//g')
+    LABELS=$(grep -e "^# *labels *= *\([a-zA-Z0-9_:]*\) *\$" ${INPUTFILE} | sed -e 's/^# *labels *= *//g')
     if test -n "${LABELS}";
     then
         COMMAND="${COMMAND} -l \"${LABELS}\""

@@ -26,6 +26,7 @@ set(INPUTS
     fischer-async.sh:3:10
     fischer-async-concurrent.sh:3:10
     parallel-c.sh:3
+    train_gate.sh:2
     train_gate.sh:3
     )
 
