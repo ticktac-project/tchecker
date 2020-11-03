@@ -143,7 +143,7 @@ namespace tchecker {
           
           // check invariant
           for (typename VLOC::loc_t const * loc : vloc)
-            if (check_location_invariant(loc, intvars_val, invariant) != 1)
+            if (! check_location_invariant(loc, intvars_val, invariant))
               return tchecker::STATE_INTVARS_SRC_INVARIANT_VIOLATED;
           
           return tchecker::STATE_OK;
@@ -226,7 +226,7 @@ namespace tchecker {
           
           // check source invariant
           for (typename VLOC::loc_t const * loc : vloc)
-            if (check_location_invariant(loc, intvars_val, src_invariant) != 1)
+            if (! check_location_invariant(loc, intvars_val, src_invariant))
               return tchecker::STATE_INTVARS_SRC_INVARIANT_VIOLATED;
           
           // compute next vloc
@@ -237,17 +237,16 @@ namespace tchecker {
           // check guards
           auto begin = vedge.begin(), end = vedge.end();
           for (auto it = begin; it != end; ++it)
-            if (check_edge_guard(*it, intvars_val, guard) != 1)
+            if (! check_edge_guard(*it, intvars_val, guard))
               return tchecker::STATE_INTVARS_GUARD_VIOLATED;
           
           // apply statements
           for (auto it = begin; it != end; ++it)
-            if (apply_edge_statement(*it, intvars_val, clkreset) != 1)
-              return tchecker::STATE_INTVARS_STATEMENT_FAILED;
+            apply_edge_statement(*it, intvars_val, clkreset);
           
           // check target invariant
           for (typename VLOC::loc_t const * loc : vloc)
-            if (check_location_invariant(loc, intvars_val, tgt_invariant) != 1)
+            if (! check_location_invariant(loc, intvars_val, tgt_invariant))
               return tchecker::STATE_INTVARS_TGT_INVARIANT_VIOLATED;
           
           return tchecker::STATE_OK;
@@ -321,16 +320,15 @@ namespace tchecker {
          \param clkreset : container for clock resets
          \post intvars_val has been updated following instructions in edge's statement
          bytecode, and all clock resets on edge have been pushed into clkreset
-         \return see tchecker::vm_t::run return value
          \throw std::runtime_error : if running edge's statement bytecode on intvars_val
          throws
          */
-        inline tchecker::integer_t apply_edge_statement(typename MODEL::system_t::edge_t const * edge,
+        inline void apply_edge_statement(typename MODEL::system_t::edge_t const * edge,
                                                         INTVARS_VAL & intvars_val,
                                                         tchecker::clock_reset_container_t & clkreset)
         {
           try {
-            return _vm.run(this->_model.statement_bytecode(edge->id()), intvars_val, _throw_clkconstr, clkreset);
+            _vm.run(this->_model.statement_bytecode(edge->id()), intvars_val, _throw_clkconstr, clkreset);
           }
           catch (std::exception const & e) {
             throw std::runtime_error(e.what()
