@@ -143,7 +143,7 @@ namespace tchecker {
           
           // check invariant
           for (typename VLOC::loc_t const * loc : vloc)
-            if (check_location_invariant(loc, intvars_val, invariant) != 1)
+            if (check_location_invariant(loc, intvars_val, invariant) == 0)
               return tchecker::STATE_INTVARS_SRC_INVARIANT_VIOLATED;
           
           return tchecker::STATE_OK;
@@ -226,7 +226,7 @@ namespace tchecker {
           
           // check source invariant
           for (typename VLOC::loc_t const * loc : vloc)
-            if (check_location_invariant(loc, intvars_val, src_invariant) != 1)
+            if (check_location_invariant(loc, intvars_val, src_invariant) == 0)
               return tchecker::STATE_INTVARS_SRC_INVARIANT_VIOLATED;
           
           // compute next vloc
@@ -237,17 +237,17 @@ namespace tchecker {
           // check guards
           auto begin = vedge.begin(), end = vedge.end();
           for (auto it = begin; it != end; ++it)
-            if (check_edge_guard(*it, intvars_val, guard) != 1)
+            if (check_edge_guard(*it, intvars_val, guard) == 0)
               return tchecker::STATE_INTVARS_GUARD_VIOLATED;
           
           // apply statements
           for (auto it = begin; it != end; ++it)
-            if (apply_edge_statement(*it, intvars_val, clkreset) != 1)
+            if (apply_edge_statement(*it, intvars_val, clkreset) == 0)
               return tchecker::STATE_INTVARS_STATEMENT_FAILED;
           
           // check target invariant
           for (typename VLOC::loc_t const * loc : vloc)
-            if (check_location_invariant(loc, intvars_val, tgt_invariant) != 1)
+            if (check_location_invariant(loc, intvars_val, tgt_invariant) == 0)
               return tchecker::STATE_INTVARS_TGT_INVARIANT_VIOLATED;
           
           return tchecker::STATE_OK;
