@@ -51,7 +51,7 @@ enum tchecker::state_status_t initialize(tchecker::ta::system_t const & system,
   // check invariant
   tchecker::vm_t & vm = system.vm();
   for (tchecker::loc_id_t loc_id : *vloc)
-    if (vm.run(system.invariant_bytecode(loc_id), *intval, invariant, throw_clkreset) != 1)
+    if (vm.run(system.invariant_bytecode(loc_id), *intval, invariant, throw_clkreset) == 0)
       return tchecker::STATE_INTVARS_SRC_INVARIANT_VIOLATED;
 
   return tchecker::STATE_OK;
@@ -70,7 +70,7 @@ enum tchecker::state_status_t next(tchecker::ta::system_t const & system,
 
   // check source invariant
   for (tchecker::loc_id_t loc_id : *vloc)
-    if (vm.run(system.invariant_bytecode(loc_id), *intval, src_invariant, throw_clkreset) != 1)
+    if (vm.run(system.invariant_bytecode(loc_id), *intval, src_invariant, throw_clkreset) == 0)
       return tchecker::STATE_INTVARS_SRC_INVARIANT_VIOLATED;
 
   // compute next vloc
@@ -80,17 +80,17 @@ enum tchecker::state_status_t next(tchecker::ta::system_t const & system,
 
   // check guards
   for (tchecker::system::edge_const_shared_ptr_t const & edge : edges)
-    if (vm.run(system.guard_bytecode(edge->pid()), *intval, guard, throw_clkreset) != 1)
+    if (vm.run(system.guard_bytecode(edge->pid()), *intval, guard, throw_clkreset) == 0)
       return tchecker::STATE_INTVARS_GUARD_VIOLATED;
 
   // apply statements
   for (tchecker::system::edge_const_shared_ptr_t const & edge : edges)
-    if (vm.run(system.statement_bytecode(edge->pid()), *intval, throw_clkconstr, reset) != 1)
+    if (vm.run(system.statement_bytecode(edge->pid()), *intval, throw_clkconstr, reset) == 0)
       return tchecker::STATE_INTVARS_STATEMENT_FAILED;
 
   // check target invariant
   for (tchecker::loc_id_t loc_id : *vloc)
-    if (vm.run(system.invariant_bytecode(loc_id), *intval, tgt_invariant, throw_clkreset) != 1)
+    if (vm.run(system.invariant_bytecode(loc_id), *intval, tgt_invariant, throw_clkreset) == 0)
       return tchecker::STATE_INTVARS_TGT_INVARIANT_VIOLATED;
 
   return tchecker::STATE_OK;

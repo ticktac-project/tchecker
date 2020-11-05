@@ -12,7 +12,6 @@
 #include "tchecker/statement/typed_statement.hh"
 #include "tchecker/vm/vm.hh"
 
-
 /*!
  \file compilers.hh
  \brief Compilers of expressions and statements to VM's bytecode
@@ -31,7 +30,6 @@ namespace tchecker {
    */
   tchecker::bytecode_t * compile(tchecker::typed_expression_t const & expr);
   
-  
   /*!
    \brief Statement compiler
    \param stmt : statement
@@ -41,7 +39,6 @@ namespace tchecker {
    \note the caller is responsible for deleting[] the returned value
    */
   tchecker::bytecode_t * compile(tchecker::typed_statement_t const & stmt);
-  
   
 } // end of namespace tchecker
 
