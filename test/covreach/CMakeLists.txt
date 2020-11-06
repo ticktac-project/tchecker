@@ -2,7 +2,7 @@
 #
 # See files AUTHORS and LICENSE for copyright details.
 
-option(TCK_ENABLE_COVREACH_TESTS "enable tests related to covreach" ON)
+option(TCK_ENABLE_COVREACH_TESTS "enable tests related to covreach" OFF)
 
 if(NOT TCK_ENABLE_COVREACH_TESTS)
     message(STATUS "Covreach tests are disabled.")
