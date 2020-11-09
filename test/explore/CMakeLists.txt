@@ -19,12 +19,12 @@ set(INPUTS
     train_gate.sh:3
     )
 
-if(NOT USE16)
+if(NOT USEINT16)
     list(APPEND INPUTS
          ad94_mid.sh:)
 endif()
 
-if(USE64)
+if(USEINT64)
     list(APPEND INPUTS
          ad94_Long.sh:)
 endif()
