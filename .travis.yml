@@ -5,8 +5,10 @@ language: cpp
 
 env:
   global:
-  - CATCH2_REPO=${HOME}/Catch2
+  - CATCH2_REPO_URL=https://github.com/catchorg/Catch2.git
   - CATCH2_BRANCH=v2.13.2
+  - CATCH2_DIRECTORY=${HOME}/Catch2
+  - TCHECKER_BUILD_TYPE=Debug
 
 before_cache:
 - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then brew cleanup; fi
@@ -18,62 +20,47 @@ cache:
   directories:
   - ${HOME}/Library/Caches/Homebrew
   - /usr/local/Homebrew
-  - ${CATCH2_REPO}
+  - ${CATCH2_DIRECTORY}
 
-dist:
-- bionic
+dist: focal
 
-
-matrix:
+jobs:
   include:
   - os: linux
     compiler: gcc
-    env: TEST_CONF="-DUSE64=ON \
-                    -DTCK_ENABLE_MEMCHECK_TESTS=ON \
-                    -DTCK_ENABLE_COVREACH_TESTS=ON \
-                    -DTCK_ENABLE_EXPLORE_TESTS=OFF \
-                    -DTCK_ENABLE_UNITTESTS=OFF \
-                    -DTCK_ENABLE_SIMPLE_NR_TESTS=OFF \
-                    -DTCK_ENABLE_BUGFIXES_TESTS=OFF"
+    env: CONFNAME="covreach:int64:memcheck"
   - os: linux
     compiler: gcc
-    env: TEST_CONF="-DTCK_ENABLE_MEMCHECK_TESTS=ON \
-                    -DTCK_ENABLE_COVREACH_TESTS=ON \
-                    -DTCK_ENABLE_EXPLORE_TESTS=OFF \
-                    -DTCK_ENABLE_UNITTESTS=OFF \
-                    -DTCK_ENABLE_SIMPLE_NR_TESTS=OFF \
-                    -DTCK_ENABLE_BUGFIXES_TESTS=OFF"
+    env: CONFNAME="covreach:int32:memcheck"
   - os: linux
     compiler: gcc
-    env: TEST_CONF="-DTCK_ENABLE_MEMCHECK_TESTS=ON \
-                    -DTCK_ENABLE_COVREACH_TESTS=OFF \
-                    -DTCK_ENABLE_EXPLORE_TESTS=ON \
-                    -DTCK_ENABLE_UNITTESTS=OFF \
-                    -DTCK_ENABLE_SIMPLE_NR_TESTS=OFF \
-                    -DTCK_ENABLE_BUGFIXES_TESTS=OFF"
+    env: CONFNAME="explore:int32:memcheck"
   - os: linux
     compiler: gcc
-    env: TEST_CONF="-DTCK_ENABLE_COVREACH_TESTS=OFF -DTCK_ENABLE_EXPLORE_TESTS=OFF  -DTCK_ENABLE_MEMCHECK_TESTS=ON"
+    env: CONFNAME="smallest:int32:memcheck"
   - os: linux
     compiler: gcc
-    env: TEST_CONF="-DUSE16=ON -DTCK_ENABLE_COVREACH_TESTS=OFF -DTCK_ENABLE_EXPLORE_TESTS=OFF  -DTCK_ENABLE_MEMCHECK_TESTS=ON"
+    env: CONFNAME="smallest:int16:memcheck"
   - os: linux
     compiler: gcc
-    env: TEST_CONF="-DUSE64=ON -DTCK_ENABLE_COVREACH_TESTS=OFF -DTCK_ENABLE_EXPLORE_TESTS=OFF  -DTCK_ENABLE_MEMCHECK_TESTS=ON"
+    env: CONFNAME="smallest:int64:memcheck"
 
   - os: linux
     compiler: clang
-    env: TEST_CONF="-DTCK_ENABLE_COVREACH_TESTS=OFF -DTCK_ENABLE_EXPLORE_TESTS=OFF  -DTCK_ENABLE_MEMCHECK_TESTS=ON"
+    env: CONFNAME="smallest:int32:memcheck"
 
   - os: osx
+    osx_image: xcode12.2
     compiler: gcc
-    env: TEST_CONF="-DTCK_ENABLE_COVREACH_TESTS=OFF -DTCK_ENABLE_EXPLORE_TESTS=OFF -DTCK_ENABLE_MEMCHECK_TESTS=OFF"
+    env: CONFNAME="smallest:int32:no-memcheck"
   - os: osx
+    osx_image: xcode12.2
     compiler: gcc
-    env: TEST_CONF="-DUSE64=ON -DTCK_ENABLE_COVREACH_TESTS=OFF -DTCK_ENABLE_EXPLORE_TESTS=OFF -DTCK_ENABLE_MEMCHECK_TESTS=OFF"
+    env: CONFNAME="smallest:int64:no-memcheck"
   - os: osx
+    osx_image: xcode12.2
     compiler: clang
-    env: TEST_CONF="-DTCK_ENABLE_COVREACH_TESTS=OFF -DTCK_ENABLE_EXPLORE_TESTS=OFF -DTCK_ENABLE_MEMCHECK_TESTS=OFF"
+    env: CONFNAME="smallest:int32:no-memcheck"
 
 install:
 - . ./ci-scripts/setenv-common.sh
@@ -82,7 +69,8 @@ install:
 - ./ci-scripts/show-config.sh
 
 script:
-- ./ci-scripts/build-and-test.sh
+- ./ci-scripts/build.sh
+- ./ci-scripts/test.sh
 
 addons:
   apt:
