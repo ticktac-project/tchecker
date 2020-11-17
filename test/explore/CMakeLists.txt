@@ -2,7 +2,7 @@
 #
 # See files AUTHORS and LICENSE for copyright details.
 
-option(TCK_ENABLE_EXPLORE_TESTS "enable tests related to explore" ON)
+option(TCK_ENABLE_EXPLORE_TESTS "enable tests related to explore" OFF)
 
 if(NOT TCK_ENABLE_EXPLORE_TESTS)
     message(STATUS "Explore tests are disabled.")
