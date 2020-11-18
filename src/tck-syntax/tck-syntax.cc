@@ -113,11 +113,15 @@ void do_check_syntax(tchecker::parsing::system_declaration_t const & sysdecl)
 {
   try {
     tchecker::ta::system_t system(sysdecl);
-    std::cout << "Syntax OK" << std::endl;
   }
   catch (std::exception & e) {
     tchecker::log.error(e.what());
   }
+
+  if (tchecker::log.error_count() == 0)
+    std::cout << "Syntax OK" << std::endl;
+  else
+    tchecker::log.display_counts();
 }
 
 void do_synchronized_product(tchecker::parsing::system_declaration_t const & sysdecl, std::string const & process_name,
