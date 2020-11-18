@@ -6,13 +6,13 @@ include(CheckCXXCompilerFlag)
 
 # Options to support 16/32/64 bit dbm's
 # 32 is default
-option(USE16 "Use 16bit int" OFF)
-option(USE64 "Use 64bit int" OFF)
+option(USEINT16 "Use 16bit int" OFF)
+option(USEINT64 "Use 64bit int" OFF)
 
 set(INTEGER_T_SIZE 32)
-if (USE16)
+if (USEINT16)
     set(INTEGER_T_SIZE 16)
-elseif(USE64)
+elseif(USEINT64)
     set(INTEGER_T_SIZE 64)
 else()
 endif()

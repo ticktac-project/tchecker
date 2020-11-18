@@ -2,7 +2,7 @@
 #
 # See files AUTHORS and LICENSE for copyright details.
 
-option(TCK_ENABLE_EXPLORE_TESTS "enable tests related to explore" ON)
+option(TCK_ENABLE_EXPLORE_TESTS "enable tests related to explore" OFF)
 
 if(NOT TCK_ENABLE_EXPLORE_TESTS)
     message(STATUS "Explore tests are disabled.")
@@ -19,12 +19,12 @@ set(INPUTS
     train_gate.sh:3
     )
 
-if(NOT USE16)
+if(NOT USEINT16)
     list(APPEND INPUTS
          ad94_mid.sh:)
 endif()
 
-if(USE64)
+if(USEINT64)
     list(APPEND INPUTS
          ad94_Long.sh:)
 endif()
