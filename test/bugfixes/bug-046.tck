@@ -1,0 +1,19 @@
+# This file is a part of the TChecker project.
+#
+# See files AUTHORS and LICENSE for copyright details.
+
+#clock:size:name
+#int:size:min:max:init:name
+#process:name
+#event:name
+#location:process:name{attributes}
+#edge:process:source:target:event:{attributes}
+#sync:events
+#   where
+#   attributes is a colon-separated list of key:value
+#   events is a colon-separated list of process@event
+
+system:bad_array_expression
+int:3:0:10:0:a
+process:P
+location:P:l0{initial: : invariant: a}

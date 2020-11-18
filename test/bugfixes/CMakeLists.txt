@@ -22,6 +22,7 @@ set(BUGFIX_TESTS
     bug-009.tck
     bug-041.sh
     bug-045.tck
+    bug-046.tck
 
     memleak-01.tck
     )

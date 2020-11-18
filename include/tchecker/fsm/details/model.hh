@@ -10,6 +10,7 @@
 
 #include <vector>
 
+#include "tchecker/expression/type_inference.hh"
 #include "tchecker/expression/typechecking.hh"
 #include "tchecker/expression/typed_expression.hh"
 #include "tchecker/flat_system/model.hh"
@@ -354,11 +355,15 @@ namespace tchecker {
                                                  std::string const & context_msg)
         {
           tchecker::integer_variables_t localvars;
-          return tchecker::typecheck(expr,
-                                     localvars,
+          tchecker::typed_expression_t * 
+          typed_expr = tchecker::typecheck(expr,
+                                      localvars,
                                      VARIABLES::system_integer_variables(*this->_system),
                                      VARIABLES::system_clock_variables(*this->_system),
                                      [&] (std::string const & msg) { log.error(context_msg, msg); });
+          if (! tchecker::bool_valued(typed_expr->type()))
+            log.error(context_msg, "expression is not bool valued");
+          return typed_expr;
         }
         
         /*!

@@ -327,7 +327,7 @@ namespace tchecker {
       std::tuple<enum tchecker::expression_type_t, tchecker::variable_id_t, tchecker::variable_size_t>
       typecheck_variable(std::string const & name)
       {
-        // Integer variable ?
+        // Local integer variable ?
         try {
           auto id = _localvars.id(name);
           auto size = _localvars.info(id).size();
