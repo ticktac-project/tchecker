@@ -48,6 +48,7 @@ void usage(char * progname)
 
 static bool check_syntax = false;
 static bool synchronized_product = false;
+static bool help = false;
 static std::string delimiter = "_";
 static std::string process_name = "P";
 static std::string output_file = "";
@@ -73,7 +74,7 @@ int parse_command_line(int argc, char * argv[])
       delimiter = optarg;
       break;
     case 'h':
-      usage(argv[0]);
+      help = true;
       break;
     case 'n':
       process_name = optarg;
@@ -144,6 +145,11 @@ int main(int argc, char * argv[])
       std::cerr << "Too many input files" << std::endl;
       usage(argv[0]);
       return EXIT_FAILURE;
+    }
+
+    if (help) {
+      usage(argv[0]);
+      return EXIT_SUCCESS;
     }
 
     std::string input_file = (optindex == argc ? "" : argv[optindex]);
