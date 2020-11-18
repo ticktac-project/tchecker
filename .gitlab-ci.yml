@@ -1,0 +1,54 @@
+variables:
+  INSTALL_DIR: install
+  TCHECKER_BUILD_TYPE: Debug
+
+.build_and_test: &build_and_test
+  - ci-scripts/build.sh
+  - ci-scripts/test.sh
+
+.clang_conf: &clang_conf
+  stage: test
+  image: pictavien/tchecker-ci:clang-latest
+  variables:
+    CC : "clang"
+    CXX : "clang++"
+
+.gcc_conf: &gcc_conf
+  stage: test
+  image: pictavien/tchecker-ci:gcc-latest
+  variables:
+    CC : "gcc"
+    CXX : "g++"
+
+
+gcc_all_int32_no_memcheck:
+  <<: *gcc_conf
+  script:
+    - export CONFNAME="all:int32:no-memcheck"
+    - *build_and_test
+
+gcc_all_int16_no_memcheck:
+  <<: *gcc_conf
+  script:
+    - export CONFNAME="all:int16:no-memcheck"
+    - *build_and_test
+
+gcc_all_int64_memcheck:
+  <<: *gcc_conf
+  script:
+    - export CONFNAME="covreach:int64:memcheck"
+    - *build_and_test
+
+gcc_simplest_int32_memcheck:
+  <<: *gcc_conf
+  script:
+    - export CONFNAME="smallest:int32:memcheck"
+    - *build_and_test
+
+clang_all_int32_no_memcheck:
+  <<: *clang_conf
+  script:
+    - export CONFNAME="all:int32:no-memcheck"
+    - *build_and_test
+
+

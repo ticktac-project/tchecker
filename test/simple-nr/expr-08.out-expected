@@ -1,0 +1,22 @@
+expr_08
+0: <l0> count[0]=0,count[1]=0,count[2]=0,count[3]=0,count[4]=0
+1: <l1> count[0]=1,count[1]=0,count[2]=0,count[3]=0,count[4]=0
+0 -> 1 
+2: <l1> count[0]=2,count[1]=0,count[2]=0,count[3]=0,count[4]=0
+1 -> 2 
+3: <l1> count[0]=3,count[1]=0,count[2]=0,count[3]=0,count[4]=0
+2 -> 3 
+4: <l1> count[0]=4,count[1]=0,count[2]=0,count[3]=0,count[4]=0
+3 -> 4 
+5: <l1> count[0]=5,count[1]=0,count[2]=0,count[3]=0,count[4]=0
+4 -> 5 
+6: <l1> count[0]=6,count[1]=0,count[2]=0,count[3]=0,count[4]=0
+5 -> 6 
+7: <l1> count[0]=7,count[1]=0,count[2]=0,count[3]=0,count[4]=0
+6 -> 7 
+8: <l1> count[0]=8,count[1]=0,count[2]=0,count[3]=0,count[4]=0
+7 -> 8 
+9: <l1> count[0]=9,count[1]=0,count[2]=0,count[3]=0,count[4]=0
+8 -> 9 
+10: <l1> count[0]=10,count[1]=0,count[2]=0,count[3]=0,count[4]=0
+9 -> 10 

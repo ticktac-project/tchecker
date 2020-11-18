@@ -2,7 +2,7 @@
 #
 # See files AUTHORS and LICENSE for copyright details.
 
-option(TCK_ENABLE_COVREACH_TESTS "enable tests related to covreach" ON)
+option(TCK_ENABLE_COVREACH_TESTS "enable tests related to covreach" OFF)
 
 if(NOT TCK_ENABLE_COVREACH_TESTS)
     message(STATUS "Covreach tests are disabled.")
@@ -30,12 +30,12 @@ set(INPUTS
     train_gate.sh:3
     )
 
-if(NOT USE16)
+if(NOT USEINT16)
     list(APPEND INPUTS
          ad94_mid.sh:)
 endif()
 
-if(USE64)
+if(USEINT64)
     list(APPEND INPUTS
          ad94_Long.sh:)
 endif()
@@ -46,10 +46,10 @@ set(MEMCHECKED_TEST_REGEX
     "^.*ad94_[0-9].*raw.*$"
     "^.*critical-region-async.*raw.*$")
 
-if(USE16)
+if(USEINT16)
     list(APPEND MEMCHECKED_TEST_REGEX
          "^.*ad94_[0-9].*raw.*$")
-elseif(USE64)
+elseif(USEINT64)
     list(APPEND MEMCHECKED_TEST_REGEX
          "^.*ad94_Long.*raw.*$")
 else()

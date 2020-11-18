@@ -269,9 +269,9 @@ namespace tchecker {
           
           tchecker::range_t<typename SYSTEM::const_loc_iterator_t> locations = system.locations();
           for (typename SYSTEM::loc_t const * loc : locations) {
-            _typed_invariants[loc->id()] = typecheck(loc->invariant(), log,
-                                                     "Attribute invariant: " + loc->invariant().to_string());
             try {
+              _typed_invariants[loc->id()] = typecheck_boolean_expression(loc->invariant(), log,
+                                                       "Attribute invariant: " + loc->invariant().to_string());
               _invariants_bytecode[loc->id()] = tchecker::compile(*_typed_invariants[loc->id()]);
             }
             catch (std::exception const & e)
@@ -301,8 +301,8 @@ namespace tchecker {
           
           tchecker::range_t<typename SYSTEM::const_edge_iterator_t> edges = system.edges();
           for (typename SYSTEM::edge_t const * edge : edges) {
-            _typed_guards[edge->id()] = typecheck(edge->guard(), log, "Attribute provided: " + edge->guard().to_string());
             try {
+              _typed_guards[edge->id()] = typecheck_boolean_expression(edge->guard(), log, "Attribute provided: " + edge->guard().to_string());
               _guards_bytecode[edge->id()] = tchecker::compile(*_typed_guards[edge->id()]);
             }
             catch (std::exception const & e)
@@ -332,8 +332,8 @@ namespace tchecker {
           
           tchecker::range_t<typename SYSTEM::const_edge_iterator_t> edges = system.edges();
           for (typename SYSTEM::edge_t const * edge : edges) {
-            _typed_statements[edge->id()] = typecheck(edge->statement(), log, "Attribute do: " + edge->statement().to_string());
             try {
+              _typed_statements[edge->id()] = typecheck(edge->statement(), log, "Attribute do: " + edge->statement().to_string());
               _statements_bytecode[edge->id()] = tchecker::compile(*_typed_statements[edge->id()]);
             }
             catch (std::exception const & e)
@@ -341,6 +341,27 @@ namespace tchecker {
               log.error("Attribute do: " + edge->statement().to_string(), e.what());
             }
           }
+        }
+        
+        /*!
+         \brief Typecheck an expression expecting it to be a Boolean one.
+         \param expr : expression
+         \param log : logging facility
+         \param context_msg : contextual message for logging
+         \return Typed expression for expr such that bool_valued returns true
+                 its type. All errors and warnings have been reported to log
+         */
+        tchecker::typed_expression_t * typecheck_boolean_expression(tchecker::expression_t const & expr,
+                                                                    tchecker::log_t & log,
+                                                                    std::string const & context_msg)
+        {
+          tchecker::typed_expression_t *result = typecheck(expr, log, context_msg);
+          if (! tchecker::bool_valued(result->type()))
+            {
+              delete result;
+              throw std::runtime_error("not a Boolean expression '"+expr.to_string() + "'.");
+            }
+          return result;
         }
         
         /*!
@@ -365,7 +386,7 @@ namespace tchecker {
             log.error(context_msg, "expression is not bool valued");
           return typed_expr;
         }
-        
+
         /*!
          \brief Typecheck s statement
          \param stmt : statement
