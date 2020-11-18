@@ -1,4 +1,10 @@
 Attribute provided: !count: ERROR, in expression !count, invalid operand count
-ERROR, not a Boolean expression '!count'.
+Attribute provided: !count: ERROR, not a Boolean expression '!count'.
+Attribute provided: count: ERROR, not a Boolean expression 'count'.
+Attribute do: count=count+1: ERROR, in expression count+1, invalid composition of expressions count and 1
+Attribute do: count=count+1: ERROR, invalid lvalue expression
+Attribute do: count=count+1: ERROR, in expression count+1, invalid composition of expressions count and 1
+Attribute do: count=count+1: ERROR, invalid lvalue expression
+ERROR, System compilation failure
 
-2 error(s)
+8 error(s)

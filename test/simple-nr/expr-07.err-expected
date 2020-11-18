@@ -1,3 +1,5 @@
-ERROR, not a Boolean expression 'count'.
+Attribute provided: count: ERROR, not a Boolean expression 'count'.
+Attribute provided: count: ERROR, not a Boolean expression 'count'.
+ERROR, System compilation failure
 
-1 error(s)
+3 error(s)
