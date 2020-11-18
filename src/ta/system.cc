@@ -11,6 +11,7 @@
 
 #include "tchecker/clockbounds/solver.hh"
 #include "tchecker/expression/expression.hh"
+#include "tchecker/expression/type_inference.hh"
 #include "tchecker/expression/typechecking.hh"
 #include "tchecker/parsing/parsing.hh"
 #include "tchecker/statement/statement.hh"
@@ -198,6 +199,9 @@ void system_t::set_invariant(tchecker::loc_id_t id,
   std::shared_ptr<tchecker::typed_expression_t> invariant_typed_expr{
       tchecker::typecheck(*invariant_expr, localvars, integer_variables(), clock_variables())};
 
+  if (!tchecker::bool_valued(invariant_typed_expr->type()))
+    tchecker::log.error(context, "expression is not bool valued");
+
   try {
     std::shared_ptr<tchecker::bytecode_t> invariant_bytecode{tchecker::compile(*invariant_typed_expr)};
     _invariants[id] = {invariant_typed_expr, invariant_bytecode};
@@ -247,6 +251,9 @@ void system_t::set_guards(tchecker::edge_id_t id,
 
   std::shared_ptr<tchecker::typed_expression_t> guard_typed_expr{
       tchecker::typecheck(*guard_expr, localvars, integer_variables(), clock_variables())};
+
+  if (!tchecker::bool_valued(guard_typed_expr->type()))
+    tchecker::log.error(context, "expression is not bool valued");
 
   try {
     std::shared_ptr<tchecker::bytecode_t> guard_bytecode{tchecker::compile(*guard_typed_expr)};
