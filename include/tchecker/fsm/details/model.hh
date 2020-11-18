@@ -269,9 +269,9 @@ namespace tchecker {
           
           tchecker::range_t<typename SYSTEM::const_loc_iterator_t> locations = system.locations();
           for (typename SYSTEM::loc_t const * loc : locations) {
-            _typed_invariants[loc->id()] = typecheck_boolean_expression(loc->invariant(), log,
-                                                     "Attribute invariant: " + loc->invariant().to_string());
             try {
+              _typed_invariants[loc->id()] = typecheck_boolean_expression(loc->invariant(), log,
+                                                       "Attribute invariant: " + loc->invariant().to_string());
               _invariants_bytecode[loc->id()] = tchecker::compile(*_typed_invariants[loc->id()]);
             }
             catch (std::exception const & e)
@@ -301,8 +301,8 @@ namespace tchecker {
           
           tchecker::range_t<typename SYSTEM::const_edge_iterator_t> edges = system.edges();
           for (typename SYSTEM::edge_t const * edge : edges) {
-            _typed_guards[edge->id()] = typecheck_boolean_expression(edge->guard(), log, "Attribute provided: " + edge->guard().to_string());
             try {
+              _typed_guards[edge->id()] = typecheck_boolean_expression(edge->guard(), log, "Attribute provided: " + edge->guard().to_string());
               _guards_bytecode[edge->id()] = tchecker::compile(*_typed_guards[edge->id()]);
             }
             catch (std::exception const & e)
@@ -332,8 +332,8 @@ namespace tchecker {
           
           tchecker::range_t<typename SYSTEM::const_edge_iterator_t> edges = system.edges();
           for (typename SYSTEM::edge_t const * edge : edges) {
-            _typed_statements[edge->id()] = typecheck(edge->statement(), log, "Attribute do: " + edge->statement().to_string());
             try {
+              _typed_statements[edge->id()] = typecheck(edge->statement(), log, "Attribute do: " + edge->statement().to_string());
               _statements_bytecode[edge->id()] = tchecker::compile(*_typed_statements[edge->id()]);
             }
             catch (std::exception const & e)
