@@ -500,7 +500,6 @@ TEST_CASE("tighten w.r.t. a difference bound", "[dbm]")
 
 TEST_CASE("constrain", "[dbm]")
 {
-
   tchecker::clock_id_t dim = 5;
   tchecker::dbm::db_t dbm[dim * dim];
   tchecker::dbm::universal_positive(dbm, dim);
@@ -585,6 +584,16 @@ TEST_CASE("constrain", "[dbm]")
     REQUIRE(res == tchecker::dbm::EMPTY);
     REQUIRE(tchecker::dbm::is_empty_0(dbm, dim));
   }
+}
+
+TEST_CASE("diagonal constrain makes zone empty", "[dbm]")
+{
+  tchecker::clock_id_t dim = 5;
+  tchecker::dbm::db_t dbm[dim * dim];
+  tchecker::dbm::universal(dbm, dim);
+
+  tchecker::dbm::status_t status = tchecker::dbm::constrain(dbm, dim, 1, 1, tchecker::dbm::LT, 0);
+  REQUIRE(status == tchecker::dbm::EMPTY);
 }
 
 TEST_CASE("DBM equality", "[dbm]")

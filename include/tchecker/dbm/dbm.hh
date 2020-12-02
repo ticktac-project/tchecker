@@ -190,7 +190,6 @@ enum tchecker::dbm::status_t tighten(tchecker::dbm::db_t * dbm, tchecker::clock_
  \pre dbm is not nullptr (checked by assertion)
  dbm is a dim*dim array of difference bounds
  dim >= 1 (checked by assertion)
- dbm is consistent (checked by assertion)
  0 <= x < dim (checked by assertion)
  0 <= y < dim (checked by assertion)
  x != y (checked by assertion)

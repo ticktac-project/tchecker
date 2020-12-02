@@ -172,7 +172,6 @@ enum tchecker::dbm::status_t tighten(tchecker::dbm::db_t * dbm, tchecker::clock_
 {
   assert(dbm != nullptr);
   assert(dim >= 1);
-  assert(tchecker::dbm::is_consistent(dbm, dim));
 
   if (DBM(x, y) == tchecker::dbm::LT_INFINITY)
     return tchecker::dbm::MAY_BE_EMPTY;
