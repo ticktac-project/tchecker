@@ -191,7 +191,8 @@ namespace tchecker {
      0 <= y < dim (checked by assertion)
      x != y (checked by assertion)
      \post for all clocks u and v, the edge u->v in the graph is tight w.r.t. the edge y->x. That is, the length of the path u->v
-     is at most the length of the path u->y->x->v.
+     is the minimum between its length before the call, and the length of the
+     path u->y->x->v.
      if dbm is empty, then the difference bound in (0,0) is less-than <=0 (tchecker::dbm::is_empty_0() returns true)
      \return EMPTY if dbm is empty, MAY_BE_EMPTY otherwise
      \note if every edge in dbm is tight w.r.t. all other edges except i->j, then after the call, dbm is either empty, or it is

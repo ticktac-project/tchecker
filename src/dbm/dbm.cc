@@ -183,7 +183,6 @@ namespace tchecker {
     {
       assert(dbm != nullptr);
       assert(dim >= 1);
-      assert(tchecker::dbm::is_consistent(dbm, dim));
       
       if (DBM(x,y) == tchecker::dbm::LT_INFINITY)
         return tchecker::dbm::MAY_BE_EMPTY;
@@ -192,9 +191,8 @@ namespace tchecker {
         // tighten i->y w.r.t. i->x->y
         if (i != x) {
           tchecker::dbm::db_t db_ixy = tchecker::dbm::sum(DBM(i,x), DBM(x,y));
-          if (db_ixy >= DBM(i,y))
-            continue;
-          DBM(i,y) = db_ixy;
+          if (db_ixy < DBM(i,y))
+            DBM(i,y) = db_ixy;
         }
         
         // tighten i->j w.r.t. i->y->j
