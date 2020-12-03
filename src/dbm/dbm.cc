@@ -149,7 +149,7 @@ enum tchecker::dbm::status_t tighten(tchecker::dbm::db_t * dbm, tchecker::clock_
 {
   assert(dbm != nullptr);
   assert(dim >= 1);
-  assert(tchecker::dbm::is_consistent(dbm, dim));
+
   for (tchecker::clock_id_t k = 0; k < dim; ++k) {
     for (tchecker::clock_id_t i = 0; i < dim; ++i) {
       if ((i == k) || (DBM(i, k) == tchecker::dbm::LT_INFINITY)) // optimization
@@ -180,9 +180,8 @@ enum tchecker::dbm::status_t tighten(tchecker::dbm::db_t * dbm, tchecker::clock_
     // tighten i->y w.r.t. i->x->y
     if (i != x) {
       tchecker::dbm::db_t db_ixy = tchecker::dbm::sum(DBM(i, x), DBM(x, y));
-      if (db_ixy >= DBM(i, y))
-        continue;
-      DBM(i, y) = db_ixy;
+      if (db_ixy < DBM(i, y))
+        DBM(i, y) = db_ixy;
     }
 
     // tighten i->j w.r.t. i->y->j
