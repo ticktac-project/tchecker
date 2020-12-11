@@ -2,7 +2,7 @@
 #
 # See files AUTHORS and LICENSE for copyright details.
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.12)
 project(tchecker LANGUAGES CXX)
 
 set(TCK_CMAKE_SCRIPT_DIR "${CMAKE_SOURCE_DIR}/cmake")
