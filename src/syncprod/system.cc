@@ -105,9 +105,8 @@ public:
    \param separator : separator for names
    \param process_name : name of synchronized process
    */
-  synchronizer_t(std::shared_ptr<tchecker::syncprod::system_t const> const & system,
-   std::string const & separator, 
-   std::string const & process_name)
+  synchronizer_t(std::shared_ptr<tchecker::syncprod::system_t const> const & system, std::string const & separator,
+                 std::string const & process_name)
       : _system(system), _separator(separator), _process_name(process_name), _product(_system->name(), _system->attributes()),
         _salloc(1000000, 1000000, _system->processes_count()), _talloc(1000000, 1000000, _system->processes_count())
   {
@@ -181,9 +180,8 @@ private:
     for (auto it = begin; it != end; ++it) {
       if (it != begin)
         name += _separator;
-      name += _system->process_name(_system->edge(*it)->pid()) + 
-              _separator + 
-              _system->event_name(_system->edge(*it)->event_id());
+      name +=
+          _system->process_name(_system->edge(*it)->pid()) + _separator + _system->event_name(_system->edge(*it)->event_id());
     }
     return name;
   }
@@ -322,8 +320,7 @@ private:
 };
 
 tchecker::system::system_t synchronized_product(std::shared_ptr<tchecker::syncprod::system_t const> const & system,
-                                                std::string const & process_name,
-                                                std::string const & separator)
+                                                std::string const & process_name, std::string const & separator)
 {
   tchecker::syncprod::synchronizer_t synchronizer(system, separator, process_name);
   return synchronizer.synchronized_product();

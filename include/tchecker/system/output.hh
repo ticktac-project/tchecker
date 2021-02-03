@@ -23,29 +23,29 @@
  */
 
 namespace tchecker {
-  
-  namespace system {
-    
-    /*!
-     \brief Output attributes following tchecker syntax
-     \param os : output stream
-     \param attr : attributes
-     \post attr has been output to os
-     \return os after output
-     */
-    std::ostream & operator<< (std::ostream & os, tchecker::system::attributes_t const & attr);
-       
-    /*!
-     \brief Output system following tchecker syntax
-     \param os : output stream
-     \param s : system
-     \post s name has been output to os
-     \return os after output
-     */
-    std::ostream & operator<< (std::ostream & os, tchecker::system::system_t const & s);
-    
-  } // end of namespace system
-  
+
+namespace system {
+
+/*!
+ \brief Output attributes following tchecker syntax
+ \param os : output stream
+ \param attr : attributes
+ \post attr has been output to os
+ \return os after output
+ */
+std::ostream & operator<<(std::ostream & os, tchecker::system::attributes_t const & attr);
+
+/*!
+ \brief Output system following tchecker syntax
+ \param os : output stream
+ \param s : system
+ \post s name has been output to os
+ \return os after output
+ */
+std::ostream & operator<<(std::ostream & os, tchecker::system::system_t const & s);
+
+} // end of namespace system
+
 } // end of namespace tchecker
 
 #endif // TCHECKER_SYSTEM_OUTPUT_HH

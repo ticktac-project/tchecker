@@ -16,28 +16,24 @@
  */
 
 namespace tchecker {
-  
-  namespace async_zg {
-    
-    namespace details {
-      
-      /*!
-       \class variables_t
-       \brief Model variables for asynchronous zone graphs
-       */
-      class variables_t : public tchecker::clockbounds::variables_t {
-      public:
-        using tchecker::clockbounds::variables_t::variables_t;
-      };
-      
-    } // end of namespace details
-    
-  } // end of namespace async_zg
-  
+
+namespace async_zg {
+
+namespace details {
+
+/*!
+ \class variables_t
+ \brief Model variables for asynchronous zone graphs
+ */
+class variables_t : public tchecker::clockbounds::variables_t {
+public:
+  using tchecker::clockbounds::variables_t::variables_t;
+};
+
+} // end of namespace details
+
+} // end of namespace async_zg
+
 } // end of namespace tchecker
 
 #endif // TCHECKER_ASYNC_ZG_DETAILS_VARIABLES_HH
-
-
-
-

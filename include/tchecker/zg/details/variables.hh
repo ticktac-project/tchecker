@@ -16,24 +16,24 @@
  */
 
 namespace tchecker {
-  
-  namespace zg {
-    
-    namespace details {
-    
-      /*!
-       \class variables_t
-       \brief Model variables for zone graphs
-       */
-      class variables_t : public tchecker::clockbounds::variables_t {
-      public:
-        using tchecker::clockbounds::variables_t::variables_t;
-      };
-      
-    } // end of namespace details
-      
-  } // end of namespace zg
-  
+
+namespace zg {
+
+namespace details {
+
+/*!
+ \class variables_t
+ \brief Model variables for zone graphs
+ */
+class variables_t : public tchecker::clockbounds::variables_t {
+public:
+  using tchecker::clockbounds::variables_t::variables_t;
+};
+
+} // end of namespace details
+
+} // end of namespace zg
+
 } // end of namespace tchecker
 
 #endif // TCHECKER_ZG_DETAILS_VARIABLES_HH

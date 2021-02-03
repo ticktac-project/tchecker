@@ -17,8 +17,7 @@ namespace tchecker {
 namespace clockbounds {
 
 df_solver_t::df_solver_t(tchecker::ta::system_t const & system)
-    : _loc_number(system.locations_count()),
-      _clock_number(system.clock_variables().size(tchecker::VK_FLATTENED)),
+    : _loc_number(system.locations_count()), _clock_number(system.clock_variables().size(tchecker::VK_FLATTENED)),
       _loc_pid(_loc_number, 0),
       _dim(1 + _loc_number * _clock_number), // 1 variable for each clock in each location, plus 1 for dummy clock 0
       _L(nullptr), _U(nullptr), _has_solution(true)
@@ -218,7 +217,7 @@ public:
   \param solver : a solver
   \note this updates constraints in solver for locations src and tgt
   */
-  df_solver_updater_t(tchecker::loc_id_t src, tchecker::loc_id_t tgt, 
+  df_solver_updater_t(tchecker::loc_id_t src, tchecker::loc_id_t tgt,
                       std::shared_ptr<tchecker::clockbounds::df_solver_t> const & solver)
       : _src(src), _tgt(tgt), _solver(solver)
   {
@@ -542,7 +541,7 @@ void add_location_constraints(tchecker::typed_expression_t const & inv, tchecker
 }
 
 void add_edge_constraints(tchecker::typed_expression_t const & guard, tchecker::typed_statement_t const & stmt,
-                          tchecker::loc_id_t src, tchecker::loc_id_t tgt, 
+                          tchecker::loc_id_t src, tchecker::loc_id_t tgt,
                           std::shared_ptr<tchecker::clockbounds::df_solver_t> const & solver)
 {
   // guard and statement
@@ -657,7 +656,7 @@ bool compute_clockbounds(tchecker::ta::system_t const & system, tchecker::clockb
 {
   // Solve
   std::shared_ptr<tchecker::clockbounds::df_solver_t> solver = tchecker::clockbounds::solve(system);
-  if (! solver->has_solution())
+  if (!solver->has_solution())
     return false;
 
   // Fill the maps

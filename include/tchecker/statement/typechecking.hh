@@ -22,23 +22,22 @@
  */
 
 namespace tchecker {
-  
-  /*!
-   \brief Type checking for statements
-   \param stmt : statement
-   \param localvars: local variables
-   \param intvars : integer variables
-   \param clocks : clock variables
-   \param error : error logging function
-   \return typed clone of stmt
-   \post errors have been reported calling function error
-   */
-  tchecker::typed_statement_t * typecheck(tchecker::statement_t const & stmt,
-                                          tchecker::integer_variables_t const & localvars,
-                                          tchecker::integer_variables_t const & intvars,
-                                          tchecker::clock_variables_t const & clocks,
-                                          std::function<void(std::string const &)> error = [](std::string const &){});
-  
+
+/*!
+ \brief Type checking for statements
+ \param stmt : statement
+ \param localvars: local variables
+ \param intvars : integer variables
+ \param clocks : clock variables
+ \param error : error logging function
+ \return typed clone of stmt
+ \post errors have been reported calling function error
+ */
+tchecker::typed_statement_t * typecheck(
+    tchecker::statement_t const & stmt, tchecker::integer_variables_t const & localvars,
+    tchecker::integer_variables_t const & intvars, tchecker::clock_variables_t const & clocks,
+    std::function<void(std::string const &)> error = [](std::string const &) {});
+
 } // end of namespace tchecker
 
 #endif // TCHECKER_STATEMENT_TYPECHECKING_HH

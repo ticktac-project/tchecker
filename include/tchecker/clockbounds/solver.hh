@@ -198,13 +198,13 @@ protected:
   */
   std::size_t index(tchecker::loc_id_t l, tchecker::clock_id_t x) const;
 
-  tchecker::loc_id_t _loc_number;                /*!< Number of locations */
-  tchecker::clock_id_t _clock_number;            /*!< Number of clocks */
-  std::vector<tchecker::process_id_t> _loc_pid;  /*!< Map: location ID -> process ID */
-  std::size_t _dim;                              /*!< Dimension of the equations */
-  tchecker::dbm::db_t * _L;                      /*!< Inequations on lower bounds L_{x,l} */
-  tchecker::dbm::db_t * _U;                      /*!< Inequations on upper bounds U_{x,l} */
-  bool _has_solution;                            /*!< Flags existence of a solution */
+  tchecker::loc_id_t _loc_number;               /*!< Number of locations */
+  tchecker::clock_id_t _clock_number;           /*!< Number of clocks */
+  std::vector<tchecker::process_id_t> _loc_pid; /*!< Map: location ID -> process ID */
+  std::size_t _dim;                             /*!< Dimension of the equations */
+  tchecker::dbm::db_t * _L;                     /*!< Inequations on lower bounds L_{x,l} */
+  tchecker::dbm::db_t * _U;                     /*!< Inequations on upper bounds U_{x,l} */
+  bool _has_solution;                           /*!< Flags existence of a solution */
 };
 
 /*!
