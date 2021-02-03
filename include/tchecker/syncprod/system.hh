@@ -231,7 +231,7 @@ namespace tchecker {
      \post the names of locations and events in the returned system are made from tuple of locations and edges in system,
      separated by separator
      */
-    tchecker::system::system_t synchronized_product(tchecker::syncprod::system_t const & system,
+    tchecker::system::system_t synchronized_product(std::shared_ptr<tchecker::syncprod::system_t const> const & system,
                                                     std::string const & process_name,
                                                     std::string const & separator);
     

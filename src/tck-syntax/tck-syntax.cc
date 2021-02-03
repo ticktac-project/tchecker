@@ -128,7 +128,7 @@ void do_check_syntax(tchecker::parsing::system_declaration_t const & sysdecl)
 void do_synchronized_product(tchecker::parsing::system_declaration_t const & sysdecl, std::string const & process_name,
                              std::string const & delimiter, std::ostream & os)
 {
-  tchecker::syncprod::system_t system(sysdecl);
+  std::shared_ptr<tchecker::syncprod::system_t> system(new tchecker::syncprod::system_t(sysdecl)); 
   tchecker::system::system_t product = tchecker::syncprod::synchronized_product(system, process_name, delimiter);
   os << product << std::endl;
 }

@@ -58,16 +58,11 @@ class df_solver_t {
 public:
   /*!
   \brief Constructor
-  \param loc_number : number of locations
-  \param clock_number : number of clocks
-  \param loc_pid : map from location IDs to process IDs
-  \pre loc_pid associates to every location ID, the ID of the process that owns the location
-  \post this is a clear()-ed clock bounds solver for a timed automaton with loc_number locations and
-  clock_number clocks
-  \throw std::invalid_argument : if loc_number * clock_number is too big (overflow)
+  \param system : a system of timed processes
+  \post this is a clear()-ed clock bounds solver for timed automaton system
+  \throw std::invalid_argument : if system.loc_number * system.clock_number is too big (overflow)
   */
-  df_solver_t(tchecker::loc_id_t loc_number, tchecker::clock_id_t clock_number,
-              std::function<tchecker::process_id_t(tchecker::loc_id_t)> && loc_pid);
+  df_solver_t(tchecker::ta::system_t const & system);
 
   /*!
   \brief Copy constructor
@@ -203,13 +198,13 @@ protected:
   */
   std::size_t index(tchecker::loc_id_t l, tchecker::clock_id_t x) const;
 
-  tchecker::loc_id_t _loc_number;                                     /*!< Number of locations */
-  tchecker::clock_id_t _clock_number;                                 /*!< Number of clocks */
-  std::function<tchecker::process_id_t(tchecker::loc_id_t)> _loc_pid; /*!< Map: location ID -> process ID */
-  std::size_t _dim;                                                   /*!< Dimension of the equations */
-  tchecker::dbm::db_t * _L;                                           /*!< Inequations on lower bounds L_{x,l} */
-  tchecker::dbm::db_t * _U;                                           /*!< Inequations on upper bounds U_{x,l} */
-  bool _has_solution;                                                 /*!< Flags existence of a solution */
+  tchecker::loc_id_t _loc_number;                /*!< Number of locations */
+  tchecker::clock_id_t _clock_number;            /*!< Number of clocks */
+  std::vector<tchecker::process_id_t> _loc_pid;  /*!< Map: location ID -> process ID */
+  std::size_t _dim;                              /*!< Dimension of the equations */
+  tchecker::dbm::db_t * _L;                      /*!< Inequations on lower bounds L_{x,l} */
+  tchecker::dbm::db_t * _U;                      /*!< Inequations on upper bounds U_{x,l} */
+  bool _has_solution;                            /*!< Flags existence of a solution */
 };
 
 /*!
@@ -240,7 +235,7 @@ void add_edge_constraints(tchecker::typed_expression_t const & guard, tchecker::
 \return A diagonal-free clock bound constraints solver which provides minimal clock bounds for system
 if any suitable clock bounds exist
 */
-tchecker::clockbounds::df_solver_t solve(tchecker::ta::system_t const & system);
+std::shared_ptr<tchecker::clockbounds::df_solver_t> solve(tchecker::ta::system_t const & system);
 
 /*!
 \brief Fill a global LU map from a solver

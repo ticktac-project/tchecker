@@ -133,9 +133,8 @@ namespace tchecker {
       /*!
        \brief Constructor
        \param system : a system of timed processes
-       \note this keeps a reference on system
        */
-      syncprod_t(tchecker::syncprod::system_t const & system);
+      syncprod_t(std::shared_ptr<tchecker::syncprod::system_t const> const & system);
       
       /*!
        \brief Copy constructor
@@ -153,14 +152,14 @@ namespace tchecker {
       virtual ~syncprod_t() = default;
       
       /*!
-       \brief Assignment operator (deleted)
+       \brief Assignment operator
        */
-      tchecker::syncprod::syncprod_t & operator= (tchecker::syncprod::syncprod_t const &) = delete;
+      tchecker::syncprod::syncprod_t & operator= (tchecker::syncprod::syncprod_t const &) = default;
       
       /*!
-       \brief Move-assignment operator (deleted)
+       \brief Move-assignment operator
        */
-      tchecker::syncprod::syncprod_t & operator= (tchecker::syncprod::syncprod_t &&) = delete;
+      tchecker::syncprod::syncprod_t & operator= (tchecker::syncprod::syncprod_t &&) = default;
             
       /*!
        \brief Accessor
@@ -207,7 +206,7 @@ namespace tchecker {
        */
       tchecker::syncprod::system_t const & system() const;
     private:
-      tchecker::syncprod::system_t const & _system; /*!< System of timed processes */
+      std::shared_ptr<tchecker::syncprod::system_t const> _system; /*!< System of timed processes */
     };
     
   } // end of namespace syncprod

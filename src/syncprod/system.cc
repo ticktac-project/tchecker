@@ -105,9 +105,11 @@ public:
    \param separator : separator for names
    \param process_name : name of synchronized process
    */
-  synchronizer_t(tchecker::syncprod::system_t const & system, std::string const & separator, std::string const & process_name)
-      : _system(system), _separator(separator), _process_name(process_name), _product(_system.name(), _system.attributes()),
-        _salloc(1000000, 1000000, _system.processes_count()), _talloc(1000000, 1000000, _system.processes_count())
+  synchronizer_t(std::shared_ptr<tchecker::syncprod::system_t const> const & system,
+   std::string const & separator, 
+   std::string const & process_name)
+      : _system(system), _separator(separator), _process_name(process_name), _product(_system->name(), _system->attributes()),
+        _salloc(1000000, 1000000, _system->processes_count()), _talloc(1000000, 1000000, _system->processes_count())
   {
     integer_variables();
     clock_variables();
@@ -138,7 +140,7 @@ private:
       if (it != begin)
         name += _separator;
       tchecker::system::sync_constraint_t const & constr = *it;
-      name += _system.process_name(constr.pid()) + _separator + _system.event_name(constr.event_id());
+      name += _system->process_name(constr.pid()) + _separator + _system->event_name(constr.event_id());
     }
     return name;
   }
@@ -153,7 +155,7 @@ private:
     for (auto it = begin; it != end; ++it) {
       if (it != begin)
         name += _separator;
-      name += _system.location(*it)->name();
+      name += _system->location(*it)->name();
     }
     return name;
   }
@@ -165,7 +167,7 @@ private:
   {
     tchecker::system::attributes_t attr;
     for (tchecker::loc_id_t id : state->vloc())
-      attr.add_attributes(_system.location(id)->attributes());
+      attr.add_attributes(_system->location(id)->attributes());
     return attr;
   }
 
@@ -179,7 +181,9 @@ private:
     for (auto it = begin; it != end; ++it) {
       if (it != begin)
         name += _separator;
-      name += _system.process_name(_system.edge(*it)->pid()) + _separator + _system.event_name(_system.edge(*it)->event_id());
+      name += _system->process_name(_system->edge(*it)->pid()) + 
+              _separator + 
+              _system->event_name(_system->edge(*it)->event_id());
     }
     return name;
   }
@@ -191,7 +195,7 @@ private:
   {
     tchecker::system::attributes_t attr;
     for (tchecker::event_id_t id : transition->vedge())
-      attr.add_attributes(_system.edge(id)->attributes());
+      attr.add_attributes(_system->edge(id)->attributes());
     return attr;
   }
 
@@ -200,10 +204,10 @@ private:
    */
   void integer_variables()
   {
-    for (tchecker::intvar_id_t id = 0; id < _system.intvars_count(tchecker::VK_DECLARED); ++id) {
-      tchecker::intvar_info_t const & info = _system.integer_variables().info(id);
-      _product.add_intvar(_system.intvar_name(id), info.size(), info.min(), info.max(), info.initial_value(),
-                          _system.intvar_attributes(id));
+    for (tchecker::intvar_id_t id = 0; id < _system->intvars_count(tchecker::VK_DECLARED); ++id) {
+      tchecker::intvar_info_t const & info = _system->integer_variables().info(id);
+      _product.add_intvar(_system->intvar_name(id), info.size(), info.min(), info.max(), info.initial_value(),
+                          _system->intvar_attributes(id));
     }
   }
 
@@ -212,9 +216,9 @@ private:
    */
   void clock_variables()
   {
-    for (tchecker::clock_id_t id = 0; id < _system.clocks_count(tchecker::VK_DECLARED); ++id) {
-      tchecker::clock_info_t const & info = _system.clock_variables().info(id);
-      _product.add_clock(_system.clock_name(id), info.size(), _system.clock_attributes(id));
+    for (tchecker::clock_id_t id = 0; id < _system->clocks_count(tchecker::VK_DECLARED); ++id) {
+      tchecker::clock_info_t const & info = _system->clock_variables().info(id);
+      _product.add_clock(_system->clock_name(id), info.size(), _system->clock_attributes(id));
     }
   }
 
@@ -309,15 +313,16 @@ private:
     }
   }
 
-  tchecker::syncprod::system_t const & _system;            /*!< Original system of timed processes */
-  std::string const & _separator;                          /*!< Separator string */
-  std::string const & _process_name;                       /*!< Name of synchronized process */
-  tchecker::system::system_t _product;                     /*!< Synchronized product of _system */
-  tchecker::syncprod::state_pool_allocator_t _salloc;      /*!< Allocator of states in synchronized product */
-  tchecker::syncprod::transition_pool_allocator_t _talloc; /*!< Allocator of transitions in synchronized product */
+  std::shared_ptr<tchecker::syncprod::system_t const> _system; /*!< System of timed processes */
+  std::string _separator;                                      /*!< Separator string */
+  std::string _process_name;                                   /*!< Name of synchronized process */
+  tchecker::system::system_t _product;                         /*!< Synchronized product of _system */
+  tchecker::syncprod::state_pool_allocator_t _salloc;          /*!< Allocator of states in synchronized product */
+  tchecker::syncprod::transition_pool_allocator_t _talloc;     /*!< Allocator of transitions in synchronized product */
 };
 
-tchecker::system::system_t synchronized_product(tchecker::syncprod::system_t const & system, std::string const & process_name,
+tchecker::system::system_t synchronized_product(std::shared_ptr<tchecker::syncprod::system_t const> const & system,
+                                                std::string const & process_name,
                                                 std::string const & separator)
 {
   tchecker::syncprod::synchronizer_t synchronizer(system, separator, process_name);

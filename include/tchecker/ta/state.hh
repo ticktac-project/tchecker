@@ -41,7 +41,6 @@ namespace tchecker {
        \param vloc : tuple of locations
        \param intval : integer variables valuation
        \pre vloc and intval must not point to nullptr (checked by assertion)
-       \note this keeps a pointer to vloc and a pointer to intval
        */
       explicit state_t(tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
                        tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval);
@@ -52,7 +51,6 @@ namespace tchecker {
        \param vloc : tuple of locations
        \param intval : integer variables valuation
        \pre vloc and intval must not point to nullptr (checked by assertion)
-       \note this keeps a pointer to vloc and a pointer to intval
        \note the state is copied from s, except the tuple of locations which is initialized from vloc, and the valuation of bounded
        integer variables which is initialized from intval
        */

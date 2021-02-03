@@ -32,7 +32,6 @@ namespace tchecker {
        \brief Constructor
        \param vedge : tuple of edges
        \pre vedge must not point to nullptr (checked by assertion)
-       \note this keeps a pointer to vedge
        */
       explicit transition_t(tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge);
           
@@ -41,7 +40,6 @@ namespace tchecker {
        \param t : a transition
        \param vedge : tuple of edges
        \pre vedge must not point to nullptr (checked by assertion)
-       \note this keeps a pointer to vedge
        \note the transition is copied from t, except the tuple of edges which is initialized from vedge
        */
       transition_t(tchecker::syncprod::transition_t const & t,

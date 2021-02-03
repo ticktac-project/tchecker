@@ -100,13 +100,13 @@ namespace tchecker {
     
     /* syncprod_t */
     
-    syncprod_t::syncprod_t(tchecker::syncprod::system_t const & system) : _system(system)
+    syncprod_t::syncprod_t(std::shared_ptr<tchecker::syncprod::system_t const> const & system) : _system(system)
     {}
     
 
     tchecker::range_t<tchecker::syncprod::initial_iterator_t> syncprod_t::initial()
     {
-      return tchecker::syncprod::initial(_system);
+      return tchecker::syncprod::initial(*_system);
     }
     
 
@@ -114,14 +114,14 @@ namespace tchecker {
                                                          tchecker::syncprod::transition_t & t,
                                                          tchecker::syncprod::initial_iterator_value_t const & v)
     {
-      return tchecker::syncprod::initialize(_system, s.vloc_ptr(), t.vedge_ptr(), v);
+      return tchecker::syncprod::initialize(*_system, s.vloc_ptr(), t.vedge_ptr(), v);
     }
     
 
     tchecker::range_t<tchecker::syncprod::outgoing_edges_iterator_t>
     syncprod_t::outgoing_edges(tchecker::syncprod::state_t const & s)
     {
-      return tchecker::syncprod::outgoing_edges(_system, s.vloc_ptr());
+      return tchecker::syncprod::outgoing_edges(*_system, s.vloc_ptr());
     }
     
     
@@ -130,13 +130,13 @@ namespace tchecker {
      tchecker::syncprod::transition_t & t,
      tchecker::syncprod::outgoing_edges_iterator_value_t const & v)
     {
-      return tchecker::syncprod::next(_system, s.vloc_ptr(), t.vedge_ptr(), v);
+      return tchecker::syncprod::next(*_system, s.vloc_ptr(), t.vedge_ptr(), v);
     }
     
     
     tchecker::syncprod::system_t const & syncprod_t::system() const
     {
-      return _system;
+      return *_system;
     }
     
   } // end of namespace syncprod

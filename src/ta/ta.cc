@@ -98,29 +98,29 @@ enum tchecker::state_status_t next(tchecker::ta::system_t const & system,
 
 /* ta_t */
 
-ta_t::ta_t(tchecker::ta::system_t const & system) : _system(system) {}
+ta_t::ta_t(std::shared_ptr<tchecker::ta::system_t const> const & system) : _system(system) {}
 
-tchecker::range_t<tchecker::ta::initial_iterator_t> ta_t::initial() { return tchecker::ta::initial(_system); }
+tchecker::range_t<tchecker::ta::initial_iterator_t> ta_t::initial() { return tchecker::ta::initial(*_system); }
 
 enum tchecker::state_status_t ta_t::initialize(tchecker::ta::state_t & s, tchecker::ta::transition_t & t,
                                                tchecker::ta::initial_iterator_value_t const & v)
 {
-  return tchecker::ta::initialize(_system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), t.tgt_invariant_container(), v);
+  return tchecker::ta::initialize(*_system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), t.tgt_invariant_container(), v);
 }
 
 tchecker::range_t<tchecker::ta::outgoing_edges_iterator_t> ta_t::outgoing_edges(tchecker::ta::state_t const & s)
 {
-  return tchecker::ta::outgoing_edges(_system, s.vloc_ptr());
+  return tchecker::ta::outgoing_edges(*_system, s.vloc_ptr());
 }
 
 enum tchecker::state_status_t ta_t::next(tchecker::ta::state_t & s, tchecker::ta::transition_t & t,
                                          tchecker::ta::outgoing_edges_iterator_value_t const & v)
 {
-  return tchecker::ta::next(_system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), t.src_invariant_container(),
+  return tchecker::ta::next(*_system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), t.src_invariant_container(),
                             t.guard_container(), t.reset_container(), t.tgt_invariant_container(), v);
 }
 
-tchecker::ta::system_t const & ta_t::system() const { return _system; }
+tchecker::ta::system_t const & ta_t::system() const { return *_system; }
 
 /* delay_allowed */
 

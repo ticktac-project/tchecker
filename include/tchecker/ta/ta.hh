@@ -150,9 +150,8 @@ public:
   /*!
    \brief Constructor
    \param system : a system of timed processes
-   \note this keeps a reference on system
    */
-  ta_t(tchecker::ta::system_t const & system);
+  ta_t(std::shared_ptr<tchecker::ta::system_t const> const & system);
 
   /*!
    \brief Copy constructor
@@ -170,14 +169,14 @@ public:
   virtual ~ta_t() = default;
 
   /*!
-   \brief Assignment operator (deleted)
+   \brief Assignment operator
    */
-  tchecker::ta::ta_t & operator=(tchecker::ta::ta_t const &) = delete;
+  tchecker::ta::ta_t & operator=(tchecker::ta::ta_t const &) = default;
 
   /*!
-   \brief Move-assignment operator (deleted)
+   \brief Move-assignment operator
    */
-  tchecker::ta::ta_t & operator=(tchecker::ta::ta_t &&) = delete;
+  tchecker::ta::ta_t & operator=(tchecker::ta::ta_t &&) = default;
 
   /*!
    \brief Accessor
@@ -223,7 +222,7 @@ public:
   tchecker::ta::system_t const & system() const;
 
 private:
-  tchecker::ta::system_t const & _system; /*!< System of timed processes */
+  std::shared_ptr<tchecker::ta::system_t const> _system; /*!< System of timed processes */
 };
 
 /*!
