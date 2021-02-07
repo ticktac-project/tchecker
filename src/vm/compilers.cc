@@ -406,7 +406,7 @@ private:
     case tchecker::EXPR_OP_MOD:
       return tchecker::VM_MOD;
     default:
-      throw std::runtime_error("incomplete swicth statement");
+      throw std::runtime_error("incomplete switch statement");
     }
   }
 
@@ -423,7 +423,7 @@ private:
     case tchecker::EXPR_OP_LNOT:
       return tchecker::VM_LNOT;
     default:
-      throw std::runtime_error("incomplete swicth statement");
+      throw std::runtime_error("incomplete switch statement");
     }
   }
 
