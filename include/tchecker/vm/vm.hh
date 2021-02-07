@@ -537,15 +537,16 @@ protected:
    \brief Accessor
    \tparam T : type of value
    \return top stack value casted to T
-   \pre the stack is not empty and the top value can be represented by type T
-   (checked by assertion)
+   \pre the stack is not empty (checked by assertion)
+   the top value can be represented by type T
+   \throw std::runtime_error : if the top value cannot be represented by type T
    */
   template <class T> inline T top()
   {
     assert(_stack.size() >= 1);
     tchecker::bytecode_t const val = _stack.back();
     if (!contains_value<T>(val))
-      throw std::runtime_error("value out-of-bounds");
+      throw std::runtime_error("vm_t::top, value out-of-bounds");
     return static_cast<T>(val);
   }
 
@@ -567,13 +568,14 @@ protected:
    \brief Push a value to the stack
    \tparam T : type of value
    \param t : value
-   \pre t can be represented by tchecker::bytecode_t (checked by assertion)
+   \pre t can be represented by tchecker::bytecode_t
    \post t has been pushed on the stack
+   \throw std::runtime_exception : if t cannot be represented by tchecker::bytecode_t
    */
   template <class T> inline void push(T t)
   {
     if (!contains_value<tchecker::bytecode_t>(t))
-      throw std::runtime_error("value out-of-bounds");
+      throw std::runtime_error("vm_t::push, value out-of-bounds");
     _stack.push_back(t);
   }
 
