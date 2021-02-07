@@ -80,7 +80,9 @@ static_assert((std::numeric_limits<tchecker::clock_id_t>::min() >= std::numeric_
 /*!
 \brief Definition of reference clock ID
 */
-tchecker::clock_id_t const REFCLOCK_ID(std::numeric_limits<tchecker::clock_id_t>::max());
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+tchecker::clock_id_t const REFCLOCK_ID(MIN(std::numeric_limits<tchecker::clock_id_t>::max(),
+                                           std::numeric_limits<tchecker::integer_t>::max())); // required by vm_t
 
 /*!
 \brief Definition of reference clock name
