@@ -8,6 +8,8 @@
 #ifndef TCHECKER_TS_TRANSITION_HH
 #define TCHECKER_TS_TRANSITION_HH
 
+#include <cstdlib>
+
 /*!
  \file transition.hh
  \brief Basic transition for transition systems

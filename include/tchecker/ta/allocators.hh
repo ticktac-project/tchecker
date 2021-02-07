@@ -30,14 +30,14 @@ namespace details {
  \tparam STATE : type of states, should inherit from tchecker::ta::state_t and should be a tchecker::make_shared object
  \brief Pool allocator for states of timed automata that can be extended to allocate more complex states
  */
-template <class STATE> class state_pool_allocator_t : private tchecker::syncprod::state_pool_allocator_t<STATE> {
+template <class STATE> class state_pool_allocator_t : private tchecker::syncprod::details::state_pool_allocator_t<STATE> {
   static_assert(std::is_base_of<tchecker::ta::state_t, STATE>::value, "");
 
 public:
   /*!
    \brief Type of allocated states
    */
-  using state_t = typename tchecker::syncprod::state_pool_allocator_t<STATE>::state_t;
+  using state_t = typename tchecker::syncprod::details::state_pool_allocator_t<STATE>::state_t;
 
   /*!
    \brief Type of allocated objects (states)
@@ -59,9 +59,9 @@ public:
    */
   state_pool_allocator_t(std::size_t state_alloc_nb, std::size_t vloc_alloc_nb, std::size_t vloc_capacity,
                          std::size_t intval_alloc_nb, std::size_t intval_capacity)
-      : tchecker::syncprod::state_pool_allocator_t<STATE>(state_alloc_nb, vloc_alloc_nb, vloc_capacity),
+      : tchecker::syncprod::details::state_pool_allocator_t<STATE>(state_alloc_nb, vloc_alloc_nb, vloc_capacity),
         _intval_capacity(intval_capacity),
-        _intval_pool(intval_nb, tchecker::allocation_size_t<tchecker::shared_intval_t>::alloc_size(_intval_capacity))
+        _intval_pool(intval_alloc_nb, tchecker::allocation_size_t<tchecker::shared_intval_t>::alloc_size(_intval_capacity))
   {
   }
 
@@ -100,7 +100,8 @@ public:
    */
   template <class... ARGS> tchecker::intrusive_shared_ptr_t<STATE> construct(ARGS &&... args)
   {
-    return tchecker::syncprod::state_pool_allocator_t<STATE>::construct(args..., _intval_pool.construct(_intval_capacity));
+    return tchecker::syncprod::details::state_pool_allocator_t<STATE>::construct(_intval_pool.construct(_intval_capacity),
+                                                                                 args...);
   }
 
   /*!
@@ -112,8 +113,8 @@ public:
    */
   template <class... ARGS> tchecker::intrusive_shared_ptr_t<STATE> construct_from_state(STATE const & state, ARGS &&... args)
   {
-    return tchecker::syncprod::state_pool_allocator_t<STATE>::construct_from_state(state, args...,
-                                                                                   _intval_pool.construct(state.intval()));
+    return tchecker::syncprod::details::state_pool_allocator_t<STATE>::construct_from_state(
+        state, _intval_pool.construct(state.intval()), args...);
   }
 
   /*!
@@ -123,7 +124,7 @@ public:
    \pre p is not nullptr
    \post the state pointed by p has been destructed if its reference counter is 1 (i.e. p is the
    only pointer to the state), does nothing otherwise
-   p points to nullptr if the state has been dstructed
+   p points to nullptr if the state has been destructed
    \return true if the state has been destructed, false otherwise
    */
   bool destruct(tchecker::intrusive_shared_ptr_t<STATE> & p)
@@ -133,7 +134,7 @@ public:
 
     auto intval_ptr = p->intval_ptr();
 
-    if (!tchecker::syncprod::state_pool_allocator_t<STATE>::destruct(p))
+    if (!tchecker::syncprod::details::state_pool_allocator_t<STATE>::destruct(p))
       return false;
 
     _intval_pool.destruct(intval_ptr);
@@ -147,7 +148,7 @@ public:
    */
   void collect()
   {
-    tchecker::syncprod::state_pool_allocator_t<STATE>::collect();
+    tchecker::syncprod::details::state_pool_allocator_t<STATE>::collect();
     _intval_pool.collect();
   }
 
@@ -159,7 +160,7 @@ public:
    */
   void destruct_all()
   {
-    tchecker::syncprod::state_pool_allocator_t<STATE>::destruct_all();
+    tchecker::syncprod::details::state_pool_allocator_t<STATE>::destruct_all();
     _intval_pool.destruct_all();
   }
 
@@ -172,7 +173,7 @@ public:
    */
   void free_all()
   {
-    tchecker::syncprod::state_pool_allocator_t<STATE>::free_all();
+    tchecker::syncprod::details::state_pool_allocator_t<STATE>::free_all();
     _intval_pool.free_all();
   }
 
@@ -180,17 +181,21 @@ public:
    \brief Accessor
    \return Memory used by this state allocator
    */
-  std::size_t memsize() const { return tchecker::syncprod::state_pool_allocator_t<STATE>::memsize() + _intval_pool.memsize(); }
+  std::size_t memsize() const
+  {
+    return tchecker::syncprod::details::state_pool_allocator_t<STATE>::memsize() + _intval_pool.memsize();
+  }
 
   /*!
    \brief Enroll on garbage collector
    \param gc : garbage collector
    \post The state allocator, vloc  pool allocator and valuation of bounded integer variables pool allocator have been enrolled
-   on gc \note this allocator should be enrolled on at most one GC
+   on gc
+   \note this allocator should be enrolled on at most one GC
    */
   void enroll(tchecker::gc_t & gc)
   {
-    tchecker::sync::state_pool_allocator_t<STATE>::enroll(gc);
+    tchecker::syncprod::details::state_pool_allocator_t<STATE>::enroll(gc);
     _intval_pool.enroll(gc);
   }
 
@@ -205,14 +210,14 @@ protected:
  object \brief Pool allocator for transitions of timed automata that can be extended to allocate more complex transitions
  */
 template <class TRANSITION>
-class transition_pool_allocator_t : private tchecker::syncprod::transition_pool_allocator_t<TRANSITION> {
+class transition_pool_allocator_t : private tchecker::syncprod::details::transition_pool_allocator_t<TRANSITION> {
   static_assert(std::is_base_of<tchecker::ta::transition_t, TRANSITION>::value, "");
 
 public:
   /*!
    \brief Type of allocated transitions
    */
-  using transition_t = typename tchecker::syncprod::transition_pool_allocator_t<TRANSITION>::transition_t;
+  using transition_t = typename tchecker::syncprod::details::transition_pool_allocator_t<TRANSITION>::transition_t;
 
   /*!
    \brief Type of allocated objects (transitions)
@@ -224,16 +229,15 @@ public:
    */
   using ptr_t = tchecker::intrusive_shared_ptr_t<transition_t>;
 
-  using tchecker::syncprod::transition_pool_allocator_t::transition_pool_allocator_t;
-  using tchecker::syncprod::transition_pool_allocator_t::~transition_pool_allocator_t;
-  using tchecker::syncprod::transition_pool_allocator_t::collect;
-  using tchecker::syncprod::transition_pool_allocator_t::construct;
-  using tchecker::syncprod::transition_pool_allocator_t::construct_from_transition;
-  using tchecker::syncprod::transition_pool_allocator_t::destruct;
-  using tchecker::syncprod::transition_pool_allocator_t::destruct_all;
-  using tchecker::syncprod::transition_pool_allocator_t::enroll;
-  using tchecker::syncprod::transition_pool_allocator_t::free_all;
-  using tchecker::syncprod::transition_pool_allocator_t::memsize;
+  using tchecker::syncprod::details::transition_pool_allocator_t<TRANSITION>::transition_pool_allocator_t;
+  using tchecker::syncprod::details::transition_pool_allocator_t<TRANSITION>::collect;
+  using tchecker::syncprod::details::transition_pool_allocator_t<TRANSITION>::construct;
+  using tchecker::syncprod::details::transition_pool_allocator_t<TRANSITION>::construct_from_transition;
+  using tchecker::syncprod::details::transition_pool_allocator_t<TRANSITION>::destruct;
+  using tchecker::syncprod::details::transition_pool_allocator_t<TRANSITION>::destruct_all;
+  using tchecker::syncprod::details::transition_pool_allocator_t<TRANSITION>::enroll;
+  using tchecker::syncprod::details::transition_pool_allocator_t<TRANSITION>::free_all;
+  using tchecker::syncprod::details::transition_pool_allocator_t<TRANSITION>::memsize;
 };
 
 } // end of namespace details

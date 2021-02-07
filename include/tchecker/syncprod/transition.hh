@@ -128,9 +128,19 @@ std::size_t hash_value(tchecker::syncprod::transition_t const & t);
 int lexical_cmp(tchecker::syncprod::transition_t const & t1, tchecker::syncprod::transition_t const & t2);
 
 /*!
- \brief Type of shared transitions
+ \brief Type of shared transition
  */
 using shared_transition_t = tchecker::make_shared_t<tchecker::syncprod::transition_t>;
+
+/*!
+\brief Type of pointer to shared transition
+*/
+using transition_sptr_t = tchecker::intrusive_shared_ptr_t<tchecker::syncprod::shared_transition_t>;
+
+/*!
+\brief Type of pointer to shared const transition
+*/
+using const_transition_sptr_t = tchecker::intrusive_shared_ptr_t<tchecker::syncprod::shared_transition_t const>;
 
 } // end of namespace syncprod
 

@@ -138,9 +138,19 @@ std::size_t hash_value(tchecker::ta::state_t const & s);
 int lexical_cmp(tchecker::ta::state_t const & s1, tchecker::ta::state_t const & s2);
 
 /*!
- \brief Type of shared states
+ \brief Type of shared state
  */
 using shared_state_t = tchecker::make_shared_t<tchecker::ta::state_t>;
+
+/*!
+\brief Type of pointer to shared state
+*/
+using state_sptr_t = tchecker::intrusive_shared_ptr_t<tchecker::ta::shared_state_t>;
+
+/*!
+\brief Type of pointer to shared const state
+*/
+using const_state_sptr_t = tchecker::intrusive_shared_ptr_t<tchecker::ta::shared_state_t const>;
 
 } // end of namespace ta
 

@@ -8,7 +8,10 @@
 #ifndef TCHECKER_SYNCPROD_SYNCPROD_HH
 #define TCHECKER_SYNCPROD_SYNCPROD_HH
 
+#include <cstdlib>
+
 #include "tchecker/basictypes.hh"
+#include "tchecker/syncprod/allocators.hh"
 #include "tchecker/syncprod/edges_iterators.hh"
 #include "tchecker/syncprod/state.hh"
 #include "tchecker/syncprod/system.hh"
@@ -17,6 +20,7 @@
 #include "tchecker/syncprod/vloc.hh"
 #include "tchecker/ts/ts.hh"
 #include "tchecker/utils/iterator.hh"
+#include "tchecker/utils/shared_objects.hh"
 
 /*!
  \file syncprod.hh
@@ -37,7 +41,7 @@ using initial_iterator_t = tchecker::cartesian_iterator_t<tchecker::system::locs
  \param system : a system
  \return range of initial states
  */
-tchecker::range_t<tchecker::syncprod::initial_iterator_t> initial(tchecker::syncprod::system_t const & system);
+tchecker::range_t<tchecker::syncprod::initial_iterator_t> initial_states(tchecker::syncprod::system_t const & system);
 
 /*!
  \brief Dereference type for iterator over initial states
@@ -45,7 +49,7 @@ tchecker::range_t<tchecker::syncprod::initial_iterator_t> initial(tchecker::sync
 using initial_iterator_value_t = std::iterator_traits<tchecker::syncprod::initial_iterator_t>::value_type;
 
 /*!
- \brief Initialize state
+ \brief Compute initial state
  \param system : a system
  \param vloc : tuple of locations
  \param vedge : tuple of edges
@@ -58,10 +62,27 @@ using initial_iterator_value_t = std::iterator_traits<tchecker::syncprod::initia
  \return tchecker::STATE_OK
  \throw std::invalid_argument : if the size of vloc, vedge and initial_range do not coincide
  */
-enum tchecker::state_status_t initialize(tchecker::syncprod::system_t const & system,
-                                         tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                                         tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                                         tchecker::syncprod::initial_iterator_value_t const & initial_range);
+enum tchecker::state_status_t initial(tchecker::syncprod::system_t const & system,
+                                      tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
+                                      tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+                                      tchecker::syncprod::initial_iterator_value_t const & initial_range);
+
+/*!
+\brief Compute initial state and transition
+\param system : a system
+\param s : state
+\param t : transition
+\param v : initial iterator value
+\post s has been initialized from v, and t is an empty transition
+\return tchecker::STATE_OK
+\throw std::invalid_argument : if s and v have incompatible sizes
+*/
+inline enum tchecker::state_status_t initial(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t & s,
+                                             tchecker::syncprod::transition_t & t,
+                                             tchecker::syncprod::initial_iterator_value_t const & v)
+{
+  return tchecker::syncprod::initial(system, s.vloc_ptr(), t.vedge_ptr(), v);
+}
 
 /*!
  \brief Type of iterator over outgoing edges
@@ -106,30 +127,51 @@ enum tchecker::state_status_t next(tchecker::syncprod::system_t const & system,
                                    tchecker::syncprod::outgoing_edges_iterator_value_t const & edges);
 
 /*!
+\brief Compute next state and transition
+\param system : a system
+\param s : state
+\param t : transition
+\param v : outgoing edge value
+\post s have been updated from v, and t is the set of edges in v
+\return status of state s after update
+\throw std::invalid_argument : if s and v have incompatible size
+*/
+inline enum tchecker::state_status_t next(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t & s,
+                                          tchecker::syncprod::transition_t & t,
+                                          tchecker::syncprod::outgoing_edges_iterator_value_t const & v)
+{
+  return tchecker::syncprod::next(system, s.vloc_ptr(), t.vedge_ptr(), v);
+}
+
+/*!
  \class syncprod_t
- \brief Synchronized product of timed processes
+ \brief Synchronized product of timed processes with state and transition
+ allocation
+ \note all returned states and transitions deallocated automatically
  */
 class syncprod_t final
-    : public tchecker::ts::ts_t<tchecker::syncprod::state_t, tchecker::syncprod::transition_t,
-                                tchecker::syncprod::initial_iterator_t, tchecker::syncprod::outgoing_edges_iterator_t,
-                                tchecker::syncprod::initial_iterator_value_t,
+    : public tchecker::ts::ts_t<tchecker::syncprod::state_sptr_t, tchecker::syncprod::const_state_sptr_t,
+                                tchecker::syncprod::transition_sptr_t, tchecker::syncprod::initial_iterator_t,
+                                tchecker::syncprod::outgoing_edges_iterator_t, tchecker::syncprod::initial_iterator_value_t,
                                 tchecker::syncprod::outgoing_edges_iterator_value_t> {
 public:
   /*!
    \brief Constructor
    \param system : a system of timed processes
+   \param block_size : number of objects allocated in a block
+   \note all states and transitions are pool allocated and deallocated automatically
    */
-  syncprod_t(std::shared_ptr<tchecker::syncprod::system_t const> const & system);
+  syncprod_t(std::shared_ptr<tchecker::syncprod::system_t const> const & system, std::size_t block_size);
 
   /*!
-   \brief Copy constructor
+   \brief Copy constructor (deleted)
    */
-  syncprod_t(tchecker::syncprod::syncprod_t const &) = default;
+  syncprod_t(tchecker::syncprod::syncprod_t const &) = delete;
 
   /*!
-   \brief Move constructor
+   \brief Move constructor (deleted)
    */
-  syncprod_t(tchecker::syncprod::syncprod_t &&) = default;
+  syncprod_t(tchecker::syncprod::syncprod_t &&) = delete;
 
   /*!
    \brief Destructor
@@ -137,31 +179,31 @@ public:
   virtual ~syncprod_t() = default;
 
   /*!
-   \brief Assignment operator
+   \brief Assignment operator (deleted)
    */
-  tchecker::syncprod::syncprod_t & operator=(tchecker::syncprod::syncprod_t const &) = default;
+  tchecker::syncprod::syncprod_t & operator=(tchecker::syncprod::syncprod_t const &) = delete;
 
   /*!
-   \brief Move-assignment operator
+   \brief Move-assignment operator (deleted)
    */
-  tchecker::syncprod::syncprod_t & operator=(tchecker::syncprod::syncprod_t &&) = default;
+  tchecker::syncprod::syncprod_t & operator=(tchecker::syncprod::syncprod_t &&) = delete;
 
   /*!
    \brief Accessor
    \return initial state iterators
    */
-  virtual tchecker::range_t<tchecker::syncprod::initial_iterator_t> initial();
+  virtual tchecker::range_t<tchecker::syncprod::initial_iterator_t> initial_states();
 
   /*!
-   \brief Initialize state
-   \param s : state
-   \param t : transition
-   \param v : initial iterator value
-   \post s has been initialized from v, and t is an empty transition
-   \return status of state s after initialization
+   \brief Initial state and transition
+   \param v : initial state valuation
+   \post state s and transition t have been initialized from v
+   \return (status, s, t) where initial state s and initial transition t have
+   been computed from v, and status is the status of state s after initialization
+   \note s and t are deallocated automatically
    */
-  virtual enum tchecker::state_status_t initialize(tchecker::syncprod::state_t & s, tchecker::syncprod::transition_t & t,
-                                                   tchecker::syncprod::initial_iterator_value_t const & v);
+  virtual std::tuple<enum tchecker::state_status_t, tchecker::syncprod::state_sptr_t, tchecker::syncprod::transition_sptr_t>
+  initial(tchecker::syncprod::initial_iterator_value_t const & v);
 
   /*!
    \brief Accessor
@@ -169,18 +211,18 @@ public:
    \return outgoing edges from state s
    */
   virtual tchecker::range_t<tchecker::syncprod::outgoing_edges_iterator_t>
-  outgoing_edges(tchecker::syncprod::state_t const & s);
+  outgoing_edges(tchecker::syncprod::const_state_sptr_t const & s);
 
   /*!
-   \brief Next state computation
+   \brief Next state and transition
    \param s : state
-   \param t : transition
    \param v : outgoing edge value
-   \post s have been updated from v, and t is the set of edges in v
-   \return status of state s after update
+   \return (status, s', t) where next state s' and transition t have been
+   computed from v, and status is the status of state s'
+   \note s' and t are deallocated automatically
    */
-  virtual enum tchecker::state_status_t next(tchecker::syncprod::state_t & s, tchecker::syncprod::transition_t & t,
-                                             tchecker::syncprod::outgoing_edges_iterator_value_t const & v);
+  virtual std::tuple<enum tchecker::state_status_t, tchecker::syncprod::state_sptr_t, tchecker::syncprod::transition_sptr_t>
+  next(tchecker::syncprod::const_state_sptr_t const & s, tchecker::syncprod::outgoing_edges_iterator_value_t const & v);
 
   /*!
    \brief Accessor
@@ -189,7 +231,9 @@ public:
   tchecker::syncprod::system_t const & system() const;
 
 private:
-  std::shared_ptr<tchecker::syncprod::system_t const> _system; /*!< System of timed processes */
+  std::shared_ptr<tchecker::syncprod::system_t const> _system;           /*!< System of timed processes */
+  tchecker::syncprod::state_pool_allocator_t _state_allocator;           /*!< Allocator of states */
+  tchecker::syncprod::transition_pool_allocator_t _transition_allocator; /*!< Allocator of transitions */
 };
 
 } // end of namespace syncprod

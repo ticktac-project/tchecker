@@ -8,10 +8,13 @@
 #ifndef TCHECKER_TA_HH
 #define TCHECKER_TA_HH
 
+#include <cstdlib>
+
 #include "tchecker/basictypes.hh"
 #include "tchecker/syncprod/syncprod.hh"
 #include "tchecker/syncprod/vedge.hh"
 #include "tchecker/syncprod/vloc.hh"
+#include "tchecker/ta/allocators.hh"
 #include "tchecker/ta/state.hh"
 #include "tchecker/ta/system.hh"
 #include "tchecker/ta/transition.hh"
@@ -38,9 +41,9 @@ using initial_iterator_t = tchecker::syncprod::initial_iterator_t;
  \param system : a system
  \return range of initial states
  */
-inline tchecker::range_t<tchecker::ta::initial_iterator_t> initial(tchecker::ta::system_t const & system)
+inline tchecker::range_t<tchecker::ta::initial_iterator_t> initial_states(tchecker::ta::system_t const & system)
 {
-  return tchecker::syncprod::initial(system.as_syncprod_system());
+  return tchecker::syncprod::initial_states(system.as_syncprod_system());
 }
 
 /*!
@@ -49,7 +52,7 @@ inline tchecker::range_t<tchecker::ta::initial_iterator_t> initial(tchecker::ta:
 using initial_iterator_value_t = tchecker::syncprod::initial_iterator_value_t;
 
 /*!
- \brief Initialize state
+ \brief Compute initial state
  \param system : a system
  \param vloc : tuple of locations
  \param intval : valuation of bounded integer variables
@@ -67,12 +70,28 @@ using initial_iterator_value_t = tchecker::syncprod::initial_iterator_value_t;
  STATE_SRC_INVARIANT_VIOLATED if the initial valuation of integer variables does not satisfy invariant
  \throw std::runtime_error : if evaluation of invariant throws an exception
  */
-enum tchecker::state_status_t initialize(tchecker::ta::system_t const & system,
-                                         tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                                         tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                                         tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                                         tchecker::clock_constraint_container_t & invariant,
-                                         tchecker::ta::initial_iterator_value_t const & initial_range);
+enum tchecker::state_status_t initial(tchecker::ta::system_t const & system,
+                                      tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
+                                      tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
+                                      tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+                                      tchecker::clock_constraint_container_t & invariant,
+                                      tchecker::ta::initial_iterator_value_t const & initial_range);
+
+/*!
+\brief Compute initial state and transition
+\param system : a system
+\param s : state
+\param t : transition
+\param v : initial iterator value
+\post s has been initialized from v, and t is an empty transition
+\return tchecker::STATE_OK
+\throw std::invalid_argument : if s and v have incompatible sizes
+*/
+inline enum tchecker::state_status_t initial(tchecker::ta::system_t const & system, tchecker::ta::state_t & s,
+                                             tchecker::ta::transition_t & t, tchecker::ta::initial_iterator_value_t const & v)
+{
+  return tchecker::ta::initial(system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), t.tgt_invariant_container(), v);
+}
 
 /*!
  \brief Type of iterator over outgoing edges
@@ -139,91 +158,22 @@ enum tchecker::state_status_t next(tchecker::ta::system_t const & system,
                                    tchecker::ta::outgoing_edges_iterator_value_t const & edges);
 
 /*!
- \class ta_t
- \brief Timed automaton over a system of synchronized timed processes
- */
-class ta_t final
-    : public tchecker::ts::ts_t<tchecker::ta::state_t, tchecker::ta::transition_t, tchecker::ta::initial_iterator_t,
-                                tchecker::ta::outgoing_edges_iterator_t, tchecker::ta::initial_iterator_value_t,
-                                tchecker::ta::outgoing_edges_iterator_value_t> {
-public:
-  /*!
-   \brief Constructor
-   \param system : a system of timed processes
-   */
-  ta_t(std::shared_ptr<tchecker::ta::system_t const> const & system);
-
-  /*!
-   \brief Copy constructor
-   */
-  ta_t(tchecker::ta::ta_t const &) = default;
-
-  /*!
-   \brief Move constructor
-   */
-  ta_t(tchecker::ta::ta_t &&) = default;
-
-  /*!
-   \brief Destructor
-   */
-  virtual ~ta_t() = default;
-
-  /*!
-   \brief Assignment operator
-   */
-  tchecker::ta::ta_t & operator=(tchecker::ta::ta_t const &) = default;
-
-  /*!
-   \brief Move-assignment operator
-   */
-  tchecker::ta::ta_t & operator=(tchecker::ta::ta_t &&) = default;
-
-  /*!
-   \brief Accessor
-   \return initial state iterators
-   */
-  virtual tchecker::range_t<tchecker::ta::initial_iterator_t> initial();
-
-  /*!
-   \brief Initialize state
-   \param s : state
-   \param t : transition
-   \param v : initial iterator value
-   \post s has been initialized from v,
-   and t has empty vedge, source invariant, guard and reset,
-   and the target invariant of t contains the invariant of state s over clock variables
-   \return status of state s after initialization
-   */
-  virtual enum tchecker::state_status_t initialize(tchecker::ta::state_t & s, tchecker::ta::transition_t & t,
-                                                   tchecker::ta::initial_iterator_value_t const & v);
-
-  /*!
-   \brief Accessor
-   \param s : state
-   \return outgoing edges from state s
-   */
-  virtual tchecker::range_t<tchecker::ta::outgoing_edges_iterator_t> outgoing_edges(tchecker::ta::state_t const & s);
-
-  /*!
-   \brief Next state computation
-   \param s : state
-   \param t : transition
-   \param v : outgoing edge value
-   \post s have been updated from v, and t is the set of edges in v along with source invariant, guard, resets and target
-   invariant over clock variables \return status of state s after update
-   */
-  virtual enum tchecker::state_status_t next(tchecker::ta::state_t & s, tchecker::ta::transition_t & t,
-                                             tchecker::ta::outgoing_edges_iterator_value_t const & v);
-
-  /*!
-   \brief Accessor
-   \return Underlying system of timed processes
-   */
-  tchecker::ta::system_t const & system() const;
-
-private:
-  std::shared_ptr<tchecker::ta::system_t const> _system; /*!< System of timed processes */
-};
+\brief Compute next state and transition
+\param system : a system
+\param s : state
+\param t : transition
+\param v : outgoing edge value
+\post s have been updated from v, and t is the set of edges in v
+\return status of state s after update
+\throw std::invalid_argument : if s and v have incompatible size
+*/
+inline enum tchecker::state_status_t next(tchecker::ta::system_t const & system, tchecker::ta::state_t & s,
+                                          tchecker::ta::transition_t & t,
+                                          tchecker::ta::outgoing_edges_iterator_value_t const & v)
+{
+  return tchecker::ta::next(system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), t.src_invariant_container(),
+                            t.guard_container(), t.reset_container(), t.tgt_invariant_container(), v);
+}
 
 /*!
  \brief Checks if time can elapse in a tuple of locations
@@ -242,6 +192,94 @@ bool delay_allowed(tchecker::ta::system_t const & system, tchecker::vloc_t const
  \post allowed[i] indicates whether process i can delay (value 1) or not (value 0) from locations in vloc
  */
 void delay_allowed(tchecker::ta::system_t const & system, tchecker::vloc_t const & vloc, boost::dynamic_bitset<> & allowed);
+
+/*!
+ \class ta_t
+ \brief Timed automaton over a system of synchronized timed processes
+ */
+class ta_t final
+    : public tchecker::ts::ts_t<tchecker::ta::state_sptr_t, tchecker::ta::const_state_sptr_t, tchecker::ta::transition_sptr_t,
+                                tchecker::ta::initial_iterator_t, tchecker::ta::outgoing_edges_iterator_t,
+                                tchecker::ta::initial_iterator_value_t, tchecker::ta::outgoing_edges_iterator_value_t> {
+public:
+  /*!
+   \brief Constructor
+   \param system : a system of timed processes
+   \param block_size : number of objects allocated in a block
+   \note all states and transitions are pool allocated and deallocated automatically
+   */
+  ta_t(std::shared_ptr<tchecker::ta::system_t const> const & system, std::size_t block_size);
+
+  /*!
+   \brief Copy constructor (deleted)
+   */
+  ta_t(tchecker::ta::ta_t const &) = delete;
+
+  /*!
+   \brief Move constructor (deleted)
+   */
+  ta_t(tchecker::ta::ta_t &&) = delete;
+
+  /*!
+   \brief Destructor
+   */
+  virtual ~ta_t() = default;
+
+  /*!
+   \brief Assignment operator (deleted)
+   */
+  tchecker::ta::ta_t & operator=(tchecker::ta::ta_t const &) = delete;
+
+  /*!
+   \brief Move-assignment operator (deleted)
+   */
+  tchecker::ta::ta_t & operator=(tchecker::ta::ta_t &&) = delete;
+
+  /*!
+   \brief Accessor
+   \return initial state iterators
+   */
+  virtual tchecker::range_t<tchecker::ta::initial_iterator_t> initial_states();
+
+  /*!
+   \brief Initial state and transition
+   \param v : initial state valuation
+   \post state s and transition t have been initialized from v
+   \return (status, s, t) where initial state s and initial transition t have
+   been computed from v, and status is the status of state s after initialization
+   \note t represents an initial transition to s
+   */
+  virtual std::tuple<enum tchecker::state_status_t, tchecker::ta::state_sptr_t, tchecker::ta::transition_sptr_t>
+  initial(tchecker::ta::initial_iterator_value_t const & v);
+
+  /*!
+   \brief Accessor
+   \param s : state
+   \return outgoing edges from state s
+   */
+  virtual tchecker::range_t<tchecker::ta::outgoing_edges_iterator_t> outgoing_edges(tchecker::ta::const_state_sptr_t const & s);
+
+  /*!
+   \brief Next state and transition
+   \param s : state
+   \param v : outgoing edge value
+   \return (status, s', t) where next state s' and transition t have been
+   computed from v, and status is the status of state s'
+   */
+  virtual std::tuple<enum tchecker::state_status_t, tchecker::ta::state_sptr_t, tchecker::ta::transition_sptr_t>
+  next(tchecker::ta::const_state_sptr_t const & s, tchecker::ta::outgoing_edges_iterator_value_t const & v);
+
+  /*!
+   \brief Accessor
+   \return Underlying system of timed processes
+   */
+  tchecker::ta::system_t const & system() const;
+
+private:
+  std::shared_ptr<tchecker::ta::system_t const> _system;           /*!< System of timed processes */
+  tchecker::ta::state_pool_allocator_t _state_allocator;           /*!< Pool allocator of states */
+  tchecker::ta::transition_pool_allocator_t _transition_allocator; /*! Pool allocator of transitions */
+};
 
 } // end of namespace ta
 

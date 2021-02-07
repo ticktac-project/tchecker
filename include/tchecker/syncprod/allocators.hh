@@ -98,7 +98,7 @@ public:
    */
   template <class... ARGS> tchecker::intrusive_shared_ptr_t<STATE> construct(ARGS &&... args)
   {
-    return tchecker::ts::state_pool_allocator_t<STATE>::construct(args..., _vloc_pool.construct(_vloc_capacity));
+    return tchecker::ts::state_pool_allocator_t<STATE>::construct(_vloc_pool.construct(_vloc_capacity), args...);
   }
 
   /*!
@@ -109,8 +109,8 @@ public:
    */
   template <class... ARGS> tchecker::intrusive_shared_ptr_t<STATE> construct_from_state(STATE const & state, ARGS &&... args)
   {
-    return tchecker::ts::state_pool_allocator_t<STATE>::construct_from_state(state, args...,
-                                                                             _vloc_pool.construct(state.vloc()));
+    return tchecker::ts::state_pool_allocator_t<STATE>::construct_from_state(state, _vloc_pool.construct(state.vloc()),
+                                                                             args...);
   }
 
   /*!
@@ -197,7 +197,8 @@ protected:
 /*!
  \class transition_pool_allocator_t
  \tparam TRANSITION : type of transitions, should inherit from tchecker::syncprod::transition_t and should be a
- tchecker::make_shared object \brief Pool allocator for transitions of synchronized product of transition systems that can be
+ tchecker::make_shared object
+ \brief Pool allocator for transitions of synchronized product of transition systems that can be
  extended to allocate more complex transitions
  */
 template <class TRANSITION> class transition_pool_allocator_t : private tchecker::ts::transition_pool_allocator_t<TRANSITION> {

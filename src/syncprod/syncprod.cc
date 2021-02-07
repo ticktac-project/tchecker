@@ -13,7 +13,7 @@ namespace syncprod {
 
 /* Semantics functions */
 
-tchecker::range_t<tchecker::syncprod::initial_iterator_t> initial(tchecker::syncprod::system_t const & system)
+tchecker::range_t<tchecker::syncprod::initial_iterator_t> initial_states(tchecker::syncprod::system_t const & system)
 {
   tchecker::process_id_t processes_count = system.processes_count();
 
@@ -27,10 +27,10 @@ tchecker::range_t<tchecker::syncprod::initial_iterator_t> initial(tchecker::sync
   return tchecker::make_range(begin, end);
 }
 
-enum tchecker::state_status_t initialize(tchecker::syncprod::system_t const & system,
-                                         tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                                         tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                                         tchecker::syncprod::initial_iterator_value_t const & initial_range)
+enum tchecker::state_status_t initial(tchecker::syncprod::system_t const & system,
+                                      tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
+                                      tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+                                      tchecker::syncprod::initial_iterator_value_t const & initial_range)
 {
   auto size = vloc->size();
   if (size != vedge->size())
@@ -91,29 +91,40 @@ enum tchecker::state_status_t next(tchecker::syncprod::system_t const & system,
 
 /* syncprod_t */
 
-syncprod_t::syncprod_t(std::shared_ptr<tchecker::syncprod::system_t const> const & system) : _system(system) {}
-
-tchecker::range_t<tchecker::syncprod::initial_iterator_t> syncprod_t::initial()
+syncprod_t::syncprod_t(std::shared_ptr<tchecker::syncprod::system_t const> const & system, std::size_t block_size)
+    : _system(system), _state_allocator(block_size, block_size, _system->processes_count()),
+      _transition_allocator(block_size, block_size, _system->processes_count())
 {
-  return tchecker::syncprod::initial(*_system);
 }
 
-enum tchecker::state_status_t syncprod_t::initialize(tchecker::syncprod::state_t & s, tchecker::syncprod::transition_t & t,
-                                                     tchecker::syncprod::initial_iterator_value_t const & v)
+tchecker::range_t<tchecker::syncprod::initial_iterator_t> syncprod_t::initial_states()
 {
-  return tchecker::syncprod::initialize(*_system, s.vloc_ptr(), t.vedge_ptr(), v);
+  return tchecker::syncprod::initial_states(*_system);
+}
+
+std::tuple<enum tchecker::state_status_t, tchecker::syncprod::state_sptr_t, tchecker::syncprod::transition_sptr_t>
+syncprod_t::initial(tchecker::syncprod::initial_iterator_value_t const & v)
+{
+  tchecker::syncprod::state_sptr_t s = _state_allocator.construct();
+  tchecker::syncprod::transition_sptr_t t = _transition_allocator.construct();
+  enum tchecker::state_status_t status = tchecker::syncprod::initial(*_system, *s, *t, v);
+  return std::make_tuple(status, s, t);
 }
 
 tchecker::range_t<tchecker::syncprod::outgoing_edges_iterator_t>
-syncprod_t::outgoing_edges(tchecker::syncprod::state_t const & s)
+syncprod_t::outgoing_edges(tchecker::syncprod::const_state_sptr_t const & s)
 {
-  return tchecker::syncprod::outgoing_edges(*_system, s.vloc_ptr());
+  return tchecker::syncprod::outgoing_edges(*_system, s->vloc_ptr());
 }
 
-enum tchecker::state_status_t syncprod_t::next(tchecker::syncprod::state_t & s, tchecker::syncprod::transition_t & t,
-                                               tchecker::syncprod::outgoing_edges_iterator_value_t const & v)
+std::tuple<enum tchecker::state_status_t, tchecker::syncprod::state_sptr_t, tchecker::syncprod::transition_sptr_t>
+syncprod_t::next(tchecker::syncprod::const_state_sptr_t const & s,
+                 tchecker::syncprod::outgoing_edges_iterator_value_t const & v)
 {
-  return tchecker::syncprod::next(*_system, s.vloc_ptr(), t.vedge_ptr(), v);
+  tchecker::syncprod::state_sptr_t nexts = _state_allocator.construct_from_state(*s);
+  tchecker::syncprod::transition_sptr_t t = _transition_allocator.construct();
+  enum tchecker::state_status_t status = tchecker::syncprod::next(*_system, *nexts, *t, v);
+  return std::make_tuple(status, nexts, t);
 }
 
 tchecker::syncprod::system_t const & syncprod_t::system() const { return *_system; }

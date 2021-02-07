@@ -107,8 +107,7 @@ public:
    */
   synchronizer_t(std::shared_ptr<tchecker::syncprod::system_t const> const & system, std::string const & separator,
                  std::string const & process_name)
-      : _system(system), _separator(separator), _process_name(process_name), _product(_system->name(), _system->attributes()),
-        _salloc(1000000, 1000000, _system->processes_count()), _talloc(1000000, 1000000, _system->processes_count())
+      : _system(system), _separator(separator), _process_name(process_name), _product(_system->name(), _system->attributes())
   {
     integer_variables();
     clock_variables();
@@ -123,9 +122,6 @@ public:
   tchecker::system::system_t synchronized_product() const { return _product; }
 
 private:
-  using state_ptr_t = tchecker::intrusive_shared_ptr_t<tchecker::syncprod::shared_state_t>;
-  using transition_ptr_t = tchecker::intrusive_shared_ptr_t<tchecker::syncprod::shared_transition_t>;
-
   /*!
    \brief Compute a name from a synchronization
    */
@@ -147,10 +143,10 @@ private:
   /*!
    \brief Compute a name from a state (from vloc)
    */
-  std::string namify(state_ptr_t const & state)
+  std::string namify(tchecker::syncprod::state_t const & state)
   {
     std::string name;
-    auto begin = state->vloc().begin(), end = state->vloc().end();
+    auto begin = state.vloc().begin(), end = state.vloc().end();
     for (auto it = begin; it != end; ++it) {
       if (it != begin)
         name += _separator;
@@ -162,10 +158,10 @@ private:
   /*!
    \brief Compute attributes from a state (from vloc)
    */
-  tchecker::system::attributes_t attributes(state_ptr_t const & state)
+  tchecker::system::attributes_t attributes(tchecker::syncprod::state_t const & state)
   {
     tchecker::system::attributes_t attr;
-    for (tchecker::loc_id_t id : state->vloc())
+    for (tchecker::loc_id_t id : state.vloc())
       attr.add_attributes(_system->location(id)->attributes());
     return attr;
   }
@@ -173,10 +169,10 @@ private:
   /*!
    \brief Compute a name from a transition (from vedge)
    */
-  std::string namify(transition_ptr_t const & transition)
+  std::string namify(tchecker::syncprod::transition_t const & transition)
   {
     std::string name;
-    auto begin = transition->vedge().begin(), end = transition->vedge().end();
+    auto begin = transition.vedge().begin(), end = transition.vedge().end();
     for (auto it = begin; it != end; ++it) {
       if (it != begin)
         name += _separator;
@@ -189,10 +185,10 @@ private:
   /*!
    \brief Compute attributes from a transition (from vedge)
    */
-  tchecker::system::attributes_t attributes(transition_ptr_t const & transition)
+  tchecker::system::attributes_t attributes(tchecker::syncprod::transition_t const & transition)
   {
     tchecker::system::attributes_t attr;
-    for (tchecker::event_id_t id : transition->vedge())
+    for (tchecker::event_id_t id : transition.vedge())
       attr.add_attributes(_system->edge(id)->attributes());
     return attr;
   }
@@ -232,82 +228,43 @@ private:
   {
     tchecker::process_id_t pid = _product.process_id(_process_name);
 
-    std::stack<state_ptr_t> waiting;
-    tchecker::syncprod::syncprod_t sp(_system);
-    std::vector<std::tuple<state_ptr_t, transition_ptr_t>> v;
+    std::stack<tchecker::syncprod::state_sptr_t> waiting;
+    tchecker::syncprod::syncprod_t sp(_system, 10000);
+    std::vector<std::tuple<tchecker::syncprod::state_sptr_t, tchecker::syncprod::transition_sptr_t>> v;
 
-    v.clear();
-    initial_states(sp, v);
+    sp.initial_ok(v);
     for (auto && [state, transition] : v) {
-      std::string state_name = namify(state);
+      std::string state_name = namify(*state);
       if (!_product.is_location(pid, state_name)) {
-        _product.add_location(pid, state_name, attributes(state));
+        _product.add_location(pid, state_name, attributes(*state));
         waiting.push(state);
       }
     }
+    v.clear();
 
     while (!waiting.empty()) {
-      state_ptr_t src = waiting.top();
+      tchecker::syncprod::state_sptr_t src = waiting.top();
       waiting.pop();
 
-      tchecker::loc_id_t src_id = _product.location(pid, namify(src))->id();
+      tchecker::loc_id_t src_id = _product.location(pid, namify(*src))->id();
 
-      v.clear();
-      next_states(sp, src, v);
+      sp.next_ok(static_cast<tchecker::syncprod::const_state_sptr_t>(src), v);
       for (auto && [tgt, transition] : v) {
-        std::string tgt_name = namify(tgt);
+        std::string tgt_name = namify(*tgt);
         if (!_product.is_location(pid, tgt_name)) {
-          _product.add_location(pid, tgt_name, attributes(tgt));
+          _product.add_location(pid, tgt_name, attributes(*tgt));
           waiting.push(tgt);
         }
         tchecker::loc_id_t tgt_id = _product.location(pid, tgt_name)->id();
 
-        std::string event_name = namify(transition);
+        std::string event_name = namify(*transition);
         if (!_product.is_event(event_name))
           _product.add_event(event_name);
         tchecker::event_id_t event_id = _product.event_id(event_name);
 
-        _product.add_edge(pid, src_id, tgt_id, event_id, attributes(transition));
+        _product.add_edge(pid, src_id, tgt_id, event_id, attributes(*transition));
       }
-
-      _salloc.collect();
-      _talloc.collect();
-    }
-  }
-
-  /*!
-   \brief Compute initial pairs (state, transition)
-   \param sp : synchronized product of timed processes
-   \param v : vector of (state, transition)
-   \post all initial pairs (state, transition) have been added to v
-   */
-  void initial_states(tchecker::syncprod::syncprod_t & sp, std::vector<std::tuple<state_ptr_t, transition_ptr_t>> & v)
-  {
-    auto const initial_states = sp.initial();
-    for (auto it = initial_states.begin(); it != initial_states.end(); ++it) {
-      state_ptr_t state = _salloc.construct();
-      transition_ptr_t transition = _talloc.construct();
-      sp.initialize(*state, *transition, *it);
-      v.push_back(std::make_tuple(state, transition));
-    }
-  }
-
-  /*!
-   \brief Compute next pairs (state, transition)
-   \param sp : synchronized product of timed processes
-   \param state : a state
-   \param v : vector of (state, transition)
-   \post all successor pairs (state, transition) of s have been added to v
-   */
-  void next_states(tchecker::syncprod::syncprod_t & sp, state_ptr_t const & state,
-                   std::vector<std::tuple<state_ptr_t, transition_ptr_t>> & v)
-  {
-    auto const outgoing_edges = sp.outgoing_edges(*state);
-    for (auto it = outgoing_edges.begin(); it != outgoing_edges.end(); ++it) {
-      state_ptr_t next_state = _salloc.construct_from_state(*state);
-      transition_ptr_t transition = _talloc.construct();
-      sp.next(*next_state, *transition, *it);
-      v.push_back(std::make_tuple(next_state, transition));
+      v.clear();
     }
   }
 
@@ -315,8 +272,6 @@ private:
   std::string _separator;                                      /*!< Separator string */
   std::string _process_name;                                   /*!< Name of synchronized process */
   tchecker::system::system_t _product;                         /*!< Synchronized product of _system */
-  tchecker::syncprod::state_pool_allocator_t _salloc;          /*!< Allocator of states in synchronized product */
-  tchecker::syncprod::transition_pool_allocator_t _talloc;     /*!< Allocator of transitions in synchronized product */
 };
 
 tchecker::system::system_t synchronized_product(std::shared_ptr<tchecker::syncprod::system_t const> const & system,
