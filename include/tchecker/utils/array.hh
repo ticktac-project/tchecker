@@ -48,9 +48,8 @@ public:
   /*!
    \brief Constructor
    \param capacity : array capacity
-   \pre capacity > 0 (checked by assertion)
    */
-  array_capacity_t(CAPACITY capacity) : _capacity(capacity) { assert(_capacity > 0); }
+  array_capacity_t(CAPACITY capacity) : _capacity(capacity) {}
 
   /*!
    \brief Copy constructor
@@ -129,16 +128,6 @@ bool operator!=(tchecker::array_capacity_t<CAPACITY> const & a1, tchecker::array
 template <class CAPACITY> std::size_t hash_value(tchecker::array_capacity_t<CAPACITY> const & a) { return a.capacity(); }
 
 /*!
- \class allocaction_size_t
- \brief Specialization of tchecker::allocation_size_t for class
- tchecker::array_capacity_t
- */
-template <class CAPACITY> class allocation_size_t<tchecker::array_capacity_t<CAPACITY>> {
-public:
-  static constexpr std::size_t alloc_size() { return sizeof(tchecker::array_capacity_t<CAPACITY>); }
-};
-
-/*!
  \class make_array_t
  \brief Fixed-capacity array with single allocation
  \tparam T : type of value
@@ -150,24 +139,19 @@ public:
 
  In order to achieve good performances, a single allocation is used for both
  the make_array_t instance AND the array of T. In details, we
- allocate:
-
- allocation_size_t<make_array_t<T, T_ALLOCSIZE, BASE>>::aloc_size()
- + capacity * T_ALLOCSIZE
-
- bytes of memory. The array starts after the first
- allocation_size_t<make_array_t<T, T_ALLOCSIZE, BASE>>::alloc_size() bytes.
+ allocate: sizeof(BASE) + capacity * T_ALLOCSIZE bytes of memory. The array
+ starts after the first sizeof(BASE) bytes.
 
  This has several consequences:
- - single allocation arrays cannot be allocated automatically (on the
- stack). Static methods allocate_and_construct() and destruct_and_deallocate()
- are provided for allocation and deallocation.
- - inheriting from single_allocation_array_t is in general not safe as it
- may overwrite the memory allocated for the array since the compiler is not
- aware of it. Extending single_allocation_array_t can be done in two ways.
- First, specify a BASE class that provides extra variables and methods.
- Second, inherit from single_allocation_array_t which is safe when adding new
- methods only (i.e. no variables)
+ - single allocation arrays cannot be allocated automatically (on the stack).
+   Static methods allocate_and_construct() and destruct_and_deallocate() are
+   provided for allocation and deallocation.
+ - inheriting from make_array_t is in general not safe as it may overwrite the
+   memory allocated for the array since the compiler is not aware of it.
+   Extending make_array_t can be done in two ways. First, specify a BASE class
+   that provides extra variables and methods. Second, inherit from
+   make_array_t which is safe when adding new, non-virtual, methods only (i.e.
+   no variables)
  */
 template <class T, std::size_t T_ALLOCSIZE = sizeof(T), class BASE = tchecker::array_capacity_t<std::size_t>>
 class make_array_t : public BASE {
@@ -406,7 +390,7 @@ protected:
   constexpr T * array_begin() const
   {
     return reinterpret_cast<T *>(reinterpret_cast<char *>(const_cast<tchecker::make_array_t<T, T_ALLOCSIZE, BASE> *>(this)) +
-                                 tchecker::allocation_size_t<BASE>::alloc_size());
+                                 sizeof(tchecker::make_array_t<T, T_ALLOCSIZE, BASE>));
   }
 
   /*!
@@ -497,7 +481,7 @@ public:
    */
   static constexpr std::size_t alloc_size(capacity_t capacity)
   {
-    return (allocation_size_t<BASE>::alloc_size() + capacity * T_ALLOCSIZE);
+    return sizeof(tchecker::make_array_t<T, T_ALLOCSIZE, BASE>) + capacity * T_ALLOCSIZE;
   }
 
   /*!
