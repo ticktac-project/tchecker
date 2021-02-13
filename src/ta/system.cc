@@ -147,14 +147,6 @@ void system_t::compute_from_syncprod_system()
 
   if (tchecker::ta::has_guarded_weakly_synchronized_event(*this))
     throw std::invalid_argument("Transitions over weakly synchronized events should not have guards");
-
-  compute_clockbounds();
-}
-
-void system_t::compute_clockbounds()
-{
-  tchecker::clockbounds::clockbounds_t::resize(locations_count(), clocks_count(tchecker::VK_FLATTENED));
-  _has_clockbounds = tchecker::clockbounds::compute_clockbounds(*this, *this);
 }
 
 static tchecker::expression_t *

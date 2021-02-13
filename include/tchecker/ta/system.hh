@@ -15,7 +15,6 @@
 #include <boost/dynamic_bitset/dynamic_bitset.hpp>
 
 #include "tchecker/basictypes.hh"
-#include "tchecker/clockbounds/clockbounds.hh"
 #include "tchecker/expression/typed_expression.hh"
 #include "tchecker/parsing/declaration.hh"
 #include "tchecker/statement/typed_statement.hh"
@@ -39,9 +38,7 @@ namespace ta {
  \class system_t
  \brief System of processes for timed automata
  */
-class system_t : private tchecker::syncprod::system_t,
-                 private tchecker::ta::labels_t,
-                 private tchecker::clockbounds::clockbounds_t {
+class system_t : private tchecker::syncprod::system_t, private tchecker::ta::labels_t {
 public:
   /*!
    \brief Constructor
@@ -101,24 +98,6 @@ public:
   using tchecker::syncprod::system_t::clock_variables;
   using tchecker::syncprod::system_t::clocks_count;
   using tchecker::syncprod::system_t::is_clock;
-
-  // Clock bounds
-  using tchecker::clockbounds::clockbounds_t::global_lu;
-  using tchecker::clockbounds::clockbounds_t::global_m;
-  using tchecker::clockbounds::clockbounds_t::local_lu;
-  using tchecker::clockbounds::clockbounds_t::local_m;
-
-  /*!
-  \brief Accessor
-  \return Clock bounds maps
-  */
-  tchecker::clockbounds::clockbounds_t const & clockbounds() const { return *this; }
-
-  /*!
-   \brief Check clock bounds
-   \return true if clock bounds have been computed for this system, false otherwise
-  */
-  inline bool has_clockbounds() const { return _has_clockbounds; }
 
   // Edges
   using tchecker::syncprod::system_t::asynchronous_incoming_edges;
@@ -266,13 +245,6 @@ public:
 
 private:
   // Hidden modifiers and accessors
-  using tchecker::clockbounds::clockbounds_t::clear;
-  using tchecker::clockbounds::clockbounds_t::global_lu_map;
-  using tchecker::clockbounds::clockbounds_t::global_m_map;
-  using tchecker::clockbounds::clockbounds_t::local_lu_map;
-  using tchecker::clockbounds::clockbounds_t::local_m_map;
-  using tchecker::clockbounds::clockbounds_t::resize;
-
   using tchecker::ta::labels_t::add_label;
 
   /*!
@@ -296,13 +268,6 @@ private:
    \throw std::invalid_argument : if system has a transition over a weakly synchronized event
    */
   void compute_from_syncprod_system();
-
-  /*!
-  \brief Compute clock bounds
-  \post sets clock bounds as well as flag _has_clockbounds that tells if clock bounds could be
-  determined for this system
-  */
-  void compute_clockbounds();
 
   /*!
    \brief Set location invariant
@@ -370,7 +335,6 @@ private:
   std::unordered_multimap<tchecker::loc_id_t, tchecker::label_id_t> _labels; /*!< Map : location identifier -> labels */
   boost::dynamic_bitset<> _committed;                                        /*!< Committed locations */
   boost::dynamic_bitset<> _urgent;                                           /*!< Urgent locations */
-  bool _has_clockbounds;                                                     /*!< Flag if clock bounds could be computed */
 };
 
 } // end of namespace ta
