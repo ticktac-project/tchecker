@@ -660,10 +660,10 @@ bool compute_clockbounds(tchecker::ta::system_t const & system, tchecker::clockb
     return false;
 
   // Fill the maps
-  tchecker::clockbounds::fill_global_lu_map(*solver, clockbounds.global_lu_map());
-  tchecker::clockbounds::fill_local_lu_map(*solver, clockbounds.local_lu_map());
-  tchecker::clockbounds::fill_global_m_map(*solver, clockbounds.global_m_map());
-  tchecker::clockbounds::fill_local_m_map(*solver, clockbounds.local_m_map());
+  tchecker::clockbounds::fill_global_lu_map(*solver, *clockbounds.global_lu_map());
+  tchecker::clockbounds::fill_local_lu_map(*solver, *clockbounds.local_lu_map());
+  tchecker::clockbounds::fill_global_m_map(*solver, *clockbounds.global_m_map());
+  tchecker::clockbounds::fill_local_m_map(*solver, *clockbounds.local_m_map());
   return true;
 }
 

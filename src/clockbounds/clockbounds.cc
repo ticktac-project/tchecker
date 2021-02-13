@@ -600,26 +600,44 @@ std::ostream & operator<<(std::ostream & os, tchecker::clockbounds::global_m_map
 /* clockbounds_t */
 
 clockbounds_t::clockbounds_t(tchecker::loc_id_t loc_nb, tchecker::clock_id_t clock_nb)
-    : tchecker::clockbounds::global_lu_map_t(clock_nb), tchecker::clockbounds::global_m_map_t(clock_nb),
-      tchecker::clockbounds::local_lu_map_t(loc_nb, clock_nb), tchecker::clockbounds::local_m_map_t(loc_nb, clock_nb)
+    : _global_lu(new tchecker::clockbounds::global_lu_map_t(clock_nb)),
+      _global_m(new tchecker::clockbounds::global_m_map_t(clock_nb)),
+      _local_lu(new tchecker::clockbounds::local_lu_map_t(loc_nb, clock_nb)),
+      _local_m(new tchecker::clockbounds::local_m_map_t(loc_nb, clock_nb))
 {
 }
 
 void clockbounds_t::clear()
 {
-  tchecker::clockbounds::global_lu_map_t::clear();
-  tchecker::clockbounds::local_lu_map_t::clear();
-  tchecker::clockbounds::global_m_map_t::clear();
-  tchecker::clockbounds::local_m_map_t::clear();
+  _global_lu->clear();
+  _global_m->clear();
+  _local_lu->clear();
+  _local_m->clear();
 }
 
 void clockbounds_t::resize(tchecker::loc_id_t loc_nb, tchecker::clock_id_t clock_nb)
 {
-  tchecker::clockbounds::global_lu_map_t::resize(clock_nb);
-  tchecker::clockbounds::local_lu_map_t::resize(loc_nb, clock_nb);
-  tchecker::clockbounds::global_m_map_t::resize(clock_nb);
-  tchecker::clockbounds::local_m_map_t::resize(loc_nb, clock_nb);
+  _global_lu->resize(clock_nb);
+  _local_lu->resize(loc_nb, clock_nb);
+  _global_m->resize(clock_nb);
+  _local_m->resize(loc_nb, clock_nb);
 }
+
+std::shared_ptr<tchecker::clockbounds::global_lu_map_t const> clockbounds_t::global_lu_map() const { return _global_lu; }
+
+std::shared_ptr<tchecker::clockbounds::global_lu_map_t> clockbounds_t::global_lu_map() { return _global_lu; }
+
+std::shared_ptr<tchecker::clockbounds::global_m_map_t const> clockbounds_t::global_m_map() const { return _global_m; }
+
+std::shared_ptr<tchecker::clockbounds::global_m_map_t> clockbounds_t::global_m_map() { return _global_m; }
+
+std::shared_ptr<tchecker::clockbounds::local_lu_map_t const> clockbounds_t::local_lu_map() const { return _local_lu; }
+
+std::shared_ptr<tchecker::clockbounds::local_lu_map_t> clockbounds_t::local_lu_map() { return _local_lu; }
+
+std::shared_ptr<tchecker::clockbounds::local_m_map_t const> clockbounds_t::local_m_map() const { return _local_m; }
+
+std::shared_ptr<tchecker::clockbounds::local_m_map_t> clockbounds_t::local_m_map() { return _local_m; }
 
 } // namespace clockbounds
 

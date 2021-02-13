@@ -10,6 +10,7 @@
 
 #include <cstdint>
 #include <iostream>
+#include <memory>
 #include <vector>
 
 #include "tchecker/basictypes.hh"
@@ -646,10 +647,7 @@ std::ostream & operator<<(std::ostream & os, tchecker::clockbounds::global_m_map
 \class clockbounds_t
 \brief Clock bounds for timed automata
 */
-class clockbounds_t : private tchecker::clockbounds::global_lu_map_t,
-                      private tchecker::clockbounds::global_m_map_t,
-                      private tchecker::clockbounds::local_lu_map_t,
-                      private tchecker::clockbounds::local_m_map_t {
+class clockbounds_t {
 public:
   /*!
   \brief Constructor
@@ -703,49 +701,49 @@ public:
   \brief Accessor
   \return global LU map (const)
   */
-  inline tchecker::clockbounds::global_lu_map_t const & global_lu_map() const { return *this; }
+  std::shared_ptr<tchecker::clockbounds::global_lu_map_t const> global_lu_map() const;
 
   /*!
   \brief Accessor
   \return global LU map (non const)
   */
-  inline tchecker::clockbounds::global_lu_map_t & global_lu_map() { return *this; }
+  std::shared_ptr<tchecker::clockbounds::global_lu_map_t> global_lu_map();
 
   /*!
   \brief Accessor
   \return global M map (const)
   */
-  inline tchecker::clockbounds::global_m_map_t const & global_m_map() const { return *this; }
+  std::shared_ptr<tchecker::clockbounds::global_m_map_t const> global_m_map() const;
 
   /*!
   \brief Accessor
   \return global M map (non const)
   */
-  inline tchecker::clockbounds::global_m_map_t & global_m_map() { return *this; }
+  std::shared_ptr<tchecker::clockbounds::global_m_map_t> global_m_map();
 
   /*!
   \brief Accessor
   \return local LU map (const)
   */
-  inline tchecker::clockbounds::local_lu_map_t const & local_lu_map() const { return *this; }
+  std::shared_ptr<tchecker::clockbounds::local_lu_map_t const> local_lu_map() const;
 
   /*!
   \brief Accessor
   \return local LU map (non const)
   */
-  inline tchecker::clockbounds::local_lu_map_t & local_lu_map() { return *this; }
+  std::shared_ptr<tchecker::clockbounds::local_lu_map_t> local_lu_map();
 
   /*!
   \brief Accessor
   \return local M map (const)
   */
-  inline tchecker::clockbounds::local_m_map_t const & local_m_map() const { return *this; }
+  std::shared_ptr<tchecker::clockbounds::local_m_map_t const> local_m_map() const;
 
   /*!
   \brief Accessor
   \return local M map (non const)
   */
-  inline tchecker::clockbounds::local_m_map_t & local_m_map() { return *this; }
+  std::shared_ptr<tchecker::clockbounds::local_m_map_t> local_m_map();
 
   /*!
   \brief Accessor
@@ -757,7 +755,7 @@ public:
   */
   inline void local_lu(tchecker::loc_id_t id, tchecker::clockbounds::map_t & L, tchecker::clockbounds::map_t & U) const
   {
-    return tchecker::clockbounds::local_lu_map_t::bounds(id, L, U);
+    return _local_lu->bounds(id, L, U);
   }
 
   /*!
@@ -770,7 +768,7 @@ public:
   */
   inline void local_lu(tchecker::vloc_t const & vloc, tchecker::clockbounds::map_t & L, tchecker::clockbounds::map_t & U) const
   {
-    return tchecker::clockbounds::local_lu_map_t::bounds(vloc, L, U);
+    return _local_lu->bounds(vloc, L, U);
   }
 
   /*!
@@ -780,10 +778,7 @@ public:
   \pre see tchecker::clockbounds::local_m_map_t::bounds
   \post M is the local bound map for location id
   */
-  inline void local_m(tchecker::loc_id_t id, tchecker::clockbounds::map_t & M) const
-  {
-    return tchecker::clockbounds::local_m_map_t::bounds(id, M);
-  }
+  inline void local_m(tchecker::loc_id_t id, tchecker::clockbounds::map_t & M) const { return _local_m->bounds(id, M); }
 
   /*!
   \brief Accessor
@@ -794,7 +789,7 @@ public:
   */
   inline void local_m(tchecker::vloc_t const & vloc, tchecker::clockbounds::map_t & M) const
   {
-    return tchecker::clockbounds::local_m_map_t::bounds(vloc, M);
+    return _local_m->bounds(vloc, M);
   }
 
   /*!
@@ -806,7 +801,7 @@ public:
   */
   inline void global_lu(tchecker::clockbounds::map_t & L, tchecker::clockbounds::map_t & U) const
   {
-    return tchecker::clockbounds::global_lu_map_t::bounds(L, U);
+    return _global_lu->bounds(L, U);
   }
 
   /*!
@@ -819,7 +814,7 @@ public:
   */
   inline void global_lu(tchecker::loc_id_t id, tchecker::clockbounds::map_t & L, tchecker::clockbounds::map_t & U) const
   {
-    return tchecker::clockbounds::global_lu_map_t::bounds(id, L, U);
+    return _global_lu->bounds(id, L, U);
   }
 
   /*!
@@ -832,7 +827,7 @@ public:
   */
   inline void global_lu(tchecker::vloc_t const & vloc, tchecker::clockbounds::map_t & L, tchecker::clockbounds::map_t & U) const
   {
-    return tchecker::clockbounds::global_lu_map_t::bounds(vloc, L, U);
+    return _global_lu->bounds(vloc, L, U);
   }
 
   /*!
@@ -841,7 +836,7 @@ public:
   \pre see tchecker::clockbounds::global_m_map_t::bounds
   \post M is the global bound map
   */
-  inline void global_m(tchecker::clockbounds::map_t & M) const { return tchecker::clockbounds::global_m_map_t::bounds(M); }
+  inline void global_m(tchecker::clockbounds::map_t & M) const { return _global_m->bounds(M); }
 
   /*!
   \brief Accessor
@@ -850,10 +845,7 @@ public:
   \pre see tchecker::clockbounds::global_lu_map_t::bounds
   \post M is the global bound map
   */
-  inline void global_m(tchecker::loc_id_t id, tchecker::clockbounds::map_t & M) const
-  {
-    return tchecker::clockbounds::global_m_map_t::bounds(id, M);
-  }
+  inline void global_m(tchecker::loc_id_t id, tchecker::clockbounds::map_t & M) const { return _global_m->bounds(id, M); }
 
   /*!
   \brief Accessor
@@ -864,8 +856,14 @@ public:
   */
   inline void global_m(tchecker::vloc_t const & vloc, tchecker::clockbounds::map_t & M) const
   {
-    return tchecker::clockbounds::global_m_map_t::bounds(vloc, M);
+    return _global_m->bounds(vloc, M);
   }
+
+private:
+  std::shared_ptr<tchecker::clockbounds::global_lu_map_t> _global_lu; /*!< Global LU map */
+  std::shared_ptr<tchecker::clockbounds::global_m_map_t> _global_m;   /*!< Global M map */
+  std::shared_ptr<tchecker::clockbounds::local_lu_map_t> _local_lu;   /*!< Local LU map */
+  std::shared_ptr<tchecker::clockbounds::local_m_map_t> _local_m;     /*!< Local M map */
 };
 
 } // namespace clockbounds
