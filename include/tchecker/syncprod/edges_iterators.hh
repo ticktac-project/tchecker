@@ -49,7 +49,8 @@ using vloc_asynchronous_edges_const_iterator_t =
  \brief Type of iterator over asynchronous edges from a tuple of locations
  */
 using vloc_asynchronous_edges_iterator_t =
-    tchecker::join_iterator_t<tchecker::syncprod::vloc_asynchronous_edges_const_iterator_t>;
+    tchecker::join_iterator_t<tchecker::range_t<tchecker::syncprod::vloc_asynchronous_edges_const_iterator_t>,
+                              tchecker::range_t<tchecker::syncprod::system_t::asynchronous_edges_const_iterator_t>>;
 
 /*!
  \brief Accessor to asynchronous edges from a tuple of locations
@@ -57,7 +58,7 @@ using vloc_asynchronous_edges_iterator_t =
  \param vloc : a tuple of locations
  \return range of outgoing asynchronous edges from vloc in system
  */
-tchecker::range_t<tchecker::syncprod::vloc_asynchronous_edges_iterator_t>
+tchecker::range_t<tchecker::syncprod::vloc_asynchronous_edges_iterator_t, tchecker::end_iterator_t>
 outgoing_asynchronous_edges(tchecker::syncprod::system_t const & system,
                             tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc);
 
@@ -124,24 +125,30 @@ public:
   bool operator!=(tchecker::syncprod::vloc_synchronized_edges_iterator_t const & it) const;
 
   /*!
-   \brief Fast end-of-range check
-   \return true if this is past-the-end, false otherwise
-   \note this is more efficient that checking disequality w.r.t. past-the-end iterator
-   */
-  inline bool at_end() const { return (_sync_it == _sync_end); }
+  \brief Equality check w.r.t. past-the-end iterator
+  \param end : past-the-end iterator
+  \return see at_end()
+  */
+  bool operator==(tchecker::end_iterator_t const & end) const;
+
+  /*!
+  \brief Disequality check w.r.t. past-the-end iterator
+  \param end : past-the-end iterator
+  \return negation of operator==
+  */
+  bool operator!=(tchecker::end_iterator_t const & end) const;
 
   /*!
    \brief Iterator over synchronized edges
    */
   using edges_iterator_t =
-      tchecker::cartesian_iterator_t<tchecker::system::edges_collection_const_iterator_t>::values_iterator_t;
+      tchecker::cartesian_iterator_t<tchecker::range_t<tchecker::system::edges_collection_const_iterator_t>>::values_iterator_t;
 
   /*!
    \brief Accessor
    \pre not at_end()  (checked by assertion)
    \return current synchronized edge
    \note the returned range is invalidated by operator++
-   \note for returned range, checking begin().at_end() is more efficient than checking begin()==end()
    */
   inline tchecker::range_t<edges_iterator_t> operator*()
   {
@@ -160,6 +167,12 @@ public:
 
 protected:
   /*!
+  \brief Fast end-of-range check
+  \return true if this is past-the-end, false otherwise
+  */
+  inline bool at_end() const { return (_sync_it == _sync_end); }
+
+  /*!
    \brief Fills cartesian product
    \post either this range is at_end(), or _cartesian_it has been filled with ranges of edges corresponding to
    synchronzation pointed by _sync_it
@@ -172,7 +185,7 @@ protected:
   tchecker::system::synchronizations_t::const_iterator_t _sync_it;  /*!< Iterator on synchronizations */
   tchecker::system::synchronizations_t::const_iterator_t _sync_end; /*!< Past-the-end iterator on synchronizations */
   /*!< Cartesian iterator */
-  tchecker::cartesian_iterator_t<tchecker::system::edges_collection_const_iterator_t> _cartesian_it;
+  tchecker::cartesian_iterator_t<tchecker::range_t<tchecker::system::edges_collection_const_iterator_t>> _cartesian_it;
 };
 
 /*!
@@ -181,7 +194,7 @@ protected:
  \param vloc : a tuple of locations
  \return range of outgoing synchronized edges from vloc in system
  */
-tchecker::range_t<tchecker::syncprod::vloc_synchronized_edges_iterator_t>
+tchecker::range_t<tchecker::syncprod::vloc_synchronized_edges_iterator_t, tchecker::end_iterator_t>
 outgoing_synchronized_edges(tchecker::syncprod::system_t const & system,
                             tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc);
 
@@ -274,7 +287,7 @@ private:
 
 /*!
  \class vloc_edges_iterator_t
- \brief Iterator over synchronous and asynchrounous tupled of edges from a tuple of locations
+ \brief Iterator over synchronous and asynchronous tuples of edges from a tuple of locations
  */
 class vloc_edges_iterator_t {
 public:
@@ -326,11 +339,18 @@ public:
   bool operator!=(tchecker::syncprod::vloc_edges_iterator_t const & it) const;
 
   /*!
-   \brief Accessor
-   \return true if this is at the end of the range, false otherwise
-   \note using at_end() is more efficient than equality check w.r.t. past-the-end iterator
-   */
-  bool at_end() const;
+  \brief Equality check w.r.t. past-the-end iterator
+  \param end : past-the-end iterator
+  \return see at_end()
+  */
+  bool operator==(tchecker::end_iterator_t const & end) const;
+
+  /*!
+  \brief Disequality check w.r.t. past-the-end iterator
+  \param end : past-the-end iterator
+  \return negation of join_iterator_t::operator==
+  */
+  bool operator!=(tchecker::end_iterator_t const & end) const;
 
   /*!
    \brief Accessor
@@ -350,6 +370,12 @@ public:
   tchecker::syncprod::vloc_edges_iterator_t & operator++();
 
 private:
+  /*!
+   \brief Accessor
+   \return true if this is at the end of the range, false otherwise
+   */
+  bool at_end() const;
+
   tchecker::syncprod::vloc_synchronized_edges_iterator_t _sync_it;  /*!< Iterator on synchronous edges */
   tchecker::syncprod::vloc_asynchronous_edges_iterator_t _async_it; /*!< Iterator on asynchronous edges */
 };

@@ -15,7 +15,7 @@ namespace syncprod {
 
 /* Iterator over asynchronous edges from a tuple of locations */
 
-tchecker::range_t<tchecker::syncprod::vloc_asynchronous_edges_iterator_t>
+tchecker::range_t<tchecker::syncprod::vloc_asynchronous_edges_iterator_t, tchecker::end_iterator_t>
 outgoing_asynchronous_edges(tchecker::syncprod::system_t const & system,
                             tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc)
 {
@@ -26,12 +26,11 @@ outgoing_asynchronous_edges(tchecker::syncprod::system_t const & system,
   tchecker::syncprod::vloc_asynchronous_edges_const_iterator_t vend(vloc->end(), loc_to_async_edges);
 
   // join iterator
-  auto get_sub_range = [](tchecker::syncprod::vloc_asynchronous_edges_const_iterator_t const & it) { return it->iterators(); };
+  auto get_sub_range = [](tchecker::syncprod::vloc_asynchronous_edges_const_iterator_t const & it) { return *it; };
 
-  tchecker::syncprod::vloc_asynchronous_edges_iterator_t jbegin(vbegin, vend, get_sub_range);
-  tchecker::syncprod::vloc_asynchronous_edges_iterator_t jend(vend, vend, get_sub_range);
+  tchecker::syncprod::vloc_asynchronous_edges_iterator_t join_begin(vbegin, vend, get_sub_range);
 
-  return tchecker::make_range(jbegin, jend);
+  return tchecker::make_range(join_begin, tchecker::past_the_end_iterator);
 }
 
 /* vloc_synchronized_edges_iterator_t */
@@ -42,7 +41,7 @@ outgoing_asynchronous_edges(tchecker::syncprod::system_t const & system,
 \param vloc : tuple of locations
 \param loc_edges_map : maps location ID -> edges/events
 \return true if every process involved in sync has a corresponding transition from vloc according to loc_edges_maps, false
-othwerwise
+otherwise
 */
 static inline bool enabled(tchecker::system::synchronization_t const & sync, tchecker::vloc_t const & vloc,
                            tchecker::system::loc_edges_maps_t const & loc_edges_maps)
@@ -75,11 +74,15 @@ bool vloc_synchronized_edges_iterator_t::operator!=(tchecker::syncprod::vloc_syn
   return (!(*this == it));
 }
 
+bool vloc_synchronized_edges_iterator_t::operator==(tchecker::end_iterator_t const & end) const { return at_end(); }
+
+bool vloc_synchronized_edges_iterator_t::operator!=(tchecker::end_iterator_t const & end) const { return !(*this == end); }
+
 tchecker::syncprod::vloc_synchronized_edges_iterator_t & tchecker::syncprod::vloc_synchronized_edges_iterator_t::operator++()
 {
   assert(!at_end());
   ++_cartesian_it;
-  if (_cartesian_it.at_end()) {
+  if (_cartesian_it == tchecker::past_the_end_iterator) {
     ++_sync_it;
     advance_while_empty_cartesian_product();
   }
@@ -108,14 +111,14 @@ void tchecker::syncprod::vloc_synchronized_edges_iterator_t::advance_while_empty
   }
 }
 
-tchecker::range_t<tchecker::syncprod::vloc_synchronized_edges_iterator_t>
+tchecker::range_t<tchecker::syncprod::vloc_synchronized_edges_iterator_t, tchecker::end_iterator_t>
 outgoing_synchronized_edges(tchecker::syncprod::system_t const & system,
                             tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc)
 {
   auto syncs = system.synchronizations();
   tchecker::syncprod::vloc_synchronized_edges_iterator_t begin(vloc, system.outgoing_edges_maps(), syncs.begin(), syncs.end());
-  tchecker::syncprod::vloc_synchronized_edges_iterator_t end(vloc, system.outgoing_edges_maps(), syncs.end(), syncs.end());
-  return tchecker::make_range(begin, end);
+
+  return tchecker::make_range(begin, tchecker::past_the_end_iterator);
 }
 
 /* edges_iterator_t */
@@ -169,13 +172,20 @@ bool vloc_edges_iterator_t::operator==(tchecker::syncprod::vloc_edges_iterator_t
 
 bool vloc_edges_iterator_t::operator!=(tchecker::syncprod::vloc_edges_iterator_t const & it) const { return !(*this == it); }
 
-bool vloc_edges_iterator_t::at_end() const { return (_sync_it.at_end() && _async_it.at_end()); }
+bool vloc_edges_iterator_t::operator==(tchecker::end_iterator_t const & end) const { return at_end(); }
+
+bool vloc_edges_iterator_t::operator!=(tchecker::end_iterator_t const & end) const { return !(*this == end); }
+
+bool vloc_edges_iterator_t::at_end() const
+{
+  return (_sync_it == tchecker::past_the_end_iterator && _async_it == tchecker::past_the_end_iterator);
+}
 
 tchecker::range_t<tchecker::syncprod::edges_iterator_t> vloc_edges_iterator_t::operator*()
 {
   assert(!at_end());
 
-  if (!_sync_it.at_end()) {
+  if (_sync_it != tchecker::past_the_end_iterator) {
     tchecker::syncprod::edges_iterator_t begin((*_sync_it).begin()), end((*_sync_it).end());
     return tchecker::make_range(begin, end);
   }
@@ -187,7 +197,7 @@ tchecker::range_t<tchecker::syncprod::edges_iterator_t> vloc_edges_iterator_t::o
 tchecker::syncprod::vloc_edges_iterator_t & vloc_edges_iterator_t::operator++()
 {
   assert(!at_end());
-  if (!_sync_it.at_end())
+  if (_sync_it != tchecker::past_the_end_iterator)
     ++_sync_it;
   else
     ++_async_it;

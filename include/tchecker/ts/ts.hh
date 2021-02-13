@@ -32,14 +32,15 @@ namespace ts {
  \tparam STATE : type of state
  \tparam CONST_STATE : type of const state
  \tparam TRANSITION : type of transition
- \tparam INITIAL_ITERATOR : type of iterator over initial states
- \tparam OUTGOING_EDGES_ITERATOR : type of iterator over outgoing edges
- \tparam INITIAL_ITERATOR_VALUE : type of value for INITIAL_ITERATOR
- \tparam OUTGOING_EDGES_ITERATOR_VALUE : type of value for OUTGOING_EDGES_ITERATOR
+ \tparam INITIAL_RANGE : type of range of initial states, should be tchecker::make_range_t<...>
+ \tparam OUTGOING_EDGES_RANGE : type of range of outgoing edges, should be tchecker::make_range_t<...>
+ \tparam INITIAL_VALUE : type of value in INITIAL_RANGE
+ \tparam OUTGOING_EDGES_VALUE : type of value in OUTGOING_EDGES_RANGE
  */
-template <class STATE, class CONST_STATE, class TRANSITION, class INITIAL_ITERATOR, class OUTGOING_EDGES_ITERATOR,
-          class INITIAL_ITERATOR_VALUE = typename std::iterator_traits<INITIAL_ITERATOR>::reference_type const,
-          class OUTGOING_EDGES_ITERATOR_VALUE = typename std::iterator_traits<OUTGOING_EDGES_ITERATOR>::reference_type const>
+template <class STATE, class CONST_STATE, class TRANSITION, class INITIAL_RANGE, class OUTGOING_EDGES_RANGE,
+          class INITIAL_VALUE = typename std::iterator_traits<typename INITIAL_RANGE::begin_iterator_t>::reference_type const,
+          class OUTGOING_EDGES_VALUE =
+              typename std::iterator_traits<typename OUTGOING_EDGES_RANGE::begin_iterator_t>::reference_type const>
 class ts_t {
 public:
   /*!
@@ -58,24 +59,24 @@ public:
   using transition_t = TRANSITION;
 
   /*!
-   \brief Type of iterator over initial states
+   \brief Type of range of initial states
    */
-  using initial_iterator_t = INITIAL_ITERATOR;
+  using initial_range_t = INITIAL_RANGE;
 
   /*!
-   \brief Value type for iterator over initial states
+   \brief Value type for range over initial states
    */
-  using initial_iterator_value_t = INITIAL_ITERATOR_VALUE;
+  using initial_value_t = INITIAL_VALUE;
 
   /*!
-   \brief Type of iterator over outgoing edges
+   \brief Type of range over outgoing edges
    */
-  using outgoing_edges_iterator_t = OUTGOING_EDGES_ITERATOR;
+  using outgoing_edges_range_t = OUTGOING_EDGES_RANGE;
 
   /*!
-   \brief Value type for iterator over outgoing edges
+   \brief Value type for range of outgoing edges
    */
-  using outgoing_edges_iterator_value_t = OUTGOING_EDGES_ITERATOR_VALUE;
+  using outgoing_edges_value_t = OUTGOING_EDGES_VALUE;
 
   /*!
    \brief Destructor
@@ -86,7 +87,7 @@ public:
    \brief Accessor
    \return Initial state valuations
    */
-  virtual tchecker::range_t<INITIAL_ITERATOR> initial_states() = 0;
+  virtual INITIAL_RANGE initial_states() = 0;
 
   /*!
    \brief Initial state and transition
@@ -96,14 +97,14 @@ public:
    been computed from v, and status is the status of state s after initialization
    \note t represents an initial transition to s
    */
-  virtual std::tuple<enum tchecker::state_status_t, STATE, TRANSITION> initial(INITIAL_ITERATOR_VALUE const & v) = 0;
+  virtual std::tuple<enum tchecker::state_status_t, STATE, TRANSITION> initial(INITIAL_VALUE const & v) = 0;
 
   /*!
    \brief Accessor
    \param s : state
    \return outgoing edges from state s
    */
-  virtual tchecker::range_t<OUTGOING_EDGES_ITERATOR> outgoing_edges(CONST_STATE const & s) = 0;
+  virtual OUTGOING_EDGES_RANGE outgoing_edges(CONST_STATE const & s) = 0;
 
   /*!
    \brief Next state and transition
@@ -113,7 +114,7 @@ public:
    computed from v, and status is the status of state s'
    */
   virtual std::tuple<enum tchecker::state_status_t, STATE, TRANSITION> next(CONST_STATE const & s,
-                                                                            OUTGOING_EDGES_ITERATOR_VALUE const & v) = 0;
+                                                                            OUTGOING_EDGES_VALUE const & v) = 0;
 
   /*!
   \brief Initial states and transitions with status tchecker::STATE_OK
@@ -126,9 +127,9 @@ public:
     enum tchecker::state_status_t status;
     STATE state;
     TRANSITION transition;
-    tchecker::range_t<INITIAL_ITERATOR> states = initial_states();
-    for (auto it = states.begin(); !it.at_end(); ++it) {
-      std::tie(status, state, transition) = initial(*it);
+    INITIAL_RANGE states = initial_states();
+    for (INITIAL_VALUE && init : states) {
+      std::tie(status, state, transition) = initial(init);
       if (status == tchecker::STATE_OK)
         v.push_back(std::make_tuple(state, transition));
     }
@@ -146,9 +147,9 @@ public:
     enum tchecker::state_status_t status;
     STATE next_state;
     TRANSITION transition;
-    tchecker::range_t<OUTGOING_EDGES_ITERATOR> edges = outgoing_edges(s);
-    for (auto it = edges.begin(); !it.at_end(); ++it) {
-      std::tie(status, next_state, transition) = next(s, *it);
+    OUTGOING_EDGES_RANGE edges = outgoing_edges(s);
+    for (OUTGOING_EDGES_VALUE && edge : edges) {
+      std::tie(status, next_state, transition) = next(s, edge);
       if (status == tchecker::STATE_OK)
         v.push_back(std::make_tuple(next_state, transition));
     }

@@ -37,11 +37,16 @@ namespace ta {
 using initial_iterator_t = tchecker::syncprod::initial_iterator_t;
 
 /*!
+\brief Type of range of iterators over inital states
+*/
+using initial_range_t = tchecker::syncprod::initial_range_t;
+
+/*!
  \brief Accessor to initial states
  \param system : a system
  \return range of initial states
  */
-inline tchecker::range_t<tchecker::ta::initial_iterator_t> initial_states(tchecker::ta::system_t const & system)
+inline tchecker::ta::initial_range_t initial_states(tchecker::ta::system_t const & system)
 {
   return tchecker::syncprod::initial_states(system.as_syncprod_system());
 }
@@ -49,7 +54,7 @@ inline tchecker::range_t<tchecker::ta::initial_iterator_t> initial_states(tcheck
 /*!
  \brief Dereference type for iterator over initial states
  */
-using initial_iterator_value_t = tchecker::syncprod::initial_iterator_value_t;
+using initial_value_t = tchecker::syncprod::initial_value_t;
 
 /*!
  \brief Compute initial state
@@ -58,7 +63,7 @@ using initial_iterator_value_t = tchecker::syncprod::initial_iterator_value_t;
  \param intval : valuation of bounded integer variables
  \param vedge : tuple of edges
  \param invariant : clock constraint container for initial state invariant
- \param initial_range : range of initial locations
+ \param initial_range : range of initial state valuations
  \pre the size of vloc and vedge is equal to the size of initial_range.
  initial_range has been obtained from system.
  initial_range yields the initial locations of all the processes ordered by increasing process identifier
@@ -75,7 +80,7 @@ enum tchecker::state_status_t initial(tchecker::ta::system_t const & system,
                                       tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
                                       tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
                                       tchecker::clock_constraint_container_t & invariant,
-                                      tchecker::ta::initial_iterator_value_t const & initial_range);
+                                      tchecker::ta::initial_value_t const & initial_range);
 
 /*!
 \brief Compute initial state and transition
@@ -88,7 +93,7 @@ enum tchecker::state_status_t initial(tchecker::ta::system_t const & system,
 \throw std::invalid_argument : if s and v have incompatible sizes
 */
 inline enum tchecker::state_status_t initial(tchecker::ta::system_t const & system, tchecker::ta::state_t & s,
-                                             tchecker::ta::transition_t & t, tchecker::ta::initial_iterator_value_t const & v)
+                                             tchecker::ta::transition_t & t, tchecker::ta::initial_value_t const & v)
 {
   return tchecker::ta::initial(system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), t.tgt_invariant_container(), v);
 }
@@ -99,12 +104,17 @@ inline enum tchecker::state_status_t initial(tchecker::ta::system_t const & syst
 using outgoing_edges_iterator_t = tchecker::syncprod::outgoing_edges_iterator_t;
 
 /*!
+\brief Type of range of outgoing edges
+*/
+using outgoing_edges_range_t = tchecker::syncprod::outgoing_edges_range_t;
+
+/*!
  \brief Accessor to outgoing edges
  \param system : a system
  \param vloc : tuple of locations
  \return range of outgoing synchronized and asynchronous edges from vloc in system
  */
-inline tchecker::range_t<tchecker::ta::outgoing_edges_iterator_t>
+inline tchecker::ta::outgoing_edges_range_t
 outgoing_edges(tchecker::ta::system_t const & system,
                tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc)
 {
@@ -112,9 +122,9 @@ outgoing_edges(tchecker::ta::system_t const & system,
 }
 
 /*!
- \brief Type of iterator over an outgoing vedge
+ \brief Type of outgoing vedge (range of synchronized/asynchronous edges)
  */
-using outgoing_edges_iterator_value_t = tchecker::syncprod::outgoing_edges_iterator_value_t;
+using outgoing_edges_value_t = tchecker::syncprod::outgoing_edges_value_t;
 
 /*!
  \brief Compute next state
@@ -126,12 +136,12 @@ using outgoing_edges_iterator_value_t = tchecker::syncprod::outgoing_edges_itera
  \param guard : clock constraint container for guard of vedge
  \param reset : clock resets container for clock resets of vedge
  \param tgt_invariant : clock constaint container for invariant of vloc after it is updated
- \param edges : range of edges in a asynchronous/synchronized edge from vloc
+ \param edges : tuple of edge from vloc (range of synchronized/asynchronous edges)
  \pre the source location in edges match the locations in vloc.
  No process has more than one edge in edges.
  The pid of every process in edges is less than the size of vloc
- \post the locations in vloc have been updated to target locations of edges for processes in vedge, and
- they have been left unchanged for the other processes.
+ \post the locations in vloc have been updated to target locations of the
+ processes involved in edges, and they have been left unchanged for the other processes.
  The values of variables in intval have been updated according to the statements in edges.
  Clock constraints from the invariants of vloc before it is updated have been pushed to src_invariant.
  Clock constraints from the guards in edges have been pushed into guard.
@@ -145,8 +155,8 @@ using outgoing_edges_iterator_value_t = tchecker::syncprod::outgoing_edges_itera
  STATE_TGT_INVARIANT_VIOLATED if the updated intval does not satisfy the invariant of updated vloc.
  \throw std::invalid_argument : if a pid in edges is greater or equal to the size of vloc
  \throw std::runtime_error : if the guard in edges generates clock resets, or if the statements in edges generate clock
- constraints, or if the invariant in updated vloc generates clock resets \throw std::runtime_error : if evaluation of
- invariants, guards or statements throws an exception
+ constraints, or if the invariant in updated vloc generates clock resets
+ \throw std::runtime_error : if evaluation of invariants, guards or statements throws an exception
  */
 enum tchecker::state_status_t next(tchecker::ta::system_t const & system,
                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
@@ -155,7 +165,7 @@ enum tchecker::state_status_t next(tchecker::ta::system_t const & system,
                                    tchecker::clock_constraint_container_t & src_invariant,
                                    tchecker::clock_constraint_container_t & guard, tchecker::clock_reset_container_t & reset,
                                    tchecker::clock_constraint_container_t & tgt_invariant,
-                                   tchecker::ta::outgoing_edges_iterator_value_t const & edges);
+                                   tchecker::ta::outgoing_edges_value_t const & edges);
 
 /*!
 \brief Compute next state and transition
@@ -168,8 +178,7 @@ enum tchecker::state_status_t next(tchecker::ta::system_t const & system,
 \throw std::invalid_argument : if s and v have incompatible size
 */
 inline enum tchecker::state_status_t next(tchecker::ta::system_t const & system, tchecker::ta::state_t & s,
-                                          tchecker::ta::transition_t & t,
-                                          tchecker::ta::outgoing_edges_iterator_value_t const & v)
+                                          tchecker::ta::transition_t & t, tchecker::ta::outgoing_edges_value_t const & v)
 {
   return tchecker::ta::next(system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), t.src_invariant_container(),
                             t.guard_container(), t.reset_container(), t.tgt_invariant_container(), v);
@@ -199,8 +208,8 @@ void delay_allowed(tchecker::ta::system_t const & system, tchecker::vloc_t const
  */
 class ta_t final
     : public tchecker::ts::ts_t<tchecker::ta::state_sptr_t, tchecker::ta::const_state_sptr_t, tchecker::ta::transition_sptr_t,
-                                tchecker::ta::initial_iterator_t, tchecker::ta::outgoing_edges_iterator_t,
-                                tchecker::ta::initial_iterator_value_t, tchecker::ta::outgoing_edges_iterator_value_t> {
+                                tchecker::ta::initial_range_t, tchecker::ta::outgoing_edges_range_t,
+                                tchecker::ta::initial_value_t, tchecker::ta::outgoing_edges_value_t> {
 public:
   /*!
    \brief Constructor
@@ -237,9 +246,9 @@ public:
 
   /*!
    \brief Accessor
-   \return initial state iterators
+   \return range of initial state iterators
    */
-  virtual tchecker::range_t<tchecker::ta::initial_iterator_t> initial_states();
+  virtual tchecker::ta::initial_range_t initial_states();
 
   /*!
    \brief Initial state and transition
@@ -250,14 +259,14 @@ public:
    \note t represents an initial transition to s
    */
   virtual std::tuple<enum tchecker::state_status_t, tchecker::ta::state_sptr_t, tchecker::ta::transition_sptr_t>
-  initial(tchecker::ta::initial_iterator_value_t const & v);
+  initial(tchecker::ta::initial_value_t const & v);
 
   /*!
    \brief Accessor
    \param s : state
    \return outgoing edges from state s
    */
-  virtual tchecker::range_t<tchecker::ta::outgoing_edges_iterator_t> outgoing_edges(tchecker::ta::const_state_sptr_t const & s);
+  virtual tchecker::ta::outgoing_edges_range_t outgoing_edges(tchecker::ta::const_state_sptr_t const & s);
 
   /*!
    \brief Next state and transition
@@ -267,7 +276,7 @@ public:
    computed from v, and status is the status of state s'
    */
   virtual std::tuple<enum tchecker::state_status_t, tchecker::ta::state_sptr_t, tchecker::ta::transition_sptr_t>
-  next(tchecker::ta::const_state_sptr_t const & s, tchecker::ta::outgoing_edges_iterator_value_t const & v);
+  next(tchecker::ta::const_state_sptr_t const & s, tchecker::ta::outgoing_edges_value_t const & v);
 
   /*!
    \brief Accessor

@@ -36,7 +36,7 @@ enum tchecker::state_status_t initial(tchecker::ta::system_t const & system,
                                       tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
                                       tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
                                       tchecker::clock_constraint_container_t & invariant,
-                                      tchecker::ta::initial_iterator_value_t const & initial_range)
+                                      tchecker::ta::initial_value_t const & initial_range)
 {
   // intialize vloc and vedge
   auto status = tchecker::syncprod::initial(system.as_syncprod_system(), vloc, vedge, initial_range);
@@ -64,7 +64,7 @@ enum tchecker::state_status_t next(tchecker::ta::system_t const & system,
                                    tchecker::clock_constraint_container_t & src_invariant,
                                    tchecker::clock_constraint_container_t & guard, tchecker::clock_reset_container_t & reset,
                                    tchecker::clock_constraint_container_t & tgt_invariant,
-                                   tchecker::ta::outgoing_edges_iterator_value_t const & edges)
+                                   tchecker::ta::outgoing_edges_value_t const & edges)
 {
   tchecker::vm_t & vm = system.vm();
 
@@ -123,10 +123,10 @@ ta_t::ta_t(std::shared_ptr<tchecker::ta::system_t const> const & system, std::si
 {
 }
 
-tchecker::range_t<tchecker::ta::initial_iterator_t> ta_t::initial_states() { return tchecker::ta::initial_states(*_system); }
+tchecker::ta::initial_range_t ta_t::initial_states() { return tchecker::ta::initial_states(*_system); }
 
 std::tuple<enum tchecker::state_status_t, tchecker::ta::state_sptr_t, tchecker::ta::transition_sptr_t>
-ta_t::initial(tchecker::ta::initial_iterator_value_t const & v)
+ta_t::initial(tchecker::ta::initial_value_t const & v)
 {
   tchecker::ta::state_sptr_t s = _state_allocator.construct();
   tchecker::ta::transition_sptr_t t = _transition_allocator.construct();
@@ -134,13 +134,13 @@ ta_t::initial(tchecker::ta::initial_iterator_value_t const & v)
   return std::make_tuple(status, s, t);
 }
 
-tchecker::range_t<tchecker::ta::outgoing_edges_iterator_t> ta_t::outgoing_edges(tchecker::ta::const_state_sptr_t const & s)
+tchecker::ta::outgoing_edges_range_t ta_t::outgoing_edges(tchecker::ta::const_state_sptr_t const & s)
 {
   return tchecker::ta::outgoing_edges(*_system, s->vloc_ptr());
 }
 
 std::tuple<enum tchecker::state_status_t, tchecker::ta::state_sptr_t, tchecker::ta::transition_sptr_t>
-ta_t::next(tchecker::ta::const_state_sptr_t const & s, tchecker::ta::outgoing_edges_iterator_value_t const & v)
+ta_t::next(tchecker::ta::const_state_sptr_t const & s, tchecker::ta::outgoing_edges_value_t const & v)
 {
   tchecker::ta::state_sptr_t nexts = _state_allocator.construct_from_state(*s);
   tchecker::ta::transition_sptr_t t = _transition_allocator.construct();

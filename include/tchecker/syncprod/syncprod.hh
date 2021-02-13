@@ -34,19 +34,24 @@ namespace syncprod {
 /*!
  \brief Type of iterator over initial states
  */
-using initial_iterator_t = tchecker::cartesian_iterator_t<tchecker::system::locs_t::const_iterator_t>;
+using initial_iterator_t = tchecker::cartesian_iterator_t<tchecker::range_t<tchecker::system::locs_t::const_iterator_t>>;
+
+/*!
+\brief Type of range over initial states
+*/
+using initial_range_t = tchecker::range_t<tchecker::syncprod::initial_iterator_t, tchecker::end_iterator_t>;
 
 /*!
  \brief Accessor to initial states
  \param system : a system
  \return range of initial states
  */
-tchecker::range_t<tchecker::syncprod::initial_iterator_t> initial_states(tchecker::syncprod::system_t const & system);
+initial_range_t initial_states(tchecker::syncprod::system_t const & system);
 
 /*!
  \brief Dereference type for iterator over initial states
  */
-using initial_iterator_value_t = std::iterator_traits<tchecker::syncprod::initial_iterator_t>::value_type;
+using initial_value_t = std::iterator_traits<tchecker::syncprod::initial_iterator_t>::value_type;
 
 /*!
  \brief Compute initial state
@@ -65,7 +70,7 @@ using initial_iterator_value_t = std::iterator_traits<tchecker::syncprod::initia
 enum tchecker::state_status_t initial(tchecker::syncprod::system_t const & system,
                                       tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
                                       tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                                      tchecker::syncprod::initial_iterator_value_t const & initial_range);
+                                      tchecker::syncprod::initial_value_t const & initial_range);
 
 /*!
 \brief Compute initial state and transition
@@ -79,7 +84,7 @@ enum tchecker::state_status_t initial(tchecker::syncprod::system_t const & syste
 */
 inline enum tchecker::state_status_t initial(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t & s,
                                              tchecker::syncprod::transition_t & t,
-                                             tchecker::syncprod::initial_iterator_value_t const & v)
+                                             tchecker::syncprod::initial_value_t const & v)
 {
   return tchecker::syncprod::initial(system, s.vloc_ptr(), t.vedge_ptr(), v);
 }
@@ -90,20 +95,24 @@ inline enum tchecker::state_status_t initial(tchecker::syncprod::system_t const 
 using outgoing_edges_iterator_t = tchecker::syncprod::vloc_edges_iterator_t;
 
 /*!
+\brief Type of range over outgoing edges
+*/
+using outgoing_edges_range_t = tchecker::range_t<tchecker::syncprod::outgoing_edges_iterator_t, tchecker::end_iterator_t>;
+
+/*!
  \brief Accessor to outgoing edges
  \param system : a system
  \param vloc : tuple of locations
  \return range of outgoing synchronized and asynchronous edges from vloc in system
  */
-tchecker::range_t<tchecker::syncprod::outgoing_edges_iterator_t>
-outgoing_edges(tchecker::syncprod::system_t const & system,
-               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc);
+outgoing_edges_range_t outgoing_edges(tchecker::syncprod::system_t const & system,
+                                      tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc);
 
 /*!
- \brief Type of iterator over an outgoing vedge
+ \brief Type of outgoing vedge
  \note type dereferenced by outgoing_edges_iterator_t, corresponds to tchecker::vedge_iterator_t
  */
-using outgoing_edges_iterator_value_t = tchecker::range_t<tchecker::syncprod::edges_iterator_t>;
+using outgoing_edges_value_t = tchecker::range_t<tchecker::syncprod::edges_iterator_t>;
 
 /*!
  \brief Compute next state
@@ -124,7 +133,7 @@ using outgoing_edges_iterator_value_t = tchecker::range_t<tchecker::syncprod::ed
 enum tchecker::state_status_t next(tchecker::syncprod::system_t const & system,
                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                                   tchecker::syncprod::outgoing_edges_iterator_value_t const & edges);
+                                   tchecker::syncprod::outgoing_edges_value_t const & edges);
 
 /*!
 \brief Compute next state and transition
@@ -138,7 +147,7 @@ enum tchecker::state_status_t next(tchecker::syncprod::system_t const & system,
 */
 inline enum tchecker::state_status_t next(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t & s,
                                           tchecker::syncprod::transition_t & t,
-                                          tchecker::syncprod::outgoing_edges_iterator_value_t const & v)
+                                          tchecker::syncprod::outgoing_edges_value_t const & v)
 {
   return tchecker::syncprod::next(system, s.vloc_ptr(), t.vedge_ptr(), v);
 }
@@ -151,9 +160,9 @@ inline enum tchecker::state_status_t next(tchecker::syncprod::system_t const & s
  */
 class syncprod_t final
     : public tchecker::ts::ts_t<tchecker::syncprod::state_sptr_t, tchecker::syncprod::const_state_sptr_t,
-                                tchecker::syncprod::transition_sptr_t, tchecker::syncprod::initial_iterator_t,
-                                tchecker::syncprod::outgoing_edges_iterator_t, tchecker::syncprod::initial_iterator_value_t,
-                                tchecker::syncprod::outgoing_edges_iterator_value_t> {
+                                tchecker::syncprod::transition_sptr_t, tchecker::syncprod::initial_range_t,
+                                tchecker::syncprod::outgoing_edges_range_t, tchecker::syncprod::initial_value_t,
+                                tchecker::syncprod::outgoing_edges_value_t> {
 public:
   /*!
    \brief Constructor
@@ -190,9 +199,9 @@ public:
 
   /*!
    \brief Accessor
-   \return initial state iterators
+   \return range of initial states iterators
    */
-  virtual tchecker::range_t<tchecker::syncprod::initial_iterator_t> initial_states();
+  virtual tchecker::syncprod::initial_range_t initial_states();
 
   /*!
    \brief Initial state and transition
@@ -203,15 +212,14 @@ public:
    \note s and t are deallocated automatically
    */
   virtual std::tuple<enum tchecker::state_status_t, tchecker::syncprod::state_sptr_t, tchecker::syncprod::transition_sptr_t>
-  initial(tchecker::syncprod::initial_iterator_value_t const & v);
+  initial(tchecker::syncprod::initial_value_t const & v);
 
   /*!
    \brief Accessor
    \param s : state
    \return outgoing edges from state s
    */
-  virtual tchecker::range_t<tchecker::syncprod::outgoing_edges_iterator_t>
-  outgoing_edges(tchecker::syncprod::const_state_sptr_t const & s);
+  virtual tchecker::syncprod::outgoing_edges_range_t outgoing_edges(tchecker::syncprod::const_state_sptr_t const & s);
 
   /*!
    \brief Next state and transition
@@ -222,7 +230,7 @@ public:
    \note s' and t are deallocated automatically
    */
   virtual std::tuple<enum tchecker::state_status_t, tchecker::syncprod::state_sptr_t, tchecker::syncprod::transition_sptr_t>
-  next(tchecker::syncprod::const_state_sptr_t const & s, tchecker::syncprod::outgoing_edges_iterator_value_t const & v);
+  next(tchecker::syncprod::const_state_sptr_t const & s, tchecker::syncprod::outgoing_edges_value_t const & v);
 
   /*!
    \brief Accessor
