@@ -13,7 +13,7 @@ namespace syncprod {
 
 /* Semantics functions */
 
-tchecker::syncprod::initial_range_t initial_states(tchecker::syncprod::system_t const & system)
+tchecker::syncprod::initial_range_t initial_edges(tchecker::syncprod::system_t const & system)
 {
   tchecker::process_id_t processes_count = system.processes_count();
 
@@ -93,7 +93,7 @@ syncprod_t::syncprod_t(std::shared_ptr<tchecker::syncprod::system_t const> const
 {
 }
 
-tchecker::syncprod::initial_range_t syncprod_t::initial_states() { return tchecker::syncprod::initial_states(*_system); }
+tchecker::syncprod::initial_range_t syncprod_t::initial_edges() { return tchecker::syncprod::initial_edges(*_system); }
 
 std::tuple<enum tchecker::state_status_t, tchecker::syncprod::state_sptr_t, tchecker::syncprod::transition_sptr_t>
 syncprod_t::initial(tchecker::syncprod::initial_value_t const & v)

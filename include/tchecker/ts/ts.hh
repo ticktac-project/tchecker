@@ -85,9 +85,9 @@ public:
 
   /*!
    \brief Accessor
-   \return Initial state valuations
+   \return Initial edges
    */
-  virtual INITIAL_RANGE initial_states() = 0;
+  virtual INITIAL_RANGE initial_edges() = 0;
 
   /*!
    \brief Initial state and transition
@@ -117,32 +117,39 @@ public:
                                                                             OUTGOING_EDGES_VALUE const & v) = 0;
 
   /*!
-  \brief Initial states and transitions with status tchecker::STATE_OK
+  \brief Type of tuples (status, state, transition)
+  */
+  using sst_t = std::tuple<enum tchecker::state_status_t, STATE, TRANSITION>;
+
+  /*!
+  \brief Initial states and transitions with selected status
   \param v : container
-  \post all pairs (s, t) of initial states and transitions such that s has
-  status tchecker::STATE_OK have been pushed back into v
+  \param mask : mask on initial states
+  \post all tuples (status, s, t) of status, initial states and transitions such
+  that status matches mask (i.e. status & mask != 0) have been pushed back into v
    */
-  virtual void initial_ok(std::vector<std::tuple<STATE, TRANSITION>> & v)
+  virtual void initial(std::vector<sst_t> & v, enum tchecker::state_status_t mask)
   {
     enum tchecker::state_status_t status;
     STATE state;
     TRANSITION transition;
-    INITIAL_RANGE states = initial_states();
-    for (INITIAL_VALUE && init : states) {
-      std::tie(status, state, transition) = initial(init);
-      if (status == tchecker::STATE_OK)
-        v.push_back(std::make_tuple(state, transition));
+    INITIAL_RANGE edges = initial_edges();
+    for (INITIAL_VALUE && edge : edges) {
+      std::tie(status, state, transition) = initial(edge);
+      if (status & mask)
+        v.push_back(std::make_tuple(status, state, transition));
     }
   }
 
   /*!
-  \brief Next states and transitions with status tchecker::STATE_OK
+  \brief Next states and transitions with selected status
   \param s : state
   \param v : container
-  \post all pairs (s', t) such that s -t-> s' is a transition such that s' has
-  status tchecker::STATE_OK have been pushed back into v
+  \param mask : mask on next states
+  \post all tuples (status, s', t) such that s -t-> s' is a transition and the
+  status of s' matches mask (i.e. status & mask != 0) have been pushed to v
   */
-  virtual void next_ok(CONST_STATE const & s, std::vector<std::tuple<STATE, TRANSITION>> & v)
+  virtual void next(CONST_STATE const & s, std::vector<sst_t> & v, enum tchecker::state_status_t mask)
   {
     enum tchecker::state_status_t status;
     STATE next_state;
@@ -150,8 +157,8 @@ public:
     OUTGOING_EDGES_RANGE edges = outgoing_edges(s);
     for (OUTGOING_EDGES_VALUE && edge : edges) {
       std::tie(status, next_state, transition) = next(s, edge);
-      if (status == tchecker::STATE_OK)
-        v.push_back(std::make_tuple(next_state, transition));
+      if (status & mask)
+        v.push_back(std::make_tuple(status, next_state, transition));
     }
   }
 };

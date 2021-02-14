@@ -123,7 +123,7 @@ ta_t::ta_t(std::shared_ptr<tchecker::ta::system_t const> const & system, std::si
 {
 }
 
-tchecker::ta::initial_range_t ta_t::initial_states() { return tchecker::ta::initial_states(*_system); }
+tchecker::ta::initial_range_t ta_t::initial_edges() { return tchecker::ta::initial_edges(*_system); }
 
 std::tuple<enum tchecker::state_status_t, tchecker::ta::state_sptr_t, tchecker::ta::transition_sptr_t>
 ta_t::initial(tchecker::ta::initial_value_t const & v)

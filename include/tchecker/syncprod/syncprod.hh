@@ -42,11 +42,11 @@ using initial_iterator_t = tchecker::cartesian_iterator_t<tchecker::range_t<tche
 using initial_range_t = tchecker::range_t<tchecker::syncprod::initial_iterator_t, tchecker::end_iterator_t>;
 
 /*!
- \brief Accessor to initial states
+ \brief Accessor to initial edges
  \param system : a system
- \return range of initial states
+ \return range of initial edges
  */
-initial_range_t initial_states(tchecker::syncprod::system_t const & system);
+initial_range_t initial_edges(tchecker::syncprod::system_t const & system);
 
 /*!
  \brief Dereference type for iterator over initial states
@@ -199,9 +199,9 @@ public:
 
   /*!
    \brief Accessor
-   \return range of initial states iterators
+   \return initial edges
    */
-  virtual tchecker::syncprod::initial_range_t initial_states();
+  virtual tchecker::syncprod::initial_range_t initial_edges();
 
   /*!
    \brief Initial state and transition
@@ -231,6 +231,38 @@ public:
    */
   virtual std::tuple<enum tchecker::state_status_t, tchecker::syncprod::state_sptr_t, tchecker::syncprod::transition_sptr_t>
   next(tchecker::syncprod::const_state_sptr_t const & s, tchecker::syncprod::outgoing_edges_value_t const & v);
+
+  /*!
+  \brief Initial states and transitions with selected status
+  \param v : container
+  \param mask : mask on initial states
+  \post all tuples (status, s, t) of status, initial states and transitions such
+  that status matches mask (i.e. status & mask != 0) have been pushed back into v
+  */
+  virtual inline void initial(std::vector<sst_t> & v, enum tchecker::state_status_t mask)
+  {
+    return tchecker::ts::ts_t<tchecker::syncprod::state_sptr_t, tchecker::syncprod::const_state_sptr_t,
+                              tchecker::syncprod::transition_sptr_t, tchecker::syncprod::initial_range_t,
+                              tchecker::syncprod::outgoing_edges_range_t, tchecker::syncprod::initial_value_t,
+                              tchecker::syncprod::outgoing_edges_value_t>::initial(v, mask);
+  }
+
+  /*!
+  \brief Next states and transitions with selected status
+  \param s : state
+  \param v : container
+  \param mask : mask on next states
+  \post all tuples (status, s', t) such that s -t-> s' is a transition and the
+  status of s' matches mask (i.e. status & mask != 0) have been pushed to v
+  */
+  virtual inline void next(tchecker::syncprod::const_state_sptr_t const & s, std::vector<sst_t> & v,
+                           enum tchecker::state_status_t mask)
+  {
+    return tchecker::ts::ts_t<tchecker::syncprod::state_sptr_t, tchecker::syncprod::const_state_sptr_t,
+                              tchecker::syncprod::transition_sptr_t, tchecker::syncprod::initial_range_t,
+                              tchecker::syncprod::outgoing_edges_range_t, tchecker::syncprod::initial_value_t,
+                              tchecker::syncprod::outgoing_edges_value_t>::next(s, v, mask);
+  }
 
   /*!
    \brief Accessor

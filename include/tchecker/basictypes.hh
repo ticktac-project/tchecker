@@ -158,16 +158,16 @@ std::ostream & operator<<(std::ostream & os, enum tchecker::sync_strength_t s);
  \brief Status of states
  */
 enum state_status_t {
-  STATE_OK,                             /*!< state computation OK */
-  STATE_INCOMPATIBLE_EDGE,              /*!< state computation failed due to unmatching locations */
-  STATE_INTVARS_GUARD_VIOLATED,         /*!< state computation failed due to intvars guard violation */
-  STATE_INTVARS_SRC_INVARIANT_VIOLATED, /*!< state computation failed due to intvars source invariant violation */
-  STATE_INTVARS_TGT_INVARIANT_VIOLATED, /*!< state computation failed due to intvars target invariant violation */
-  STATE_INTVARS_STATEMENT_FAILED,       /*!< state computation failed due to intvars edge statement */
-  STATE_CLOCKS_GUARD_VIOLATED,          /*!< state computation failed due to clocks guard violation */
-  STATE_CLOCKS_SRC_INVARIANT_VIOLATED,  /*!< state computation failed due to clocks source invariant violation */
-  STATE_CLOCKS_TGT_INVARIANT_VIOLATED,  /*!< state computation failed due to clocks target invariant violation */
-  STATE_EMPTY_ZONE,                     /*!< state computation resulted in an empty zone (no details provided) */
+  STATE_OK = 1,                              /*!< state computation OK */
+  STATE_INCOMPATIBLE_EDGE = 2,               /*!< state computation failed due to unmatching locations */
+  STATE_INTVARS_GUARD_VIOLATED = 4,          /*!< state computation failed due to intvars guard violation */
+  STATE_INTVARS_SRC_INVARIANT_VIOLATED = 8,  /*!< state computation failed due to intvars source invariant violation */
+  STATE_INTVARS_TGT_INVARIANT_VIOLATED = 16, /*!< state computation failed due to intvars target invariant violation */
+  STATE_INTVARS_STATEMENT_FAILED = 32,       /*!< state computation failed due to intvars edge statement */
+  STATE_CLOCKS_GUARD_VIOLATED = 64,          /*!< state computation failed due to clocks guard violation */
+  STATE_CLOCKS_SRC_INVARIANT_VIOLATED = 128, /*!< state computation failed due to clocks source invariant violation */
+  STATE_CLOCKS_TGT_INVARIANT_VIOLATED = 256, /*!< state computation failed due to clocks target invariant violation */
+  STATE_EMPTY_ZONE = 512,                    /*!< state computation resulted in an empty zone (no details provided) */
 };
 
 } // end of namespace tchecker

@@ -230,10 +230,10 @@ private:
 
     std::stack<tchecker::syncprod::state_sptr_t> waiting;
     tchecker::syncprod::syncprod_t sp(_system, 10000);
-    std::vector<std::tuple<tchecker::syncprod::state_sptr_t, tchecker::syncprod::transition_sptr_t>> v;
+    std::vector<tchecker::syncprod::syncprod_t::sst_t> v;
 
-    sp.initial_ok(v);
-    for (auto && [state, transition] : v) {
+    sp.initial(v, tchecker::STATE_OK);
+    for (auto && [status, state, transition] : v) {
       std::string state_name = namify(*state);
       if (!_product.is_location(pid, state_name)) {
         _product.add_location(pid, state_name, attributes(*state));
@@ -248,8 +248,8 @@ private:
 
       tchecker::loc_id_t src_id = _product.location(pid, namify(*src))->id();
 
-      sp.next_ok(static_cast<tchecker::syncprod::const_state_sptr_t>(src), v);
-      for (auto && [tgt, transition] : v) {
+      sp.next(static_cast<tchecker::syncprod::const_state_sptr_t>(src), v, tchecker::STATE_OK);
+      for (auto && [status, tgt, transition] : v) {
         std::string tgt_name = namify(*tgt);
         if (!_product.is_location(pid, tgt_name)) {
           _product.add_location(pid, tgt_name, attributes(*tgt));
