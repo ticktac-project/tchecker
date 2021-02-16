@@ -186,9 +186,17 @@ private:
    */
   tchecker::system::attributes_t attributes(tchecker::syncprod::state_t const & state)
   {
+    tchecker::process_id_t count_initial = 0;
     tchecker::system::attributes_t attr;
     for (tchecker::loc_id_t id : state.vloc())
-      attr.add_attributes(_system->location(id)->attributes());
+      for (auto && [key, value] : _system->location(id)->attributes().attributes()) {
+        if (key == "initial")
+          ++count_initial;
+        else
+          attr.add_attribute(key, value);
+      }
+    if (count_initial == state.vloc().size()) // all processes initial
+      attr.add_attribute("initial", "");
     return attr;
   }
 
