@@ -11,6 +11,8 @@
 #include <string>
 #include <vector>
 
+#include <boost/dynamic_bitset/dynamic_bitset.hpp>
+
 #include "tchecker/parsing/declaration.hh"
 #include "tchecker/system/edge.hh"
 #include "tchecker/system/system.hh"
@@ -164,6 +166,14 @@ public:
   using tchecker::system::system_t::locations;
   using tchecker::system::system_t::locations_count;
 
+  /*!
+   \brief Accessor
+   \param id : location identifier
+   \pre id is a location identifier (checked by assertion)
+   \return true if location id is committed, false otherwise
+   */
+  bool is_committed(tchecker::loc_id_t id) const;
+
   // Processes
   using tchecker::system::system_t::is_process;
   using tchecker::system::system_t::process_attributes;
@@ -201,6 +211,12 @@ private:
   void extract_asynchronous_edges();
 
   /*!
+  \brief Compute committed location flags
+  \post _committed reflects the committed locations in the system
+  */
+  void compute_committed_locations();
+
+  /*!
    \brief Add asynchronous edge
    \param edge : an edge
    \pre edge is asynchronous (checked by assertion)
@@ -209,9 +225,18 @@ private:
    */
   void add_asynchronous_edge(tchecker::system::edge_const_shared_ptr_t const & edge);
 
+  /*!
+   \brief Set location committed flag
+   \param id : location identifier
+   \param flags : range of committed flags
+   \post location has been set committed if flags if not empty
+   */
+  void set_committed(tchecker::loc_id_t id, tchecker::range_t<tchecker::system::attributes_t::const_iterator_t> const & flags);
+
   std::vector<asynchronous_edges_collection_t> _async_outgoing_edges; /*!< Map : loc id -> asynchronous outgoing edges */
   std::vector<asynchronous_edges_collection_t> _async_incoming_edges; /*!< Map : loc id -> asynchronous incoming edges */
   static asynchronous_edges_collection_t const _empty_async_edges;    /*!< Empty collection of asynchronous edges */
+  boost::dynamic_bitset<> _committed;                                 /*!< Committed locations */
 };
 
 /*!

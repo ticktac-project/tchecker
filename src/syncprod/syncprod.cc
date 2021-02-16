@@ -47,6 +47,68 @@ enum tchecker::state_status_t initial(tchecker::syncprod::system_t const & syste
   return tchecker::STATE_OK;
 }
 
+/*! outgoing_edges_iterator_t */
+
+outgoing_edges_iterator_t::outgoing_edges_iterator_t(tchecker::syncprod::vloc_synchronized_edges_iterator_t const & sync_it,
+                                                     tchecker::syncprod::vloc_asynchronous_edges_iterator_t const & async_it,
+                                                     boost::dynamic_bitset<> committed_processes)
+    : _it(sync_it, async_it), _committed_processes(committed_processes), _committed(_committed_processes.any())
+{
+  advance_while_not_enabled();
+}
+
+outgoing_edges_iterator_t::outgoing_edges_iterator_t(tchecker::syncprod::vloc_edges_iterator_t const & it,
+                                                     boost::dynamic_bitset<> committed_processes)
+    : _it(it), _committed_processes(committed_processes), _committed(_committed_processes.any())
+{
+  advance_while_not_enabled();
+}
+
+bool outgoing_edges_iterator_t::operator==(tchecker::syncprod::outgoing_edges_iterator_t const & it) const
+{
+  return (_it == it._it && _committed_processes == it._committed_processes && _committed == it._committed);
+}
+
+bool outgoing_edges_iterator_t::operator==(tchecker::end_iterator_t const & it) const { return at_end(); }
+
+tchecker::range_t<tchecker::syncprod::edges_iterator_t> outgoing_edges_iterator_t::operator*()
+{
+  assert(!at_end());
+  return *_it;
+}
+
+tchecker::syncprod::outgoing_edges_iterator_t & outgoing_edges_iterator_t::operator++()
+{
+  assert(!at_end());
+  ++_it;
+  advance_while_not_enabled();
+  return *this;
+}
+
+void outgoing_edges_iterator_t::advance_while_not_enabled()
+{
+  if (!_committed)
+    return;
+  while (!at_end()) {
+    if (involves_committed_process(*_it))
+      return;
+    ++_it;
+  }
+}
+
+bool outgoing_edges_iterator_t::involves_committed_process(
+    tchecker::range_t<tchecker::syncprod::edges_iterator_t> const & r) const
+{
+  for (tchecker::system::edge_const_shared_ptr_t const & edge : r)
+    if (_committed_processes[edge->pid()])
+      return true;
+  return false;
+}
+
+bool outgoing_edges_iterator_t::at_end() const { return _it == tchecker::past_the_end_iterator; }
+
+/* outgoing edges */
+
 tchecker::syncprod::outgoing_edges_range_t
 outgoing_edges(tchecker::syncprod::system_t const & system,
                tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc)
@@ -57,7 +119,8 @@ outgoing_edges(tchecker::syncprod::system_t const & system,
   tchecker::range_t<tchecker::syncprod::vloc_asynchronous_edges_iterator_t, tchecker::end_iterator_t> async_edges(
       tchecker::syncprod::outgoing_asynchronous_edges(system, vloc));
 
-  tchecker::syncprod::vloc_edges_iterator_t begin(sync_edges.begin(), async_edges.begin());
+  tchecker::syncprod::outgoing_edges_iterator_t begin(sync_edges.begin(), async_edges.begin(),
+                                                      committed_processes(system, vloc));
 
   return tchecker::make_range(begin, tchecker::past_the_end_iterator);
 }
@@ -83,6 +146,17 @@ enum tchecker::state_status_t next(tchecker::syncprod::system_t const & system,
     (*vedge)[edge->pid()] = edge->id();
   }
   return tchecker::STATE_OK;
+}
+
+boost::dynamic_bitset<> committed_processes(tchecker::syncprod::system_t const & system,
+                                            tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc)
+{
+  boost::dynamic_bitset<> committed(system.processes_count());
+  committed.reset();
+  for (tchecker::loc_id_t id : *vloc)
+    if (system.is_committed(id))
+      committed[system.location(id)->pid()] = 1;
+  return committed;
 }
 
 /* syncprod_t */

@@ -25,11 +25,13 @@ tchecker::syncprod::system_t::asynchronous_edges_collection_t const tchecker::sy
 system_t::system_t(tchecker::parsing::system_declaration_t const & sysdecl) : tchecker::system::system_t(sysdecl)
 {
   extract_asynchronous_edges();
+  compute_committed_locations();
 }
 
 system_t::system_t(tchecker::system::system_t const & system) : tchecker::system::system_t(system)
 {
   extract_asynchronous_edges();
+  compute_committed_locations();
 }
 
 bool system_t::is_asynchronous(tchecker::system::edge_t const & edge) const
@@ -74,11 +76,28 @@ system_t::asynchronous_incoming_edges(tchecker::loc_id_t loc) const
                               asynchronous_edges_const_iterator_t(_async_incoming_edges[loc].end()));
 }
 
+bool system_t::is_committed(tchecker::loc_id_t id) const
+{
+  assert(is_location(id));
+  return _committed[id] == 1;
+}
+
 void system_t::extract_asynchronous_edges()
 {
   for (tchecker::system::edge_const_shared_ptr_t const & edge : edges())
     if (is_asynchronous(*edge))
       add_asynchronous_edge(edge);
+}
+
+void system_t::compute_committed_locations()
+{
+  tchecker::loc_id_t locations_count = this->locations_count();
+  _committed.resize(locations_count, false);
+
+  for (tchecker::loc_id_t id = 0; id < locations_count; ++id) {
+    auto const & attr = tchecker::syncprod::system_t::location(id)->attributes();
+    set_committed(id, attr.values("committed"));
+  }
 }
 
 void system_t::add_asynchronous_edge(tchecker::system::edge_const_shared_ptr_t const & edge)
@@ -91,6 +110,13 @@ void system_t::add_asynchronous_edge(tchecker::system::edge_const_shared_ptr_t c
   if (tgt >= _async_incoming_edges.size())
     _async_incoming_edges.resize(tgt + 1);
   _async_incoming_edges[tgt].push_back(edge);
+}
+
+void system_t::set_committed(tchecker::loc_id_t id,
+                             tchecker::range_t<tchecker::system::attributes_t::const_iterator_t> const & flags)
+{
+  if (flags.begin() != flags.end())
+    _committed[id] = 1;
 }
 
 /*!

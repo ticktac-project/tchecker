@@ -169,18 +169,11 @@ public:
 
   // Locations
   using tchecker::syncprod::system_t::initial_locations;
+  using tchecker::syncprod::system_t::is_committed;
   using tchecker::syncprod::system_t::is_location;
   using tchecker::syncprod::system_t::location;
   using tchecker::syncprod::system_t::locations;
   using tchecker::syncprod::system_t::locations_count;
-
-  /*!
-   \brief Accessor
-   \param id : location identifier
-   \pre id is a location identifier (checked by assertion)
-   \return true if location id is committed, false otherwise
-   */
-  bool is_committed(tchecker::loc_id_t id) const;
 
   /*!
    \brief Accessor
@@ -290,14 +283,6 @@ private:
   void set_labels(tchecker::loc_id_t id, tchecker::range_t<tchecker::system::attributes_t::const_iterator_t> const & labels);
 
   /*!
-   \brief Set location committed flag
-   \param id : location identifier
-   \param flags : range of committed flags
-   \post location has been set committed if flags if not empty
-   */
-  void set_committed(tchecker::loc_id_t id, tchecker::range_t<tchecker::system::attributes_t::const_iterator_t> const & flags);
-
-  /*!
    \brief Set location urgent flag
    \param id : location identifier
    \param flags : range of urgent flags
@@ -333,7 +318,6 @@ private:
   std::vector<compiled_expression_t> _guards;                                /*!< Map : edge identifier -> guard */
   std::vector<compiled_statement_t> _statements;                             /*!< Map : edge identifier -> statement */
   std::unordered_multimap<tchecker::loc_id_t, tchecker::label_id_t> _labels; /*!< Map : location identifier -> labels */
-  boost::dynamic_bitset<> _committed;                                        /*!< Committed locations */
   boost::dynamic_bitset<> _urgent;                                           /*!< Urgent locations */
 };
 

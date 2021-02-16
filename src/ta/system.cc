@@ -81,12 +81,6 @@ tchecker::bytecode_t const * system_t::statement_bytecode(tchecker::edge_id_t id
   return _statements[id]._compiled_stmt.get();
 }
 
-bool system_t::is_committed(tchecker::loc_id_t id) const
-{
-  assert(is_location(id));
-  return _committed[id] == 1;
-}
-
 bool system_t::is_urgent(tchecker::loc_id_t id) const
 {
   assert(is_location(id));
@@ -118,8 +112,7 @@ void system_t::compute_from_syncprod_system()
   _guards.clear();
   _statements.clear();
   _labels.clear();
-  _committed.clear();
-  _urgent.clear();
+  _urgent.reset();
 
   tchecker::loc_id_t locations_count = this->locations_count();
   tchecker::edge_id_t edges_count = this->edges_count();
@@ -128,14 +121,12 @@ void system_t::compute_from_syncprod_system()
   _guards.resize(edges_count);
   _statements.resize(edges_count);
   _labels.reserve(locations_count);
-  _committed.resize(locations_count);
   _urgent.resize(locations_count);
 
   for (tchecker::loc_id_t id = 0; id < locations_count; ++id) {
     auto const & attr = tchecker::syncprod::system_t::location(id)->attributes();
     set_invariant(id, attr.values("invariant"));
     set_labels(id, attr.values("labels"));
-    set_committed(id, attr.values("committed"));
     set_urgent(id, attr.values("urgent"));
   }
 
@@ -211,13 +202,6 @@ void system_t::set_labels(tchecker::loc_id_t id,
       tchecker::ta::labels_t::add_label(value);
     _labels.insert({id, tchecker::ta::labels_t::label_id(value)});
   }
-}
-
-void system_t::set_committed(tchecker::loc_id_t id,
-                             tchecker::range_t<tchecker::system::attributes_t::const_iterator_t> const & flags)
-{
-  if (flags.begin() != flags.end())
-    _committed[id] = 1;
 }
 
 void system_t::set_urgent(tchecker::loc_id_t id,
