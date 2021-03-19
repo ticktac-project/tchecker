@@ -15,8 +15,6 @@
 
 namespace tchecker {
 
-#ifdef HIDDEN_TO_COMPILER
-
 /*!
  \class zone_t
  \brief Representation of a zone (interface)
@@ -26,57 +24,62 @@ namespace tchecker {
 class zone_t {
 public:
   /*!
+  \brief Destructor
+  */
+  virtual ~zone_t() = default;
+
+  /*!
    \brief Emptiness check
    \return true if this zone is empty, false otherwise
    */
-  bool empty() const;
+  virtual bool is_empty() const = 0;
 
   /*!
-   \brief Universality check
-   \return true if this zone is universal, false otherwise
+   \brief Universal-positive check
+   \return true if this zone is universal-positive (i.e. no constraint on clocks except x>=0), false otherwise
    */
-  bool universal() const;
+  virtual bool is_universal_positive() const = 0;
 
   /*!
    \brief Equality predicate
    \param zone : a zone
    \return true if this is equal to zone, false otherwise
    */
-  bool operator==(/* actual zone type */ const & zone) const;
+  virtual bool operator==(tchecker::zone_t const & zone) const = 0;
 
   /*!
    \brief Disequality predicate
    \param zone : a zone
    \return true if this is not equal to zone, false otherwise
    */
-  bool operator!=(/* actual zone type */ const & zone) const;
+  virtual bool operator!=(tchecker::zone_t const & zone) const = 0;
 
   /*!
    \brief Inclusion check
    \param zone : a zone
    \return true if this is included or equal to zone
    */
-  bool operator<=(/* actual zone type */ const & zone) const;
+  virtual bool operator<=(tchecker::zone_t const & zone) const = 0;
 
   /*!
    \brief Checks inclusion wrt abstraction aM
    \param zone : a zone
-   \param M : clock bounds
+   \param m : clock bounds
    \return true if this zone is include in aM(zone), false otherwise
-   \pre clocks have same IDs in zone and M
+   \pre m is a clock bound map over the clocks in zone
    */
-  bool aM_le(/* actual zone type */ const & zone, tchecker::clockbounds::map_t const & M) const;
+  virtual bool am_le(tchecker::zone_t const & zone, tchecker::clockbounds::map_t const & m) const = 0;
 
   /*!
    \brief Checks inclusion wrt abstraction aLU
    \param zone : a zone
-   \param L : clock lower bounds
-   \param U : clock upper bounds
+   \param l : clock lower bounds
+   \param u : clock upper bounds
    \return true if this zone is included in aLU(zone), false otherwise
-   \pre clocks have same IDs in zone, L and U
+   \pre m is a clock bound map over the clocks in zone
    */
-  bool aLU_le(/* actual zone type */ const & zone, tchecker::clockbounds::map_t const & L,
-              tchecker::clockbounds::map_t const & U) const;
+  virtual bool alu_le(tchecker::zone_t const & zone, tchecker::clockbounds::map_t const & l,
+                      tchecker::clockbounds::map_t const & u) const = 0;
 
   /*!
    \brief Lexical ordering
@@ -84,19 +87,19 @@ public:
    \return 0 if this and zone are equal, a negative value if this is smaller than zone w.r.t. lexical ordering on the clock
    constraints, a positive value otherwise
    */
-  int lexical_cmp(/* actual zone type */ const & zone) const;
+  virtual int lexical_cmp(tchecker::zone_t const & zone) const = 0;
 
   /*!
    \brief Accessor
    \return hash code for this zone
    */
-  std::size_t hash() const;
+  virtual std::size_t hash() const = 0;
 
   /*!
    \brief Accessor
    \return dimension of the zone
    */
-  std::size_t dim() const;
+  virtual std::size_t dim() const = 0;
 
   /*!
    \brief Output
@@ -105,7 +108,16 @@ public:
    \post this zone has been output to os with clock names from index
    \return os after this zone has been output
    */
-  std::ostream & output(std::ostream & os, tchecker::clock_index_t const & index) const;
+  virtual std::ostream & output(std::ostream & os, tchecker::clock_index_t const & index) const = 0;
+
+  /*!
+  \brief Conversion to DBM
+  \param dbm : a DBM
+  \pre dbm is a dim() * dim() allocated DBM
+  \post dbm contains a DBM representation of the zone.
+  dbm is tight if the zone is not empty.
+   */
+  virtual void to_dbm(tchecker::dbm::db_t * dbm) const = 0;
 };
 
 /*!
@@ -113,9 +125,7 @@ public:
  \param zone : a zone
  \return hash value for zone
  */
-inline std::size_t hash_value(/* actual zone type */ const & zone) { return zone.hash(); }
-
-#endif // HIDDEN_TO_COMPILER
+inline std::size_t hash_value(tchecker::zone_t const & zone) { return zone.hash(); }
 
 } // end of namespace tchecker
 

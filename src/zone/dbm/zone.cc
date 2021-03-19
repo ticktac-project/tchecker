@@ -39,7 +39,15 @@ bool zone_t::operator==(tchecker::dbm::zone_t const & zone) const
   return tchecker::dbm::is_equal(dbm_ptr(), zone.dbm_ptr(), _dim);
 }
 
+bool zone_t::operator==(tchecker::zone_t const & zone) const
+{
+  tchecker::dbm::zone_t const & zone_dbm = dynamic_cast<tchecker::dbm::zone_t const &>(zone);
+  return (*this == zone_dbm);
+}
+
 bool zone_t::operator!=(tchecker::dbm::zone_t const & zone) const { return !(*this == zone); }
+
+bool zone_t::operator!=(tchecker::zone_t const & zone) const { return !(*this == zone); }
 
 bool zone_t::operator<=(tchecker::dbm::zone_t const & zone) const
 {
@@ -52,6 +60,12 @@ bool zone_t::operator<=(tchecker::dbm::zone_t const & zone) const
   return tchecker::dbm::is_le(dbm_ptr(), zone.dbm_ptr(), _dim);
 }
 
+bool zone_t::operator<=(tchecker::zone_t const & zone) const
+{
+  tchecker::dbm::zone_t const & zone_dbm = dynamic_cast<tchecker::dbm::zone_t const &>(zone);
+  return (*this <= zone_dbm);
+}
+
 bool zone_t::am_le(tchecker::dbm::zone_t const & zone, tchecker::clockbounds::map_t const & m) const
 {
   if (this->is_empty())
@@ -59,6 +73,12 @@ bool zone_t::am_le(tchecker::dbm::zone_t const & zone, tchecker::clockbounds::ma
   if (zone.is_empty())
     return false;
   return tchecker::dbm::is_am_le(dbm_ptr(), zone.dbm_ptr(), _dim, m.ptr());
+}
+
+bool zone_t::am_le(tchecker::zone_t const & zone, tchecker::clockbounds::map_t const & m) const
+{
+  tchecker::dbm::zone_t const & zone_dbm = dynamic_cast<tchecker::dbm::zone_t const &>(zone);
+  return am_le(zone_dbm, m);
 }
 
 bool zone_t::alu_le(tchecker::dbm::zone_t const & zone, tchecker::clockbounds::map_t const & l,
@@ -71,9 +91,22 @@ bool zone_t::alu_le(tchecker::dbm::zone_t const & zone, tchecker::clockbounds::m
   return tchecker::dbm::is_alu_le(dbm_ptr(), zone.dbm_ptr(), _dim, l.ptr(), u.ptr());
 }
 
+bool zone_t::alu_le(tchecker::zone_t const & zone, tchecker::clockbounds::map_t const & l,
+                    tchecker::clockbounds::map_t const & u) const
+{
+  tchecker::dbm::zone_t const & zone_dbm = dynamic_cast<tchecker::dbm::zone_t const &>(zone);
+  return alu_le(zone_dbm, l, u);
+}
+
 int zone_t::lexical_cmp(tchecker::dbm::zone_t const & zone) const
 {
   return tchecker::dbm::lexical_cmp(dbm_ptr(), _dim, zone.dbm_ptr(), zone._dim);
+}
+
+int zone_t::lexical_cmp(tchecker::zone_t const & zone) const
+{
+  tchecker::dbm::zone_t const & zone_dbm = dynamic_cast<tchecker::dbm::zone_t const &>(zone);
+  return lexical_cmp(zone_dbm);
 }
 
 std::size_t zone_t::hash() const { return tchecker::dbm::hash(dbm_ptr(), _dim); }
@@ -86,6 +119,8 @@ std::ostream & zone_t::output(std::ostream & os, tchecker::clock_index_t const &
 tchecker::dbm::db_t * zone_t::dbm() { return dbm_ptr(); }
 
 tchecker::dbm::db_t const * zone_t::dbm() const { return dbm_ptr(); }
+
+void zone_t::to_dbm(tchecker::dbm::db_t * dbm) const { std::memcpy(dbm, dbm_ptr(), _dim * _dim * sizeof(*dbm)); }
 
 zone_t::zone_t(tchecker::clock_id_t dim) : _dim(dim) { tchecker::dbm::universal_positive(dbm_ptr(), _dim); }
 

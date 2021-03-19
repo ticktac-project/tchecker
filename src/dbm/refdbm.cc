@@ -6,10 +6,13 @@
  */
 
 #include "tchecker/dbm/refdbm.hh"
+#include "tchecker/clockbounds/clockbounds.hh"
 #include "tchecker/utils/ordering.hh"
 
-#define DBM(i, j)  dbm[(i)*dim + (j)]
-#define RDBM(i, j) rdbm[(i)*rdim + (j)]
+#define DBM(i, j)   dbm[(i)*dim + (j)]
+#define RDBM(i, j)  rdbm[(i)*rdim + (j)]
+#define RDBM1(i, j) rdbm1[(i)*rdim + (j)]
+#define RDBM2(i, j) rdbm2[(i)*rdim + (j)]
 
 namespace tchecker {
 
@@ -167,6 +170,80 @@ bool is_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
   assert(tchecker::refdbm::is_tight(rdbm1, r));
   assert(tchecker::refdbm::is_tight(rdbm2, r));
   return tchecker::dbm::is_le(rdbm1, rdbm2, r.size());
+}
+
+bool is_alu_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
+               tchecker::reference_clock_variables_t const & r, tchecker::integer_t const * l, tchecker::integer_t const * u)
+{
+  assert(rdbm1 != nullptr);
+  assert(rdbm2 != nullptr);
+  assert(tchecker::refdbm::is_tight(rdbm1, r));
+  assert(tchecker::refdbm::is_tight(rdbm2, r));
+  assert(tchecker::refdbm::is_consistent(rdbm1, r));
+  assert(tchecker::refdbm::is_consistent(rdbm2, r));
+
+  // Z is not included in aLU*(Z') if:
+  //    Z{r1,r2} > Z'(r1,r2} for some reference clocks r1, r2
+  // or Z{ry,y} >= (<=,-Uy) and Z'{r,y} < Z{r,y} for some reference clock r and offset clock y
+  // or Z'{x,r} < Z{x,r} and Z'{x,r} + (<,-Lx) < Z{rx,r} for some reference clock r and offset clock x
+  // or Z{ry,y} >= (<=,-Uy) and Z’{x,y} < Z{x,y} and Z’{x,y} + (<,-Lx) < Z{rx,y} for some offset clocks x, y
+
+  std::size_t const rdim = r.size();
+  std::size_t const refcount = r.refcount();
+
+  for (tchecker::clock_id_t y = refcount; y < rdim; ++y) {
+    tchecker::integer_t const Ly = l[y - refcount];
+    tchecker::integer_t const Uy = u[y - refcount];
+    assert(Ly < tchecker::dbm::INF_VALUE);
+    assert(Uy < tchecker::dbm::INF_VALUE);
+
+    if (Ly == tchecker::clockbounds::NO_BOUND)
+      continue;
+
+    tchecker::clock_id_t const ry = r.refmap()[y];
+    tchecker::dbm::db_t const lt_minus_Ly = tchecker::dbm::db(tchecker::dbm::LT, -Ly);
+
+    for (tchecker::clock_id_t r = 0; r < refcount; ++r)
+      if ((RDBM2(y, r) < RDBM1(y, r)) && (tchecker::dbm::sum(RDBM2(y, r), lt_minus_Ly) < RDBM1(ry, r)))
+        return false;
+
+    if (Uy == tchecker::clockbounds::NO_BOUND)
+      continue;
+
+    if (RDBM1(ry, y) < tchecker::dbm::db(tchecker::dbm::LE, -Uy))
+      continue;
+
+    for (tchecker::clock_id_t r = 0; r < refcount; ++r)
+      if (RDBM2(r, y) < RDBM1(r, y))
+        return false;
+
+    for (tchecker::clock_id_t x = refcount; x < rdim; ++x) {
+      tchecker::integer_t const Lx = l[x - refcount];
+      assert(Lx < tchecker::dbm::INF_VALUE);
+
+      if (Lx == tchecker::clockbounds::NO_BOUND)
+        continue;
+
+      tchecker::clock_id_t const rx = r.refmap()[x];
+      tchecker::dbm::db_t const lt_minus_Lx = tchecker::dbm::db(tchecker::dbm::LT, -Lx);
+
+      if ((RDBM2(x, y) < RDBM1(x, y)) && (tchecker::dbm::sum(RDBM2(x, y), lt_minus_Lx) < RDBM1(rx, y)))
+        return false;
+    }
+  }
+
+  for (tchecker::clock_id_t r1 = 0; r1 < refcount; ++r1)
+    for (tchecker::clock_id_t r2 = 0; r2 < refcount; ++r2)
+      if (RDBM1(r1, r2) > RDBM2(r1, r2))
+        return false;
+
+  return true;
+}
+
+bool is_am_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
+              tchecker::reference_clock_variables_t const & r, tchecker::integer_t const * m)
+{
+  return is_alu_le(rdbm1, rdbm2, r, m, m);
 }
 
 std::size_t hash(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r)

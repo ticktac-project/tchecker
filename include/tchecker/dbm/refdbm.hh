@@ -241,6 +241,45 @@ bool is_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
            tchecker::reference_clock_variables_t const & r);
 
 /*!
+ \brief Checks inclusion w.r.t. abstraction aLU* (i.e. aLU over reference DBMs)
+ \param rdbm1 : a first dbm
+ \param rdbm2 : a second dbm
+ \param r : reference clocks for rdbm1 and rdbm2
+ \param l : clock lower bounds for offset clocks, l[0] is the bound for offset clock 1 and so on
+ \param u : clock upper bounds for offset clocks, u[0] is the bound for offset clock 1 and so on
+ \pre rdbm1 and rdbm2 are not nullptr (checked by assertion)
+ rdbm1 and rdbm2 are r.size()*r.size() arrays of difference bounds
+ rdbm1 and rdbm2 are consistent (checked by assertion)
+ rdbm1 and rdbm2 are positive (checked by assertion)
+ rdbm1 and rdbm2 are tight (checked by assertion)
+ l and u are arrays of size r.size()-r.refcount()
+ l[i], u[i] < tchecker::dbm::INF_VALUE for all offset clock i>=0 (checked by assertion)
+ \return true if rdbm1 <= aLU*(rdbm2), false otherwise
+ \note set l[i]/u[i] to -tchecker::dbm::INF_VALUE if clock i has no lower/upper bound
+ */
+bool is_alu_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
+               tchecker::reference_clock_variables_t const & r, tchecker::integer_t const * l, tchecker::integer_t const * u);
+
+/*!
+ \brief Checks inclusion w.r.t. abstraction aM* (i.e. aM over reference DBMs)
+ \param rdbm1 : a first dbm
+ \param rdbm2 : a second dbm
+ \param r : reference clocks for rdbm1 and rdbm2
+ \param m : clock bounds for offset clocks, m[0] is the bound for offset clock 1 and so on
+ \pre rdbm1 and rdbm2 are not nullptr (checked by assertion)
+ rdbm1 and rdbm2 are r.size()*r.size() arrays of difference bounds
+ rdbm1 and rdbm2 are consistent (checked by assertion)
+ rdbm1 and rdbm2 are positive (checked by assertion)
+ rdbm1 and rdbm2 are tight (checked by assertion)
+ m is an array of size r.size()-r.refcount()
+ m[i] < tchecker::dbm::INF_VALUE for all offset clock i>=0 (checked by assertion)
+ \return true if rdbm1 <= aM*(rdbm2), false otherwise
+ \note set m[i] to -tchecker::dbm::INF_VALUE if clock i has no lower/upper bound
+ */
+bool is_am_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
+              tchecker::reference_clock_variables_t const & r, tchecker::integer_t const * m);
+
+/*!
  \brief Hash function on DBMs with reference clocks
  \param rdbm : a DBM
  \param r : reference clocks for rdbm

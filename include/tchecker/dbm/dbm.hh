@@ -501,7 +501,7 @@ bool is_alu_le(tchecker::dbm::db_t const * dbm1, tchecker::dbm::db_t const * dbm
  dim >= 1 (checked by assertion)
  m is an array of size dim-1
  m[i] < tchecker::dbm::INF_VALUE for all i>=0 (checked by assertion)
- \return true if z1 <= aM(z2), false otherwise (see "Better abstractions for timed automata", Herbreteau, Srivathsan
+ \return true if dbm1 <= aM(dbm2), false otherwise (see "Better abstractions for timed automata", Herbreteau, Srivathsan
  and Walukiewicz. Inf. Comput., 2016)
  \note set m[i] to -tchecker::dbm::INF_VALUE if clock i has no lower/upper bound
  */

@@ -13,6 +13,7 @@
 #include "tchecker/dbm/dbm.hh"
 #include "tchecker/utils/allocation_size.hh"
 #include "tchecker/variables/clocks.hh"
+#include "tchecker/zone/zone.hh"
 
 /*!
  \file zone.hh
@@ -27,7 +28,7 @@ namespace dbm {
  \class zone_t
  \brief DBM implementation of zones
  */
-class zone_t {
+class zone_t final : public tchecker::zone_t {
 public:
   /*!
    \brief Assignment operator
@@ -49,74 +50,129 @@ public:
    \brief Emptiness check
    \return true if this zone is empty, false otherwise
    */
-  bool is_empty() const;
+  virtual bool is_empty() const;
 
   /*!
    \brief Universal-positive check
    \return true if this zone is universal-positive (i.e. no constraint on clocks except x>=0), false otherwise
    */
-  bool is_universal_positive() const;
+  virtual bool is_universal_positive() const;
 
   /*!
    \brief Equality predicate
-   \param zone : a zone
+   \param zone : a DBM zone
    \return true if this is equal to zone, false otherwise
    */
   bool operator==(tchecker::dbm::zone_t const & zone) const;
 
   /*!
-   \brief Disequality predicate
+   \brief Equality predicate
    \param zone : a zone
+   \return true if this is equal to zone, false otherwise
+   \pre zone should be an instance of tchecker::dbm::zone_t
+   */
+  virtual bool operator==(tchecker::zone_t const & zone) const;
+
+  /*!
+   \brief Disequality predicate
+   \param zone : a DBM zone
    \return true if this is not equal to zone, false otherwise
    */
   bool operator!=(tchecker::dbm::zone_t const & zone) const;
 
   /*!
-   \brief Inclusion check
+   \brief Disequality predicate
    \param zone : a zone
+   \return true if this is not equal to zone, false otherwise
+   \pre zone should be an instance of tchecker::dbm::zone_t
+   */
+  virtual bool operator!=(tchecker::zone_t const & zone) const;
+
+  /*!
+   \brief Inclusion check
+   \param zone : a DBM zone
    \return true if this is included or equal to zone
    */
   bool operator<=(tchecker::dbm::zone_t const & zone) const;
+
+  /*!
+   \brief Inclusion check
+   \param zone : a zone
+   \return true if this is included or equal to zone
+   \pre zone should be an instance of tchecker::dbm::zone_t
+   */
+  virtual bool operator<=(tchecker::zone_t const & zone) const;
+
+  /*!
+   \brief Checks inclusion wrt abstraction aM
+   \param zone : a DBM zone
+   \param m : clock bounds
+   \return true if this zone is include in aM(zone), false otherwise
+   \pre m is a clock bound map over the clocks in zone
+   */
+  bool am_le(tchecker::dbm::zone_t const & zone, tchecker::clockbounds::map_t const & m) const;
 
   /*!
    \brief Checks inclusion wrt abstraction aM
    \param zone : a zone
    \param m : clock bounds
    \return true if this zone is include in aM(zone), false otherwise
-   \pre clocks have same IDs in zone and m
+   \pre m is a clock bound map over the clocks in zone
+   zone should be an instance of tchecker::dbm::zone_t
    */
-  bool am_le(tchecker::dbm::zone_t const & zone, tchecker::clockbounds::map_t const & m) const;
+  virtual bool am_le(tchecker::zone_t const & zone, tchecker::clockbounds::map_t const & m) const;
 
   /*!
    \brief Checks inclusion wrt abstraction aLU
-   \param zone : a zone
+   \param zone : a DBM zone
    \param l : clock lower bounds
    \param u : clock upper bounds
    \return true if this zone is included in aLU(zone), false otherwise
-   \pre clocks have same IDs in zone, l and u
+   \pre l and u are clock bound maps over the clocks in zone
    */
   bool alu_le(tchecker::dbm::zone_t const & zone, tchecker::clockbounds::map_t const & l,
               tchecker::clockbounds::map_t const & u) const;
 
   /*!
-   \brief Lexical ordering
+   \brief Checks inclusion wrt abstraction aLU
    \param zone : a zone
+   \param L : clock lower bounds
+   \param U : clock upper bounds
+   \return true if this zone is included in aLU(zone), false otherwise
+   \pre l and u are clock bound maps over the clocks in zone
+   zone should be an instance of tchecker::dbm::zone_t
+   */
+  virtual bool alu_le(tchecker::zone_t const & zone, tchecker::clockbounds::map_t const & l,
+                      tchecker::clockbounds::map_t const & u) const;
+
+  /*!
+   \brief Lexical ordering
+   \param zone : a DBM zone
    \return 0 if this and zone are equal, a negative value if this is smaller than zone w.r.t. lexical ordering on the clock
    constraints, a positive value otherwise
    */
   int lexical_cmp(tchecker::dbm::zone_t const & zone) const;
 
   /*!
+   \brief Lexical ordering
+   \param zone : a zone
+   \return 0 if this and zone are equal, a negative value if this is smaller than zone w.r.t. lexical ordering on the clock
+   constraints, a positive value otherwise
+   \pre zone should be an instance of tchecker::dbm::zone_t
+   */
+  virtual int lexical_cmp(tchecker::zone_t const & zone) const;
+
+  /*!
    \brief Accessor
    \return hash code for this zone
    */
-  std::size_t hash() const;
+  virtual std::size_t hash() const;
 
   /*!
    \brief Accessor
    \return dimension of the zone
    */
-  inline std::size_t dim() const { return _dim; }
+  virtual inline std::size_t dim() const { return _dim; }
 
   /*!
    \brief Output
@@ -125,7 +181,7 @@ public:
    \post this zone has been output to os with clock names from index
    \return os after this zone has been output
    */
-  std::ostream & output(std::ostream & os, tchecker::clock_index_t const & index) const;
+  virtual std::ostream & output(std::ostream & os, tchecker::clock_index_t const & index) const;
 
   /*!
    \brief Accessor
@@ -143,12 +199,21 @@ public:
   tchecker::dbm::db_t const * dbm() const;
 
   /*!
+  \brief Conversion to DBM
+  \param dbm : a DBM
+  \pre dbm is a dim() * dim() allocated DBM
+  \post dbm contains a DBM representation of the zone.
+  dbm is tight if the zone is not empty.
+   */
+  virtual void to_dbm(tchecker::dbm::db_t * dbm) const;
+
+  /*!
    \brief Construction
-   \tparam ARGS : type of arguments to a constructor of tchecker::zone_dbm_t
+   \tparam ARGS : type of arguments to a constructor of tchecker::dbm::zone_t
    \tparam ptr : pointer to an allocated zone
    \pre ptr points to an allocated zone of sufficient capacity, i.e. at least
-   allocation_size_t<tchecker::zone_dbm_t>::alloc_size(dim)
-   \post an instance of thcecker::zone_dbm_t has been built in ptr with
+   allocation_size_t<tchecker::dbm::zone_t>::alloc_size(dim)
+   \post an instance of tchecker::dbm::zone_t has been built in ptr with
    parameters args
    */
   template <class... ARGS> static inline void construct(void * ptr, ARGS &&... args)
@@ -159,7 +224,7 @@ public:
   /*!
    \brief Destruction
    \param ptr : a zone
-   \post the destructor of tchecker::zone_dbm_t has been called on ptr
+   \post the destructor of tchecker::dbm::zone_t has been called on ptr
    */
   static inline void destruct(tchecker::dbm::zone_t * ptr) { ptr->~zone_t(); }
 
@@ -188,7 +253,7 @@ protected:
   /*!
    \brief Destructor
    */
-  ~zone_t();
+  virtual ~zone_t();
 
   /*!
    \brief Accessor
@@ -257,9 +322,9 @@ namespace dbm {
 /*!
  \brief Allocation and construction of DBM zones
  \param dim : dimension
- \param args : arguments to a constructor of tchecker::dbm_zone_t
+ \param args : arguments to a constructor of tchecker::dbm::zone_t
  \pre dim >= 1
- \return an instance of tchecker::dbm_zone_t of dimension dim and
+ \return an instance of tchecker::dbm::zone_t of dimension dim and
  constructed with args
  \throw std::invalid_argument if dim < 1
  */
