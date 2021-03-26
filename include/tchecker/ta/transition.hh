@@ -173,8 +173,8 @@ template <> class allocation_size_t<tchecker::ta::transition_t> {
 public:
   /*!
    \brief Allocation size
-   \param args : arguments for a constructor of class tchecker::syncprod::transition_t
-   \return allocation size for objects of class tchecker::syncprod::transition_t
+   \param args : arguments for a constructor of class tchecker::ta::transition_t
+   \return allocation size for objects of class tchecker::ta::transition_t
    */
   template <class... ARGS> static constexpr std::size_t alloc_size(ARGS &&... args)
   {
