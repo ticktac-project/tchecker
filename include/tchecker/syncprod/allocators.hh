@@ -380,8 +380,8 @@ public:
 };
 
 /*!
- \class transition_singleton_allocator_t
- \brief Singleton allocator for transitions of synchronized product of timed processes
+ \class transition_pool_allocator_t
+ \brief Pool allocator for transitions of synchronized product of timed processes
  */
 class transition_pool_allocator_t final
     : public tchecker::syncprod::details::transition_pool_allocator_t<tchecker::syncprod::shared_transition_t> {

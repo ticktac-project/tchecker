@@ -252,8 +252,8 @@ public:
 };
 
 /*!
- \class transition_singleton_allocator_t
- \brief Singleton allocator for transitions of timed automata
+ \class transition_pool_allocator_t
+ \brief Pool allocator for transitions of timed automata
  */
 class transition_pool_allocator_t final
     : public tchecker::ta::details::transition_pool_allocator_t<tchecker::ta::shared_transition_t> {
