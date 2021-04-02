@@ -160,18 +160,6 @@ public:
   }
 
   /*!
-   \brief Free all allocated memory
-   \post All allocated states and tuples of locations have been freed.
-   \note No destructor has been called
-   \note invalidates all pointers to states and tuple of locations allocated by this allocator
-   */
-  void free_all()
-  {
-    tchecker::ts::state_pool_allocator_t<STATE>::free_all();
-    _vloc_pool.free_all();
-  }
-
-  /*!
    \brief Accessor
    \return Memory used by this state allocator
    */
@@ -327,18 +315,6 @@ public:
   {
     tchecker::ts::transition_pool_allocator_t<TRANSITION>::destruct_all();
     _vedge_pool.destruct_all();
-  }
-
-  /*!
-   \brief Free all allocated memory
-   \post All allocated transitions and tuples of edges have been freed.
-   \note No destructor has been called
-   \note invalidates all pointers to transitions and tuple of edges allocated by this allocator
-   */
-  void free_all()
-  {
-    tchecker::ts::transition_pool_allocator_t<TRANSITION>::free_all();
-    _vedge_pool.free_all();
   }
 
   /*!

@@ -169,20 +169,6 @@ public:
   }
 
   /*!
-   \brief Free all allocated memory
-   \post All allocated states, zones, tuples of locations and valuations of
-   bounded integer variables have been freed.
-   \note No destructor has been called
-   \note invalidates all pointers to states, zones, tuple of locations and
-   valuations of bounded integer variables allocated by this allocator
-   */
-  void free_all()
-  {
-    tchecker::ta::details::state_pool_allocator_t<STATE>::free_all();
-    _zone_pool.free_all();
-  }
-
-  /*!
    \brief Accessor
    \return Memory used by this state allocator
    */
@@ -241,7 +227,6 @@ public:
   using tchecker::ta::details::transition_pool_allocator_t<TRANSITION>::destruct;
   using tchecker::ta::details::transition_pool_allocator_t<TRANSITION>::destruct_all;
   using tchecker::ta::details::transition_pool_allocator_t<TRANSITION>::enroll;
-  using tchecker::ta::details::transition_pool_allocator_t<TRANSITION>::free_all;
   using tchecker::ta::details::transition_pool_allocator_t<TRANSITION>::memsize;
 };
 

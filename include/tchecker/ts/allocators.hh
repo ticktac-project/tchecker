@@ -133,12 +133,6 @@ public:
   void destruct_all() { _state_pool.destruct_all(); }
 
   /*!
-   \brief Free all allocated memory
-   \post All allocated memory have been deleted, but not destructor has been called
-   */
-  void free_all() { _state_pool.free_all(); }
-
-  /*!
    \brief Accessor
    \return Memory used by this state allocator
    */
@@ -269,12 +263,6 @@ public:
   void destruct_all() { _transition_pool.destruct_all(); }
 
   /*!
-   \brief Free all allocated memory
-   \post All allocated memory have been deleted, but not destructor has been called
-   */
-  void free_all() { _transition_pool.free_all(); }
-
-  /*!
    \brief Accessor
    \return Memory used by this transition allocator
    */
@@ -397,18 +385,6 @@ public:
   {
     _state_allocator.destruct_all();
     _transition_allocator.destruct_all();
-  }
-
-  /*!
-   \brief Fast memory deallocation
-   \post all allocated states and transitins have been freed. No destructor
-   has been called. All pointers returned by methods allocate_state(),
-   allocate_from_state() and allocate_transition() have been invalidated
-   */
-  void free_all()
-  {
-    _state_allocator.free_all();
-    _transition_allocator.free_all();
   }
 
   /*!
