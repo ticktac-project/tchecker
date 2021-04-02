@@ -297,6 +297,13 @@ bounds, otherwise, clockbounds is empty
 */
 bool compute_clockbounds(tchecker::ta::system_t const & system, tchecker::clockbounds::clockbounds_t & clockbounds);
 
+/*!
+\brief Allocates and computes clock bound maps from a system of timed processes
+\param system : a system of timed processes
+\return clock bounds maps for system, nullptr if clock bounds computation failed
+*/
+tchecker::clockbounds::clockbounds_t * compute_clockbounds(tchecker::ta::system_t const & system);
+
 } // end of namespace clockbounds
 
 } // end of namespace tchecker

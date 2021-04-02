@@ -4,13 +4,13 @@
 
 set(ZONE_SRC
 #${CMAKE_CURRENT_SOURCE_DIR}/dbm/semantics.cc
-${CMAKE_CURRENT_SOURCE_DIR}/dbm/zone.cc
+#${CMAKE_CURRENT_SOURCE_DIR}/dbm/zone.cc
 ${CMAKE_CURRENT_SOURCE_DIR}/refdbm/zone.cc
 #${CMAKE_CURRENT_SOURCE_DIR}/offset_dbm/semantics.cc
 #${CMAKE_CURRENT_SOURCE_DIR}/offset_dbm/zone.cc
 #${TCHECKER_INCLUDE_DIR}/tchecker/zone/dbm/extrapolation.hh
 #${TCHECKER_INCLUDE_DIR}/tchecker/zone/dbm/semantics.hh
-${TCHECKER_INCLUDE_DIR}/tchecker/zone/dbm/zone.hh
+#${TCHECKER_INCLUDE_DIR}/tchecker/zone/dbm/zone.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/zone/refdbm/zone.hh
 #${TCHECKER_INCLUDE_DIR}/tchecker/zone/offset_dbm/semantics.hh
 #${TCHECKER_INCLUDE_DIR}/tchecker/zone/offset_dbm/zone.hh

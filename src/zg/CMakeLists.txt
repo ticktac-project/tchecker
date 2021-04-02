@@ -3,14 +3,17 @@
 # See files AUTHORS and LICENSE for copyright details.
 
 set(ZG_SRC
-${CMAKE_CURRENT_SOURCE_DIR}/zg_ta.cc
-${TCHECKER_INCLUDE_DIR}/tchecker/zg/details/allocators.hh
-${TCHECKER_INCLUDE_DIR}/tchecker/zg/details/model.hh
-${TCHECKER_INCLUDE_DIR}/tchecker/zg/details/output.hh
-${TCHECKER_INCLUDE_DIR}/tchecker/zg/details/state.hh
-${TCHECKER_INCLUDE_DIR}/tchecker/zg/details/transition.hh
-${TCHECKER_INCLUDE_DIR}/tchecker/zg/details/ts.hh
-${TCHECKER_INCLUDE_DIR}/tchecker/zg/details/variables.hh
-${TCHECKER_INCLUDE_DIR}/tchecker/zg/details/zg.hh
-${TCHECKER_INCLUDE_DIR}/tchecker/zg/zg_ta.hh
+${CMAKE_CURRENT_SOURCE_DIR}/extrapolation.cc
+${CMAKE_CURRENT_SOURCE_DIR}/semantics.cc
+${CMAKE_CURRENT_SOURCE_DIR}/state.cc
+${CMAKE_CURRENT_SOURCE_DIR}/transition.cc
+${CMAKE_CURRENT_SOURCE_DIR}/zg.cc
+${CMAKE_CURRENT_SOURCE_DIR}/zone.cc
+${TCHECKER_INCLUDE_DIR}/tchecker/zg/allocators.hh
+${TCHECKER_INCLUDE_DIR}/tchecker/zg/extrapolation.hh
+${TCHECKER_INCLUDE_DIR}/tchecker/zg/semantics.hh
+${TCHECKER_INCLUDE_DIR}/tchecker/zg/state.hh
+${TCHECKER_INCLUDE_DIR}/tchecker/zg/transition.hh
+${TCHECKER_INCLUDE_DIR}/tchecker/zg/zg.hh
+${TCHECKER_INCLUDE_DIR}/tchecker/zg/zone.hh
 PARENT_SCOPE)

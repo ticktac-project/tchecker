@@ -584,6 +584,62 @@ TEST_CASE("constrain", "[dbm]")
     REQUIRE(res == tchecker::dbm::EMPTY);
     REQUIRE(tchecker::dbm::is_empty_0(dbm, dim));
   }
+
+  SECTION("constraint, clock constraint container, non empty resulting DBM")
+  {
+    // NB: constraints are over systems clocks. The reference clock is
+    // tchecker::REFCLOCK_ID. Clocks are indexed 0..dim-2 and correspond to
+    // indices 1..dim-1 in the DBM
+    tchecker::clock_constraint_container_t constraints;
+    constraints.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, 3, tchecker::clock_constraint_t::LT, -4});
+    constraints.push_back(tchecker::clock_constraint_t{3, 1, tchecker::clock_constraint_t::LE, 1});
+
+    auto res = tchecker::dbm::constrain(dbm, dim, constraints);
+
+    REQUIRE(res == tchecker::dbm::NON_EMPTY);
+    REQUIRE(tchecker::dbm::is_tight(dbm, dim));
+
+    REQUIRE(DBM(0, 0) == tchecker::dbm::LE_ZERO);
+    REQUIRE(DBM(0, 1) == tchecker::dbm::db(tchecker::dbm::LT, 0));
+    REQUIRE(DBM(0, 2) == tchecker::dbm::db(tchecker::dbm::LT, -3));
+    REQUIRE(DBM(0, 3) == tchecker::dbm::LE_ZERO);
+    REQUIRE(DBM(0, 4) == tchecker::dbm::db(tchecker::dbm::LT, -4));
+    REQUIRE(DBM(1, 0) == tchecker::dbm::LT_INFINITY);
+    REQUIRE(DBM(1, 1) == tchecker::dbm::LE_ZERO);
+    REQUIRE(DBM(1, 2) == tchecker::dbm::db(tchecker::dbm::LE, 8));
+    REQUIRE(DBM(1, 3) == tchecker::dbm::db(tchecker::dbm::LE, 2));
+    REQUIRE(DBM(1, 4) == tchecker::dbm::LT_INFINITY);
+    REQUIRE(DBM(2, 0) == tchecker::dbm::LT_INFINITY);
+    REQUIRE(DBM(2, 1) == tchecker::dbm::LT_INFINITY);
+    REQUIRE(DBM(2, 2) == tchecker::dbm::LE_ZERO);
+    REQUIRE(DBM(2, 3) == tchecker::dbm::LT_INFINITY);
+    REQUIRE(DBM(2, 4) == tchecker::dbm::LT_INFINITY);
+    REQUIRE(DBM(3, 0) == tchecker::dbm::LT_INFINITY);
+    REQUIRE(DBM(3, 1) == tchecker::dbm::LT_INFINITY);
+    REQUIRE(DBM(3, 2) == tchecker::dbm::db(tchecker::dbm::LE, 6));
+    REQUIRE(DBM(3, 3) == tchecker::dbm::LE_ZERO);
+    REQUIRE(DBM(3, 4) == tchecker::dbm::LT_INFINITY);
+    REQUIRE(DBM(4, 0) == tchecker::dbm::LT_INFINITY);
+    REQUIRE(DBM(4, 1) == tchecker::dbm::LT_INFINITY);
+    REQUIRE(DBM(4, 2) == tchecker::dbm::db(tchecker::dbm::LE, 1));
+    REQUIRE(DBM(4, 3) == tchecker::dbm::LT_INFINITY);
+    REQUIRE(DBM(4, 4) == tchecker::dbm::LE_ZERO);
+  }
+
+  SECTION("constraint, clock constraint container, empty resulting DBM")
+  {
+    // NB: constraints are over systems clocks. The reference clock is
+    // tchecker::REFCLOCK_ID. Clocks are indexed 0..dim-2 and correspond to
+    // indices 1..dim-1 in the DBM
+    tchecker::clock_constraint_container_t constraints;
+    constraints.push_back(tchecker::clock_constraint_t{0, 3, tchecker::clock_constraint_t::LE, -1});
+    constraints.push_back(tchecker::clock_constraint_t{3, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 1});
+
+    auto res = tchecker::dbm::constrain(dbm, dim, constraints);
+
+    REQUIRE(res == tchecker::dbm::EMPTY);
+    REQUIRE(tchecker::dbm::is_empty_0(dbm, dim));
+  }
 }
 
 TEST_CASE("diagonal constrain makes zone empty", "[dbm]")
@@ -1008,6 +1064,24 @@ TEST_CASE("reset DBM", "[dbm]")
     tchecker::dbm::reset(dbm, dim, x, y, value);
 
     REQUIRE(tchecker::dbm::is_tight(dbm, dim));
+    REQUIRE(tchecker::dbm::is_equal(dbm, dbm2, dim));
+  }
+
+  SECTION("reset from clock resets container")
+  {
+    // NB: constraints are over systems clocks. The reference clock is
+    // tchecker::REFCLOCK_ID. Clocks are indexed 0..dim-2 and correspond to
+    // indices 1..dim-1 in the DBM
+    tchecker::clock_reset_container_t resets;
+    resets.push_back(tchecker::clock_reset_t{0, tchecker::REFCLOCK_ID, 0});
+    resets.push_back(tchecker::clock_reset_t{1, tchecker::REFCLOCK_ID, 0});
+    resets.push_back(tchecker::clock_reset_t{2, tchecker::REFCLOCK_ID, 0});
+
+    tchecker::dbm::reset(dbm, dim, resets);
+
+    REQUIRE(tchecker::dbm::is_tight(dbm, dim));
+
+    tchecker::dbm::zero(dbm2, dim);
     REQUIRE(tchecker::dbm::is_equal(dbm, dbm2, dim));
   }
 }

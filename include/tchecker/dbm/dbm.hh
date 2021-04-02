@@ -13,6 +13,7 @@
 
 #include "tchecker/basictypes.hh"
 #include "tchecker/dbm/db.hh"
+#include "tchecker/variables/clocks.hh"
 
 /*!
  \file dbm.hh
@@ -231,6 +232,26 @@ enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * dbm, tchecker::cloc
                                        tchecker::clock_id_t y, tchecker::dbm::comparator_t cmp, tchecker::integer_t value);
 
 /*!
+ \brief Constrain a DBM w.r.t. clock constraints container
+ \param dbm : a dbm
+ \param dim : dimension of dbm
+ \param constraints : clock constraints
+ \pre dbm is not nullptr (checked by assertion)
+ dbm is a dim*dim array of difference bounds
+ dbm is consistent (checked by assertion)
+ dbm is tight (checked by assertion)
+ dim >= 1 (checked by assertion)
+ all clock constraints in constraints are expressed over system clocks
+ \post dbm has been intersected with constraints
+ if dbm is empty, then its difference bound in (0,0) is less-than <=0
+ (tchecker::dbm::is_empty_0() returns true)
+ the resulting DBM is tight and consistent if not empty
+ \return EMPTY is the resulting DBM is empty, NON_EMPTY otherwise
+*/
+enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim,
+                                       tchecker::clock_constraint_container_t const & constraints);
+
+/*!
  \brief Equality predicate
  \param dbm1 : a first dbm
  \param dmb2 : a second dbm
@@ -282,6 +303,22 @@ bool is_le(tchecker::dbm::db_t const * dbm1, tchecker::dbm::db_t const * dbm2, t
  */
 void reset(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x, tchecker::clock_id_t y,
            tchecker::integer_t value);
+
+/*!
+ \brief Reset from a clock reset container
+ \param dbm : a dbm
+ \param dim : dimension of dbm
+ \param resets : a clock reset container
+ \pre dbm is not nullptr (checked by assertion)
+ dbm is a dim*dim array of difference bounds
+ dbm is consistent (checked by assertion)
+ dbm is tight (checked by assertion)
+ dim >= 1 (checked by assertion).
+ all resets are expressed over system clocks
+ \post dbm has been updated according to the sequence of resets
+ dbm is tight and consistent
+ */
+void reset(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_reset_container_t const & resets);
 
 /*!
  \brief Reset a clock to a constant

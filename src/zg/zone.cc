@@ -8,13 +8,13 @@
 #include <string>
 
 #include "tchecker/dbm/dbm.hh"
-#include "tchecker/zone/dbm/zone.hh"
+#include "tchecker/zg/zone.hh"
 
 namespace tchecker {
 
-namespace dbm {
+namespace zg {
 
-tchecker::dbm::zone_t & zone_t::operator=(tchecker::dbm::zone_t const & zone)
+tchecker::zg::zone_t & zone_t::operator=(tchecker::zg::zone_t const & zone)
 {
   if (_dim != zone._dim)
     throw std::invalid_argument("Zone dimension mismatch");
@@ -29,7 +29,7 @@ bool zone_t::is_empty() const { return tchecker::dbm::is_empty_0(dbm_ptr(), _dim
 
 bool zone_t::is_universal_positive() const { return tchecker::dbm::is_universal_positive(dbm_ptr(), _dim); }
 
-bool zone_t::operator==(tchecker::dbm::zone_t const & zone) const
+bool zone_t::operator==(tchecker::zg::zone_t const & zone) const
 {
   if (_dim != zone._dim)
     return false;
@@ -39,17 +39,9 @@ bool zone_t::operator==(tchecker::dbm::zone_t const & zone) const
   return tchecker::dbm::is_equal(dbm_ptr(), zone.dbm_ptr(), _dim);
 }
 
-bool zone_t::operator==(tchecker::zone_t const & zone) const
-{
-  tchecker::dbm::zone_t const & zone_dbm = dynamic_cast<tchecker::dbm::zone_t const &>(zone);
-  return (*this == zone_dbm);
-}
+bool zone_t::operator!=(tchecker::zg::zone_t const & zone) const { return !(*this == zone); }
 
-bool zone_t::operator!=(tchecker::dbm::zone_t const & zone) const { return !(*this == zone); }
-
-bool zone_t::operator!=(tchecker::zone_t const & zone) const { return !(*this == zone); }
-
-bool zone_t::operator<=(tchecker::dbm::zone_t const & zone) const
+bool zone_t::operator<=(tchecker::zg::zone_t const & zone) const
 {
   if (_dim != zone._dim)
     return false;
@@ -60,13 +52,7 @@ bool zone_t::operator<=(tchecker::dbm::zone_t const & zone) const
   return tchecker::dbm::is_le(dbm_ptr(), zone.dbm_ptr(), _dim);
 }
 
-bool zone_t::operator<=(tchecker::zone_t const & zone) const
-{
-  tchecker::dbm::zone_t const & zone_dbm = dynamic_cast<tchecker::dbm::zone_t const &>(zone);
-  return (*this <= zone_dbm);
-}
-
-bool zone_t::am_le(tchecker::dbm::zone_t const & zone, tchecker::clockbounds::map_t const & m) const
+bool zone_t::am_le(tchecker::zg::zone_t const & zone, tchecker::clockbounds::map_t const & m) const
 {
   if (this->is_empty())
     return true;
@@ -75,13 +61,7 @@ bool zone_t::am_le(tchecker::dbm::zone_t const & zone, tchecker::clockbounds::ma
   return tchecker::dbm::is_am_le(dbm_ptr(), zone.dbm_ptr(), _dim, m.ptr());
 }
 
-bool zone_t::am_le(tchecker::zone_t const & zone, tchecker::clockbounds::map_t const & m) const
-{
-  tchecker::dbm::zone_t const & zone_dbm = dynamic_cast<tchecker::dbm::zone_t const &>(zone);
-  return am_le(zone_dbm, m);
-}
-
-bool zone_t::alu_le(tchecker::dbm::zone_t const & zone, tchecker::clockbounds::map_t const & l,
+bool zone_t::alu_le(tchecker::zg::zone_t const & zone, tchecker::clockbounds::map_t const & l,
                     tchecker::clockbounds::map_t const & u) const
 {
   if (this->is_empty())
@@ -91,29 +71,17 @@ bool zone_t::alu_le(tchecker::dbm::zone_t const & zone, tchecker::clockbounds::m
   return tchecker::dbm::is_alu_le(dbm_ptr(), zone.dbm_ptr(), _dim, l.ptr(), u.ptr());
 }
 
-bool zone_t::alu_le(tchecker::zone_t const & zone, tchecker::clockbounds::map_t const & l,
-                    tchecker::clockbounds::map_t const & u) const
-{
-  tchecker::dbm::zone_t const & zone_dbm = dynamic_cast<tchecker::dbm::zone_t const &>(zone);
-  return alu_le(zone_dbm, l, u);
-}
-
-int zone_t::lexical_cmp(tchecker::dbm::zone_t const & zone) const
+int zone_t::lexical_cmp(tchecker::zg::zone_t const & zone) const
 {
   return tchecker::dbm::lexical_cmp(dbm_ptr(), _dim, zone.dbm_ptr(), zone._dim);
-}
-
-int zone_t::lexical_cmp(tchecker::zone_t const & zone) const
-{
-  tchecker::dbm::zone_t const & zone_dbm = dynamic_cast<tchecker::dbm::zone_t const &>(zone);
-  return lexical_cmp(zone_dbm);
 }
 
 std::size_t zone_t::hash() const { return tchecker::dbm::hash(dbm_ptr(), _dim); }
 
 std::ostream & zone_t::output(std::ostream & os, tchecker::clock_index_t const & index) const
 {
-  return tchecker::dbm::output(os, dbm_ptr(), _dim, [&](tchecker::clock_id_t id) { return index.value(id); });
+  return tchecker::dbm::output(os, dbm_ptr(), _dim,
+                               [&](tchecker::clock_id_t id) { return (id == 0 ? "0" : index.value(id - 1)); });
 }
 
 tchecker::dbm::db_t * zone_t::dbm() { return dbm_ptr(); }
@@ -124,7 +92,7 @@ void zone_t::to_dbm(tchecker::dbm::db_t * dbm) const { std::memcpy(dbm, dbm_ptr(
 
 zone_t::zone_t(tchecker::clock_id_t dim) : _dim(dim) { tchecker::dbm::universal_positive(dbm_ptr(), _dim); }
 
-zone_t::zone_t(tchecker::dbm::zone_t const & zone) : _dim(zone._dim)
+zone_t::zone_t(tchecker::zg::zone_t const & zone) : _dim(zone._dim)
 {
   memcpy(dbm_ptr(), zone.dbm_ptr(), _dim * _dim * sizeof(tchecker::dbm::db_t));
 }
@@ -133,12 +101,12 @@ zone_t::~zone_t() = default;
 
 // Allocation and deallocation
 
-void zone_destruct_and_deallocate(tchecker::dbm::zone_t * zone)
+void zone_destruct_and_deallocate(tchecker::zg::zone_t * zone)
 {
-  tchecker::dbm::zone_t::destruct(zone);
+  tchecker::zg::zone_t::destruct(zone);
   delete[] reinterpret_cast<char *>(zone);
 }
 
-} // end of namespace dbm
+} // end of namespace zg
 
 } // end of namespace tchecker

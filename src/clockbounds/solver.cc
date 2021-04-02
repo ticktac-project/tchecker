@@ -667,6 +667,18 @@ bool compute_clockbounds(tchecker::ta::system_t const & system, tchecker::clockb
   return true;
 }
 
+tchecker::clockbounds::clockbounds_t * compute_clockbounds(tchecker::ta::system_t const & system)
+{
+  tchecker::clockbounds::clockbounds_t * clockbounds =
+      new tchecker::clockbounds::clockbounds_t{system.locations_count(), system.clocks_count(tchecker::VK_FLATTENED)};
+
+  if (tchecker::clockbounds::compute_clockbounds(system, *clockbounds))
+    return clockbounds;
+
+  delete clockbounds;
+  return nullptr;
+}
+
 } // end of namespace clockbounds
 
 } // end of namespace tchecker

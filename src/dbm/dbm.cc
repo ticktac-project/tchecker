@@ -224,6 +224,24 @@ enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * dbm, tchecker::cloc
   return res;
 }
 
+enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim,
+                                       tchecker::clock_constraint_container_t const & constraints)
+{
+  assert(dbm != nullptr);
+  assert(dim >= 1);
+  assert(tchecker::dbm::is_consistent(dbm, dim));
+  assert(tchecker::dbm::is_tight(dbm, dim));
+
+  for (tchecker::clock_constraint_t const & c : constraints) {
+    tchecker::clock_id_t id1 = (c.id1() == tchecker::REFCLOCK_ID ? 0 : c.id1() + 1);
+    tchecker::clock_id_t id2 = (c.id2() == tchecker::REFCLOCK_ID ? 0 : c.id2() + 1);
+    auto cmp = (c.comparator() == tchecker::clock_constraint_t::LT ? tchecker::dbm::LT : tchecker::dbm::LE);
+    if (tchecker::dbm::constrain(dbm, dim, id1, id2, cmp, c.value()) == tchecker::dbm::EMPTY)
+      return tchecker::dbm::EMPTY;
+  }
+  return tchecker::dbm::NON_EMPTY;
+}
+
 bool is_equal(tchecker::dbm::db_t const * dbm1, tchecker::dbm::db_t const * dbm2, tchecker::clock_id_t dim)
 {
   assert(dbm1 != nullptr);
@@ -263,6 +281,15 @@ void reset(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_
     reset_to_clock(dbm, dim, x, y);
   else
     reset_to_sum(dbm, dim, x, y, value);
+}
+
+void reset(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_reset_container_t const & resets)
+{
+  for (tchecker::clock_reset_t const & r : resets) {
+    tchecker::clock_id_t lid = (r.left_id() == tchecker::REFCLOCK_ID ? 0 : r.left_id() + 1);
+    tchecker::clock_id_t rid = (r.right_id() == tchecker::REFCLOCK_ID ? 0 : r.right_id() + 1);
+    tchecker::dbm::reset(dbm, dim, lid, rid, r.value());
+  }
 }
 
 void reset_to_value(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x, tchecker::integer_t value)
