@@ -143,6 +143,20 @@ bool is_positive(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_var
 bool is_universal_positive(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r);
 
 /*!
+ \brief Checks if a DBM with reference clocks is open up (time-elapsed)
+ \param rdbm : a DBM
+ \param r : reference clocks for rdbm
+ \return true if rdbm is open up (it is closed under time successors), false
+ otherwise
+ \pre rdbm is not nullptr (checked by assertion)
+ rdbm is a r.size()*r.size() array of difference bounds
+ rdbm is tight (checked by assertion)
+ rdbm is consistent (checked by assertion)
+ rdbm is a DBM over reference clocks r
+ */
+bool is_open_up(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r);
+
+/*!
  \brief Tightness predicate on DBMs with reference clocks
  \param rdbm : a DBM
  \param r : reference clocks fr rdbm
@@ -291,6 +305,7 @@ bool is_am_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdb
  rdbm1 and rdbm2 are consistent (checked by assertion)
  rdbm1 and rdbm2 are positive (checked by assertion)
  rdbm1 and rdbm2 are tight (checked by assertion)
+ rdbm1 and rdbm2 are open up (checker by assertion)
  l and u are arrays of size r.size()-r.refcount()
  l[i], u[i] < tchecker::dbm::INF_VALUE for all offset clock i>=0 (checked by assertion)
  \return true if sync(rdbm1) <= aLU(sync(rdbm2)), false otherwise

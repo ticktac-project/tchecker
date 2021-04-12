@@ -104,6 +104,24 @@ bool is_universal_positive(tchecker::dbm::db_t const * rdbm, tchecker::reference
   return true;
 }
 
+bool is_open_up(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r)
+{
+  assert(rdbm != nullptr);
+  assert(tchecker::refdbm::is_consistent(rdbm, r));
+  assert(tchecker::refdbm::is_tight(rdbm, r));
+  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const refcount = r.refcount();
+  // X-R is <inf for every (offset or reference) clock X and any reference clock R
+  for (tchecker::clock_id_t x = 0; x < rdim; ++x)
+    for (tchecker::clock_id_t r = 0; r < refcount; ++r) {
+      if (x == r)
+        continue;
+      if (RDBM(x, r) != tchecker::dbm::LT_INFINITY)
+        return false;
+    }
+  return true;
+}
+
 bool is_tight(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r)
 {
   assert(rdbm != nullptr);
@@ -261,6 +279,8 @@ bool is_sync_alu_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const
   assert(tchecker::refdbm::is_positive(rdbm2, r));
   assert(tchecker::refdbm::is_tight(rdbm1, r));
   assert(tchecker::refdbm::is_tight(rdbm2, r));
+  assert(tchecker::refdbm::is_open_up(rdbm1, r));
+  assert(tchecker::refdbm::is_open_up(rdbm2, r));
 
   // We apply the technique described in appendix C of Govind Rajanbabu's PhD thesis
   // "Partial-order reduction for timed automata", Université de Bordeaux, 2021

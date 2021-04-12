@@ -230,6 +230,77 @@ TEST_CASE("is_universal_positive", "[refdbm]")
   }
 }
 
+TEST_CASE("is_open_up", "[refdbm]")
+{
+  std::vector<std::string> refclocks = {"$0", "$1", "$2"};
+  tchecker::reference_clock_variables_t r(refclocks.begin(), refclocks.end());
+  r.declare("x1", "$0");
+  r.declare("x2", "$0");
+  r.declare("y1", "$1");
+  r.declare("y2", "$1");
+  r.declare("z1", "$2");
+
+  tchecker::clock_id_t const rdim = r.size();
+  tchecker::dbm::db_t rdbm[rdim * rdim];
+
+  tchecker::clock_id_t const x1 = r.id("x1");
+  tchecker::clock_id_t const rx1 = r.refmap()[x1];
+  tchecker::clock_id_t const y2 = r.id("y2");
+  tchecker::clock_id_t const ry2 = r.refmap()[y2];
+  tchecker::clock_id_t const z1 = r.id("z1");
+  tchecker::clock_id_t const rz1 = r.refmap()[z1];
+
+  SECTION("Universal positive DBM is open up")
+  {
+    tchecker::refdbm::universal_positive(rdbm, r);
+    REQUIRE(tchecker::refdbm::is_open_up(rdbm, r));
+  }
+
+  SECTION("Zero DBM is not open up")
+  {
+    tchecker::refdbm::zero(rdbm, r);
+    REQUIRE_FALSE(tchecker::refdbm::is_open_up(rdbm, r));
+  }
+
+  SECTION("DBM with lower bounds is open up")
+  {
+    tchecker::refdbm::universal_positive(rdbm, r);
+    RDBM(rx1, x1) = tchecker::dbm::db(tchecker::dbm::LT, -1);
+    RDBM(ry2, y2) = tchecker::dbm::db(tchecker::dbm::LE, -6);
+    RDBM(x1, z1) = tchecker::dbm::db(tchecker::dbm::LE, 3);
+    tchecker::refdbm::tighten(rdbm, r);
+
+    REQUIRE(tchecker::refdbm::is_open_up(rdbm, r));
+  }
+
+  SECTION("DBM with upper bounds on offset clocks and reference clocks")
+  {
+    tchecker::refdbm::universal_positive(rdbm, r);
+    RDBM(y2, ry2) = tchecker::dbm::db(tchecker::dbm::LT, 4);
+    tchecker::refdbm::tighten(rdbm, r);
+
+    REQUIRE_FALSE(tchecker::refdbm::is_open_up(rdbm, r));
+  }
+
+  SECTION("DBM with upper bounds on reference clocks")
+  {
+    tchecker::refdbm::universal_positive(rdbm, r);
+    RDBM(rz1, ry2) = tchecker::dbm::db(tchecker::dbm::LT, 1);
+    tchecker::refdbm::tighten(rdbm, r);
+
+    REQUIRE_FALSE(tchecker::refdbm::is_open_up(rdbm, r));
+  }
+
+  SECTION("DBM with upper bounds on offset clocks")
+  {
+    tchecker::refdbm::universal_positive(rdbm, r);
+    RDBM(z1, y2) = tchecker::dbm::db(tchecker::dbm::LT, 1);
+    tchecker::refdbm::tighten(rdbm, r);
+
+    REQUIRE(tchecker::refdbm::is_open_up(rdbm, r));
+  }
+}
+
 TEST_CASE("is_tight", "[refdbm]")
 {
   std::vector<std::string> refclocks = {"$0", "$1", "$2"};
@@ -579,7 +650,6 @@ TEST_CASE("is_sync_alu_le", "[refdbm]")
   tchecker::clock_id_t const z = r.id("z");
   tchecker::clock_id_t const rx = r.refmap()[x];
   tchecker::clock_id_t const ry = r.refmap()[y];
-  tchecker::clock_id_t const rz = r.refmap()[z];
 
   tchecker::clock_id_t const rdim = r.size();
   tchecker::clock_id_t const refcount = r.refcount();
@@ -588,58 +658,6 @@ TEST_CASE("is_sync_alu_le", "[refdbm]")
   tchecker::dbm::db_t rdbm1[rdim * rdim], rdbm2[rdim * rdim];
 
   tchecker::integer_t l[offset_dim], u[offset_dim];
-
-  SECTION("Zero DBM is sync-aLU-subsumed by zero DBM")
-  {
-    tchecker::refdbm::zero(rdbm1, r);
-    tchecker::refdbm::zero(rdbm2, r);
-
-    for (tchecker::clock_id_t i = 0; i < offset_dim; ++i) {
-      l[i] = 0;
-      u[i] = 0;
-    }
-
-    REQUIRE(tchecker::refdbm::is_sync_alu_le(rdbm1, rdbm2, r, l, u));
-  }
-
-  SECTION("Zero DBM is sync-aLU-subsumed by universal positive DBM")
-  {
-    tchecker::refdbm::zero(rdbm1, r);
-    tchecker::refdbm::universal_positive(rdbm2, r);
-
-    for (tchecker::clock_id_t i = 0; i < offset_dim; ++i) {
-      l[i] = 0;
-      u[i] = 0;
-    }
-
-    REQUIRE(tchecker::refdbm::is_sync_alu_le(rdbm1, rdbm2, r, l, u));
-  }
-
-  SECTION("Universal positive DBM is not sync-aLU-subsumed by zero DBM with 0 clock bounds")
-  {
-    tchecker::refdbm::universal_positive(rdbm1, r);
-    tchecker::refdbm::zero(rdbm2, r);
-
-    for (tchecker::clock_id_t i = 0; i < offset_dim; ++i) {
-      l[i] = 0;
-      u[i] = 0;
-    }
-
-    REQUIRE_FALSE(tchecker::refdbm::is_sync_alu_le(rdbm1, rdbm2, r, l, u));
-  }
-
-  SECTION("Universal positive DBM is sync-aLU-subsumed by zero DBM with no clock bound")
-  {
-    tchecker::refdbm::universal_positive(rdbm1, r);
-    tchecker::refdbm::zero(rdbm2, r);
-
-    for (tchecker::clock_id_t i = 0; i < offset_dim; ++i) {
-      l[i] = tchecker::clockbounds::NO_BOUND;
-      u[i] = tchecker::clockbounds::NO_BOUND;
-    }
-
-    REQUIRE(tchecker::refdbm::is_sync_alu_le(rdbm1, rdbm2, r, l, u));
-  }
 
   SECTION("Some DBM sync-aLU-subsumed")
   {
