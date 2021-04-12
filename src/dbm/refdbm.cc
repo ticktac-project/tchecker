@@ -13,6 +13,9 @@
 #define RDBM(i, j)  rdbm[(i)*rdim + (j)]
 #define RDBM1(i, j) rdbm1[(i)*rdim + (j)]
 #define RDBM2(i, j) rdbm2[(i)*rdim + (j)]
+#define L(x)        l[x - refcount];
+#define U(x)        u[x - refcount];
+#define M(x)        m[x - refcount];
 
 namespace tchecker {
 
@@ -192,8 +195,8 @@ bool is_alu_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rd
   std::size_t const refcount = r.refcount();
 
   for (tchecker::clock_id_t y = refcount; y < rdim; ++y) {
-    tchecker::integer_t const Ly = l[y - refcount];
-    tchecker::integer_t const Uy = u[y - refcount];
+    tchecker::integer_t const Ly = L(y);
+    tchecker::integer_t const Uy = U(y);
     assert(Ly < tchecker::dbm::INF_VALUE);
     assert(Uy < tchecker::dbm::INF_VALUE);
 
@@ -218,7 +221,7 @@ bool is_alu_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rd
         return false;
 
     for (tchecker::clock_id_t x = refcount; x < rdim; ++x) {
-      tchecker::integer_t const Lx = l[x - refcount];
+      tchecker::integer_t const Lx = L(x);
       assert(Lx < tchecker::dbm::INF_VALUE);
 
       if (Lx == tchecker::clockbounds::NO_BOUND)
@@ -244,6 +247,89 @@ bool is_am_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdb
               tchecker::reference_clock_variables_t const & r, tchecker::integer_t const * m)
 {
   return is_alu_le(rdbm1, rdbm2, r, m, m);
+}
+
+bool is_sync_alu_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
+                    tchecker::reference_clock_variables_t const & r, tchecker::integer_t const * l,
+                    tchecker::integer_t const * u)
+{
+  assert(rdbm1 != nullptr);
+  assert(rdbm2 != nullptr);
+  assert(tchecker::refdbm::is_consistent(rdbm1, r));
+  assert(tchecker::refdbm::is_consistent(rdbm2, r));
+  assert(tchecker::refdbm::is_positive(rdbm1, r));
+  assert(tchecker::refdbm::is_positive(rdbm2, r));
+  assert(tchecker::refdbm::is_tight(rdbm1, r));
+  assert(tchecker::refdbm::is_tight(rdbm2, r));
+
+  // We apply the technique described in appendix C of Govind Rajanbabu's PhD thesis
+  // "Partial-order reduction for timed automata", Université de Bordeaux, 2021
+  //
+  // Let min_tx1 = min {dbm1[t,x] | t ref clock, x offset clock}
+  // and min_tx2 = min {dbm2[t,x] | t ref clock, x offset clock}
+  //
+  // dbm1 not included in aLU(dbm2) if:
+  // - either there is an offset clock x s.t.
+  //     min_tx1 >= (<= -U(x))
+  // &&  min_tx2 < min_tx1
+  // - or there are two offset clocks x and y s.t.
+  //     min_tx1 >= (<= -U(x))
+  // &&  dbm2[y,x] < dbm1[y,x]
+  // &&  dbm2[y,x] + (< -L(y)) < min_tx1
+
+  std::size_t const rdim = r.size();
+  std::size_t const refcount = r.refcount();
+
+  for (tchecker::clock_id_t x = refcount; x < rdim; ++x) {
+    tchecker::integer_t Ux = U(x);
+    assert(Ux < tchecker::dbm::INF_VALUE);
+
+    // Skip x as 1st condition cannot be satisfied
+    if (Ux == -tchecker::dbm::INF_VALUE)
+      continue;
+
+    // Compute min_tx1 = min {dbm1[t,x] | t ref clock}
+    tchecker::dbm::db_t min_tx1 = RDBM1(0, x);
+    for (tchecker::clock_id_t t = 1; t < refcount; ++t)
+      min_tx1 = tchecker::dbm::min(min_tx1, RDBM1(t, x));
+
+    // Check 1st condition
+    if (min_tx1 < tchecker::dbm::db(tchecker::dbm::LE, -Ux))
+      continue;
+
+    // Compute min_tx2 = min {dbm2[t,x] | t ref clock}
+    tchecker::dbm::db_t min_tx2 = RDBM2(0, x);
+    for (tchecker::clock_id_t t = 1; t < refcount; ++t)
+      min_tx2 = tchecker::dbm::min(min_tx2, RDBM2(t, x));
+
+    // Check 2nd condition (of first case above)
+    if (min_tx2 < min_tx1)
+      return false;
+
+    for (tchecker::clock_id_t y = refcount; y < rdim; ++y) {
+      tchecker::integer_t Ly = L(y);
+      assert(Ly < tchecker::dbm::INF_VALUE);
+
+      if (x == y)
+        continue;
+
+      // Skip y as 3rd condition cannot be satisfied
+      if (Ly == -tchecker::dbm::INF_VALUE)
+        continue;
+
+      // Check 2nd and 3rd conditions (of second case above)
+      if (RDBM2(y, x) < RDBM1(y, x) && tchecker::dbm::sum(RDBM2(y, x), tchecker::dbm::db(tchecker::dbm::LT, -Ly)) < min_tx1)
+        return false;
+    }
+  }
+
+  return true;
+}
+
+bool is_sync_am_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
+                   tchecker::reference_clock_variables_t const & r, tchecker::integer_t const * m)
+{
+  return tchecker::refdbm::is_sync_alu_le(rdbm1, rdbm2, r, m, m);
 }
 
 std::size_t hash(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r)

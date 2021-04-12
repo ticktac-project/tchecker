@@ -20,14 +20,14 @@
  \brief Functions on DBMs with reference clocks
  \note A DBM with reference clocks is a DBM where the first refcount variables
  are reference variables, and the other variables are clock variables. Each
- clock variable has a corresponding reference variable. The correspondence is
+ clock variable has a corresponding reference variable. The correspondance is
  defined according to an instance of tchecker::reference_clock_variables_t.
  It associates to each clock variable X its reference clock RX. Each reference
  clock is mapped to itself.
 
  The value of system clock x is represented as the value of X-RX, the difference
  between the corresponding clock variable X and its reference clock RX.
- Reference DBMs generalize standard DBMs which have a single reference clock,
+ Reference DBMs generalise standard DBMs which have a single reference clock,
  usually denoted 0.
 
  Reference DBMs have been introduced as "offset DBMs" in "Partial Order
@@ -278,6 +278,46 @@ bool is_alu_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rd
  */
 bool is_am_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
               tchecker::reference_clock_variables_t const & r, tchecker::integer_t const * m);
+
+/*!
+ \brief Checks inclusion w.r.t. abstraction aLU over synchronized valuations
+ \param rdbm1 : a first dbm
+ \param rdbm2 : a second dbm
+ \param r : reference clocks for rdbm1 and rdbm2
+ \param l : clock lower bounds for offset clocks, l[0] is the bound for offset clock 1 and so on
+ \param u : clock upper bounds for offset clocks, u[0] is the bound for offset clock 1 and so on
+ \pre rdbm1 and rdbm2 are not nullptr (checked by assertion)
+ rdbm1 and rdbm2 are r.size()*r.size() arrays of difference bounds
+ rdbm1 and rdbm2 are consistent (checked by assertion)
+ rdbm1 and rdbm2 are positive (checked by assertion)
+ rdbm1 and rdbm2 are tight (checked by assertion)
+ l and u are arrays of size r.size()-r.refcount()
+ l[i], u[i] < tchecker::dbm::INF_VALUE for all offset clock i>=0 (checked by assertion)
+ \return true if sync(rdbm1) <= aLU(sync(rdbm2)), false otherwise
+ \note set l[i]/u[i] to -tchecker::dbm::INF_VALUE if clock i has no lower/upper bound
+ */
+bool is_sync_alu_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
+                    tchecker::reference_clock_variables_t const & r, tchecker::integer_t const * l,
+                    tchecker::integer_t const * u);
+
+/*!
+ \brief Checks inclusion w.r.t. abstraction aM over synchronized valuations
+ \param rdbm1 : a first dbm
+ \param rdbm2 : a second dbm
+ \param r : reference clocks for rdbm1 and rdbm2
+ \param m : clock bounds for offset clocks, m[0] is the bound for offset clock 1 and so on
+ \pre rdbm1 and rdbm2 are not nullptr (checked by assertion)
+ rdbm1 and rdbm2 are r.size()*r.size() arrays of difference bounds
+ rdbm1 and rdbm2 are consistent (checked by assertion)
+ rdbm1 and rdbm2 are positive (checked by assertion)
+ rdbm1 and rdbm2 are tight (checked by assertion)
+ m is an array of size r.size()-r.refcount()
+ m[i] < tchecker::dbm::INF_VALUE for all offset clock i>=0 (checked by assertion)
+ \return true if sync(rdbm1) <= aM(sync(rdbm2)), false otherwise
+ \note set m[i] to -tchecker::dbm::INF_VALUE if clock i has no bound
+ */
+bool is_sync_am_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
+                   tchecker::reference_clock_variables_t const & r, tchecker::integer_t const * m);
 
 /*!
  \brief Hash function on DBMs with reference clocks
