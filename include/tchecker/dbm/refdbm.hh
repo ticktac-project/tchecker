@@ -385,6 +385,25 @@ enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * rdbm, tchecker::ref
 enum tchecker::dbm::status_t synchronize(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r);
 
 /*!
+ \brief Restriction to synchronized valuations over specified set of reference clocks
+ \param rdbm : a DBM
+ \param r : reference clocks for rdbm
+ \param sync_ref_clocks : set of reference clocks to synchronize
+ \pre rdbm is not nullptr (checked by assertion)
+ rdbm is a r.size()*r.size() array of difference bounds
+ rdbm is consistent (checked by assertion)
+ rdbm is tight (checked by assertion)
+ the size of sync_ref_clocks is the number of reference clocks in r (checked by
+ assertion)
+ \post rdbm has been restricted to its subset of valuations that are
+ synchronized over all reference clocks in sync_ref_clocks
+ \return tchecker::dbm::EMPTY if synchronized dbm is empty,
+ tchecker::dbm::NON_EMPTY otherwise
+ */
+enum tchecker::dbm::status_t synchronize(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
+                                         boost::dynamic_bitset<> const & sync_ref_clocks);
+
+/*!
  \brief Reset a clock to its reference clock
  \param rdbm : a DBM
  \param r : reference clocks for rdbm

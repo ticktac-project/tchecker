@@ -5,8 +5,10 @@
  *
  */
 
-#include "tchecker/dbm/refdbm.hh"
+#include <limits>
+
 #include "tchecker/clockbounds/clockbounds.hh"
+#include "tchecker/dbm/refdbm.hh"
 #include "tchecker/utils/ordering.hh"
 
 #define DBM(i, j)   dbm[(i)*dim + (j)]
@@ -371,29 +373,50 @@ enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * rdbm, tchecker::ref
 
 enum tchecker::dbm::status_t synchronize(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r)
 {
+  boost::dynamic_bitset<> sync_ref_clocks{r.refcount()};
+  sync_ref_clocks.set();
+  return tchecker::refdbm::synchronize(rdbm, r, sync_ref_clocks);
+}
+
+enum tchecker::dbm::status_t synchronize(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
+                                         boost::dynamic_bitset<> const & sync_ref_clocks)
+{
   assert(rdbm != nullptr);
   assert(tchecker::refdbm::is_consistent(rdbm, r));
   assert(tchecker::refdbm::is_tight(rdbm, r));
+  assert(r.refcount() == sync_ref_clocks.size());
 
   tchecker::clock_id_t const rdim = r.size();
-  tchecker::clock_id_t const refcount = r.refcount();
 
-  for (tchecker::clock_id_t x = 0; x < refcount - 1; ++x) {
-    RDBM(x, x + 1) = tchecker::dbm::min(RDBM(x, x + 1), tchecker::dbm::LE_ZERO);
-    RDBM(x + 1, x) = tchecker::dbm::min(RDBM(x + 1, x), tchecker::dbm::LE_ZERO);
+  auto t1 = sync_ref_clocks.find_first(); // tchecker::clock_id_t not big enough for npos value
+  auto t2 = sync_ref_clocks.find_next(t1);
+
+  if (t1 == sync_ref_clocks.npos || t2 == sync_ref_clocks.npos)
+    return tchecker::dbm::NON_EMPTY;
+
+  while (t2 != sync_ref_clocks.npos) {
+    assert(t1 < r.refcount());
+    assert(t2 < r.refcount());
+
+    RDBM(t1, t2) = tchecker::dbm::min(RDBM(t1, t2), tchecker::dbm::LE_ZERO);
+    RDBM(t2, t1) = tchecker::dbm::min(RDBM(t2, t1), tchecker::dbm::LE_ZERO);
+    t1 = t2;
+    t2 = sync_ref_clocks.find_next(t1);
   }
 
-  // Optimized tightening: Floyd-Warshall algorithm w.r.t. reference clocks
-  for (tchecker::clock_id_t r = 0; r < refcount; ++r) {
+  // Optimized tightening: Floyd-Warshall algorithm w.r.t. reference clocks in sync_ref_clocks
+  for (auto t = sync_ref_clocks.find_first(); t != sync_ref_clocks.npos; t = sync_ref_clocks.find_next(t)) {
+    assert(t < r.refcount());
+
     for (tchecker::clock_id_t x = 0; x < rdim; ++x) {
-      if ((x == r) || (RDBM(x, r) == tchecker::dbm::LT_INFINITY))
+      if (x == t || RDBM(x, t) == tchecker::dbm::LT_INFINITY)
         continue; // optimization
 
       for (tchecker::clock_id_t y = 0; y < rdim; ++y) {
-        if (y == r)
+        if (y == t || RDBM(t, y) == tchecker::dbm::LT_INFINITY)
           continue; // optimization
 
-        RDBM(x, y) = tchecker::dbm::min(tchecker::dbm::sum(RDBM(x, r), RDBM(r, y)), RDBM(x, y));
+        RDBM(x, y) = tchecker::dbm::min(tchecker::dbm::sum(RDBM(x, t), RDBM(t, y)), RDBM(x, y));
       }
 
       if (RDBM(x, x) < tchecker::dbm::LE_ZERO) {

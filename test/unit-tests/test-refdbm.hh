@@ -879,6 +879,85 @@ TEST_CASE("synchronize DBMs with reference clocks", "[refdbm]")
   }
 }
 
+TEST_CASE("synchronize DBMs with reference clocks, partial synchronization", "[refdbm]")
+{
+  std::vector<std::string> refclocks = {"$0", "$1", "$2"};
+  tchecker::reference_clock_variables_t r(refclocks.begin(), refclocks.end());
+  r.declare("x1", "$0");
+  r.declare("x2", "$0");
+  r.declare("y1", "$1");
+  r.declare("y2", "$1");
+  r.declare("y3", "$1");
+  r.declare("z", "$2");
+
+  tchecker::clock_id_t const rdim = r.size();
+
+  tchecker::clock_id_t const t0 = r.id("$0");
+  tchecker::clock_id_t const t1 = r.id("$1");
+  tchecker::clock_id_t const t2 = r.id("$2");
+  tchecker::clock_id_t const x1 = r.id("x1");
+  tchecker::clock_id_t const y1 = r.id("y1");
+
+  boost::dynamic_bitset<> sync_ref_clocks{r.refcount()};
+
+  SECTION("Synchronizing no clock leaves the DBM unchanged")
+  {
+    tchecker::dbm::db_t rdbm[rdim * rdim];
+    tchecker::refdbm::universal_positive(rdbm, r);
+
+    sync_ref_clocks.reset();
+    auto status = tchecker::refdbm::synchronize(rdbm, r, sync_ref_clocks);
+
+    REQUIRE(status == tchecker::dbm::NON_EMPTY);
+    REQUIRE(tchecker::refdbm::is_universal_positive(rdbm, r));
+  }
+
+  SECTION("Synchronizing yields empty DBM")
+  {
+    tchecker::dbm::db_t rdbm[rdim * rdim];
+    tchecker::refdbm::universal_positive(rdbm, r);
+    RDBM(x1, t0) = tchecker::dbm::LE_ZERO;
+    RDBM(y1, x1) = tchecker::dbm::db(tchecker::dbm::LE, -1);
+    RDBM(t1, y1) = tchecker::dbm::LE_ZERO;
+    tchecker::refdbm::tighten(rdbm, r);
+
+    sync_ref_clocks.reset();
+    sync_ref_clocks[t0] = 1;
+    sync_ref_clocks[t1] = 1;
+
+    auto status = tchecker::refdbm::synchronize(rdbm, r, sync_ref_clocks);
+    REQUIRE(status == tchecker::dbm::EMPTY);
+  }
+
+  SECTION("Synchronizing yields non-empty DBM")
+  {
+    tchecker::dbm::db_t rdbm1[rdim * rdim];
+    tchecker::refdbm::universal_positive(rdbm1, r);
+    RDBM1(x1, t0) = tchecker::dbm::LE_ZERO;
+    RDBM1(y1, x1) = tchecker::dbm::db(tchecker::dbm::LE, -1);
+    RDBM1(t1, y1) = tchecker::dbm::LE_ZERO;
+    tchecker::refdbm::tighten(rdbm1, r);
+
+    sync_ref_clocks.reset();
+    sync_ref_clocks[t0] = 1;
+    sync_ref_clocks[t2] = 1;
+
+    auto status = tchecker::refdbm::synchronize(rdbm1, r, sync_ref_clocks);
+    REQUIRE(status == tchecker::dbm::NON_EMPTY);
+
+    tchecker::dbm::db_t rdbm2[rdim * rdim];
+    tchecker::refdbm::universal_positive(rdbm2, r);
+    RDBM2(x1, t0) = tchecker::dbm::LE_ZERO;
+    RDBM2(y1, x1) = tchecker::dbm::db(tchecker::dbm::LE, -1);
+    RDBM2(t1, y1) = tchecker::dbm::LE_ZERO;
+    RDBM2(t0, t2) = tchecker::dbm::LE_ZERO;
+    RDBM2(t2, t0) = tchecker::dbm::LE_ZERO;
+    tchecker::refdbm::tighten(rdbm2, r);
+
+    REQUIRE(tchecker::refdbm::is_equal(rdbm1, rdbm2, r));
+  }
+}
+
 TEST_CASE("Reset to reference clock on DBMs with reference clocks", "[refdbm]")
 {
   std::vector<std::string> refclocks = {"$0", "$1", "$2"};
