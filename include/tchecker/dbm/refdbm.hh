@@ -19,16 +19,16 @@
  \file refdbm.hh
  \brief Functions on DBMs with reference clocks
  \note A DBM with reference clocks is a DBM where the first refcount variables
- are reference variables, and the other variables are clock variables. Each
- clock variable has a corresponding reference variable. The correspondance is
- defined according to an instance of tchecker::reference_clock_variables_t.
- It associates to each clock variable X its reference clock RX. Each reference
- clock is mapped to itself.
+ are reference variables, and the other variables are clock (or offset)
+ variables. Each clock variable has a corresponding reference variable. The
+ correspondance is defined according to an instance r of
+ tchecker::reference_clock_variables_t. It associates to each clock variable X
+ its reference clock r(X). Each reference clock is mapped to itself.
 
- The value of system clock x is represented as the value of X-RX, the difference
- between the corresponding clock variable X and its reference clock RX.
- Reference DBMs generalise standard DBMs which have a single reference clock,
- usually denoted 0.
+ The value of system clock x is represented as the value of X-r(X), the
+ difference between the corresponding clock variable X and its reference clock
+ r(X). Reference DBMs generalise standard DBMs which have a single reference
+ clock, usually denoted 0.
 
  Reference DBMs have been introduced as "offset DBMs" in "Partial Order
  Reduction for Timed Systems", J. Bengtsson, B. Jonsson, J. Lilis and Wang Yi,
@@ -134,7 +134,8 @@ bool is_positive(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_var
  \param rdbm : a DBM
  \param r : reference clocks for rdbm
  \return true if rdbm is universal positive (the only constraints in rdbm are
- positivity constraints: each clock is greater-than or equal-to its reference clock), false otherwise.
+ positivity constraints: each clock is greater-than or equal-to its reference
+ clock), false otherwise.
  \pre rdbm is not nullptr (checked by assertion)
  rdbm is a r.size()*r.size() array of difference bounds
  rdbm is tight (checked by assertion)
@@ -176,7 +177,8 @@ bool is_tight(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variab
  rdbm is a DBM over reference clocks r
  rdbm is consistent (checked by assertion)
  \post rdbm is tight if it is not empty.
- if rdbm is empty, then the difference bound in (0,0) is less-than <=0 (tchecker::refdbm::is_empty_0() returns true)
+ if rdbm is empty, then the difference bound in (0,0) is less-than <=0
+ (tchecker::refdbm::is_empty_0() returns true)
  \return EMPTY if rdbm is empty, NON_EMPTY otherwise
  \note Applies Floyd-Warshall algorithm on rdbm seen as a weighted graph.
  */
@@ -189,7 +191,8 @@ enum tchecker::dbm::status_t tighten(tchecker::dbm::db_t * rdbm, tchecker::refer
  \pre rdbm is not nullptr (checked by assertion)
  rdbm is a r.size()*r.size() array of difference bounds
  rdbm is a DBM over reference clocks r
- \return true if rdbm is consistent (no negative value on the diagonal), false otherwise
+ \return true if rdbm is consistent (no negative value on the diagonal), false
+ otherwise
 */
 bool is_consistent(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r);
 
@@ -210,19 +213,19 @@ bool is_synchronized(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock
  \brief Synchronized predicate on DBMs with reference clocks
  \param rdbm : a DBM
  \param r : reference clocks for rdbm
- \param r1 : reference clock
- \param r2 : reference clock
+ \param sync_ref_clocks : synchronized reference clocks
  \pre rdbm is not nullptr (checked by assertion)
  rdbm is a r.size()*r.size() array of difference bounds
  rdbm is consistent (checked by assertion)
  rdbm is tight (checked by assertion)
  rdbm is a DBM over reference clocks r
- r1 < r.refcount() (checked by assertion)
- r2 < r.refcount() (checked by assertion)
- \return true if r1 and r2 are equal in rdbm, false otherwise
+ the size of sync_ref_clocks is the number of reference clocks in r (checked by
+ assertion)
+ \return true if all reference clocks in sync_ref_clocks are equal in rdbm,
+ false otherwise
  */
-bool is_synchronized(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r, tchecker::clock_id_t r1,
-                     tchecker::clock_id_t r2);
+bool is_synchronized(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r,
+                     boost::dynamic_bitset<> const & sync_ref_clocks);
 
 /*!
  \brief Equality predicate on DBMs with reference clocks
@@ -259,17 +262,21 @@ bool is_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
  \param rdbm1 : a first dbm
  \param rdbm2 : a second dbm
  \param r : reference clocks for rdbm1 and rdbm2
- \param l : clock lower bounds for offset clocks, l[0] is the bound for offset clock 1 and so on
- \param u : clock upper bounds for offset clocks, u[0] is the bound for offset clock 1 and so on
+ \param l : clock lower bounds for offset clocks, l[0] is the bound for offset
+ clock 1 and so on
+ \param u : clock upper bounds for offset clocks, u[0] is the bound for offset
+ clock 1 and so on
  \pre rdbm1 and rdbm2 are not nullptr (checked by assertion)
  rdbm1 and rdbm2 are r.size()*r.size() arrays of difference bounds
  rdbm1 and rdbm2 are consistent (checked by assertion)
  rdbm1 and rdbm2 are positive (checked by assertion)
  rdbm1 and rdbm2 are tight (checked by assertion)
  l and u are arrays of size r.size()-r.refcount()
- l[i], u[i] < tchecker::dbm::INF_VALUE for all offset clock i>=0 (checked by assertion)
+ l[i], u[i] < tchecker::dbm::INF_VALUE for all offset clock i>=0 (checked by
+ assertion)
  \return true if rdbm1 <= aLU*(rdbm2), false otherwise
- \note set l[i]/u[i] to -tchecker::dbm::INF_VALUE if clock i has no lower/upper bound
+ \note set l[i]/u[i] to tchecker::clockbounds::NO_BOUND if clock i has no
+ lower/upper bound
  */
 bool is_alu_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
                tchecker::reference_clock_variables_t const & r, tchecker::integer_t const * l, tchecker::integer_t const * u);
@@ -279,16 +286,19 @@ bool is_alu_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rd
  \param rdbm1 : a first dbm
  \param rdbm2 : a second dbm
  \param r : reference clocks for rdbm1 and rdbm2
- \param m : clock bounds for offset clocks, m[0] is the bound for offset clock 1 and so on
+ \param m : clock bounds for offset clocks, m[0] is the bound for offset clock 1
+ and so on
  \pre rdbm1 and rdbm2 are not nullptr (checked by assertion)
  rdbm1 and rdbm2 are r.size()*r.size() arrays of difference bounds
  rdbm1 and rdbm2 are consistent (checked by assertion)
  rdbm1 and rdbm2 are positive (checked by assertion)
  rdbm1 and rdbm2 are tight (checked by assertion)
  m is an array of size r.size()-r.refcount()
- m[i] < tchecker::dbm::INF_VALUE for all offset clock i>=0 (checked by assertion)
+ m[i] < tchecker::dbm::INF_VALUE for all offset clock i>=0 (checked by
+ assertion)
  \return true if rdbm1 <= aM*(rdbm2), false otherwise
- \note set m[i] to -tchecker::dbm::INF_VALUE if clock i has no lower/upper bound
+ \note set m[i] to tchecker::clockbounds::NO_BOUND if clock i has no lower/upper
+ bound
  */
 bool is_am_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
               tchecker::reference_clock_variables_t const & r, tchecker::integer_t const * m);
@@ -298,8 +308,10 @@ bool is_am_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdb
  \param rdbm1 : a first dbm
  \param rdbm2 : a second dbm
  \param r : reference clocks for rdbm1 and rdbm2
- \param l : clock lower bounds for offset clocks, l[0] is the bound for offset clock 1 and so on
- \param u : clock upper bounds for offset clocks, u[0] is the bound for offset clock 1 and so on
+ \param l : clock lower bounds for offset clocks, l[0] is the bound for offset
+ clock 1 and so on
+ \param u : clock upper bounds for offset clocks, u[0] is the bound for offset
+ clock 1 and so on
  \pre rdbm1 and rdbm2 are not nullptr (checked by assertion)
  rdbm1 and rdbm2 are r.size()*r.size() arrays of difference bounds
  rdbm1 and rdbm2 are consistent (checked by assertion)
@@ -307,9 +319,11 @@ bool is_am_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdb
  rdbm1 and rdbm2 are tight (checked by assertion)
  rdbm1 and rdbm2 are open up (checker by assertion)
  l and u are arrays of size r.size()-r.refcount()
- l[i], u[i] < tchecker::dbm::INF_VALUE for all offset clock i>=0 (checked by assertion)
+ l[i], u[i] < tchecker::dbm::INF_VALUE for all offset clock i>=0 (checked by
+ assertion)
  \return true if sync(rdbm1) <= aLU(sync(rdbm2)), false otherwise
- \note set l[i]/u[i] to -tchecker::dbm::INF_VALUE if clock i has no lower/upper bound
+ \note set l[i]/u[i] to tchecker::clockbounds::NO_BOUND if clock i has no
+ lower/upper bound
  */
 bool is_sync_alu_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
                     tchecker::reference_clock_variables_t const & r, tchecker::integer_t const * l,
@@ -320,16 +334,18 @@ bool is_sync_alu_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const
  \param rdbm1 : a first dbm
  \param rdbm2 : a second dbm
  \param r : reference clocks for rdbm1 and rdbm2
- \param m : clock bounds for offset clocks, m[0] is the bound for offset clock 1 and so on
+ \param m : clock bounds for offset clocks, m[0] is the bound for offset clock 1
+ and so on
  \pre rdbm1 and rdbm2 are not nullptr (checked by assertion)
  rdbm1 and rdbm2 are r.size()*r.size() arrays of difference bounds
  rdbm1 and rdbm2 are consistent (checked by assertion)
  rdbm1 and rdbm2 are positive (checked by assertion)
  rdbm1 and rdbm2 are tight (checked by assertion)
  m is an array of size r.size()-r.refcount()
- m[i] < tchecker::dbm::INF_VALUE for all offset clock i>=0 (checked by assertion)
+ m[i] < tchecker::dbm::INF_VALUE for all offset clock i>=0 (checked by
+ assertion)
  \return true if sync(rdbm1) <= aM(sync(rdbm2)), false otherwise
- \note set m[i] to -tchecker::dbm::INF_VALUE if clock i has no bound
+ \note set m[i] to tchecker::clockbounds::NO_BOUND if clock i has no bound
  */
 bool is_sync_am_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
                    tchecker::reference_clock_variables_t const & r, tchecker::integer_t const * m);
@@ -342,7 +358,8 @@ bool is_sync_am_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const 
  \pre rdbm is not nullptr (checked by assertion)
  rdbm is a r.size()*r.size() array of difference bounds
  rdbm is a DBM over reference clocks r
- \note if rdbm is not tight, the returned hash code may differ from the hash code of its corresponding tight DBM
+ \note if rdbm is not tight, the returned hash code may differ from the hash
+ code of its corresponding tight DBM
  */
 std::size_t hash(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r);
 
@@ -360,12 +377,14 @@ std::size_t hash(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_var
  rdbm is a DBM over reference clocks r
  0 <= x < r.size() (checked by assertion)
  0 <= y < r.size() (checked by assertion)
- \post rdbm has been intersected with constraint `x - y # value` where # is < if cmp is LT, and # is <= if cmp is LE
+ \post rdbm has been intersected with constraint `x - y # value` where # is < if
+ cmp is LT, and # is <= if cmp is LE
  rdbm is tight if it is not empty.
- if rdbm is empty, then its difference bound in (0,0) is less-than <=0 (tchecker::refdbm::is_empty_0() returns true)
+ if rdbm is empty, then its difference bound in (0,0) is less-than <=0
+ (tchecker::refdbm::is_empty_0() returns true)
  \return EMPTY if rdbm is empty, NON_EMPTY otherwise
- \throw std::invalid_argument : if `cmp value` cannot be represented as a tchecker::dbm::db_t (only if compilation flag
- DBM_UNSAFE is not set)
+ \throw std::invalid_argument : if `cmp value` cannot be represented as a
+ tchecker::dbm::db_t (only if compilation flag DBM_UNSAFE is not set)
  */
 enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
                                        tchecker::clock_id_t x, tchecker::clock_id_t y, tchecker::dbm::comparator_t cmp,
@@ -380,12 +399,14 @@ enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * rdbm, tchecker::ref
  rdbm is consistent (checked by assertion)
  rdbm is tight (checked by assertion)
  \post rdbm has been restricted to its subset of synchronized valuations
- \return tchecker::dbm::EMPTY if synchronized dbm is empty, tchecker::dbm::NON_EMPTY otherwise
+ \return tchecker::dbm::EMPTY if synchronized dbm is empty,
+ tchecker::dbm::NON_EMPTY otherwise
  */
 enum tchecker::dbm::status_t synchronize(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r);
 
 /*!
- \brief Restriction to synchronized valuations over specified set of reference clocks
+ \brief Restriction to synchronized valuations over specified set of reference
+ clocks
  \param rdbm : a DBM
  \param r : reference clocks for rdbm
  \param sync_ref_clocks : set of reference clocks to synchronize
@@ -446,8 +467,9 @@ void asynchronous_open_up(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_
  rdbm is tight (checked by assertion)
  rdbm is a DBM over reference clocks r
  delay_allowed has size r.refcount() (checked by assertion)
- \post reference clocks in rdbm with delay_allowed are unbounded (i.e. x-r<inf for every reference clock r and
- any variable x, including x being another reference clock).
+ \post reference clocks in rdbm with delay_allowed are unbounded (i.e. x-t<inf
+ for every reference clock t and any variable x, including x being another
+ reference clock).
  reference clocks in rdbm without delay_allowed are unchanged
  rdbm is tight and consistent.
  */
@@ -470,8 +492,8 @@ void asynchronous_open_up(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_
  dbm is not nullptr (checked by assertion)
  dbm is a dim*dim array of difference bounds
  dim is equal to r.size() - r.refcount() + 1 (checked by assertion)
- \post dbm is the zone extracted from rdbm by identifying the reference clocks in rdbm to the
- zero clock in dbm.
+ \post dbm is the zone extracted from rdbm by identifying the reference clocks
+ in rdbm to the zero clock in dbm.
  dbm is tight and consistent.
  */
 void to_dbm(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r, tchecker::dbm::db_t * dbm,
@@ -499,8 +521,8 @@ std::ostream & output_matrix(std::ostream & os, tchecker::dbm::db_t const * rdbm
  \pre rdbm is not nullptr (checked by assertion)
  rdbm is a r.size()*r.size() array of difference bounds
  rdbm is a DBM over reference clocks r
- \post the relevant constraints in rdbm have been output to os. Relevant constraints are those that differ
- from the universal DBM.
+ \post the relevant constraints in rdbm have been output to os. Relevant
+ constraints are those that differ from the universal DBM.
  \return os after output
  */
 std::ostream & output(std::ostream & os, tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r);
@@ -516,8 +538,8 @@ std::ostream & output(std::ostream & os, tchecker::dbm::db_t const * rdbm, tchec
  rdbm2 is a r2.size()*r2.size() array of difference bounds
  rdbm1 is a DBM over reference clocks r1
  rdbm2 is a DBM over reference clocks r2
- \return 0 if rdbm1 and rdbm2 are equal, a negative value if rdbm1 is smaller than rdbm2 w.r.t. lexical
- ordering, and a positive value otherwise
+ \return 0 if rdbm1 and rdbm2 are equal, a negative value if rdbm1 is smaller
+ than rdbm2 w.r.t. lexical ordering, and a positive value otherwise
  */
 int lexical_cmp(tchecker::dbm::db_t const * rdbm1, tchecker::reference_clock_variables_t const & r1,
                 tchecker::dbm::db_t const * rdbm2, tchecker::reference_clock_variables_t const & r2);

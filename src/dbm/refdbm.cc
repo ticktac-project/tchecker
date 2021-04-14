@@ -36,7 +36,7 @@ void universal_positive(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_va
   assert(rdbm != nullptr);
 
   tchecker::refdbm::universal(rdbm, r);
-  // clocks are non-negative: x>=0 <=> X>=RX <=> RX-X<=0
+  // clocks are non-negative: x>=0 <=> X>=r(X) <=> r(X)-X<=0
   tchecker::clock_id_t const rdim = r.size();
   tchecker::clock_id_t const * refmap = r.refmap();
   for (tchecker::clock_id_t i = r.refcount(); i < rdim; ++i)
@@ -79,7 +79,7 @@ bool is_positive(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_var
   assert(rdbm != nullptr);
   assert(tchecker::refdbm::is_tight(rdbm, r));
 
-  // RX-X are less-or-equal to <=0, (i.e. RX<=X)
+  // r(X)-X are less-or-equal to <=0, (i.e. r(X)<=X)
   tchecker::clock_id_t const * refmap = r.refmap();
   for (tchecker::clock_id_t i = r.refcount(); i < rdim; ++i)
     if (RDBM(refmap[i], i) > tchecker::dbm::LE_ZERO)
@@ -97,8 +97,8 @@ bool is_universal_positive(tchecker::dbm::db_t const * rdbm, tchecker::reference
   // <inf everywhere, except <=0 on the diagonal and for RX-X
   for (tchecker::clock_id_t i = 0; i < rdim; ++i) {
     for (tchecker::clock_id_t j = 0; j < rdim; ++j) {
-      tchecker::clock_id_t const rj = refmap[j];
-      tchecker::dbm::db_t const expected = ((i == j) || (i == rj) ? tchecker::dbm::LE_ZERO : tchecker::dbm::LT_INFINITY);
+      tchecker::clock_id_t const tj = refmap[j];
+      tchecker::dbm::db_t const expected = ((i == j) || (i == tj) ? tchecker::dbm::LE_ZERO : tchecker::dbm::LT_INFINITY);
       if (RDBM(i, j) != expected)
         return false;
     }
@@ -115,10 +115,10 @@ bool is_open_up(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_vari
   tchecker::clock_id_t const refcount = r.refcount();
   // X-R is <inf for every (offset or reference) clock X and any reference clock R
   for (tchecker::clock_id_t x = 0; x < rdim; ++x)
-    for (tchecker::clock_id_t r = 0; r < refcount; ++r) {
-      if (x == r)
+    for (tchecker::clock_id_t t = 0; t < refcount; ++t) {
+      if (x == t)
         continue;
-      if (RDBM(x, r) != tchecker::dbm::LT_INFINITY)
+      if (RDBM(x, t) != tchecker::dbm::LT_INFINITY)
         return false;
     }
   return true;
@@ -152,23 +152,34 @@ bool is_synchronized(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock
   assert(tchecker::refdbm::is_consistent(rdbm, r));
   assert(tchecker::refdbm::is_tight(rdbm, r));
 
-  tchecker::clock_id_t const refcount = r.refcount();
-  for (tchecker::clock_id_t i = 0; i < refcount - 1; ++i) {
-    if (!tchecker::refdbm::is_synchronized(rdbm, r, i, i + 1))
-      return false;
-  }
-  return true;
+  boost::dynamic_bitset<> sync_ref_clocks{r.refcount()};
+  sync_ref_clocks.set();
+  return tchecker::refdbm::is_synchronized(rdbm, r, sync_ref_clocks);
 }
 
-bool is_synchronized(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r, tchecker::clock_id_t r1,
-                     tchecker::clock_id_t r2)
+bool is_synchronized(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r,
+                     boost::dynamic_bitset<> const & sync_ref_clocks)
 {
   assert(rdbm != nullptr);
   assert(tchecker::refdbm::is_consistent(rdbm, r));
   assert(tchecker::refdbm::is_tight(rdbm, r));
+  assert(sync_ref_clocks.size() == r.refcount());
 
   tchecker::clock_id_t const rdim = r.size();
-  return ((RDBM(r1, r2) == tchecker::dbm::LE_ZERO) && (RDBM(r2, r1) == tchecker::dbm::LE_ZERO));
+
+  auto t1 = sync_ref_clocks.find_first();
+  auto t2 = sync_ref_clocks.find_next(t1);
+  while (t2 != sync_ref_clocks.npos) {
+    assert(t1 < r.refcount());
+    assert(t2 < r.refcount());
+
+    if (RDBM(t1, t2) != tchecker::dbm::LE_ZERO || RDBM(t2, t1) != tchecker::dbm::LE_ZERO)
+      return false;
+
+    t1 = t2;
+    t2 = sync_ref_clocks.find_next(t1);
+  }
+  return true;
 }
 
 bool is_equal(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
@@ -206,10 +217,10 @@ bool is_alu_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rd
   assert(tchecker::refdbm::is_consistent(rdbm2, r));
 
   // Z is not included in aLU*(Z') if:
-  //    Z{r1,r2} > Z'(r1,r2} for some reference clocks r1, r2
-  // or Z{ry,y} >= (<=,-Uy) and Z'{r,y} < Z{r,y} for some reference clock r and offset clock y
-  // or Z'{x,r} < Z{x,r} and Z'{x,r} + (<,-Lx) < Z{rx,r} for some reference clock r and offset clock x
-  // or Z{ry,y} >= (<=,-Uy) and Z’{x,y} < Z{x,y} and Z’{x,y} + (<,-Lx) < Z{rx,y} for some offset clocks x, y
+  //    Z{t1,t2} > Z'(t1,t2} for some reference clocks t1, t2
+  // or Z{r(y),y} >= (<=,-Uy) and Z'{t,y} < Z{t,y} for some reference clock t and offset clock y
+  // or Z'{x,t} < Z{x,t} and Z'{x,t} + (<,-Lx) < Z{r(x),t} for some reference clock t and offset clock x
+  // or Z{r(y),y} >= (<=,-Uy) and Z’{x,y} < Z{x,y} and Z’{x,y} + (<,-Lx) < Z{r(x),y} for some offset clocks x, y
 
   std::size_t const rdim = r.size();
   std::size_t const refcount = r.refcount();
@@ -223,21 +234,21 @@ bool is_alu_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rd
     if (Ly == tchecker::clockbounds::NO_BOUND)
       continue;
 
-    tchecker::clock_id_t const ry = r.refmap()[y];
+    tchecker::clock_id_t const ty = r.refmap()[y];
     tchecker::dbm::db_t const lt_minus_Ly = tchecker::dbm::db(tchecker::dbm::LT, -Ly);
 
-    for (tchecker::clock_id_t r = 0; r < refcount; ++r)
-      if ((RDBM2(y, r) < RDBM1(y, r)) && (tchecker::dbm::sum(RDBM2(y, r), lt_minus_Ly) < RDBM1(ry, r)))
+    for (tchecker::clock_id_t t = 0; t < refcount; ++t)
+      if ((RDBM2(y, t) < RDBM1(y, t)) && (tchecker::dbm::sum(RDBM2(y, t), lt_minus_Ly) < RDBM1(ty, t)))
         return false;
 
     if (Uy == tchecker::clockbounds::NO_BOUND)
       continue;
 
-    if (RDBM1(ry, y) < tchecker::dbm::db(tchecker::dbm::LE, -Uy))
+    if (RDBM1(ty, y) < tchecker::dbm::db(tchecker::dbm::LE, -Uy))
       continue;
 
-    for (tchecker::clock_id_t r = 0; r < refcount; ++r)
-      if (RDBM2(r, y) < RDBM1(r, y))
+    for (tchecker::clock_id_t t = 0; t < refcount; ++t)
+      if (RDBM2(t, y) < RDBM1(t, y))
         return false;
 
     for (tchecker::clock_id_t x = refcount; x < rdim; ++x) {
@@ -247,17 +258,17 @@ bool is_alu_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rd
       if (Lx == tchecker::clockbounds::NO_BOUND)
         continue;
 
-      tchecker::clock_id_t const rx = r.refmap()[x];
+      tchecker::clock_id_t const tx = r.refmap()[x];
       tchecker::dbm::db_t const lt_minus_Lx = tchecker::dbm::db(tchecker::dbm::LT, -Lx);
 
-      if ((RDBM2(x, y) < RDBM1(x, y)) && (tchecker::dbm::sum(RDBM2(x, y), lt_minus_Lx) < RDBM1(rx, y)))
+      if ((RDBM2(x, y) < RDBM1(x, y)) && (tchecker::dbm::sum(RDBM2(x, y), lt_minus_Lx) < RDBM1(tx, y)))
         return false;
     }
   }
 
-  for (tchecker::clock_id_t r1 = 0; r1 < refcount; ++r1)
-    for (tchecker::clock_id_t r2 = 0; r2 < refcount; ++r2)
-      if (RDBM1(r1, r2) > RDBM2(r1, r2))
+  for (tchecker::clock_id_t t1 = 0; t1 < refcount; ++t1)
+    for (tchecker::clock_id_t t2 = 0; t2 < refcount; ++t2)
+      if (RDBM1(t1, t2) > RDBM2(t1, t2))
         return false;
 
   return true;
@@ -442,15 +453,15 @@ void reset_to_reference_clock(tchecker::dbm::db_t * rdbm, tchecker::reference_cl
   assert(tchecker::refdbm::is_tight(rdbm, r));
   assert(x < rdim);
 
-  tchecker::clock_id_t const rx = r.refmap()[x];
+  tchecker::clock_id_t const tx = r.refmap()[x];
 
-  if (rx == x)
+  if (tx == x)
     return;
 
-  // x is identified to rx w.r.t. all clocks z
+  // x is identified to r(x) w.r.t. all clocks z
   for (tchecker::clock_id_t z = 0; z < rdim; ++z) {
-    RDBM(x, z) = RDBM(rx, z);
-    RDBM(z, x) = RDBM(z, rx);
+    RDBM(x, z) = RDBM(tx, z);
+    RDBM(z, x) = RDBM(z, tx);
   }
   RDBM(x, x) = tchecker::dbm::LE_ZERO; // cheaper than testing in loop
 
@@ -469,10 +480,10 @@ void asynchronous_open_up(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_
   tchecker::clock_id_t const rdim = r.size();
   tchecker::clock_id_t const refcount = r.refcount();
 
-  for (tchecker::clock_id_t r = 0; r < refcount; ++r) {
+  for (tchecker::clock_id_t t = 0; t < refcount; ++t) {
     for (tchecker::clock_id_t x = 0; x < rdim; ++x)
-      RDBM(x, r) = tchecker::dbm::LT_INFINITY;
-    RDBM(r, r) = tchecker::dbm::LE_ZERO;
+      RDBM(x, t) = tchecker::dbm::LT_INFINITY;
+    RDBM(t, t) = tchecker::dbm::LE_ZERO;
   }
 
   assert(tchecker::refdbm::is_consistent(rdbm, r));
@@ -490,15 +501,15 @@ void asynchronous_open_up(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_
   assert(tchecker::refdbm::is_tight(rdbm, r));
   assert(refcount == delay_allowed.size());
 
-  // x - r < inf for all x and r s.t. delay is allowed for r (including x being
+  // x - t < inf for all x and t s.t. delay is allowed for t (including x being
   // another reference clocks)
-  for (tchecker::clock_id_t r = 0; r < refcount; ++r) {
-    if (!delay_allowed[r])
+  for (tchecker::clock_id_t t = 0; t < refcount; ++t) {
+    if (!delay_allowed[t])
       continue;
 
     for (tchecker::clock_id_t x = 0; x < rdim; ++x)
-      RDBM(x, r) = tchecker::dbm::LT_INFINITY;
-    RDBM(r, r) = tchecker::dbm::LE_ZERO;
+      RDBM(x, t) = tchecker::dbm::LT_INFINITY;
+    RDBM(t, t) = tchecker::dbm::LE_ZERO;
   }
 
   assert(tchecker::refdbm::is_consistent(rdbm, r));
