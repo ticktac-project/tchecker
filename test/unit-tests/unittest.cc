@@ -9,6 +9,7 @@
 #include <catch2/catch.hpp>
 
 #include "test-cache.hh"
+#include "test-clocks.hh"
 #include "test-db.hh"
 #include "test-dbm.hh"
 #include "test-extract_variables.hh"

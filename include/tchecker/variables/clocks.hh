@@ -581,18 +581,19 @@ public:
   /*!
     \brief Translate a clock constraint w.r.t. reference clocks
     \param c : a clock constraint
-    \pre c is expressed over system clocks 0..size() - refcount() plus tchecker::REFCLOCK_ID (checked by assertion)
-    \post c has been re-expressed over this reference clocks
+    \pre c is expressed over system clocks 0..size() - refcount() plus
+    tchecker::REFCLOCK_ID (checked by assertion)
+    \return c translated over this reference clocks
    */
-  void translate(tchecker::clock_constraint_t & c) const;
+  tchecker::clock_constraint_t translate(tchecker::clock_constraint_t const & c) const;
 
   /*!
     \brief Translate a clock reset w.r.t reference clocks
     \param r : a clock reset
     \pre r is expressed over system clocks 0..size() - refcount() plus tchecker::REFCLOCK_ID (checked by assertion)
-    \post r has been re-expressed over this reference clocks
+    \return r translated over this reference clocks
   */
-  void translate(tchecker::clock_reset_t & r) const;
+  tchecker::clock_reset_t translate(tchecker::clock_reset_t const & r) const;
 
   /*!
     \brief Translate system clock ID to this reference map

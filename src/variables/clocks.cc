@@ -187,7 +187,7 @@ tchecker::clock_id_t reference_clock_variables_t::declare(std::string const & na
   return id;
 }
 
-void reference_clock_variables_t::translate(tchecker::clock_constraint_t & c) const
+tchecker::clock_constraint_t reference_clock_variables_t::translate(tchecker::clock_constraint_t const & c) const
 {
   assert(c.id1() != tchecker::REFCLOCK_ID || c.id2() != tchecker::REFCLOCK_ID);
   assert(c.id1() == tchecker::REFCLOCK_ID || c.id1() < size() - _refcount);
@@ -197,11 +197,11 @@ void reference_clock_variables_t::translate(tchecker::clock_constraint_t & c) co
   id1 = (id1 == tchecker::REFCLOCK_ID ? refclock_of_system_clock(c.id2()) : translate_system_clock(id1));
   tchecker::clock_id_t id2 = c.id2();
   id2 = (id2 == tchecker::REFCLOCK_ID ? refclock_of_system_clock(c.id1()) : translate_system_clock(id2));
-  c.id1() = id1;
-  c.id2() = id2;
+
+  return tchecker::clock_constraint_t{id1, id2, c.comparator(), c.value()};
 }
 
-void reference_clock_variables_t::translate(tchecker::clock_reset_t & r) const
+tchecker::clock_reset_t reference_clock_variables_t::translate(tchecker::clock_reset_t const & r) const
 {
   assert(r.left_id() < size() - _refcount);
   assert(r.right_id() == tchecker::REFCLOCK_ID || r.right_id() < size() - _refcount);
@@ -209,8 +209,8 @@ void reference_clock_variables_t::translate(tchecker::clock_reset_t & r) const
   tchecker::clock_id_t left_id = translate_system_clock(r.left_id());
   tchecker::clock_id_t right_id = r.right_id();
   right_id = (right_id == tchecker::REFCLOCK_ID ? refclock_of_system_clock(r.left_id()) : translate_system_clock(right_id));
-  r.left_id() = left_id;
-  r.right_id() = right_id;
+
+  return tchecker::clock_reset_t{left_id, right_id, r.value()};
 }
 
 tchecker::clock_id_t reference_clock_variables_t::declare(std::string const & name, tchecker::clock_id_t refid)
