@@ -54,7 +54,8 @@ public:
    \param size : size (array)
    \pre 'name' is not a declared variable
    size > 0
-   \post a clock variable with base name 'name' and with size 'size' has been declared
+   \post a clock variable with base name 'name' and with size 'size' has been
+   declared
    \return the identifier of the declared clock
    \throw std::invalid_argument : if the precondition is violated
    \throw std::runtime_error : if there is no clock identifier left
@@ -249,7 +250,8 @@ std::ostream & output(std::ostream & os, tchecker::clock_constraint_t const & c,
  \param os : output stream
  \param range : range of clock constraints
  \param index : clock index
- \post all the clock constraints in range have been output to os with clock names from index
+ \post all the clock constraints in range have been output to os with clock
+ names from index
  \return os after output
  */
 template <class CLKCONSTR_ITERATOR>
@@ -269,7 +271,8 @@ std::ostream & output_clock_constraints(std::ostream & os, tchecker::range_t<CLK
  \brief Lexical ordering on clock constraints
  \param c1 : first clock constraint
  \param c2 : second clock constraint
- \return 0 if c1 and c2 are equal, a negative value if c1 is smaller than c2 w.r.t. lexical ordering, a positive value otherwise
+ \return 0 if c1 and c2 are equal, a negative value if c1 is smaller than c2
+ w.r.t. lexical ordering, a positive value otherwise
  */
 int lexical_cmp(tchecker::clock_constraint_t const & c1, tchecker::clock_constraint_t const & c2);
 
@@ -287,7 +290,8 @@ using clock_constraint_container_const_iterator_t = tchecker::clock_constraint_c
  \brief Lexical ordering on clock constraint containers
  \param c1 : first clock constraint container
  \param c2 : second clock constraint container
- \return 0 if c1 and c2 are equal, a negative value if c1 is smaller than c2 w.r.t. lexical ordering, a positive value otherwise
+ \return 0 if c1 and c2 are equal, a negative value if c1 is smaller than c2
+ w.r.t. lexical ordering, a positive value otherwise
  */
 int lexical_cmp(tchecker::clock_constraint_container_t const & c1, tchecker::clock_constraint_container_t const & c2);
 
@@ -332,7 +336,7 @@ public:
   tchecker::clock_reset_t & operator=(tchecker::clock_reset_t const &) = default;
 
   /*!
-   \brief Move qssignment operator
+   \brief Move assignment operator
    */
   tchecker::clock_reset_t & operator=(tchecker::clock_reset_t &&) = default;
 
@@ -454,7 +458,8 @@ std::ostream & output(std::ostream & os, tchecker::clock_reset_t const & r, tche
  \param os : output stream
  \param range : range of clock resets
  \param index : clock index
- \post all the clock resets in range have been output to os with clock names from index
+ \post all the clock resets in range have been output to os with clock names
+ from index
  \return os after output
  */
 template <class CLKRESET_ITERATOR>
@@ -474,7 +479,8 @@ std::ostream & output_clock_resets(std::ostream & os, tchecker::range_t<CLKRESET
  \brief Lexical ordering on clock resets
  \param r1 : first clock reset
  \param r2 : second clock reset
- \return 0 if r1 and r2 are equal, a negative value if r1 is smaller than r2 w.r.t. lexical ordering, a positive value otherwise
+ \return 0 if r1 and r2 are equal, a negative value if r1 is smaller than r2
+ w.r.t. lexical ordering, a positive value otherwise
  */
 int lexical_cmp(tchecker::clock_reset_t const & r1, tchecker::clock_reset_t const & r2);
 
@@ -492,25 +498,28 @@ using clock_reset_container_const_iterator_t = tchecker::clock_reset_container_t
  \brief Lexical ordering on clock reset containers
  \param c1 : first clock reset container
  \param c2 : second clock reset container
- \return 0 if c1 and c2 are equal, a negative value if c1 is smaller than c2 w.r.t. lexical ordering, a positive value otherwise
+ \return 0 if c1 and c2 are equal, a negative value if c1 is smaller than c2
+ w.r.t. lexical ordering, a positive value otherwise
  */
 int lexical_cmp(tchecker::clock_reset_container_t const & c1, tchecker::clock_reset_container_t const & c2);
 
 /*!
  \class reference_clock_variables_t
  \brief Declaration of clock variables w.r.t. reference clock variables.
- \note Reference clocks allow to model polychronous time. Each reference clock has its own time scale. Clocks
- that are mapped to the same reference clock evolve on the same time scale. The standard semantics for timed
- automata rely on a single time scale: a single reference clock usually denoted 0.
- We distinguish between system clock variables with have IDs 0..N-1 and are all actual clocks on the one
- hand, and reference clock variables with the first 0..refcount-1 clocks which are reference clocks, followed
- by N actual clocks.
+ \note Reference clocks allow to model polychronous time. Each reference clock
+ has its own time scale. Clocks that are mapped to the same reference clock
+ evolve on the same time scale. The standard semantics for timed automata rely
+ on a single time scale: a single reference clock usually denoted 0. We
+ distinguish between system clock variables with have IDs 0..N-1 and are all
+ actual clocks on the one hand, and reference clock variables with the first
+ 0..refcount-1 clocks which are reference clocks, followed by N actual clocks.
  */
 class reference_clock_variables_t : public tchecker::flat_clock_variables_t {
 public:
   /*!
    \brief Constructor
-   \tparam REFCLOCK_NAME_ITERATOR : forward iterator that dereference to std::string
+   \tparam REFCLOCK_NAME_ITERATOR : forward iterator that dereference to
+   std::string
    \param begin : iterator to the name of the first reference clock
    \param end : past-the-end iterator on reference clock names
    \pre the range [begin, end) is not empty
@@ -559,7 +568,8 @@ public:
    \param refclock : name of reference clock
    \pre 'name' is not a declared variable
    'refclock' is the name of a declared reference clock
-   \post a clock variable with base name 'name', dimension 1 and reference clock 'refclock' has been declared
+   \post a clock variable with base name 'name', dimension 1 and reference clock
+   'refclock' has been declared
    \return identifier of the declared clock
    \throw std::invalid_argument : if the precondition is violated
    */
@@ -574,7 +584,8 @@ public:
   /*!
    \brief Accessor
    \return Reference map: clock ID -> reference clock ID
-   \note Each reference clock is mapped to itself, and each clock variable is mapped to its reference clock
+   \note Each reference clock is mapped to itself, and each clock variable is
+   mapped to its reference clock
    */
   constexpr inline tchecker::clock_id_t const * refmap() const { return _refmap.data(); }
 
@@ -590,7 +601,8 @@ public:
   /*!
     \brief Translate a clock reset w.r.t reference clocks
     \param r : a clock reset
-    \pre r is expressed over system clocks 0..size() - refcount() plus tchecker::REFCLOCK_ID (checked by assertion)
+    \pre r is expressed over system clocks 0..size() - refcount() plus
+    tchecker::REFCLOCK_ID (checked by assertion)
     \return r translated over this reference clocks
   */
   tchecker::clock_reset_t translate(tchecker::clock_reset_t const & r) const;
@@ -598,7 +610,8 @@ public:
   /*!
     \brief Translate system clock ID to this reference map
     \brief id : system clock ID
-    \pre id belongs to 0..size(tchecker::VK_FLATTENED) - _refcount (checked by assertion)
+    \pre id belongs to 0..size(tchecker::VK_FLATTENED) - _refcount (checked by
+    assertion)
     \return the identifier of clock id in this reference map
   */
   constexpr inline tchecker::clock_id_t translate_system_clock(tchecker::clock_id_t id) const
@@ -610,7 +623,8 @@ public:
   /*!
     \brief Returns reference clock of a system clock
     \brief id : system clock ID
-    \pre id belongs to 0..size(tchecker::VK_FLATTENED) - _refcount (checked by assertion)
+    \pre id belongs to 0..size(tchecker::VK_FLATTENED) - _refcount (checked by
+    assertion)
     \return the ID of the reference clock of id in this reference map
    */
   constexpr inline tchecker::clock_id_t refclock_of_system_clock(tchecker::clock_id_t id) const
@@ -628,7 +642,8 @@ private:
    \param refid : ID of reference clock
    \pre 'name' is not a declared variable
    'refid' is a valid reference clock identifier (checked by assertion)
-   \post an offset variable with base name 'name', dimension 1 and reference clock 'refid' has been declared
+   \post an offset variable with base name 'name', dimension 1 and reference
+   clock 'refid' has been declared
    \return identifier of declared clock
    \throw std::invalid_argument : if a variable 'name' has already been declared
    */
@@ -638,10 +653,11 @@ private:
    \brief Declare a reference clock
    \param name : reference clock name
    \pre 'name' is not a declared variable
-   \post a reference clock with base name 'name' has been declared. The identifier of the reference clock is
-   refcount() - 1
+   \post a reference clock with base name 'name' has been declared. The
+   identifier of the reference clock is refcount() - 1
    \return identifier of declared reference clock
-   \throw std::invalid_argument : if a variable with base name 'name' has already been declared
+   \throw std::invalid_argument : if a variable with base name 'name' has
+   already been declared
    \throw std::runtime_error : if an offset variable has already been declared
    */
   tchecker::clock_id_t declare_reference_clock(std::string const & name);
@@ -655,8 +671,8 @@ private:
 /*!
  \brief Build reference clock variables w.r.t to single reference clock 0
  \param flat_clocks : flat clock variables
- \return reference clocks with a single reference clock 0, and clock variables as in flat_clocks, all mapped to
- reference clock 0
+ \return reference clocks with a single reference clock 0, and clock variables
+ as in flat_clocks, all mapped to reference clock 0
 */
 tchecker::reference_clock_variables_t single_reference_clocks(tchecker::flat_clock_variables_t const & flat_clocks);
 
@@ -667,11 +683,14 @@ tchecker::reference_clock_variables_t single_reference_clocks(tchecker::flat_clo
  \param flat_clocks : flat clock variables
  \pre proc_count > 0
  all process IDs in vaccess_map should belong to [0,proc_count)
- \return reference clock variables with proc_count reference clocks, along with all clocks from flat_clocks.
- Each clock is mapped to the reference clock of the process that accesses the clock according to vaccess_map
+ \return reference clock variables with proc_count reference clocks, along with
+ all clocks from flat_clocks.
+ Each clock is mapped to the reference clock of the process that accesses the
+ clock according to vaccess_map
  \throw std::invalid_argument : if proc_count == 0
- \throw std::invalid_argument : if the number of clocks (i.e. proc_count reference clocks + flat_clocks size)
- exceeds the number of representable clock identifiers
+ \throw std::invalid_argument : if the number of clocks (i.e. proc_count
+ reference clocks + flat_clocks size) exceeds the number of representable clock
+ identifiers
  */
 tchecker::reference_clock_variables_t process_reference_clocks(tchecker::variable_access_map_t const & vaccess_map,
                                                                tchecker::process_id_t proc_count,
