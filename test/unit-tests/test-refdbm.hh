@@ -817,6 +817,10 @@ TEST_CASE("constrain, for reference DBMs", "[refdbm]")
 
   tchecker::clock_id_t const * refmap = r.refmap();
 
+  tchecker::clock_id_t const _x = 0;
+  tchecker::clock_id_t const _y1 = 1;
+  tchecker::clock_id_t const _y2 = 2;
+
   SECTION("Constrain with a constrain smaller than DBM")
   {
     tchecker::dbm::db_t rdbm1[rdim * rdim], rdbm2[rdim * rdim];
@@ -887,6 +891,54 @@ TEST_CASE("constrain, for reference DBMs", "[refdbm]")
 
     REQUIRE(status == tchecker::dbm::EMPTY);
     REQUIRE(tchecker::refdbm::is_empty_0(rdbm, r));
+  }
+
+  SECTION("Constrain w.r.t. clock constraint over system clocks")
+  {
+    tchecker::dbm::db_t rdbm1[rdim * rdim], rdbm2[rdim * rdim];
+    tchecker::refdbm::universal(rdbm1, r);
+    tchecker::refdbm::universal(rdbm2, r);
+
+    tchecker::clock_constraint_t c{_x, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LT, 3};
+    tchecker::dbm::status_t status = tchecker::refdbm::constrain(rdbm1, r, c);
+
+    RDBM2(x, refmap[x]) = tchecker::dbm::db(tchecker::dbm::LT, 3);
+
+    REQUIRE(status == tchecker::dbm::NON_EMPTY);
+    REQUIRE(tchecker::refdbm::is_tight(rdbm1, r));
+    REQUIRE(tchecker::refdbm::is_equal(rdbm1, rdbm2, r));
+  }
+
+  SECTION("Constrain w.r.t. collection of clock constraints over system clocks")
+  {
+    tchecker::dbm::db_t rdbm1[rdim * rdim], rdbm2[rdim * rdim];
+    tchecker::refdbm::universal_positive(rdbm1, r);
+    tchecker::refdbm::universal_positive(rdbm2, r);
+
+    tchecker::clock_constraint_container_t cc;
+    cc.emplace_back(_x, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 4);
+    cc.emplace_back(_y1, _y2, tchecker::clock_constraint_t::LE, 1);
+    cc.emplace_back(tchecker::REFCLOCK_ID, _y1, tchecker::clock_constraint_t::LT, -2);
+
+    tchecker::dbm::status_t status = tchecker::refdbm::constrain(rdbm1, r, cc);
+
+    RDBM2(x, refmap[x]) = tchecker::dbm::db(tchecker::dbm::LE, 4);
+    status = tchecker::refdbm::tighten(rdbm2, r);
+    REQUIRE(status == tchecker::dbm::NON_EMPTY);
+    REQUIRE(tchecker::refdbm::is_tight(rdbm2, r));
+
+    RDBM2(y1, y2) = tchecker::dbm::db(tchecker::dbm::LE, 1);
+    status = tchecker::refdbm::tighten(rdbm2, r);
+    REQUIRE(status == tchecker::dbm::NON_EMPTY);
+    REQUIRE(tchecker::refdbm::is_tight(rdbm2, r));
+
+    RDBM2(refmap[y1], y1) = tchecker::dbm::db(tchecker::dbm::LT, -2);
+    status = tchecker::refdbm::tighten(rdbm2, r);
+    REQUIRE(status == tchecker::dbm::NON_EMPTY);
+    REQUIRE(tchecker::refdbm::is_tight(rdbm2, r));
+
+    REQUIRE(tchecker::refdbm::is_tight(rdbm1, r));
+    REQUIRE(tchecker::refdbm::is_equal(rdbm1, rdbm2, r));
   }
 }
 
@@ -1026,9 +1078,15 @@ TEST_CASE("Reset to reference clock on DBMs with reference clocks", "[refdbm]")
   tchecker::clock_id_t const tx = r.refmap()[x];
   tchecker::clock_id_t const y1 = r.id("y1");
   tchecker::clock_id_t const ty1 = r.refmap()[y1];
+  tchecker::clock_id_t const y2 = r.id("y2");
+  tchecker::clock_id_t const ty2 = r.refmap()[y2];
   tchecker::clock_id_t const z1 = r.id("z1");
   tchecker::clock_id_t const tz1 = r.refmap()[z1];
   tchecker::clock_id_t const z2 = r.id("z2");
+
+  tchecker::clock_id_t const _x = 0;
+  tchecker::clock_id_t const _y2 = 2;
+  tchecker::clock_id_t const _z1 = 3;
 
   SECTION("reset one clock to reference clock on universal positive DBM with reference clocks")
   {
@@ -1095,6 +1153,56 @@ TEST_CASE("Reset to reference clock on DBMs with reference clocks", "[refdbm]")
     tchecker::refdbm::synchronize(rdbm2, r);
     for (tchecker::clock_id_t j = 0; j < rdim; ++j)
       RDBM2(y1, j) = tchecker::dbm::LE_ZERO; // reset of x + tightening
+
+    REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
+  }
+
+  SECTION("reset to zero from clock reset on DBM with reference clocks")
+  {
+    tchecker::dbm::db_t rdbm[rdim * rdim];
+    tchecker::refdbm::universal_positive(rdbm, r);
+    RDBM(tz1, z1) = tchecker::dbm::db(tchecker::dbm::LT, -1);
+    RDBM(z1, tz1) = tchecker::dbm::db(tchecker::dbm::LE, 5);
+    tchecker::refdbm::tighten(rdbm, r);
+
+    tchecker::clock_reset_t cr{_z1, tchecker::REFCLOCK_ID, 0};
+    tchecker::refdbm::reset(rdbm, r, cr);
+
+    tchecker::dbm::db_t rdbm2[rdim * rdim];
+    tchecker::refdbm::universal_positive(rdbm2, r);
+    RDBM2(z1, tz1) = tchecker::dbm::LE_ZERO;
+    RDBM2(z1, z2) = tchecker::dbm::LE_ZERO; // tightening as tz1 = tz2
+    REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
+  }
+
+  SECTION("reset to zero from clock reset collection on DBM with reference clocks")
+  {
+    tchecker::dbm::db_t rdbm[rdim * rdim];
+    tchecker::refdbm::universal_positive(rdbm, r);
+    RDBM(tz1, z1) = tchecker::dbm::db(tchecker::dbm::LT, -1);
+    RDBM(z1, tz1) = tchecker::dbm::db(tchecker::dbm::LE, 5);
+    RDBM(tx, x) = tchecker::dbm::db(tchecker::dbm::LE, -7);
+    RDBM(x, tx) = tchecker::dbm::db(tchecker::dbm::LT, 15);
+    RDBM(ty2, y2) = tchecker::dbm::db(tchecker::dbm::LT, 0);
+    RDBM(y2, ty2) = tchecker::dbm::db(tchecker::dbm::LE, 3);
+    tchecker::refdbm::tighten(rdbm, r);
+
+    tchecker::clock_reset_container_t rc;
+    rc.emplace_back(_z1, tchecker::REFCLOCK_ID, 0);
+    rc.emplace_back(_x, tchecker::REFCLOCK_ID, 0);
+    rc.emplace_back(_y2, tchecker::REFCLOCK_ID, 0);
+
+    tchecker::refdbm::reset(rdbm, r, rc);
+
+    tchecker::dbm::db_t rdbm2[rdim * rdim];
+    tchecker::refdbm::universal_positive(rdbm2, r);
+    RDBM2(z1, tz1) = tchecker::dbm::LE_ZERO;
+    RDBM2(tz1, z1) = tchecker::dbm::LE_ZERO;
+    RDBM2(x, tx) = tchecker::dbm::LE_ZERO;
+    RDBM2(tx, x) = tchecker::dbm::LE_ZERO;
+    RDBM2(y2, ty2) = tchecker::dbm::LE_ZERO;
+    RDBM2(ty2, y2) = tchecker::dbm::LE_ZERO;
+    tchecker::refdbm::tighten(rdbm2, r);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }

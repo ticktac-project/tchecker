@@ -391,6 +391,46 @@ enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * rdbm, tchecker::ref
                                        tchecker::integer_t value);
 
 /*!
+ \brief Constrain a DBM with reference clocks with a clock constraint
+ \param rdbm : a DBM
+ \param r : reference clocks for rdbm
+ \param c : clock constraint
+ \pre rdbm is not nullptr (checked by assertion)
+ rdbm is a r.size()*r.size() array of difference bounds
+ rdbm is tight (checked by assertion)
+ rdbm is a DBM over reference clocks r
+ clocks IDs in c are systems clocks, i.e. the first clock has index 0, and the
+ last clock has index r.size() - r.refcount() - 1
+ \post rdbm has been intersected with constraint c (translated w.r.t. r clocks)
+ rdbm is tight if it is not empty.
+ if rdbm is empty, then its difference bound in (0,0) is less-than <=0
+ (tchecker::refdbm::is_empty_0() returns true)
+ \return EMPTY if rdbm is empty, NON_EMPTY otherwise
+ */
+enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
+                                       tchecker::clock_constraint_t const & c);
+/*!
+ \brief Constrain a DBM with reference clocks with a collection of clock constraints
+ \param rdbm : a DBM
+ \param r : reference clocks for rdbm
+ \param cc : collection of clock constraints
+ \pre rdbm is not nullptr (checked by assertion)
+ rdbm is a r.size()*r.size() array of difference bounds
+ rdbm is tight (checked by assertion)
+ rdbm is a DBM over reference clocks r
+ clocks IDs in c are systems clocks, i.e. the first clock has index 0, and the
+ last clock has index r.size() - r.refcount() - 1
+ \post rdbm has been intersected with clock constraints in cc (translated w.r.t.
+ r clocks))
+ rdbm is tight if it is not empty.
+ if rdbm is empty, then its difference bound in (0,0) is less-than <=0
+ (tchecker::refdbm::is_empty_0() returns true)
+ \return EMPTY if rdbm is empty, NON_EMPTY otherwise
+ */
+enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
+                                       tchecker::clock_constraint_container_t const & cc);
+
+/*!
  \brief Restriction to synchronized valuations
  \param rdbm : a DBM
  \param r : reference clocks for rdbm
@@ -440,6 +480,43 @@ enum tchecker::dbm::status_t synchronize(tchecker::dbm::db_t * rdbm, tchecker::r
  */
 void reset_to_reference_clock(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
                               tchecker::clock_id_t x);
+
+/*!
+ \brief Reset a DBM with reference clocks w.r.t. a clock reset
+ \param rdbm : a DBM
+ \param r : reference clocks for rdbm
+ \param reset : clock reset
+ \pre rdbm is not nullptr (checked by assertion)
+ rdbm is a r.size()*r.size() array of difference bounds
+ rdbm is consistent (checked by assertion)
+ rdbm is tight (checked by assertion)
+ all clock IDs in reset are system clock IDs
+ reset should be a reset to reference clock: the right id of reset is
+ tchecker::REFCLOCK_ID, and the value in reset is 0 (checked by assertion)
+ \post the left clock in reset is equal to its reference clock. All other
+ variables are unchanged.
+ rdbm is tight
+ */
+void reset(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r, tchecker::clock_reset_t const & reset);
+
+/*!
+ \brief Reset a DBM with reference clocks w.r.t. a clock reset
+ \param rdbm : a DBM
+ \param r : reference clocks for rdbm
+ \param rc : clock reset collection
+ \pre rdbm is not nullptr (checked by assertion)
+ rdbm is a r.size()*r.size() array of difference bounds
+ rdbm is consistent (checked by assertion)
+ rdbm is tight (checked by assertion)
+ all clock IDs in rc are system clock IDs
+ all resets in rc must be resets to reference clock: the right id is
+ tchecker::REFCLOCK_ID, and the value  is 0 (checked by assertion)
+ \post the left clock in each reset in cr is equal to its reference clock. All
+ other variables are unchanged.
+ rdbm is tight
+ */
+void reset(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
+           tchecker::clock_reset_container_t const & rc);
 
 /*!
  \brief Asynchronous open-up (delay)

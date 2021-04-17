@@ -382,6 +382,26 @@ enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * rdbm, tchecker::ref
   return tchecker::dbm::constrain(rdbm, r.size(), x, y, cmp, value);
 }
 
+enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
+                                       tchecker::clock_constraint_t const & c)
+{
+  tchecker::clock_constraint_t translated = r.translate(c);
+  tchecker::dbm::comparator_t cmp =
+      (translated.comparator() == tchecker::clock_constraint_t::LE ? tchecker::dbm::LE : tchecker::dbm::LT);
+  return tchecker::refdbm::constrain(rdbm, r, translated.id1(), translated.id2(), cmp, translated.value());
+}
+
+enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
+                                       tchecker::clock_constraint_container_t const & cc)
+{
+  for (tchecker::clock_constraint_t const & c : cc) {
+    enum tchecker::dbm::status_t status = tchecker::refdbm::constrain(rdbm, r, c);
+    if (status == tchecker::dbm::EMPTY)
+      return status;
+  }
+  return tchecker::dbm::NON_EMPTY;
+}
+
 enum tchecker::dbm::status_t synchronize(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r)
 {
   boost::dynamic_bitset<> sync_ref_clocks{r.refcount()};
@@ -467,6 +487,23 @@ void reset_to_reference_clock(tchecker::dbm::db_t * rdbm, tchecker::reference_cl
 
   assert(tchecker::refdbm::is_consistent(rdbm, r));
   assert(tchecker::refdbm::is_tight(rdbm, r));
+}
+
+void reset(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r, tchecker::clock_reset_t const & reset)
+{
+  assert(reset.left_id() < r.size() - r.refcount() - 1);
+  assert(reset.right_id() == tchecker::REFCLOCK_ID);
+  assert(reset.value() == 0);
+
+  tchecker::clock_reset_t translated = r.translate(reset);
+  return tchecker::refdbm::reset_to_reference_clock(rdbm, r, translated.left_id());
+}
+
+void reset(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
+           tchecker::clock_reset_container_t const & rc)
+{
+  for (tchecker::clock_reset_t const & reset : rc)
+    tchecker::refdbm::reset(rdbm, r, reset);
 }
 
 void asynchronous_open_up(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r)
