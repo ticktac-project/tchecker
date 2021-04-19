@@ -1062,6 +1062,165 @@ TEST_CASE("synchronize DBMs with reference clocks, partial synchronization", "[r
   }
 }
 
+TEST_CASE("Spread bounding DBMs with reference clocks", "[refdbm]")
+{
+  std::vector<std::string> refclocks = {"$0", "$1", "$2"};
+  tchecker::reference_clock_variables_t r(refclocks.begin(), refclocks.end());
+  r.declare("x1", "$0");
+  r.declare("x2", "$0");
+  r.declare("y1", "$1");
+  r.declare("y2", "$1");
+  r.declare("z1", "$2");
+  r.declare("z2", "$2");
+
+  tchecker::clock_id_t const rdim = r.size();
+
+  tchecker::clock_id_t const t0 = r.id("$0");
+  tchecker::clock_id_t const t1 = r.id("$1");
+  tchecker::clock_id_t const t2 = r.id("$2");
+
+  SECTION("Spread-bounding the universal positive DBM with reference clocks")
+  {
+    tchecker::dbm::db_t rdbm1[rdim * rdim];
+    tchecker::refdbm::universal_positive(rdbm1, r);
+
+    tchecker::integer_t const spread = 2;
+
+    auto status = tchecker::refdbm::bound_spread(rdbm1, r, spread);
+    REQUIRE(status == tchecker::dbm::NON_EMPTY);
+
+    tchecker::dbm::db_t rdbm2[rdim * rdim];
+    tchecker::refdbm::universal_positive(rdbm2, r);
+    for (tchecker::clock_id_t t1 = 0; t1 < r.refcount(); ++t1) {
+      for (tchecker::clock_id_t t2 = 0; t2 < r.refcount(); ++t2)
+        RDBM2(t1, t2) = MIN(RDBM2(t1, t2), tchecker::dbm::db(tchecker::dbm::LE, spread));
+      RDBM2(t1, t1) = tchecker::dbm::LE_ZERO;
+    }
+    tchecker::refdbm::tighten(rdbm2, r);
+
+    REQUIRE(tchecker::refdbm::is_equal(rdbm1, rdbm2, r));
+  }
+
+  SECTION("Spread-bounding a DBM that has a minimal spread, yields empty zone")
+  {
+    tchecker::dbm::db_t rdbm1[rdim * rdim];
+    tchecker::refdbm::universal_positive(rdbm1, r);
+    RDBM1(t0, t1) = tchecker::dbm::db(tchecker::dbm::LT, -1);
+    tchecker::refdbm::tighten(rdbm1, r);
+
+    auto status = tchecker::refdbm::bound_spread(rdbm1, r, 1);
+    REQUIRE(status == tchecker::dbm::EMPTY);
+    REQUIRE(tchecker::refdbm::is_empty_0(rdbm1, r));
+  }
+
+  SECTION("Spread-bounding a DBM with negative spread yields empty zone")
+  {
+    tchecker::dbm::db_t rdbm1[rdim * rdim];
+    tchecker::refdbm::universal_positive(rdbm1, r);
+
+    auto status = tchecker::refdbm::bound_spread(rdbm1, r, -1);
+    REQUIRE(status == tchecker::dbm::EMPTY);
+    REQUIRE(tchecker::refdbm::is_empty_0(rdbm1, r));
+  }
+
+  SECTION("Spread-bounding a DBM tightens clock constraints")
+  {
+    // x1 = x2 = t0 & y1 = y2 = t1 & z1 = z2 = t2 & (ti - tj <= 2 for all i,j)
+    tchecker::dbm::db_t rdbm1[rdim * rdim];
+    tchecker::refdbm::universal(rdbm1, r);
+
+    for (tchecker::clock_id_t t = 0; t != r.refcount(); ++t) {
+      for (tchecker::clock_id_t tt = 0; tt != r.refcount(); ++tt)
+        RDBM1(t, tt) = tchecker::dbm::db(tchecker::dbm::LE, 2);
+      RDBM1(t, t) = tchecker::dbm::LE_ZERO;
+    }
+
+    tchecker::clock_id_t const * refmap = r.refmap();
+    for (tchecker::clock_id_t u = r.refcount(); u < r.size(); ++u) {
+      RDBM1(u, refmap[u]) = tchecker::dbm::LE_ZERO;
+      RDBM1(refmap[u], u) = tchecker::dbm::LE_ZERO;
+    }
+
+    tchecker::refdbm::tighten(rdbm1, r);
+
+    // bound spread to 1
+    tchecker::integer_t const spread = 1;
+    auto status = tchecker::refdbm::bound_spread(rdbm1, r, spread);
+    REQUIRE(status == tchecker::dbm::NON_EMPTY);
+
+    // the new zone should be: x1 = x2 = t0 & y1 = y2 = t1 & z1 = z2 = t2 &
+    // (ti - tj <= 1 for all i,j)
+    tchecker::dbm::db_t rdbm2[rdim * rdim];
+    tchecker::refdbm::universal(rdbm2, r);
+
+    for (tchecker::clock_id_t t = 0; t != r.refcount(); ++t) {
+      for (tchecker::clock_id_t tt = 0; tt != r.refcount(); ++tt)
+        RDBM2(t, tt) = tchecker::dbm::db(tchecker::dbm::LE, spread);
+      RDBM2(t, t) = tchecker::dbm::LE_ZERO;
+    }
+
+    for (tchecker::clock_id_t u = r.refcount(); u < r.size(); ++u) {
+      RDBM2(u, refmap[u]) = tchecker::dbm::LE_ZERO;
+      RDBM2(refmap[u], u) = tchecker::dbm::LE_ZERO;
+    }
+
+    tchecker::refdbm::tighten(rdbm2, r);
+
+    REQUIRE(tchecker::refdbm::is_equal(rdbm1, rdbm2, r));
+  }
+
+  SECTION("Partial spread-bounding a DBM partially tightens clock constraints")
+  {
+    // x1 = x2 = t0 & y1 = y2 = t1 & z1 = z2 = t2 & (ti - tj <= 2 for all i,j)
+    tchecker::dbm::db_t rdbm1[rdim * rdim];
+    tchecker::refdbm::universal(rdbm1, r);
+
+    for (tchecker::clock_id_t t = 0; t != r.refcount(); ++t) {
+      for (tchecker::clock_id_t tt = 0; tt != r.refcount(); ++tt)
+        RDBM1(t, tt) = tchecker::dbm::db(tchecker::dbm::LE, 2);
+      RDBM1(t, t) = tchecker::dbm::LE_ZERO;
+    }
+
+    tchecker::clock_id_t const * refmap = r.refmap();
+    for (tchecker::clock_id_t u = r.refcount(); u < r.size(); ++u) {
+      RDBM1(u, refmap[u]) = tchecker::dbm::LE_ZERO;
+      RDBM1(refmap[u], u) = tchecker::dbm::LE_ZERO;
+    }
+
+    tchecker::refdbm::tighten(rdbm1, r);
+
+    // bound spread to 1 for t0 and t1
+    tchecker::integer_t const spread = 1;
+    boost::dynamic_bitset<> ref_clocks{r.refcount()};
+    ref_clocks.reset();
+    ref_clocks.set(t0);
+    ref_clocks.set(t1);
+
+    auto status = tchecker::refdbm::bound_spread(rdbm1, r, spread, ref_clocks);
+    REQUIRE(status == tchecker::dbm::NON_EMPTY);
+
+    // the new zone should be: x1 = x2 = t0 & y1 = y2 = t1 & z1 = z2 = t2 &
+    // (ti - tj <= 1 for all i,j in {0,1}) & (ti - t2 <= 2) & (t2 - ti <= 2)
+    tchecker::dbm::db_t rdbm2[rdim * rdim];
+    tchecker::refdbm::universal(rdbm2, r);
+    RDBM2(t0, t1) = tchecker::dbm::db(tchecker::dbm::LE, spread);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LE, spread);
+    RDBM2(t0, t2) = tchecker::dbm::db(tchecker::dbm::LE, 2);
+    RDBM2(t2, t0) = tchecker::dbm::db(tchecker::dbm::LE, 2);
+    RDBM2(t1, t2) = tchecker::dbm::db(tchecker::dbm::LE, 2);
+    RDBM2(t2, t1) = tchecker::dbm::db(tchecker::dbm::LE, 2);
+
+    for (tchecker::clock_id_t u = r.refcount(); u < r.size(); ++u) {
+      RDBM2(u, refmap[u]) = tchecker::dbm::LE_ZERO;
+      RDBM2(refmap[u], u) = tchecker::dbm::LE_ZERO;
+    }
+
+    tchecker::refdbm::tighten(rdbm2, r);
+
+    REQUIRE(tchecker::refdbm::is_equal(rdbm1, rdbm2, r));
+  }
+}
+
 TEST_CASE("Reset to reference clock on DBMs with reference clocks", "[refdbm]")
 {
   std::vector<std::string> refclocks = {"$0", "$1", "$2"};

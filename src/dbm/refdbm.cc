@@ -8,6 +8,7 @@
 #include <limits>
 
 #include "tchecker/clockbounds/clockbounds.hh"
+#include "tchecker/dbm/db.hh"
 #include "tchecker/dbm/refdbm.hh"
 #include "tchecker/utils/ordering.hh"
 
@@ -404,39 +405,51 @@ enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * rdbm, tchecker::ref
 
 enum tchecker::dbm::status_t synchronize(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r)
 {
-  boost::dynamic_bitset<> sync_ref_clocks{r.refcount()};
-  sync_ref_clocks.set();
-  return tchecker::refdbm::synchronize(rdbm, r, sync_ref_clocks);
+  return tchecker::refdbm::bound_spread(rdbm, r, 0);
 }
 
 enum tchecker::dbm::status_t synchronize(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
                                          boost::dynamic_bitset<> const & sync_ref_clocks)
 {
+  return tchecker::refdbm::bound_spread(rdbm, r, 0, sync_ref_clocks);
+}
+
+tchecker::integer_t const UNBOUNDED_SPREAD = std::numeric_limits<tchecker::integer_t>::max();
+
+enum tchecker::dbm::status_t bound_spread(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
+                                          tchecker::integer_t spread)
+{
+  boost::dynamic_bitset<> ref_clocks{r.refcount()};
+  ref_clocks.set();
+  return tchecker::refdbm::bound_spread(rdbm, r, spread, ref_clocks);
+}
+
+enum tchecker::dbm::status_t bound_spread(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
+                                          tchecker::integer_t spread, boost::dynamic_bitset<> const & ref_clocks)
+{
   assert(rdbm != nullptr);
   assert(tchecker::refdbm::is_consistent(rdbm, r));
   assert(tchecker::refdbm::is_tight(rdbm, r));
-  assert(r.refcount() == sync_ref_clocks.size());
+  assert(r.refcount() == ref_clocks.size());
+
+  if (spread == tchecker::refdbm::UNBOUNDED_SPREAD)
+    return tchecker::dbm::NON_EMPTY;
+
+  tchecker::dbm::db_t const le_spread = tchecker::dbm::db(tchecker::dbm::LE, spread);
 
   tchecker::clock_id_t const rdim = r.size();
 
-  auto t1 = sync_ref_clocks.find_first(); // tchecker::clock_id_t not big enough for npos value
-  auto t2 = sync_ref_clocks.find_next(t1);
-
-  if (t1 == sync_ref_clocks.npos || t2 == sync_ref_clocks.npos)
-    return tchecker::dbm::NON_EMPTY;
-
-  while (t2 != sync_ref_clocks.npos) {
+  for (auto t1 = ref_clocks.find_first(); t1 != ref_clocks.npos; t1 = ref_clocks.find_next(t1)) {
     assert(t1 < r.refcount());
-    assert(t2 < r.refcount());
-
-    RDBM(t1, t2) = tchecker::dbm::min(RDBM(t1, t2), tchecker::dbm::LE_ZERO);
-    RDBM(t2, t1) = tchecker::dbm::min(RDBM(t2, t1), tchecker::dbm::LE_ZERO);
-    t1 = t2;
-    t2 = sync_ref_clocks.find_next(t1);
+    for (auto t2 = ref_clocks.find_first(); t2 != ref_clocks.npos; t2 = ref_clocks.find_next(t2)) {
+      assert(t2 < r.refcount());
+      RDBM(t1, t2) = tchecker::dbm::min(RDBM(t1, t2), le_spread);
+    }
+    RDBM(t1, t1) = tchecker::dbm::LE_ZERO;
   }
 
-  // Optimized tightening: Floyd-Warshall algorithm w.r.t. reference clocks in sync_ref_clocks
-  for (auto t = sync_ref_clocks.find_first(); t != sync_ref_clocks.npos; t = sync_ref_clocks.find_next(t)) {
+  // Optimized tightening: Floyd-Warshall algorithm w.r.t. reference clocks in ref_clocks
+  for (auto t = ref_clocks.find_first(); t != ref_clocks.npos; t = ref_clocks.find_next(t)) {
     assert(t < r.refcount());
 
     for (tchecker::clock_id_t x = 0; x < rdim; ++x) {

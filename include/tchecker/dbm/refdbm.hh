@@ -465,6 +465,55 @@ enum tchecker::dbm::status_t synchronize(tchecker::dbm::db_t * rdbm, tchecker::r
                                          boost::dynamic_bitset<> const & sync_ref_clocks);
 
 /*!
+ \brief Unbounded spread
+*/
+extern tchecker::integer_t const UNBOUNDED_SPREAD;
+
+/*!
+ \brief Bound the spread between reference clocks
+ \param rdbm : a DBM
+ \param r : reference clocks for rdbm
+ \param spread : expected spread between reference clocks
+ \pre rdbm is not nullptr (checked by assertion)
+ rdbm is a r.size()*r.size() array of difference bounds
+ rdbm is consistent (checked by assertion)
+ rdbm is tight (checked by assertion)
+ \post rdbm is unchanged if spread is tchecker::refdbm::UNBOUNDED_SPREAD.
+ rdbm has been restricted to its subset of valuations such that the spread
+ between all reference clocks is bounded by spread otherwise, if not empty.
+ if rdbm is empty, then its difference bound in (0,0) is less-than <=0
+ (tchecker::refdbm::is_empty_0() returns true)
+ \return tchecker::dbm::EMPTY is the spread-bounded dbm is empty,
+ tchecker::dbm::NON_EMPTY otherwise
+ */
+enum tchecker::dbm::status_t bound_spread(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
+                                          tchecker::integer_t spread);
+
+/*!
+ \brief Bound the spread between reference clocks
+ \param rdbm : a DBM
+ \param r : reference clocks for rdbm
+ \param spread : expected spread between reference clocks
+ \param ref_clocks : reference clocks to bound
+ \pre rdbm is not nullptr (checked by assertion)
+ rdbm is a r.size()*r.size() array of difference bounds
+ rdbm is consistent (checked by assertion)
+ rdbm is tight (checked by assertion)
+ the size of ref_clocks is the number of reference clocks in r (checked by
+ assertion)
+ \post rdbm is unchanged if spread is tchecker::refdbm::UNBOUNDED_SPREAD.
+ rdbm has been restricted to its subset of valuations such that the spread
+ between all reference clocks in ref_clocks is bounded by spread otherwise, if
+ not empty.
+ if rdbm is empty, then its difference bound in (0,0) is less-than <=0
+ (tchecker::refdbm::is_empty_0() returns true)
+ \return tchecker::dbm::EMPTY is the spread-bounded dbm is empty,
+ tchecker::dbm::NON_EMPTY otherwise
+ */
+enum tchecker::dbm::status_t bound_spread(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
+                                          tchecker::integer_t spread, boost::dynamic_bitset<> const & ref_clocks);
+
+/*!
  \brief Reset a clock to its reference clock
  \param rdbm : a DBM
  \param r : reference clocks for rdbm
