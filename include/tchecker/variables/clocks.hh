@@ -685,8 +685,8 @@ tchecker::reference_clock_variables_t single_reference_clocks(tchecker::flat_clo
 /*!
  \brief Build refeence clock variables from a variable access map
  \param vaccess_map : a variable access map
- \param proc_count : number of processes
  \param flat_clocks : flat clock variables
+ \param proc_count : number of processes
  \pre proc_count > 0
  all process IDs in vaccess_map should belong to [0,proc_count)
  \return reference clock variables with proc_count reference clocks, along with
@@ -699,8 +699,8 @@ tchecker::reference_clock_variables_t single_reference_clocks(tchecker::flat_clo
  identifiers
  */
 tchecker::reference_clock_variables_t process_reference_clocks(tchecker::variable_access_map_t const & vaccess_map,
-                                                               tchecker::process_id_t proc_count,
-                                                               tchecker::flat_clock_variables_t const & flat_clocks);
+                                                               tchecker::flat_clock_variables_t const & flat_clocks,
+                                                               tchecker::process_id_t proc_count);
 
 } // end of namespace tchecker
 

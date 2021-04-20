@@ -116,7 +116,7 @@ public:
 /*!
  \brief Allocate and construct a vector of locations
  \param size : vector size
- \param args : arguments to a constuctor of tchecker::vloc_t
+ \param args : arguments to a constructor of tchecker::vloc_t
  \return an instance of tchecker::vloc_t with size location identifiers initialized from args
  */
 template <class... ARGS> tchecker::vloc_t * vloc_allocate_and_construct(unsigned int size, ARGS &&... args)

@@ -79,6 +79,11 @@ public:
   using outgoing_edges_value_t = OUTGOING_EDGES_VALUE;
 
   /*!
+  \brief Type of tuples (status, state, transition)
+  */
+  using sst_t = std::tuple<enum tchecker::state_status_t, STATE, TRANSITION>;
+
+  /*!
    \brief Destructor
    */
   virtual ~ts_t() = default;
@@ -115,11 +120,6 @@ public:
    */
   virtual std::tuple<enum tchecker::state_status_t, STATE, TRANSITION> next(CONST_STATE const & s,
                                                                             OUTGOING_EDGES_VALUE const & v) = 0;
-
-  /*!
-  \brief Type of tuples (status, state, transition)
-  */
-  using sst_t = std::tuple<enum tchecker::state_status_t, STATE, TRANSITION>;
 
   /*!
   \brief Initial states and transitions with selected status

@@ -40,7 +40,7 @@ TEST_CASE("Reference clock variables from empty access map", "[reference clock v
   SECTION("No clock - process reference clocks")
   {
     tchecker::process_id_t const proc_count = 3;
-    tchecker::reference_clock_variables_t reference_clocks = tchecker::process_reference_clocks(m, proc_count, flat_clocks);
+    tchecker::reference_clock_variables_t reference_clocks = tchecker::process_reference_clocks(m, flat_clocks, proc_count);
 
     REQUIRE(reference_clocks.refcount() == proc_count);
     REQUIRE(reference_clocks.size() - reference_clocks.refcount() == 0);
@@ -67,7 +67,7 @@ TEST_CASE("Reference clock variables from empty access map", "[reference clock v
     tchecker::flat_clock_variables_t flat_clocks;
     flat_clocks.declare("x", tchecker::clock_info_t{1});
 
-    REQUIRE_THROWS_AS(tchecker::process_reference_clocks(m, proc_count, flat_clocks), std::invalid_argument);
+    REQUIRE_THROWS_AS(tchecker::process_reference_clocks(m, flat_clocks, proc_count), std::invalid_argument);
   }
 }
 
@@ -104,7 +104,7 @@ TEST_CASE("Reference clock variables from system - no array", "[reference clock 
   tchecker::clock_id_t const y = system.clock_id("y");
 
   tchecker::reference_clock_variables_t const reference_clocks =
-      tchecker::process_reference_clocks(vaccess_map, system.processes_count(), system.clock_variables().flattened());
+      tchecker::process_reference_clocks(vaccess_map, system.clock_variables().flattened(), system.processes_count());
 
   SECTION("Check reference clocks")
   {
@@ -181,7 +181,7 @@ TEST_CASE("Offset clock variables from system - array", "[offset clock variables
   tchecker::clock_id_t const z = system.clock_variables().flattened().id("z");
 
   tchecker::reference_clock_variables_t const reference_clocks =
-      tchecker::process_reference_clocks(vaccess_map, system.processes_count(), system.clock_variables().flattened());
+      tchecker::process_reference_clocks(vaccess_map, system.clock_variables().flattened(), system.processes_count());
 
   SECTION("Check reference clocks")
   {

@@ -280,8 +280,8 @@ tchecker::reference_clock_variables_t single_reference_clocks(tchecker::flat_clo
 }
 
 tchecker::reference_clock_variables_t process_reference_clocks(tchecker::variable_access_map_t const & vaccess_map,
-                                                               tchecker::process_id_t proc_count,
-                                                               tchecker::flat_clock_variables_t const & flat_clocks)
+                                                               tchecker::flat_clock_variables_t const & flat_clocks,
+                                                               tchecker::process_id_t proc_count)
 {
   if (proc_count == 0)
     throw std::invalid_argument("number of processes should be > 0");
