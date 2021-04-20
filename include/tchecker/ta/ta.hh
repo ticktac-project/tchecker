@@ -196,11 +196,15 @@ bool delay_allowed(tchecker::ta::system_t const & system, tchecker::vloc_t const
  \brief Checks if time can elapse in a tuple of locations
  \param system : a system of timed processes
  \param vloc : tuple of locations
+ \param r : reference clocks
  \param allowed : bit vector
- \pre allowed and vloc have same size (checked by assertion)
- \post allowed[i] indicates whether process i can delay (value 1) or not (value 0) from locations in vloc
+ \pre the size of allowed is the number of reference clocks in r (checked by
+ assertion)
+ \post allowed[i] indicates whether reference clock i can delay (value 1) or not
+ (value 0) from vloc
  */
-void delay_allowed(tchecker::ta::system_t const & system, tchecker::vloc_t const & vloc, boost::dynamic_bitset<> & allowed);
+void delay_allowed(tchecker::ta::system_t const & system, tchecker::reference_clock_variables_t const & r,
+                   tchecker::vloc_t const & vloc, boost::dynamic_bitset<> & allowed);
 
 /*!
  \class ta_t

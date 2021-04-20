@@ -106,12 +106,16 @@ bool delay_allowed(tchecker::ta::system_t const & system, tchecker::vloc_t const
   return true;
 }
 
-void delay_allowed(tchecker::ta::system_t const & system, tchecker::vloc_t const & vloc, boost::dynamic_bitset<> & allowed)
+void delay_allowed(tchecker::ta::system_t const & system, tchecker::reference_clock_variables_t const & r,
+                   tchecker::vloc_t const & vloc, boost::dynamic_bitset<> & allowed)
 {
-  assert(vloc.size() == allowed.size());
+  assert(allowed.size() == r.refcount());
   std::size_t size = vloc.size();
+  std::vector<tchecker::clock_id_t> const & procmap = r.procmap();
+  allowed.set();
   for (std::size_t i = 0; i < size; ++i)
-    allowed[i] = !system.is_urgent(vloc[i]) && !system.is_committed(vloc[i]);
+    if (system.is_urgent(vloc[i]) || system.is_committed(vloc[i]))
+      allowed.reset(procmap[i]);
 }
 
 /* ta_t */
