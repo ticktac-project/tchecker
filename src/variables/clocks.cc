@@ -6,6 +6,7 @@
  */
 
 #include <functional>
+#include <limits>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -173,6 +174,24 @@ int lexical_cmp(tchecker::clock_reset_container_t const & c1, tchecker::clock_re
 
 /* reference_clock_variables_t */
 
+reference_clock_variables_t::reference_clock_variables_t(std::vector<std::string> const & proc_refname_map)
+    : _refcount(0), _procmap(proc_refname_map.size())
+{
+  if (proc_refname_map.empty())
+    throw std::invalid_argument("Empty reference clocks not allowed");
+  assert(proc_refname_map.size() < std::numeric_limits<tchecker::process_id_t>::max());
+  for (tchecker::process_id_t pid = 0; pid < proc_refname_map.size(); ++pid) {
+    tchecker::clock_id_t refid = 0;
+    try {
+      refid = tchecker::flat_clock_variables_t::id(proc_refname_map[pid]);
+    }
+    catch (...) {
+      refid = declare_reference_clock(proc_refname_map[pid]);
+    }
+    _procmap[pid] = refid;
+  }
+}
+
 tchecker::clock_id_t reference_clock_variables_t::declare(std::string const & name, std::string const & refclock)
 {
   tchecker::clock_id_t refid = 0;
@@ -242,14 +261,14 @@ tchecker::clock_id_t reference_clock_variables_t::declare_reference_clock(std::s
 
 /* Reference clock builders */
 
-tchecker::reference_clock_variables_t single_reference_clocks(tchecker::flat_clock_variables_t const & flat_clocks)
+tchecker::reference_clock_variables_t single_reference_clocks(tchecker::flat_clock_variables_t const & flat_clocks,
+                                                              tchecker::process_id_t proc_count)
 {
-  std::string zero_clock_name = "0";
+  std::string const zero_clock_name = "0";
 
-  std::vector<std::string> zero_clock;
-  zero_clock.push_back(zero_clock_name);
+  std::vector<std::string> proc_refname_map(proc_count, zero_clock_name);
 
-  tchecker::reference_clock_variables_t reference_clocks(zero_clock.begin(), zero_clock.end());
+  tchecker::reference_clock_variables_t reference_clocks(proc_refname_map);
 
   tchecker::clock_id_t clocks_count = flat_clocks.size();
   for (tchecker::clock_id_t clock_id = 0; clock_id < clocks_count; ++clock_id) {
@@ -267,7 +286,7 @@ tchecker::reference_clock_variables_t process_reference_clocks(tchecker::variabl
   if (proc_count == 0)
     throw std::invalid_argument("number of processes should be > 0");
 
-  tchecker::clock_id_t flat_clocks_count = flat_clocks.size();
+  tchecker::clock_id_t const flat_clocks_count = flat_clocks.size();
 
   if (proc_count > std::numeric_limits<tchecker::clock_id_t>::max())
     throw std::invalid_argument("too many processes");
@@ -277,11 +296,11 @@ tchecker::reference_clock_variables_t process_reference_clocks(tchecker::variabl
     throw std::invalid_argument("too many offset variables");
 
   // compute reference clock names
-  std::vector<std::string> refclock_names;
+  std::vector<std::string> proc_refname_map;
   for (tchecker::process_id_t pid = 0; pid < proc_count; ++pid)
-    refclock_names.push_back("$" + std::to_string(pid));
+    proc_refname_map.push_back("$" + std::to_string(pid));
 
-  tchecker::reference_clock_variables_t reference_clocks(refclock_names.begin(), refclock_names.end());
+  tchecker::reference_clock_variables_t reference_clocks(proc_refname_map);
 
   // declare clock variables
   for (tchecker::clock_id_t clock_id = 0; clock_id < flat_clocks_count; ++clock_id) {
@@ -292,7 +311,7 @@ tchecker::reference_clock_variables_t process_reference_clocks(tchecker::variabl
 
     tchecker::process_id_t pid = *accessing_processes.begin();
     std::string const & clock_name = flat_clocks.index().value(clock_id);
-    reference_clocks.declare("$" + clock_name, refclock_names[pid]);
+    reference_clocks.declare("$" + clock_name, proc_refname_map[pid]);
   }
 
   return reference_clocks;

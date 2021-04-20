@@ -23,8 +23,8 @@
 
 TEST_CASE("universal", "[refdbm]")
 {
-  std::vector<std::string> refclocks = {"$0", "$1", "$2"};
-  tchecker::reference_clock_variables_t r(refclocks.begin(), refclocks.end());
+  std::vector<std::string> refclocks{"$0", "$1", "$2"};
+  tchecker::reference_clock_variables_t r(refclocks);
   r.declare("x", "$0");
   r.declare("y1", "$1");
   r.declare("y2", "$1");
@@ -39,8 +39,8 @@ TEST_CASE("universal", "[refdbm]")
 
 TEST_CASE("universal_positive", "[refdbm]")
 {
-  std::vector<std::string> refclocks = {"$0", "$1", "$2"};
-  tchecker::reference_clock_variables_t r(refclocks.begin(), refclocks.end());
+  std::vector<std::string> refclocks{"$0", "$1", "$2"};
+  tchecker::reference_clock_variables_t r(refclocks);
   r.declare("x1", "$0");
   r.declare("x2", "$0");
   r.declare("y", "$1");
@@ -65,8 +65,8 @@ TEST_CASE("universal_positive", "[refdbm]")
 
 TEST_CASE("empty", "[refdbm]")
 {
-  std::vector<std::string> refclocks = {"$0", "$1", "$2", "$3"};
-  tchecker::reference_clock_variables_t r(refclocks.begin(), refclocks.end());
+  std::vector<std::string> refclocks{"$0", "$1", "$2", "$3"};
+  tchecker::reference_clock_variables_t r(refclocks);
   r.declare("x", "$0");
   r.declare("y1", "$1");
   r.declare("y2", "$1");
@@ -81,8 +81,8 @@ TEST_CASE("empty", "[refdbm]")
 
 TEST_CASE("zero", "[refdbm]")
 {
-  std::vector<std::string> refclocks = {"$0", "$1", "$2"};
-  tchecker::reference_clock_variables_t r(refclocks.begin(), refclocks.end());
+  std::vector<std::string> refclocks{"$0", "$1", "$2"};
+  tchecker::reference_clock_variables_t r(refclocks);
   r.declare("x1", "$0");
   r.declare("x2", "$0");
   r.declare("y1", "$1");
@@ -103,8 +103,8 @@ TEST_CASE("zero", "[refdbm]")
 
 TEST_CASE("is_empty_0", "[refdbm]")
 {
-  std::vector<std::string> refclocks = {"$0", "$1", "$2"};
-  tchecker::reference_clock_variables_t r(refclocks.begin(), refclocks.end());
+  std::vector<std::string> refclocks{"$0", "$1", "$2"};
+  tchecker::reference_clock_variables_t r(refclocks);
   r.declare("x1", "$0");
   r.declare("x2", "$0");
   r.declare("y", "$1");
@@ -135,8 +135,8 @@ TEST_CASE("is_empty_0", "[refdbm]")
 
 TEST_CASE("is_universal", "[refdbm]")
 {
-  std::vector<std::string> refclocks = {"$0", "$1", "$2", "$3"};
-  tchecker::reference_clock_variables_t r(refclocks.begin(), refclocks.end());
+  std::vector<std::string> refclocks{"$0", "$1", "$2", "$3"};
+  tchecker::reference_clock_variables_t r(refclocks);
   r.declare("x1", "$0");
   r.declare("x2", "$0");
   r.declare("y", "$1");
@@ -169,8 +169,8 @@ TEST_CASE("is_universal", "[refdbm]")
 
 TEST_CASE("is_positive", "[refdbm]")
 {
-  std::vector<std::string> refclocks = {"$0", "$1"};
-  tchecker::reference_clock_variables_t r(refclocks.begin(), refclocks.end());
+  std::vector<std::string> refclocks{"$0", "$1"};
+  tchecker::reference_clock_variables_t r(refclocks);
   r.declare("x1", "$0");
   r.declare("x2", "$0");
   r.declare("y1", "$1");
@@ -200,8 +200,8 @@ TEST_CASE("is_positive", "[refdbm]")
 
 TEST_CASE("is_universal_positive", "[refdbm]")
 {
-  std::vector<std::string> refclocks = {"$0", "$1"};
-  tchecker::reference_clock_variables_t r(refclocks.begin(), refclocks.end());
+  std::vector<std::string> refclocks{"$0", "$1"};
+  tchecker::reference_clock_variables_t r(refclocks);
   r.declare("x1", "$0");
   r.declare("x2", "$0");
   r.declare("y1", "$1");
@@ -232,8 +232,8 @@ TEST_CASE("is_universal_positive", "[refdbm]")
 
 TEST_CASE("is_open_up", "[refdbm]")
 {
-  std::vector<std::string> refclocks = {"$0", "$1", "$2"};
-  tchecker::reference_clock_variables_t r(refclocks.begin(), refclocks.end());
+  std::vector<std::string> refclocks{"$0", "$1", "$2"};
+  tchecker::reference_clock_variables_t r(refclocks);
   r.declare("x1", "$0");
   r.declare("x2", "$0");
   r.declare("y1", "$1");
@@ -303,8 +303,8 @@ TEST_CASE("is_open_up", "[refdbm]")
 
 TEST_CASE("is_tight", "[refdbm]")
 {
-  std::vector<std::string> refclocks = {"$0", "$1", "$2"};
-  tchecker::reference_clock_variables_t r(refclocks.begin(), refclocks.end());
+  std::vector<std::string> refclocks{"$0", "$1", "$2"};
+  tchecker::reference_clock_variables_t r(refclocks);
   r.declare("x1", "$0");
   r.declare("x2", "$0");
   r.declare("y1", "$1");
@@ -336,8 +336,8 @@ TEST_CASE("is_tight", "[refdbm]")
 
 TEST_CASE("is_synchronized", "[refdbm]")
 {
-  std::vector<std::string> refclocks = {"$0", "$1", "$2"};
-  tchecker::reference_clock_variables_t r(refclocks.begin(), refclocks.end());
+  std::vector<std::string> refclocks{"$0", "$1", "$2"};
+  tchecker::reference_clock_variables_t r(refclocks);
   r.declare("x1", "$0");
   r.declare("x2", "$0");
   r.declare("y1", "$1");
@@ -446,8 +446,8 @@ TEST_CASE("is_synchronized", "[refdbm]")
 
 TEST_CASE("is_equal", "[refdbm]")
 {
-  std::vector<std::string> refclocks = {"$0", "$1", "$2"};
-  tchecker::reference_clock_variables_t r(refclocks.begin(), refclocks.end());
+  std::vector<std::string> refclocks{"$0", "$1", "$2"};
+  tchecker::reference_clock_variables_t r(refclocks);
   r.declare("x1", "$0");
   r.declare("x2", "$0");
   r.declare("y1", "$1");
@@ -481,8 +481,8 @@ TEST_CASE("is_equal", "[refdbm]")
 
 TEST_CASE("is_le", "[refdbm]")
 {
-  std::vector<std::string> refclocks = {"$0", "$1", "$2"};
-  tchecker::reference_clock_variables_t r(refclocks.begin(), refclocks.end());
+  std::vector<std::string> refclocks{"$0", "$1", "$2"};
+  tchecker::reference_clock_variables_t r(refclocks);
   r.declare("x", "$0");
   r.declare("y1", "$1");
   r.declare("y2", "$1");
@@ -511,8 +511,8 @@ TEST_CASE("is_le", "[refdbm]")
 
 TEST_CASE("is_alu_le", "[refdbm]")
 {
-  std::vector<std::string> refclocks = {"$0", "$1", "$2"};
-  tchecker::reference_clock_variables_t r(refclocks.begin(), refclocks.end());
+  std::vector<std::string> refclocks{"$0", "$1", "$2"};
+  tchecker::reference_clock_variables_t r(refclocks);
   r.declare("x", "$0");
   r.declare("y", "$1");
   r.declare("z", "$2");
@@ -691,8 +691,8 @@ TEST_CASE("is_alu_le", "[refdbm]")
 
 TEST_CASE("is_sync_alu_le", "[refdbm]")
 {
-  std::vector<std::string> refclocks = {"$0", "$1", "$2"};
-  tchecker::reference_clock_variables_t r(refclocks.begin(), refclocks.end());
+  std::vector<std::string> refclocks{"$0", "$1", "$2"};
+  tchecker::reference_clock_variables_t r(refclocks);
   r.declare("x", "$0");
   r.declare("y", "$1");
   r.declare("z", "$2");
@@ -764,8 +764,8 @@ TEST_CASE("is_sync_alu_le", "[refdbm]")
 
 TEST_CASE("hash", "[refdbm]")
 {
-  std::vector<std::string> refclocks = {"$0", "$1", "$2"};
-  tchecker::reference_clock_variables_t r(refclocks.begin(), refclocks.end());
+  std::vector<std::string> refclocks{"$0", "$1", "$2"};
+  tchecker::reference_clock_variables_t r(refclocks);
   r.declare("x", "$0");
   r.declare("y1", "$1");
   r.declare("y2", "$1");
@@ -801,8 +801,8 @@ TEST_CASE("hash", "[refdbm]")
 
 TEST_CASE("constrain, for reference DBMs", "[refdbm]")
 {
-  std::vector<std::string> refclocks = {"$0", "$1"};
-  tchecker::reference_clock_variables_t r(refclocks.begin(), refclocks.end());
+  std::vector<std::string> refclocks{"$0", "$1"};
+  tchecker::reference_clock_variables_t r(refclocks);
   r.declare("x", "$0");
   r.declare("y1", "$1");
   r.declare("y2", "$1");
@@ -944,8 +944,8 @@ TEST_CASE("constrain, for reference DBMs", "[refdbm]")
 
 TEST_CASE("synchronize DBMs with reference clocks", "[refdbm]")
 {
-  std::vector<std::string> refclocks = {"$0", "$1", "$2"};
-  tchecker::reference_clock_variables_t r(refclocks.begin(), refclocks.end());
+  std::vector<std::string> refclocks{"$0", "$1", "$2"};
+  tchecker::reference_clock_variables_t r(refclocks);
   r.declare("x1", "$0");
   r.declare("x2", "$0");
   r.declare("y1", "$1");
@@ -985,8 +985,8 @@ TEST_CASE("synchronize DBMs with reference clocks", "[refdbm]")
 
 TEST_CASE("synchronize DBMs with reference clocks, partial synchronization", "[refdbm]")
 {
-  std::vector<std::string> refclocks = {"$0", "$1", "$2"};
-  tchecker::reference_clock_variables_t r(refclocks.begin(), refclocks.end());
+  std::vector<std::string> refclocks{"$0", "$1", "$2"};
+  tchecker::reference_clock_variables_t r(refclocks);
   r.declare("x1", "$0");
   r.declare("x2", "$0");
   r.declare("y1", "$1");
@@ -1064,8 +1064,8 @@ TEST_CASE("synchronize DBMs with reference clocks, partial synchronization", "[r
 
 TEST_CASE("Spread bounding DBMs with reference clocks", "[refdbm]")
 {
-  std::vector<std::string> refclocks = {"$0", "$1", "$2"};
-  tchecker::reference_clock_variables_t r(refclocks.begin(), refclocks.end());
+  std::vector<std::string> refclocks{"$0", "$1", "$2"};
+  tchecker::reference_clock_variables_t r(refclocks);
   r.declare("x1", "$0");
   r.declare("x2", "$0");
   r.declare("y1", "$1");
@@ -1223,8 +1223,8 @@ TEST_CASE("Spread bounding DBMs with reference clocks", "[refdbm]")
 
 TEST_CASE("Reset to reference clock on DBMs with reference clocks", "[refdbm]")
 {
-  std::vector<std::string> refclocks = {"$0", "$1", "$2"};
-  tchecker::reference_clock_variables_t r(refclocks.begin(), refclocks.end());
+  std::vector<std::string> refclocks{"$0", "$1", "$2"};
+  tchecker::reference_clock_variables_t r(refclocks);
   r.declare("x", "$0");
   r.declare("y1", "$1");
   r.declare("y2", "$1");
@@ -1369,8 +1369,8 @@ TEST_CASE("Reset to reference clock on DBMs with reference clocks", "[refdbm]")
 
 TEST_CASE("asynchronous_open_up on DBMs with reference clocks", "[refdbm]")
 {
-  std::vector<std::string> refclocks = {"$0", "$1", "$2"};
-  tchecker::reference_clock_variables_t r(refclocks.begin(), refclocks.end());
+  std::vector<std::string> refclocks{"$0", "$1", "$2"};
+  tchecker::reference_clock_variables_t r(refclocks);
   r.declare("x", "$0");
   r.declare("y", "$1");
   r.declare("z1", "$2");
@@ -1472,8 +1472,8 @@ TEST_CASE("asynchronous_open_up on DBMs with reference clocks", "[refdbm]")
 
 TEST_CASE("to_dbm on DBMs with reference clocks", "[refdbm]")
 {
-  std::vector<std::string> refclocks = {"$0", "$1", "$2"};
-  tchecker::reference_clock_variables_t r(refclocks.begin(), refclocks.end());
+  std::vector<std::string> refclocks{"$0", "$1", "$2"};
+  tchecker::reference_clock_variables_t r(refclocks);
   r.declare("x1", "$0");
   r.declare("x2", "$0");
   r.declare("y", "$1");

@@ -509,8 +509,10 @@ int lexical_cmp(tchecker::clock_reset_container_t const & c1, tchecker::clock_re
  \note Reference clocks allow to model polychronous time. Each reference clock
  has its own time scale. Clocks that are mapped to the same reference clock
  evolve on the same time scale. The standard semantics for timed automata rely
- on a single time scale: a single reference clock usually denoted 0. We
- distinguish between system clock variables with have IDs 0..N-1 and are all
+ on a single time scale: a single reference clock usually denoted 0. Reference
+ clocks allow to extend the standard semantics to multiple time scales (see
+ tchecker/dbm/refdbm.hh for DBMs with reference clocks).
+ We distinguish between system clock variables with have IDs 0..N-1 and are all
  actual clocks on the one hand, and reference clock variables with the first
  0..refcount-1 clocks which are reference clocks, followed by N actual clocks.
  */
@@ -518,24 +520,18 @@ class reference_clock_variables_t : public tchecker::flat_clock_variables_t {
 public:
   /*!
    \brief Constructor
-   \tparam REFCLOCK_NAME_ITERATOR : forward iterator that dereference to
-   std::string
-   \param begin : iterator to the name of the first reference clock
-   \param end : past-the-end iterator on reference clock names
-   \pre the range [begin, end) is not empty
-   \post All reference clocks in the range [begin,end) have been declared.
-   The ID of each reference clock corresponds to its rank in the range
-   [begin,end), staring from 0
-   \throw std::invalid_argument : if the range [begin, end) is empty
+   \param proc_refname_map : map from process IDs to reference clock names
+   \pre proc_refname_map is not empty
+   \post All reference clocks in proc_refname_map have been declared.
+   Each process i is mapped to reference clock proc_refname_map[i].
+   Two processes are mapped to the same reference clock if proc_refname_aap maps
+   them to the same reference clock name.
+   The first reference clock has ID 0, and all other reference clocks get their
+   ID w.r.t. the order in which they appear in proc_refname_map (the ID of the
+   first occurrence in case of multiple occurrences)
+   \throw std::invalid_argument : if proc_refname_map is empty
    */
-  template <class REFCLOCK_NAME_ITERATOR>
-  reference_clock_variables_t(REFCLOCK_NAME_ITERATOR const & begin, REFCLOCK_NAME_ITERATOR const & end) : _refcount(0)
-  {
-    if (begin == end)
-      throw std::invalid_argument("Empty reference clocks not allowed");
-    for (auto it = begin; it != end; ++it)
-      declare_reference_clock(*it);
-  }
+  reference_clock_variables_t(std::vector<std::string> const & proc_refname_map);
 
   /*!
    \brief Copy constructor
@@ -588,6 +584,13 @@ public:
    mapped to its reference clock
    */
   constexpr inline tchecker::clock_id_t const * refmap() const { return _refmap.data(); }
+
+  /*!
+   \brief Accessor
+   \return Map : process ID -> reference clock ID that maps each process to its
+   reference clock
+  */
+  constexpr inline std::vector<tchecker::clock_id_t> const & procmap() const { return _procmap; }
 
   /*!
     \brief Translate a clock constraint w.r.t. reference clocks
@@ -662,8 +665,9 @@ private:
    */
   tchecker::clock_id_t declare_reference_clock(std::string const & name);
 
-  tchecker::clock_id_t _refcount;            /*!< Number of reference clocks */
-  std::vector<tchecker::clock_id_t> _refmap; /*!< Map : offset clock ID -> reference clock ID */
+  tchecker::clock_id_t _refcount;             /*!< Number of reference clocks */
+  std::vector<tchecker::clock_id_t> _refmap;  /*!< Map : offset clock ID -> reference clock ID */
+  std::vector<tchecker::clock_id_t> _procmap; /*!< Map : process ID -> reference clock ID */
 };
 
 /* Reference clock builders */
@@ -671,10 +675,12 @@ private:
 /*!
  \brief Build reference clock variables w.r.t to single reference clock 0
  \param flat_clocks : flat clock variables
+ \param proc_count : number of processes
  \return reference clocks with a single reference clock 0, and clock variables
  as in flat_clocks, all mapped to reference clock 0
 */
-tchecker::reference_clock_variables_t single_reference_clocks(tchecker::flat_clock_variables_t const & flat_clocks);
+tchecker::reference_clock_variables_t single_reference_clocks(tchecker::flat_clock_variables_t const & flat_clocks,
+                                                              tchecker::clock_id_t proc_count);
 
 /*!
  \brief Build refeence clock variables from a variable access map

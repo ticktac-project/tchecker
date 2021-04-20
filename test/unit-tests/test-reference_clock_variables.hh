@@ -20,7 +20,7 @@
 TEST_CASE("Reference clock variables with no reference clock")
 {
   std::vector<std::string> refclocks;
-  REQUIRE_THROWS_AS(tchecker::reference_clock_variables_t(refclocks.begin(), refclocks.end()), std::invalid_argument);
+  REQUIRE_THROWS_AS(tchecker::reference_clock_variables_t(refclocks), std::invalid_argument);
 }
 
 TEST_CASE("Reference clock variables from empty access map", "[reference clock variables]")
@@ -30,33 +30,39 @@ TEST_CASE("Reference clock variables from empty access map", "[reference clock v
 
   SECTION("No clock - single reference clock")
   {
-    tchecker::reference_clock_variables_t reference_clocks = tchecker::single_reference_clocks(flat_clocks);
+    tchecker::reference_clock_variables_t reference_clocks = tchecker::single_reference_clocks(flat_clocks, 1);
 
     REQUIRE(reference_clocks.refcount() == 1);
     REQUIRE(reference_clocks.size() - reference_clocks.refcount() == 0);
+    REQUIRE(reference_clocks.procmap()[0] == 0);
   }
 
   SECTION("No clock - process reference clocks")
   {
-    tchecker::process_id_t proc_count = 3;
+    tchecker::process_id_t const proc_count = 3;
     tchecker::reference_clock_variables_t reference_clocks = tchecker::process_reference_clocks(m, proc_count, flat_clocks);
 
     REQUIRE(reference_clocks.refcount() == proc_count);
     REQUIRE(reference_clocks.size() - reference_clocks.refcount() == 0);
+    REQUIRE(reference_clocks.procmap()[0] == 0);
+    REQUIRE(reference_clocks.procmap()[1] == 1);
+    REQUIRE(reference_clocks.procmap()[2] == 2);
   }
 
   SECTION("Unaccessed clocks - single reference clocks")
   {
     flat_clocks.declare("x", tchecker::clock_info_t{1});
-    tchecker::reference_clock_variables_t reference_clocks = tchecker::single_reference_clocks(flat_clocks);
+    tchecker::reference_clock_variables_t reference_clocks = tchecker::single_reference_clocks(flat_clocks, 2);
 
     REQUIRE(reference_clocks.refcount() == 1);
     REQUIRE(reference_clocks.size() - reference_clocks.refcount() == 1);
+    REQUIRE(reference_clocks.procmap()[0] == 0);
+    REQUIRE(reference_clocks.procmap()[1] == 0);
   }
 
   SECTION("Unaccessed clocks - process reference clocks")
   {
-    tchecker::process_id_t proc_count = 2;
+    tchecker::process_id_t const proc_count = 2;
 
     tchecker::flat_clock_variables_t flat_clocks;
     flat_clocks.declare("x", tchecker::clock_info_t{1});
@@ -90,14 +96,14 @@ TEST_CASE("Reference clock variables from system - no array", "[reference clock 
   REQUIRE(sysdecl != nullptr);
 
   tchecker::ta::system_t system(*sysdecl);
-  tchecker::variable_access_map_t vaccess_map = tchecker::variable_access(system);
+  tchecker::variable_access_map_t const vaccess_map = tchecker::variable_access(system);
 
-  tchecker::process_id_t P1 = system.process_id("P1");
-  tchecker::process_id_t P2 = system.process_id("P2");
-  tchecker::clock_id_t x = system.clock_id("x");
-  tchecker::clock_id_t y = system.clock_id("y");
+  tchecker::process_id_t const P1 = system.process_id("P1");
+  tchecker::process_id_t const P2 = system.process_id("P2");
+  tchecker::clock_id_t const x = system.clock_id("x");
+  tchecker::clock_id_t const y = system.clock_id("y");
 
-  tchecker::reference_clock_variables_t reference_clocks =
+  tchecker::reference_clock_variables_t const reference_clocks =
       tchecker::process_reference_clocks(vaccess_map, system.processes_count(), system.clock_variables().flattened());
 
   SECTION("Check reference clocks")
@@ -105,6 +111,8 @@ TEST_CASE("Reference clock variables from system - no array", "[reference clock 
     REQUIRE(reference_clocks.refcount() == system.processes_count());
     REQUIRE(reference_clocks.refmap()[P1] == P1);
     REQUIRE(reference_clocks.refmap()[P2] == P2);
+    REQUIRE(reference_clocks.procmap()[P1] == P1);
+    REQUIRE(reference_clocks.procmap()[P2] == P2);
   }
 
   SECTION("Check clocks")
@@ -161,18 +169,18 @@ TEST_CASE("Offset clock variables from system - array", "[offset clock variables
 
   REQUIRE(sysdecl != nullptr);
 
-  tchecker::ta::system_t system(*sysdecl);
-  tchecker::variable_access_map_t vaccess_map = tchecker::variable_access(system);
+  tchecker::ta::system_t const system(*sysdecl);
+  tchecker::variable_access_map_t const vaccess_map = tchecker::variable_access(system);
 
-  tchecker::process_id_t P1 = system.process_id("P1");
-  tchecker::process_id_t P2 = system.process_id("P2");
-  tchecker::process_id_t P3 = system.process_id("P3");
-  tchecker::clock_id_t x = system.clock_variables().flattened().id("x");
-  tchecker::clock_id_t y0 = system.clock_variables().flattened().id("y[0]");
-  tchecker::clock_id_t y1 = system.clock_variables().flattened().id("y[1]");
-  tchecker::clock_id_t z = system.clock_variables().flattened().id("z");
+  tchecker::process_id_t const P1 = system.process_id("P1");
+  tchecker::process_id_t const P2 = system.process_id("P2");
+  tchecker::process_id_t const P3 = system.process_id("P3");
+  tchecker::clock_id_t const x = system.clock_variables().flattened().id("x");
+  tchecker::clock_id_t const y0 = system.clock_variables().flattened().id("y[0]");
+  tchecker::clock_id_t const y1 = system.clock_variables().flattened().id("y[1]");
+  tchecker::clock_id_t const z = system.clock_variables().flattened().id("z");
 
-  tchecker::reference_clock_variables_t reference_clocks =
+  tchecker::reference_clock_variables_t const reference_clocks =
       tchecker::process_reference_clocks(vaccess_map, system.processes_count(), system.clock_variables().flattened());
 
   SECTION("Check reference clocks")
@@ -181,6 +189,9 @@ TEST_CASE("Offset clock variables from system - array", "[offset clock variables
     REQUIRE(reference_clocks.refmap()[P1] == P1);
     REQUIRE(reference_clocks.refmap()[P2] == P2);
     REQUIRE(reference_clocks.refmap()[P3] == P3);
+    REQUIRE(reference_clocks.procmap()[P1] == P1);
+    REQUIRE(reference_clocks.procmap()[P2] == P2);
+    REQUIRE(reference_clocks.procmap()[P3] == P3);
   }
 
   SECTION("Check offset clocks")
@@ -211,5 +222,119 @@ TEST_CASE("Offset clock variables from system - array", "[offset clock variables
     REQUIRE(reference_clocks.refmap()[yy0] == P1);
     REQUIRE(reference_clocks.refmap()[yy1] == P3);
     REQUIRE(reference_clocks.refmap()[zz] == P3);
+  }
+}
+
+TEST_CASE("translation of clock constraints", "[clocks]")
+{
+  std::vector<std::string> refclocks = {"$0", "$1", "$2"};
+  tchecker::reference_clock_variables_t r(refclocks);
+  r.declare("x", "$0");
+  r.declare("y", "$1");
+  r.declare("z1", "$2");
+  r.declare("z2", "$2");
+
+  tchecker::clock_id_t const t0 = r.id("$0");
+  tchecker::clock_id_t const t2 = r.id("$2");
+  tchecker::clock_id_t const x = r.id("x");
+  tchecker::clock_id_t const y = r.id("y");
+  tchecker::clock_id_t const z1 = r.id("z1");
+  tchecker::clock_id_t const z2 = r.id("z2");
+
+  tchecker::clock_id_t const _x = 0;
+  tchecker::clock_id_t const _y = 1;
+  tchecker::clock_id_t const _z1 = 2;
+  tchecker::clock_id_t const _z2 = 3;
+
+  SECTION("Upper-bound constraint")
+  {
+    tchecker::clock_constraint_t c =
+        r.translate(tchecker::clock_constraint_t(_x, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 1));
+    REQUIRE(c.id1() == x);
+    REQUIRE(c.id2() == t0);
+    REQUIRE(c.comparator() == tchecker::clock_constraint_t::LE);
+    REQUIRE(c.value() == 1);
+  }
+
+  SECTION("Lower-bound constraint")
+  {
+    tchecker::clock_constraint_t c =
+        r.translate(tchecker::clock_constraint_t(tchecker::REFCLOCK_ID, _z1, tchecker::clock_constraint_t::LE, -3));
+    REQUIRE(c.id1() == t2);
+    REQUIRE(c.id2() == z1);
+    REQUIRE(c.comparator() == tchecker::clock_constraint_t::LE);
+    REQUIRE(c.value() == -3);
+  }
+
+  SECTION("Diagonal constraint, same reference clock")
+  {
+    tchecker::clock_constraint_t c = r.translate(tchecker::clock_constraint_t(_z1, _z2, tchecker::clock_constraint_t::LT, 19));
+    REQUIRE(c.id1() == z1);
+    REQUIRE(c.id2() == z2);
+    REQUIRE(c.comparator() == tchecker::clock_constraint_t::LT);
+    REQUIRE(c.value() == 19);
+  }
+
+  SECTION("Diagonal constraint, distinct reference clocks")
+  {
+    tchecker::clock_constraint_t c = r.translate(tchecker::clock_constraint_t(_y, _x, tchecker::clock_constraint_t::LE, -5));
+    REQUIRE(c.id1() == y);
+    REQUIRE(c.id2() == x);
+    REQUIRE(c.comparator() == tchecker::clock_constraint_t::LE);
+    REQUIRE(c.value() == -5);
+  }
+}
+
+TEST_CASE("translation of clock resets", "[clocks]")
+{
+  std::vector<std::string> refclocks = {"$0", "$1", "$2"};
+  tchecker::reference_clock_variables_t r(refclocks);
+  r.declare("x1", "$0");
+  r.declare("x2", "$0");
+  r.declare("y", "$1");
+  r.declare("z", "$2");
+
+  tchecker::clock_id_t const t0 = r.id("$0");
+  tchecker::clock_id_t const t1 = r.id("$1");
+  tchecker::clock_id_t const x1 = r.id("x1");
+  tchecker::clock_id_t const x2 = r.id("x2");
+  tchecker::clock_id_t const y = r.id("y");
+  tchecker::clock_id_t const z = r.id("z");
+
+  tchecker::clock_id_t const _x1 = 0;
+  tchecker::clock_id_t const _x2 = 1;
+  tchecker::clock_id_t const _y = 2;
+  tchecker::clock_id_t const _z = 3;
+
+  SECTION("Reset to reference clock")
+  {
+    tchecker::clock_reset_t cr = r.translate(tchecker::clock_reset_t(_x1, tchecker::REFCLOCK_ID, 0));
+    REQUIRE(cr.left_id() == x1);
+    REQUIRE(cr.right_id() == t0);
+    REQUIRE(cr.value() == 0);
+  }
+
+  SECTION("Reset to reference clock plus some constant")
+  {
+    tchecker::clock_reset_t cr = r.translate(tchecker::clock_reset_t(_y, tchecker::REFCLOCK_ID, 8));
+    REQUIRE(cr.left_id() == y);
+    REQUIRE(cr.right_id() == t1);
+    REQUIRE(cr.value() == 8);
+  }
+
+  SECTION("Reset to other clock")
+  {
+    tchecker::clock_reset_t cr = r.translate(tchecker::clock_reset_t(_z, _x2, 0));
+    REQUIRE(cr.left_id() == z);
+    REQUIRE(cr.right_id() == x2);
+    REQUIRE(cr.value() == 0);
+  }
+
+  SECTION("Reset to other clock, plus some constant")
+  {
+    tchecker::clock_reset_t cr = r.translate(tchecker::clock_reset_t(_x1, _y, 16));
+    REQUIRE(cr.left_id() == x1);
+    REQUIRE(cr.right_id() == y);
+    REQUIRE(cr.value() == 16);
   }
 }
