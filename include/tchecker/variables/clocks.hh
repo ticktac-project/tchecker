@@ -583,7 +583,7 @@ public:
    \note Each reference clock is mapped to itself, and each clock variable is
    mapped to its reference clock
    */
-  constexpr inline tchecker::clock_id_t const * refmap() const { return _refmap.data(); }
+  constexpr inline std::vector<tchecker::clock_id_t> const & refmap() const { return _refmap; }
 
   /*!
    \brief Accessor

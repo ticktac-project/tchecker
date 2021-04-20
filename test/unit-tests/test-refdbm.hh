@@ -52,7 +52,7 @@ TEST_CASE("universal_positive", "[refdbm]")
   tchecker::dbm::db_t rdbm[rdim * rdim];
   tchecker::refdbm::universal_positive(rdbm, r);
 
-  tchecker::clock_id_t const * refmap = r.refmap();
+  std::vector<tchecker::clock_id_t> const & refmap = r.refmap();
   for (tchecker::clock_id_t i = 0; i < rdim; ++i) {
     for (tchecker::clock_id_t j = 0; j < rdim; ++j) {
       if (i == j || i == refmap[j])
@@ -815,7 +815,7 @@ TEST_CASE("constrain, for reference DBMs", "[refdbm]")
   tchecker::clock_id_t const y1 = r.id("y1");
   tchecker::clock_id_t const y2 = r.id("y2");
 
-  tchecker::clock_id_t const * refmap = r.refmap();
+  std::vector<tchecker::clock_id_t> const & refmap = r.refmap();
 
   tchecker::clock_id_t const _x = 0;
   tchecker::clock_id_t const _y1 = 1;
@@ -1135,7 +1135,7 @@ TEST_CASE("Spread bounding DBMs with reference clocks", "[refdbm]")
       RDBM1(t, t) = tchecker::dbm::LE_ZERO;
     }
 
-    tchecker::clock_id_t const * refmap = r.refmap();
+    std::vector<tchecker::clock_id_t> const & refmap = r.refmap();
     for (tchecker::clock_id_t u = r.refcount(); u < r.size(); ++u) {
       RDBM1(u, refmap[u]) = tchecker::dbm::LE_ZERO;
       RDBM1(refmap[u], u) = tchecker::dbm::LE_ZERO;
@@ -1181,7 +1181,7 @@ TEST_CASE("Spread bounding DBMs with reference clocks", "[refdbm]")
       RDBM1(t, t) = tchecker::dbm::LE_ZERO;
     }
 
-    tchecker::clock_id_t const * refmap = r.refmap();
+    std::vector<tchecker::clock_id_t> const & refmap = r.refmap();
     for (tchecker::clock_id_t u = r.refcount(); u < r.size(); ++u) {
       RDBM1(u, refmap[u]) = tchecker::dbm::LE_ZERO;
       RDBM1(refmap[u], u) = tchecker::dbm::LE_ZERO;

@@ -6,6 +6,7 @@
  */
 
 #include <limits>
+#include <vector>
 
 #include "tchecker/clockbounds/clockbounds.hh"
 #include "tchecker/dbm/db.hh"
@@ -39,7 +40,7 @@ void universal_positive(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_va
   tchecker::refdbm::universal(rdbm, r);
   // clocks are non-negative: x>=0 <=> X>=r(X) <=> r(X)-X<=0
   tchecker::clock_id_t const rdim = r.size();
-  tchecker::clock_id_t const * refmap = r.refmap();
+  std::vector<tchecker::clock_id_t> const & refmap = r.refmap();
   for (tchecker::clock_id_t i = r.refcount(); i < rdim; ++i)
     RDBM(refmap[i], i) = tchecker::dbm::LE_ZERO;
   assert(tchecker::refdbm::is_tight(rdbm, r));
@@ -81,7 +82,7 @@ bool is_positive(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_var
   assert(tchecker::refdbm::is_tight(rdbm, r));
 
   // r(X)-X are less-or-equal to <=0, (i.e. r(X)<=X)
-  tchecker::clock_id_t const * refmap = r.refmap();
+  std::vector<tchecker::clock_id_t> const & refmap = r.refmap();
   for (tchecker::clock_id_t i = r.refcount(); i < rdim; ++i)
     if (RDBM(refmap[i], i) > tchecker::dbm::LE_ZERO)
       return false;
@@ -94,7 +95,7 @@ bool is_universal_positive(tchecker::dbm::db_t const * rdbm, tchecker::reference
   assert(tchecker::refdbm::is_tight(rdbm, r));
 
   tchecker::clock_id_t const rdim = r.size();
-  tchecker::clock_id_t const * refmap = r.refmap();
+  std::vector<tchecker::clock_id_t> const & refmap = r.refmap();
   // <inf everywhere, except <=0 on the diagonal and for RX-X
   for (tchecker::clock_id_t i = 0; i < rdim; ++i) {
     for (tchecker::clock_id_t j = 0; j < rdim; ++j) {
