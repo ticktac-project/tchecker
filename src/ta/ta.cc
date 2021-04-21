@@ -106,16 +106,30 @@ bool delay_allowed(tchecker::ta::system_t const & system, tchecker::vloc_t const
   return true;
 }
 
-void delay_allowed(tchecker::ta::system_t const & system, tchecker::reference_clock_variables_t const & r,
-                   tchecker::vloc_t const & vloc, boost::dynamic_bitset<> & allowed)
+boost::dynamic_bitset<> delay_allowed(tchecker::ta::system_t const & system, tchecker::reference_clock_variables_t const & r,
+                                      tchecker::vloc_t const & vloc)
 {
-  assert(allowed.size() == r.refcount());
-  std::size_t size = vloc.size();
+  std::size_t const size = vloc.size();
   std::vector<tchecker::clock_id_t> const & procmap = r.procmap();
+  boost::dynamic_bitset<> allowed{r.refcount()};
   allowed.set();
   for (std::size_t i = 0; i < size; ++i)
     if (system.is_urgent(vloc[i]) || system.is_committed(vloc[i]))
       allowed.reset(procmap[i]);
+  return allowed;
+}
+
+/* sync_refclocks */
+
+boost::dynamic_bitset<> sync_refclocks(tchecker::ta::system_t const & system, tchecker::reference_clock_variables_t const & r,
+                                       tchecker::vedge_t const & vedge)
+{
+  std::vector<tchecker::clock_id_t> const & procmap = r.procmap();
+  boost::dynamic_bitset<> refclocks{r.refcount()};
+  refclocks.reset();
+  for (tchecker::edge_id_t id : vedge)
+    refclocks.set(procmap[system.edge(id)->pid()]);
+  return refclocks;
 }
 
 /* ta_t */

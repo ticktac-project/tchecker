@@ -61,8 +61,7 @@ TEST_CASE("delay allowed for all reference clocks", "[delay_allowed]")
     tchecker::reference_clock_variables_t r =
         single_reference_clocks(system.clock_variables().flattened(), system.processes_count());
 
-    boost::dynamic_bitset<> delay_allowed{r.refcount()};
-    tchecker::ta::delay_allowed(system, r, *vloc, delay_allowed);
+    boost::dynamic_bitset<> delay_allowed = tchecker::ta::delay_allowed(system, r, *vloc);
 
     REQUIRE(delay_allowed.all());
   }
@@ -74,8 +73,7 @@ TEST_CASE("delay allowed for all reference clocks", "[delay_allowed]")
     tchecker::reference_clock_variables_t r =
         process_reference_clocks(va_map, system.clock_variables().flattened(), system.processes_count());
 
-    boost::dynamic_bitset<> delay_allowed{r.refcount()};
-    tchecker::ta::delay_allowed(system, r, *vloc, delay_allowed);
+    boost::dynamic_bitset<> delay_allowed = tchecker::ta::delay_allowed(system, r, *vloc);
 
     REQUIRE(delay_allowed.all());
   }
@@ -123,8 +121,7 @@ TEST_CASE("delay allowed for some reference clocks", "[delay_allowed]")
     tchecker::reference_clock_variables_t r =
         single_reference_clocks(system.clock_variables().flattened(), system.processes_count());
 
-    boost::dynamic_bitset<> delay_allowed{r.refcount()};
-    tchecker::ta::delay_allowed(system, r, *vloc, delay_allowed);
+    boost::dynamic_bitset<> delay_allowed = tchecker::ta::delay_allowed(system, r, *vloc);
 
     REQUIRE(delay_allowed.none());
   }
@@ -136,8 +133,7 @@ TEST_CASE("delay allowed for some reference clocks", "[delay_allowed]")
     tchecker::reference_clock_variables_t r =
         process_reference_clocks(va_map, system.clock_variables().flattened(), system.processes_count());
 
-    boost::dynamic_bitset<> delay_allowed{r.refcount()};
-    tchecker::ta::delay_allowed(system, r, *vloc, delay_allowed);
+    boost::dynamic_bitset<> delay_allowed = tchecker::ta::delay_allowed(system, r, *vloc);
 
     REQUIRE(delay_allowed[P1]);
     REQUIRE_FALSE(delay_allowed[P2]);
@@ -187,8 +183,7 @@ TEST_CASE("delay allowed for no reference clock", "[delay_allowed]")
     tchecker::reference_clock_variables_t r =
         single_reference_clocks(system.clock_variables().flattened(), system.processes_count());
 
-    boost::dynamic_bitset<> delay_allowed{r.refcount()};
-    tchecker::ta::delay_allowed(system, r, *vloc, delay_allowed);
+    boost::dynamic_bitset<> delay_allowed = tchecker::ta::delay_allowed(system, r, *vloc);
 
     REQUIRE(delay_allowed.none());
   }
@@ -200,8 +195,7 @@ TEST_CASE("delay allowed for no reference clock", "[delay_allowed]")
     tchecker::reference_clock_variables_t r =
         process_reference_clocks(va_map, system.clock_variables().flattened(), system.processes_count());
 
-    boost::dynamic_bitset<> delay_allowed{r.refcount()};
-    tchecker::ta::delay_allowed(system, r, *vloc, delay_allowed);
+    boost::dynamic_bitset<> delay_allowed = tchecker::ta::delay_allowed(system, r, *vloc);
 
     REQUIRE(delay_allowed.none());
   }

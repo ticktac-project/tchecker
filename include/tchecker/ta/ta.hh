@@ -10,6 +10,8 @@
 
 #include <cstdlib>
 
+#include <boost/dynamic_bitset.hpp>
+
 #include "tchecker/basictypes.hh"
 #include "tchecker/syncprod/syncprod.hh"
 #include "tchecker/syncprod/vedge.hh"
@@ -193,18 +195,28 @@ inline enum tchecker::state_status_t next(tchecker::ta::system_t const & system,
 bool delay_allowed(tchecker::ta::system_t const & system, tchecker::vloc_t const & vloc);
 
 /*!
- \brief Checks if time can elapse in a tuple of locations
+ \brief Compute the set of reference clocks that can let time elapse in a tuple
+ of locations
  \param system : a system of timed processes
- \param vloc : tuple of locations
  \param r : reference clocks
- \param allowed : bit vector
- \pre the size of allowed is the number of reference clocks in r (checked by
- assertion)
- \post allowed[i] indicates whether reference clock i can delay (value 1) or not
- (value 0) from vloc
+ \param vloc : tuple of locations
+ \return a dynamic bitset of size.refcount() that contains all reference clocks
+ that can delay from vloc
  */
-void delay_allowed(tchecker::ta::system_t const & system, tchecker::reference_clock_variables_t const & r,
-                   tchecker::vloc_t const & vloc, boost::dynamic_bitset<> & allowed);
+boost::dynamic_bitset<> delay_allowed(tchecker::ta::system_t const & system, tchecker::reference_clock_variables_t const & r,
+                                      tchecker::vloc_t const & vloc);
+
+/*!
+ \brief Compute the set of reference clocks that should synchronize on a tuple
+ of edges
+ \param system : a system of timed processes
+ \param r : reference clocks
+ \param vedge : tuple of edges
+ \return a dynamic bitset of size r.refcount() that contains all reference
+ clocks that should synchronize on vedge
+ */
+boost::dynamic_bitset<> sync_refclocks(tchecker::ta::system_t const & system, tchecker::reference_clock_variables_t const & r,
+                                       tchecker::vedge_t const & vedge);
 
 /*!
  \class ta_t
