@@ -67,8 +67,7 @@ ${TS_SRC}
 ${UTILS_SRC}
 ${VARIABLES_SRC}
 ${VM_SRC}
-${ZG_SRC}
-${ZONE_SRC})
+${ZG_SRC})
 
 
 # Build TChecker static library
