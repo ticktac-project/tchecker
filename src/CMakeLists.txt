@@ -28,7 +28,6 @@ include_directories(${TCHECKER_BINARY_INCLUDE_DIR})
 include_directories(${Boost_INCLUDE_DIRS})
 
 add_subdirectory(algorithms)
-add_subdirectory(async_zg)
 add_subdirectory(clockbounds)
 add_subdirectory(dbm)
 add_subdirectory(expression)
@@ -52,7 +51,6 @@ ${TCHECKER_INCLUDE_DIR}/tchecker/basictypes.hh
 
 set(LIBTCHECKER_SRC
 ${ALGORITHMS_SRC}
-${ASYNC_ZG_SRC}
 ${CLOCKBOUNDS_SRC}
 ${DBM_SRC}
 ${EXPRESSION_SRC}
@@ -60,6 +58,7 @@ ${SYNCPROD_SRC}
 ${GRAPH_SRC}
 ${OTHER_SRC}
 ${PARSING_SRC}
+${REFZG_SRC}
 ${STATEMENT_SRC}
 ${SYSTEM_SRC}
 ${TA_SRC}
