@@ -505,7 +505,7 @@ void reset_to_reference_clock(tchecker::dbm::db_t * rdbm, tchecker::reference_cl
 
 void reset(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r, tchecker::clock_reset_t const & reset)
 {
-  assert(reset.left_id() < r.size() - r.refcount() - 1);
+  assert(reset.left_id() < r.size() - r.refcount());
   assert(reset.right_id() == tchecker::REFCLOCK_ID);
   assert(reset.value() == 0);
 
