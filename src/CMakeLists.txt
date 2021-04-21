@@ -34,6 +34,7 @@ add_subdirectory(dbm)
 add_subdirectory(expression)
 add_subdirectory(graph)
 add_subdirectory(parsing)
+add_subdirectory(refzg)
 add_subdirectory(statement)
 add_subdirectory(syncprod)
 add_subdirectory(system)
@@ -43,7 +44,6 @@ add_subdirectory(utils)
 add_subdirectory(variables)
 add_subdirectory(vm)
 add_subdirectory(zg)
-add_subdirectory(zone)
 
 set(OTHER_SRC
 ${CMAKE_CURRENT_SOURCE_DIR}/basictypes.cc
@@ -95,7 +95,7 @@ endif()
 
 # TO BE REMOVED
 # FAKE static library for refactoring
-add_library(librefactor STATIC ${CLOCKBOUNDS_SRC} ${DBM_SRC} ${EXPRESSION_SRC} ${OTHER_SRC} ${PARSING_SRC} ${STATEMENT_SRC} ${SYNCPROD_SRC} ${SYSTEM_SRC} ${TA_SRC} ${UTILS_SRC} ${VARIABLES_SRC} ${VM_SRC} ${ZG_SRC} ${ZONE_SRC}
+add_library(librefactor STATIC ${CLOCKBOUNDS_SRC} ${DBM_SRC} ${EXPRESSION_SRC} ${OTHER_SRC} ${PARSING_SRC} ${REFZG_SRC} ${STATEMENT_SRC} ${SYNCPROD_SRC} ${SYSTEM_SRC} ${TA_SRC} ${UTILS_SRC} ${VARIABLES_SRC} ${VM_SRC} ${ZG_SRC}
             $<TARGET_OBJECTS:program_parsing_static>
             $<TARGET_OBJECTS:system_parsing_static>)
 set_property(TARGET librefactor PROPERTY OUTPUT_NAME refactor)

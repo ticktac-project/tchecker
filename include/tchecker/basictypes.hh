@@ -167,7 +167,9 @@ enum state_status_t {
   STATE_CLOCKS_GUARD_VIOLATED = 64,          /*!< state computation failed due to clocks guard violation */
   STATE_CLOCKS_SRC_INVARIANT_VIOLATED = 128, /*!< state computation failed due to clocks source invariant violation */
   STATE_CLOCKS_TGT_INVARIANT_VIOLATED = 256, /*!< state computation failed due to clocks target invariant violation */
-  STATE_EMPTY_ZONE = 512,                    /*!< state computation resulted in an empty zone (no details provided) */
+  STATE_CLOCKS_EMPTY_SYNC = 512,             /*!< state computation failed due to empty sync zone */
+  STATE_CLOCKS_EMPTY_SPREAD = 1024,          /*!< state computation failed due to empty bounded-spread zone */
+  STATE_EMPTY_ZONE = 2048,                   /*!< state computation resulted in an empty zone (no details provided) */
 };
 
 } // end of namespace tchecker
