@@ -22,11 +22,11 @@ community.
 
 ## Installation
 
-Please, refer to [Installation of TChecker](https://github.com/fredher/tchecker/wiki/Installation-of-TChecker) or to file INSTALL.md in the repository.
+Please, refer to [Installation of TChecker](https://github.com/ticktac-project/tchecker/wiki/Installation-of-TChecker) or to file INSTALL.md in the repository.
 
 ## Usage
 
-Please, refer to [Using TChecker](https://github.com/fredher/tchecker/wiki/Using-TChecker) or to file doc/usage.md in the repository.
+Please, refer to [Using TChecker](https://github.com/ticktac-project/tchecker/wiki/Using-TChecker) or to file doc/usage.md in the repository.
 
 ## Credits
 

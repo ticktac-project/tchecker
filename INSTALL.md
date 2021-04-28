@@ -1,4 +1,4 @@
-Binary distributions can be found from the [Releases page](https://github.com/fredher/tchecker/releases). The instructions below are for installation from the sources. Please, notice that these instructions have only been tested on Linux (Ubuntu and Debian) and Mac OS X. The installation instructions below may not work for other operating systems. Please contact us in case of problem.
+Binary distributions can be found from the [Releases page](https://github.com/ticktac-project/tchecker/releases). The instructions below are for installation from the sources. Please, notice that these instructions have only been tested on Linux (Ubuntu and Debian) and Mac OS X. The installation instructions below may not work for other operating systems. Please contact us in case of problem.
 
 # Requirements
 
@@ -22,7 +22,7 @@ We assume that all dependencies have been successfully installed.
 ## Clone the repository:
 
 ```
-git clone https://github.com/fredher/tchecker.git
+git clone https://github.com/ticktac-project/tchecker.git
 ```
 This will create a directory `tchecker` in the current directory, that contains a fully functional local clone of the project.
 
@@ -45,7 +45,7 @@ Run the following command to configure the build:
 cmake ../tchecker -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/path/to/install
 ```
 
-In the command above, `/path/to/install` shall be replaced by the desired installation path. Please, refer to [Configuration options](https://github.com/fredher/tchecker/wiki/Installation-of-TChecker/_edit#configuration-options) for details.
+In the command above, `/path/to/install` shall be replaced by the desired installation path. Please, refer to [Configuration options](https://github.com/ticktac-project/tchecker/wiki/Installation-of-TChecker/_edit#configuration-options) for details.
 
 ### Mac OS X users
 
@@ -55,7 +55,7 @@ The version of `bison` that is shipped with Apple development tools is quite old
 cmake ../tchecker -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/path/to/install -DCMAKE_PREFIX_PATH=/path/to/bison
 ```
 
-In the command above, `/path/to/bison` shall be replaced by the actual path to the newer `bison` executable. And `/path/to/install` shall be replaced by the desired installation path. Please, refer to [Configuration options](https://github.com/fredher/tchecker/wiki/Installation-of-TChecker/_edit#configuration-options) for details.
+In the command above, `/path/to/bison` shall be replaced by the actual path to the newer `bison` executable. And `/path/to/install` shall be replaced by the desired installation path. Please, refer to [Configuration options](https://github.com/ticktac-project/tchecker/wiki/Installation-of-TChecker/_edit#configuration-options) for details.
 
 ### Configuration options
 
@@ -79,4 +79,4 @@ make install
 
 Option `-j5` launches 5 parallel compilation jobs. The value 5 shall be adapted to match the number of CPU cores on your system.
 
-The installation procedure creates four directories: `bin`, `lib`, `include` and `share/doc/tchecker/html` in the installation directory. The TChecker tools can be found in directory `bin` (see [Using TChecker](https://github.com/fredher/tchecker/wiki/Using-TChecker)). The development tools are provided in the other directories: the headers in `include`, the library in `lib`, and the Doxygen documentation in `share/doc/tchecker/html`.
+The installation procedure creates four directories: `bin`, `lib`, `include` and `share/doc/tchecker/html` in the installation directory. The TChecker tools can be found in directory `bin` (see [Using TChecker](https://github.com/ticktac-project/tchecker/wiki/Using-TChecker)). The development tools are provided in the other directories: the headers in `include`, the library in `lib`, and the Doxygen documentation in `share/doc/tchecker/html`.
