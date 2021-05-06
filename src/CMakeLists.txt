@@ -41,6 +41,7 @@ add_subdirectory(ta)
 add_subdirectory(ts)
 add_subdirectory(utils)
 add_subdirectory(variables)
+add_subdirectory(waiting)
 add_subdirectory(vm)
 add_subdirectory(zg)
 
@@ -65,6 +66,7 @@ ${TA_SRC}
 ${TS_SRC}
 ${UTILS_SRC}
 ${VARIABLES_SRC}
+${WAITING_SRC}
 ${VM_SRC}
 ${ZG_SRC})
 
@@ -93,7 +95,7 @@ endif()
 
 # TO BE REMOVED
 # FAKE static library for refactoring
-add_library(librefactor STATIC ${CLOCKBOUNDS_SRC} ${DBM_SRC} ${EXPRESSION_SRC} ${OTHER_SRC} ${PARSING_SRC} ${REFZG_SRC} ${STATEMENT_SRC} ${SYNCPROD_SRC} ${SYSTEM_SRC} ${TA_SRC} ${UTILS_SRC} ${VARIABLES_SRC} ${VM_SRC} ${ZG_SRC}
+add_library(librefactor STATIC ${CLOCKBOUNDS_SRC} ${DBM_SRC} ${EXPRESSION_SRC} ${OTHER_SRC} ${PARSING_SRC} ${REFZG_SRC} ${STATEMENT_SRC} ${SYNCPROD_SRC} ${SYSTEM_SRC} ${TA_SRC} ${UTILS_SRC} ${VARIABLES_SRC} ${WAITING_SRC} ${VM_SRC} ${ZG_SRC}
             $<TARGET_OBJECTS:program_parsing_static>
             $<TARGET_OBJECTS:system_parsing_static>)
 set_property(TARGET librefactor PROPERTY OUTPUT_NAME refactor)

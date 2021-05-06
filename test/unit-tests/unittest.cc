@@ -18,3 +18,4 @@
 #include "test-refdbm.hh"
 #include "test-reference_clock_variables.hh"
 #include "test-variables-access.hh"
+#include "test-waiting.hh"
