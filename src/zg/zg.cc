@@ -75,13 +75,15 @@ enum tchecker::state_status_t next(tchecker::ta::system_t const & system,
 
 zg_t::zg_t(std::shared_ptr<tchecker::ta::system_t const> const & system,
            std::unique_ptr<tchecker::zg::semantics_t> && semantics,
-           std::unique_ptr<tchecker::zg::extrapolation_t> && extrapolation, std::size_t block_size)
+           std::unique_ptr<tchecker::zg::extrapolation_t> && extrapolation, std::size_t block_size, tchecker::gc_t & gc)
     : _system(system), _semantics(std::move(semantics)), _extrapolation(std::move(extrapolation)),
       _state_allocator(block_size, block_size, _system->processes_count(), block_size,
                        _system->intvars_count(tchecker::VK_FLATTENED), block_size,
                        _system->clocks_count(tchecker::VK_FLATTENED) + 1),
       _transition_allocator(block_size, block_size, _system->processes_count())
 {
+  _state_allocator.enroll(gc);
+  _transition_allocator.enroll(gc);
 }
 
 tchecker::zg::initial_range_t zg_t::initial_edges() { return tchecker::zg::initial_edges(*_system); }
@@ -115,27 +117,29 @@ tchecker::ta::system_t const & zg_t::system() const { return *_system; }
 
 tchecker::zg::zg_t * factory(std::shared_ptr<tchecker::ta::system_t const> const & system,
                              enum tchecker::zg::semantics_type_t semantics_type,
-                             enum tchecker::zg::extrapolation_type_t extrapolation_type, std::size_t block_size)
+                             enum tchecker::zg::extrapolation_type_t extrapolation_type, std::size_t block_size,
+                             tchecker::gc_t & gc)
 {
   std::unique_ptr<tchecker::zg::extrapolation_t> extrapolation{
       tchecker::zg::extrapolation_factory(extrapolation_type, *system)};
   if (extrapolation.get() == nullptr)
     return nullptr;
   std::unique_ptr<tchecker::zg::semantics_t> semantics{tchecker::zg::semantics_factory(semantics_type)};
-  return new tchecker::zg::zg_t(system, std::move(semantics), std::move(extrapolation), block_size);
+  return new tchecker::zg::zg_t(system, std::move(semantics), std::move(extrapolation), block_size, gc);
 }
 
 tchecker::zg::zg_t * factory(std::shared_ptr<tchecker::ta::system_t const> const & system,
                              enum tchecker::zg::semantics_type_t semantics_type,
                              enum tchecker::zg::extrapolation_type_t extrapolation_type,
-                             tchecker::clockbounds::clockbounds_t const & clock_bounds, std::size_t block_size)
+                             tchecker::clockbounds::clockbounds_t const & clock_bounds, std::size_t block_size,
+                             tchecker::gc_t & gc)
 {
   std::unique_ptr<tchecker::zg::extrapolation_t> extrapolation{
       tchecker::zg::extrapolation_factory(extrapolation_type, clock_bounds)};
   if (extrapolation.get() == nullptr)
     return nullptr;
   std::unique_ptr<tchecker::zg::semantics_t> semantics{tchecker::zg::semantics_factory(semantics_type)};
-  return new tchecker::zg::zg_t(system, std::move(semantics), std::move(extrapolation), block_size);
+  return new tchecker::zg::zg_t(system, std::move(semantics), std::move(extrapolation), block_size, gc);
 }
 
 } // end of namespace zg

@@ -261,13 +261,15 @@ public:
    \param semantics : a semantics over zones with reference clocks
    \param spread : spread bound over reference clocks
    \param block_size : number of objects allocated in a block
+   \param gc : garbage collector
    \note all states and transitions are pool allocated and deallocated
    automatically
    \note set spread to tchecker::refdbm::UNBOUNDED_SPREAD for unbounded spread
    */
   refzg_t(std::shared_ptr<tchecker::ta::system_t const> const & system,
           std::shared_ptr<tchecker::reference_clock_variables_t const> const & r,
-          std::unique_ptr<tchecker::refzg::semantics_t> && semantics, tchecker::integer_t spread, std::size_t block_size);
+          std::unique_ptr<tchecker::refzg::semantics_t> && semantics, tchecker::integer_t spread, std::size_t block_size,
+          tchecker::gc_t & gc);
 
   /*!
    \brief Copy constructor (deleted)
@@ -392,6 +394,7 @@ enum reference_clock_variables_type_t {
  \param semantics_type : type of semantics over zones with reference clocks
  \param spread : spread bound over reference clocks
  \param block_size : number of objects allocated in a block
+ \param gc : garbage collector
  \return a zone graph over system with zone semantics and spread bound
  defined from semantics_type and spread, reference clocks defined from
  refclocks_type, and allocation of block_size objects at a time
@@ -400,7 +403,7 @@ enum reference_clock_variables_type_t {
 tchecker::refzg::refzg_t * factory(std::shared_ptr<tchecker::ta::system_t const> const & system,
                                    enum tchecker::refzg::reference_clock_variables_type_t refclocks_type,
                                    enum tchecker::refzg::semantics_type_t semantics_type, tchecker::integer_t spread,
-                                   std::size_t block_size);
+                                   std::size_t block_size, tchecker::gc_t & gc);
 
 } // end of namespace refzg
 

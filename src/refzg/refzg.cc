@@ -87,12 +87,15 @@ enum tchecker::state_status_t next(tchecker::ta::system_t const & system,
 
 refzg_t::refzg_t(std::shared_ptr<tchecker::ta::system_t const> const & system,
                  std::shared_ptr<tchecker::reference_clock_variables_t const> const & r,
-                 std::unique_ptr<tchecker::refzg::semantics_t> && semantics, tchecker::integer_t spread, std::size_t block_size)
+                 std::unique_ptr<tchecker::refzg::semantics_t> && semantics, tchecker::integer_t spread, std::size_t block_size,
+                 tchecker::gc_t & gc)
     : _system(system), _r(r), _semantics(std::move(semantics)), _spread(spread),
       _state_allocator(block_size, block_size, _system->processes_count(), block_size,
                        _system->intvars_count(tchecker::VK_FLATTENED), block_size, _r),
       _transition_allocator(block_size, block_size, _system->processes_count())
 {
+  _state_allocator.enroll(gc);
+  _transition_allocator.enroll(gc);
 }
 
 tchecker::refzg::initial_range_t refzg_t::initial_edges() { return tchecker::refzg::initial_edges(*_system); }
@@ -145,12 +148,12 @@ reference_clocks_factory(enum tchecker::refzg::reference_clock_variables_type_t 
 tchecker::refzg::refzg_t * factory(std::shared_ptr<tchecker::ta::system_t const> const & system,
                                    enum tchecker::refzg::reference_clock_variables_type_t refclocks_type,
                                    enum tchecker::refzg::semantics_type_t semantics_type, tchecker::integer_t spread,
-                                   std::size_t block_size)
+                                   std::size_t block_size, tchecker::gc_t & gc)
 {
   std::shared_ptr<tchecker::reference_clock_variables_t const> r(
       tchecker::refzg::reference_clocks_factory(refclocks_type, *system));
   std::unique_ptr<tchecker::refzg::semantics_t> semantics{tchecker::refzg::semantics_factory(semantics_type)};
-  return new tchecker::refzg::refzg_t(system, r, std::move(semantics), spread, block_size);
+  return new tchecker::refzg::refzg_t(system, r, std::move(semantics), spread, block_size, gc);
 }
 
 } // end of namespace refzg

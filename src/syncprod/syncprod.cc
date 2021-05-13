@@ -161,10 +161,13 @@ boost::dynamic_bitset<> committed_processes(tchecker::syncprod::system_t const &
 
 /* syncprod_t */
 
-syncprod_t::syncprod_t(std::shared_ptr<tchecker::syncprod::system_t const> const & system, std::size_t block_size)
+syncprod_t::syncprod_t(std::shared_ptr<tchecker::syncprod::system_t const> const & system, std::size_t block_size,
+                       tchecker::gc_t & gc)
     : _system(system), _state_allocator(block_size, block_size, _system->processes_count()),
       _transition_allocator(block_size, block_size, _system->processes_count())
 {
+  _state_allocator.enroll(gc);
+  _transition_allocator.enroll(gc);
 }
 
 tchecker::syncprod::initial_range_t syncprod_t::initial_edges() { return tchecker::syncprod::initial_edges(*_system); }
