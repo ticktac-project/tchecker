@@ -245,7 +245,7 @@ public:
    p is not nullptr
    \post the object pointed by p has been destructed if its reference counter is 1
    (i.e. p is the only pointer to the object), and p points to nullptr. Does nothing otherwise
-   \return true if the state has been destructed, false otherwise
+   \return true if the transition has been destructed, false otherwise
    */
   bool destruct(tchecker::intrusive_shared_ptr_t<TRANSITION> & p) { return _transition_pool.destruct(p); }
 
