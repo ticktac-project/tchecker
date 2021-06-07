@@ -20,7 +20,7 @@
 #include "tchecker/utils/log.hh"
 
 /*!
- \file tck-system.cc
+ \file tck-syntax.cc
  \brief Syntax checking and translation of systems
  */
 
