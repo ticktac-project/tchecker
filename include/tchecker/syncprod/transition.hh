@@ -78,9 +78,9 @@ public:
 
   /*!
    \brief Accessor
-   \return pointer to tuple of edges
+   \return reference to pointer to tuple of edges
    */
-  inline tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> vedge_ptr() { return _vedge; }
+  inline tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> & vedge_ptr() { return _vedge; }
 
   /*!
    \brief Accessor

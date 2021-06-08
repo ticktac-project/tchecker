@@ -102,15 +102,13 @@ public:
   }
 
   /*!
-   \brief Construct state
-   \param state : a state
-   \param args : arguments to a constructor of STATE beyond tuple of locations
-   \return a new instance of STATE constructed from a copy of the tuple of locations in state and args
-   */
-  template <class... ARGS> tchecker::intrusive_shared_ptr_t<STATE> construct_from_state(STATE const & state, ARGS &&... args)
+   \brief Clone state
+   \param s : state to clone
+   \return a new instance of STATE that is a clone of s
+  */
+  template <class... ARGS> tchecker::intrusive_shared_ptr_t<STATE> clone(STATE const & s)
   {
-    return tchecker::ts::state_pool_allocator_t<STATE>::construct_from_state(state, _vloc_pool.construct(state.vloc()),
-                                                                             args...);
+    return tchecker::syncprod::details::state_pool_allocator_t<STATE>::construct_from_state(s);
   }
 
   /*!
@@ -178,6 +176,17 @@ public:
   }
 
 protected:
+  /*!
+   \brief Construct state
+   \param s : a state
+   \param args : arguments to a constructor of STATE beyond tuple of locations
+   \return a new instance of STATE constructed from a copy of the tuple of locations in s and args
+   */
+  template <class... ARGS> tchecker::intrusive_shared_ptr_t<STATE> construct_from_state(STATE const & s, ARGS &&... args)
+  {
+    return tchecker::ts::state_pool_allocator_t<STATE>::construct_from_state(s, _vloc_pool.construct(s.vloc()), args...);
+  }
+
   std::size_t _vloc_capacity;                           /*!< Capacity of tuples of locations */
   tchecker::pool_t<tchecker::shared_vloc_t> _vloc_pool; /*!< Pool of tuples of locations */
 };
@@ -258,17 +267,13 @@ public:
   }
 
   /*!
-   \brief Construct transition
-   \param transition : a transition
-   \param args : arguments to a constructor of TRANSITION beyond tuple of edges
-   \return a new instance of TRANSITION constructed from a copy of the tuple of edges in state and args
-   */
-  template <class... ARGS>
-  tchecker::intrusive_shared_ptr_t<TRANSITION> construct_from_transition(TRANSITION const & transition, ARGS &&... args)
-
+   \brief Clone a transition
+   \param t : transition
+   \return a new instance of TRANSITION that is a clone of t
+  */
+  template <class... ARGS> tchecker::intrusive_shared_ptr_t<TRANSITION> clone(TRANSITION const & t)
   {
-    return tchecker::ts::transition_pool_allocator_t<TRANSITION>::construct_from_transition(
-        transition, args..., _vedge_pool.construct(transition.vedge()));
+    return tchecker::syncprod::details::transition_pool_allocator_t<TRANSITION>::construct_from_transition(t);
   }
 
   /*!
@@ -339,6 +344,20 @@ public:
   }
 
 protected:
+  /*!
+   \brief Construct a transition from a transition
+   \param t : a transition
+   \param args : arguments to a constructor of TRANSITION beyond tuple of edges
+   \return a new instance of TRANSITION constructed from a copy of the tuple of edges in t and args
+   */
+  template <class... ARGS>
+  tchecker::intrusive_shared_ptr_t<TRANSITION> construct_from_transition(TRANSITION const & t, ARGS &&... args)
+
+  {
+    return tchecker::ts::transition_pool_allocator_t<TRANSITION>::construct_from_transition(t, args...,
+                                                                                            _vedge_pool.construct(t.vedge()));
+  }
+
   std::size_t _vedge_capacity;                            /*!< Capacity of tuples of edges */
   tchecker::pool_t<tchecker::shared_vedge_t> _vedge_pool; /*!< Pool of tuples of edges */
 };

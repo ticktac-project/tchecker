@@ -105,16 +105,13 @@ public:
   }
 
   /*!
-   \brief Construct state
-   \param state : a state
-   \param args : arguments to a constructor of STATE beyond tuple of locations and valuation of bounded integer variables
-   \return a new instance of STATE constructed from a copy of the tuple of locations in state, a copy of the valuation of
-   bounded integer variables in state, and args
-   */
-  template <class... ARGS> tchecker::intrusive_shared_ptr_t<STATE> construct_from_state(STATE const & state, ARGS &&... args)
+   \brief Clone state
+   \param s : a state
+   \return a new instance of STATE that is a clone of s
+  */
+  template <class... ARGS> tchecker::intrusive_shared_ptr_t<STATE> clone(STATE const & s)
   {
-    return tchecker::syncprod::details::state_pool_allocator_t<STATE>::construct_from_state(
-        state, _intval_pool.construct(state.intval()), args...);
+    return tchecker::ta::details::state_pool_allocator_t<STATE>::construct_from_state(s);
   }
 
   /*!
@@ -187,6 +184,19 @@ public:
   }
 
 protected:
+  /*!
+   \brief Construct state from a state
+   \param s : a state
+   \param args : arguments to a constructor of STATE beyond tuple of locations and valuation of bounded integer variables
+   \return a new instance of STATE constructed from a copy of the tuple of locations in s, a copy of the valuation of
+   bounded integer variables in s, and args
+   */
+  template <class... ARGS> tchecker::intrusive_shared_ptr_t<STATE> construct_from_state(STATE const & s, ARGS &&... args)
+  {
+    return tchecker::syncprod::details::state_pool_allocator_t<STATE>::construct_from_state(
+        s, _intval_pool.construct(s.intval()), args...);
+  }
+
   std::size_t _intval_capacity;                             /*!< Capacity of valuations of bounded integer variables */
   tchecker::pool_t<tchecker::shared_intval_t> _intval_pool; /*!< Pool of valuations of bounded integer variables */
 };
@@ -219,11 +229,14 @@ public:
   using tchecker::syncprod::details::transition_pool_allocator_t<TRANSITION>::transition_pool_allocator_t;
   using tchecker::syncprod::details::transition_pool_allocator_t<TRANSITION>::collect;
   using tchecker::syncprod::details::transition_pool_allocator_t<TRANSITION>::construct;
-  using tchecker::syncprod::details::transition_pool_allocator_t<TRANSITION>::construct_from_transition;
+  using tchecker::syncprod::details::transition_pool_allocator_t<TRANSITION>::clone;
   using tchecker::syncprod::details::transition_pool_allocator_t<TRANSITION>::destruct;
   using tchecker::syncprod::details::transition_pool_allocator_t<TRANSITION>::destruct_all;
   using tchecker::syncprod::details::transition_pool_allocator_t<TRANSITION>::enroll;
   using tchecker::syncprod::details::transition_pool_allocator_t<TRANSITION>::memsize;
+
+protected:
+  using tchecker::syncprod::details::transition_pool_allocator_t<TRANSITION>::construct_from_transition;
 };
 
 } // end of namespace details

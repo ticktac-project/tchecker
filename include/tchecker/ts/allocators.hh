@@ -97,14 +97,13 @@ public:
   }
 
   /*!
-   \brief Copy-construct state
-   \param state : a state
-   \param args : arguments to a constructor of STATE beyond state
-   \return a new instance of STATE constructed from state and args
-   */
-  template <class... ARGS> tchecker::intrusive_shared_ptr_t<STATE> construct_from_state(STATE const & state, ARGS &&... args)
+   \brief Clone state
+   \param s : s state
+   \return a new instance of STATE that is a clone of s
+  */
+  template <class... ARGS> tchecker::intrusive_shared_ptr_t<STATE> clone(STATE const & s)
   {
-    return _state_pool.construct(state, std::forward<ARGS>(args)...);
+    return tchecker::ts::state_pool_allocator_t<STATE>::construct_from_state(s);
   }
 
   /*!
@@ -147,6 +146,17 @@ public:
   void enroll(tchecker::gc_t & gc) { _state_pool.enroll(gc); }
 
 protected:
+  /*!
+   \brief Construct a state from a state
+   \param s : a state
+   \param args : arguments to a constructor of STATE beyond s
+   \return a new instance of STATE constructed from s and args
+   */
+  template <class... ARGS> tchecker::intrusive_shared_ptr_t<STATE> construct_from_state(STATE const & s, ARGS &&... args)
+  {
+    return _state_pool.construct(s, std::forward<ARGS>(args)...);
+  }
+
   tchecker::pool_t<STATE> _state_pool; /*!< Pool of states */
 };
 
@@ -227,15 +237,13 @@ public:
   }
 
   /*!
-   \brief Copy-construct transition
-   \param transition : a transition
-   \param args : arguments to a constructor of TRANSITION beyond transition
-   \return a new instance of TRANSITION constructed from transition and args
-   */
-  template <class... ARGS>
-  tchecker::intrusive_shared_ptr_t<TRANSITION> construct_from_transition(TRANSITION const & transition, ARGS &&... args)
+   \brief Clone a transition
+   \param t : a transition
+   \return a new instance of TRANSITION that is a clone of t
+  */
+  template <class... ARGS> tchecker::intrusive_shared_ptr_t<TRANSITION> clone(TRANSITION const & t)
   {
-    return _transition_pool.construct(transition, std::forward<ARGS>(args)...);
+    return tchecker::ts::transition_pool_allocator_t<TRANSITION>::construct_from_transition(t);
   }
 
   /*!
@@ -277,6 +285,18 @@ public:
   void enroll(tchecker::gc_t & gc) { _transition_pool.enroll(gc); }
 
 protected:
+  /*!
+   \brief Construct a transition from a transition
+   \param t : a transition
+   \param args : arguments to a constructor of TRANSITION beyond t
+   \return a new instance of TRANSITION constructed from t and args
+   */
+  template <class... ARGS>
+  tchecker::intrusive_shared_ptr_t<TRANSITION> construct_from_transition(TRANSITION const & t, ARGS &&... args)
+  {
+    return _transition_pool.construct(t, std::forward<ARGS>(args)...);
+  }
+
   tchecker::pool_t<TRANSITION> _transition_pool; /*!< Pool of transitions */
 };
 

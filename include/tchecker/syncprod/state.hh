@@ -79,9 +79,9 @@ public:
 
   /*!
    \brief Accessor
-   \return pointer to tuple of locations
+   \return reference to pointer to tuple of locations
    */
-  inline tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> vloc_ptr() { return _vloc; }
+  inline tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> & vloc_ptr() { return _vloc; }
 
   /*!
    \brief Accessor

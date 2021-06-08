@@ -87,9 +87,9 @@ public:
 
   /*!
    \brief Accessor
-   \return pointer to valuation of bounded integer variables
+   \return reference to pointer to valuation of bounded integer variables
    */
-  inline tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> intval_ptr() { return _intval; }
+  inline tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> & intval_ptr() { return _intval; }
 
   /*!
    \brief Accessor

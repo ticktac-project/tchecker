@@ -98,9 +98,9 @@ public:
 
   /*!
   \brief Accessor
-  \return pointer to the zone in this state
+  \return reference to pointer to the zone in this state
   */
-  inline tchecker::intrusive_shared_ptr_t<tchecker::refzg::shared_zone_t> zone_ptr() { return _zone; }
+  inline tchecker::intrusive_shared_ptr_t<tchecker::refzg::shared_zone_t> & zone_ptr() { return _zone; }
 
   /*!
   \brief Accessor

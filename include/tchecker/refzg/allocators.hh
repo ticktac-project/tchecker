@@ -111,15 +111,13 @@ public:
   }
 
   /*!
-   \brief Construct state
-   \param state : a state
-   \param args : arguments to a constructor of STATE beyond the zone
-   \return a new instance of STATE constructed from a copy of the zone in state, and args
-   */
-  template <class... ARGS> tchecker::intrusive_shared_ptr_t<STATE> construct_from_state(STATE const & state, ARGS &&... args)
+   \brief Clone state
+   \param s : a state
+   \return a new instance of STATE that is a clone of s
+  */
+  template <class... ARGS> tchecker::intrusive_shared_ptr_t<STATE> clone(STATE const & s)
   {
-    return tchecker::ta::details::state_pool_allocator_t<STATE>::construct_from_state(state, _zone_pool.construct(state.zone()),
-                                                                                      args...);
+    return tchecker::refzg::details::state_pool_allocator_t<STATE>::construct_from_state(s);
   }
 
   /*!
@@ -192,6 +190,18 @@ public:
   }
 
 protected:
+  /*!
+   \brief Construct state from a state
+   \param s : a state
+   \param args : arguments to a constructor of STATE beyond the zone
+   \return a new instance of STATE constructed from a copy of the zone in s, and args
+   */
+  template <class... ARGS> tchecker::intrusive_shared_ptr_t<STATE> construct_from_state(STATE const & s, ARGS &&... args)
+  {
+    return tchecker::ta::details::state_pool_allocator_t<STATE>::construct_from_state(s, _zone_pool.construct(s.zone()),
+                                                                                      args...);
+  }
+
   std::shared_ptr<tchecker::reference_clock_variables_t const> _ref_clocks; /*!< Reference clocks */
   tchecker::pool_t<tchecker::refzg::shared_zone_t> _zone_pool;              /*!< Pool of zones */
 };
@@ -226,11 +236,14 @@ public:
   using tchecker::ta::details::transition_pool_allocator_t<TRANSITION>::transition_pool_allocator_t;
   using tchecker::ta::details::transition_pool_allocator_t<TRANSITION>::collect;
   using tchecker::ta::details::transition_pool_allocator_t<TRANSITION>::construct;
-  using tchecker::ta::details::transition_pool_allocator_t<TRANSITION>::construct_from_transition;
+  using tchecker::ta::details::transition_pool_allocator_t<TRANSITION>::clone;
   using tchecker::ta::details::transition_pool_allocator_t<TRANSITION>::destruct;
   using tchecker::ta::details::transition_pool_allocator_t<TRANSITION>::destruct_all;
   using tchecker::ta::details::transition_pool_allocator_t<TRANSITION>::enroll;
   using tchecker::ta::details::transition_pool_allocator_t<TRANSITION>::memsize;
+
+protected:
+  using tchecker::ta::details::transition_pool_allocator_t<TRANSITION>::construct_from_transition;
 };
 
 } // end of namespace details

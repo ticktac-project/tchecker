@@ -117,7 +117,7 @@ tchecker::refzg::outgoing_edges_range_t refzg_t::outgoing_edges(tchecker::refzg:
 std::tuple<enum tchecker::state_status_t, tchecker::refzg::state_sptr_t, tchecker::refzg::transition_sptr_t>
 refzg_t::next(tchecker::refzg::const_state_sptr_t const & s, tchecker::refzg::outgoing_edges_value_t const & v)
 {
-  tchecker::refzg::state_sptr_t nexts = _state_allocator.construct_from_state(*s);
+  tchecker::refzg::state_sptr_t nexts = _state_allocator.clone(*s);
   tchecker::refzg::transition_sptr_t t = _transition_allocator.construct();
   enum tchecker::state_status_t status = tchecker::refzg::next(*_system, *nexts, *t, *_semantics, _spread, v);
   return std::make_tuple(status, nexts, t);

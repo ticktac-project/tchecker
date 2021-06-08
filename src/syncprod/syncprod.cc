@@ -189,7 +189,7 @@ tchecker::syncprod::outgoing_edges_range_t syncprod_t::outgoing_edges(tchecker::
 std::tuple<enum tchecker::state_status_t, tchecker::syncprod::state_sptr_t, tchecker::syncprod::transition_sptr_t>
 syncprod_t::next(tchecker::syncprod::const_state_sptr_t const & s, tchecker::syncprod::outgoing_edges_value_t const & v)
 {
-  tchecker::syncprod::state_sptr_t nexts = _state_allocator.construct_from_state(*s);
+  tchecker::syncprod::state_sptr_t nexts = _state_allocator.clone(*s);
   tchecker::syncprod::transition_sptr_t t = _transition_allocator.construct();
   enum tchecker::state_status_t status = tchecker::syncprod::next(*_system, *nexts, *t, v);
   return std::make_tuple(status, nexts, t);

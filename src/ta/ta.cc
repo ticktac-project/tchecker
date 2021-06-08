@@ -162,7 +162,7 @@ tchecker::ta::outgoing_edges_range_t ta_t::outgoing_edges(tchecker::ta::const_st
 std::tuple<enum tchecker::state_status_t, tchecker::ta::state_sptr_t, tchecker::ta::transition_sptr_t>
 ta_t::next(tchecker::ta::const_state_sptr_t const & s, tchecker::ta::outgoing_edges_value_t const & v)
 {
-  tchecker::ta::state_sptr_t nexts = _state_allocator.construct_from_state(*s);
+  tchecker::ta::state_sptr_t nexts = _state_allocator.clone(*s);
   tchecker::ta::transition_sptr_t t = _transition_allocator.construct();
   enum tchecker::state_status_t status = tchecker::ta::next(*_system, *nexts, *t, v);
   return std::make_tuple(status, nexts, t);
