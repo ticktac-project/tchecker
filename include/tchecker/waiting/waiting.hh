@@ -8,6 +8,8 @@
 #ifndef TCHECKER_WAITING_HH
 #define TCHECKER_WAITING_HH
 
+#include <cassert>
+
 /*!
  \file waiting.hh
  \brief Waiting containers
