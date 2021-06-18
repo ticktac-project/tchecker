@@ -14,7 +14,7 @@
 
 #include "testutils/utils.hh"
 
-TEST_CASE("labels in tuple of locations", "[labels]")
+TEST_CASE("Labels in tuple of locations", "[labels]")
 {
   std::string model = "system:labels \n\
   \n\
@@ -55,7 +55,7 @@ TEST_CASE("labels in tuple of locations", "[labels]")
 
   tchecker::vloc_t * vloc = tchecker::vloc_allocate_and_construct(system.processes_count(), system.processes_count());
 
-  SECTION("No labels")
+  SECTION("No label")
   {
     (*vloc)[P1] = P1_l0;
     (*vloc)[P2] = P2_l1;
@@ -112,4 +112,71 @@ TEST_CASE("labels in tuple of locations", "[labels]")
   }
 
   tchecker::vloc_destruct_and_deallocate(vloc);
+}
+
+TEST_CASE("Labels from comma-separated strings", "[labels]")
+{
+  std::string model = "system:labels \n\
+  \n\
+  process:P1 \n\
+  location:P1:l0{initial:} \n\
+  location:P1:l1{initial: : labels: a,b} \n\
+  \n\
+  process:P2 \n\
+  location:P2:l0{initial: : labels: a} \n\
+  location:P2:l1{initial:} \n\
+  \n\
+  process:P3 \n\
+  location:P3:l0{initial:} \n\
+  location:P3:l1{initial: : labels: b,c,d} \n\
+  ";
+
+  tchecker::log_t log(&std::cerr);
+  std::unique_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model, log)};
+  assert(sysdecl != nullptr);
+
+  tchecker::ta::system_t system{*sysdecl};
+
+  tchecker::label_id_t const a = system.label_id("a");
+  tchecker::label_id_t const b = system.label_id("b");
+  tchecker::label_id_t const c = system.label_id("c");
+  tchecker::label_id_t const d = system.label_id("d");
+
+  SECTION("No label")
+  {
+    boost::dynamic_bitset<> labels = system.labels("");
+    REQUIRE(labels.none());
+  }
+
+  SECTION("One label")
+  {
+    boost::dynamic_bitset<> labels = system.labels("b");
+    REQUIRE(labels.count() == 1);
+    REQUIRE(!labels[a]);
+    REQUIRE(labels[b]);
+    REQUIRE(!labels[c]);
+    REQUIRE(!labels[d]);
+  }
+
+  SECTION("Multiple label")
+  {
+    boost::dynamic_bitset<> labels = system.labels("a,b,d");
+    REQUIRE(labels.count() == 3);
+    REQUIRE(labels[a]);
+    REQUIRE(labels[b]);
+    REQUIRE(!labels[c]);
+    REQUIRE(labels[d]);
+  }
+
+  SECTION("All labels")
+  {
+    boost::dynamic_bitset<> labels = system.labels("c,a,d,b");
+    REQUIRE(labels.count() == 4);
+    REQUIRE(labels[a]);
+    REQUIRE(labels[b]);
+    REQUIRE(labels[c]);
+    REQUIRE(labels[d]);
+  }
+
+  SECTION("Bad label") { REQUIRE_THROWS_AS(system.labels("a,c,s,d"), std::invalid_argument); }
 }

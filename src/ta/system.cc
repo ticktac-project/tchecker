@@ -95,6 +95,22 @@ boost::dynamic_bitset<> const & system_t::labels(tchecker::loc_id_t id) const
   return _labels[id];
 }
 
+boost::dynamic_bitset<> system_t::labels(std::string const & labels) const
+{
+  boost::dynamic_bitset<> s{this->labels_count()};
+  if (labels == "")
+    return s;
+
+  std::vector<std::string> v;
+  boost::split(v, labels, boost::is_any_of(","));
+  for (std::string const & l : v) {
+    if (!this->is_label(l))
+      throw std::invalid_argument("Unknown label");
+    s.set(this->label_id(l));
+  }
+  return s;
+}
+
 tchecker::typed_expression_t const & system_t::invariant(tchecker::loc_id_t id) const
 {
   assert(is_location(id));

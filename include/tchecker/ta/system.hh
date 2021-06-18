@@ -192,6 +192,14 @@ public:
   boost::dynamic_bitset<> const & labels(tchecker::loc_id_t id) const;
 
   /*!
+   \brief Compute labels set from list of labels
+   \param labels : comma-separated list of labels
+   \return a set of size labels_count(), corresponding to labels
+   \throw std::invalid_argument : if labels contains an undeclared label
+  */
+  boost::dynamic_bitset<> labels(std::string const & labels) const;
+
+  /*!
    \brief Accessor
    \param id : location identifier
    \pre id is a location identifier (checked by assertion)
