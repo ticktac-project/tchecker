@@ -201,7 +201,7 @@ bool delay_allowed(tchecker::ta::system_t const & system, tchecker::vloc_t const
  \param system : a system of timed processes
  \param r : reference clocks
  \param vloc : tuple of locations
- \return a dynamic bitset of size.refcount() that contains all reference clocks
+ \return a dynamic bitset of size r.refcount() that contains all reference clocks
  that can delay from vloc
  */
 boost::dynamic_bitset<> delay_allowed(tchecker::ta::system_t const & system, tchecker::reference_clock_variables_t const & r,
@@ -218,6 +218,15 @@ boost::dynamic_bitset<> delay_allowed(tchecker::ta::system_t const & system, tch
  */
 boost::dynamic_bitset<> sync_refclocks(tchecker::ta::system_t const & system, tchecker::reference_clock_variables_t const & r,
                                        tchecker::vedge_t const & vedge);
+
+/*!
+ \brief Compute labels in a tuple of locations
+ \param system : a system of timed processes
+ \param vloc : tuple of locations
+ \return a dynamic bitset of size system.labels_count() that contains all labels
+ on locations in vloc
+ */
+boost::dynamic_bitset<> labels(tchecker::ta::system_t const & system, tchecker::vloc_t const & vloc);
 
 /*!
  \class ta_t

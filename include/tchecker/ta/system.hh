@@ -184,17 +184,12 @@ public:
   bool is_urgent(tchecker::loc_id_t id) const;
 
   /*!
-   \brief Type of labels iterator
-   */
-  using labels_const_iterator_t = std::unordered_multimap<tchecker::loc_id_t, tchecker::label_id_t>::const_iterator;
-
-  /*!
    \brief Accessor
    \param id : location identifier
    \pre id is a location identifier (checked by assertion)
-   \return range of labels on location id
+   \return set of labels in location id
    */
-  tchecker::range_t<labels_const_iterator_t> labels(tchecker::loc_id_t id) const;
+  boost::dynamic_bitset<> const & labels(tchecker::loc_id_t id) const;
 
   /*!
    \brief Accessor
@@ -263,6 +258,11 @@ private:
   void compute_from_syncprod_system();
 
   /*!
+  \brief Compute labels index and set state labels
+   */
+  void set_labels();
+
+  /*!
    \brief Set location invariant
    \param id : location identifier
    \param invariants : range of invariants (as strings)
@@ -273,14 +273,6 @@ private:
    */
   void set_invariant(tchecker::loc_id_t id,
                      tchecker::range_t<tchecker::system::attributes_t::const_iterator_t> const & invariants);
-
-  /*!
-   \brief Set location labels
-   \param id : location identifier
-   \param labels : range of labels (as strings)
-   \post location is is labelled by labels
-   */
-  void set_labels(tchecker::loc_id_t id, tchecker::range_t<tchecker::system::attributes_t::const_iterator_t> const & labels);
 
   /*!
    \brief Set location urgent flag
@@ -313,12 +305,12 @@ private:
   void set_statements(tchecker::edge_id_t id,
                       tchecker::range_t<tchecker::system::attributes_t::const_iterator_t> const & statements);
 
-  mutable tchecker::vm_t _vm;                                                /*!< Bytecode interpreter */
-  std::vector<compiled_expression_t> _invariants;                            /*!< Map : location identifier -> invariant */
-  std::vector<compiled_expression_t> _guards;                                /*!< Map : edge identifier -> guard */
-  std::vector<compiled_statement_t> _statements;                             /*!< Map : edge identifier -> statement */
-  std::unordered_multimap<tchecker::loc_id_t, tchecker::label_id_t> _labels; /*!< Map : location identifier -> labels */
-  boost::dynamic_bitset<> _urgent;                                           /*!< Urgent locations */
+  mutable tchecker::vm_t _vm;                     /*!< Bytecode interpreter */
+  std::vector<compiled_expression_t> _invariants; /*!< Map : location identifier -> invariant */
+  std::vector<compiled_expression_t> _guards;     /*!< Map : edge identifier -> guard */
+  std::vector<compiled_statement_t> _statements;  /*!< Map : edge identifier -> statement */
+  std::vector<boost::dynamic_bitset<>> _labels;   /*!< Map: location identifier -> labels */
+  boost::dynamic_bitset<> _urgent;                /*!< Urgent locations */
 };
 
 } // end of namespace ta

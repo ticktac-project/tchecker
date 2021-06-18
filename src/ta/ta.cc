@@ -132,6 +132,16 @@ boost::dynamic_bitset<> sync_refclocks(tchecker::ta::system_t const & system, tc
   return refclocks;
 }
 
+/* labels */
+
+boost::dynamic_bitset<> labels(tchecker::ta::system_t const & system, tchecker::vloc_t const & vloc)
+{
+  boost::dynamic_bitset<> l(system.labels_count());
+  for (tchecker::loc_id_t loc_id : vloc)
+    l |= system.labels(loc_id);
+  return l;
+}
+
 /* ta_t */
 
 ta_t::ta_t(std::shared_ptr<tchecker::ta::system_t const> const & system, std::size_t block_size, tchecker::gc_t & gc)
