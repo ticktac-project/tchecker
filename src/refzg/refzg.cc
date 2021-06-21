@@ -83,6 +83,12 @@ enum tchecker::state_status_t next(tchecker::ta::system_t const & system,
   return tchecker::STATE_OK;
 }
 
+bool satisfies(tchecker::ta::system_t const & system, tchecker::refzg::state_t const & s,
+               boost::dynamic_bitset<> const & labels)
+{
+  return !s.zone().is_empty() && s.zone().is_synchronizable() && tchecker::ta::satisfies(system, s, labels);
+}
+
 /* refzg_t */
 
 refzg_t::refzg_t(std::shared_ptr<tchecker::ta::system_t const> const & system,
@@ -121,6 +127,11 @@ refzg_t::next(tchecker::refzg::const_state_sptr_t const & s, tchecker::refzg::ou
   tchecker::refzg::transition_sptr_t t = _transition_allocator.construct();
   enum tchecker::state_status_t status = tchecker::refzg::next(*_system, *nexts, *t, *_semantics, _spread, v);
   return std::make_tuple(status, nexts, t);
+}
+
+bool refzg_t::satisfies(tchecker::refzg::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels)
+{
+  return tchecker::refzg::satisfies(*_system, *s, labels);
 }
 
 tchecker::ta::system_t const & refzg_t::system() const { return *_system; }

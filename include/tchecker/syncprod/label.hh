@@ -5,8 +5,8 @@
  *
  */
 
-#ifndef TCHECKER_TA_LABEL_HH
-#define TCHECKER_TA_LABEL_HH
+#ifndef TCHECKER_SYNCPROD_LABEL_HH
+#define TCHECKER_SYNCPROD_LABEL_HH
 
 #include <string>
 
@@ -15,16 +15,16 @@
 
 /*!
  \file label.hh
- \brief Labels of locations in a system of timed processes
+ \brief Labels of locations for a synchronized product of processes
  */
 
 namespace tchecker {
 
-namespace ta {
+namespace syncprod {
 
 /*!
  \class labels_t
- \brief Labels of locations in a system of timed processes
+ \brief Labels of locations for a synchronized product of processes
  */
 class labels_t {
 public:
@@ -78,8 +78,8 @@ private:
   tchecker::index_t<std::string, tchecker::label_id_t> _labels_index; /*!< Map label name <-> label identifier */
 };
 
-} // end of namespace ta
+} // namespace syncprod
 
 } // end of namespace tchecker
 
-#endif // TCHECKER_TA_LABEL_HH
+#endif // TCHECKER_SYNCPROD_LABEL_HH

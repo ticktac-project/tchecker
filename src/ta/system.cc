@@ -9,8 +9,6 @@
 #include <memory>
 #include <string>
 
-#include <boost/algorithm/string.hpp>
-
 #include "tchecker/clockbounds/solver.hh"
 #include "tchecker/expression/expression.hh"
 #include "tchecker/expression/type_inference.hh"
@@ -52,7 +50,6 @@ tchecker::ta::system_t & system_t::operator=(tchecker::ta::system_t const & syst
 {
   if (this != &system) {
     tchecker::syncprod::system_t::operator=(system);
-    tchecker::ta::labels_t::operator=(system);
     _vm = system._vm;
     compute_from_syncprod_system();
   }
@@ -87,28 +84,6 @@ bool system_t::is_urgent(tchecker::loc_id_t id) const
 {
   assert(is_location(id));
   return _urgent[id] == 1;
-}
-
-boost::dynamic_bitset<> const & system_t::labels(tchecker::loc_id_t id) const
-{
-  assert(is_location(id));
-  return _labels[id];
-}
-
-boost::dynamic_bitset<> system_t::labels(std::string const & labels) const
-{
-  boost::dynamic_bitset<> s{this->labels_count()};
-  if (labels == "")
-    return s;
-
-  std::vector<std::string> v;
-  boost::split(v, labels, boost::is_any_of(","));
-  for (std::string const & l : v) {
-    if (!this->is_label(l))
-      throw std::invalid_argument("Unknown label");
-    s.set(this->label_id(l));
-  }
-  return s;
 }
 
 tchecker::typed_expression_t const & system_t::invariant(tchecker::loc_id_t id) const
@@ -152,51 +127,6 @@ void system_t::compute_from_syncprod_system()
 
   if (tchecker::ta::has_guarded_weakly_synchronized_event(*this))
     throw std::invalid_argument("Transitions over weakly synchronized events should not have guards");
-
-  set_labels();
-}
-
-static void labels_from_attrs(tchecker::range_t<tchecker::system::attributes_t::const_iterator_t> const & attrs,
-                              std::vector<std::string> & labels)
-{
-  std::vector<std::string> splitted_labels;
-  for (auto && [key, value] : attrs) {
-    boost::split(splitted_labels, value, boost::is_any_of(","));
-    labels.insert(labels.end(), splitted_labels.begin(), splitted_labels.end());
-  }
-}
-
-void system_t::set_labels()
-{
-  tchecker::loc_id_t const locations_count = this->locations_count();
-
-  // Compute labels index
-  std::vector<std::string> labels;
-  for (tchecker::loc_id_t loc_id = 0; loc_id < locations_count; ++loc_id) {
-    auto const & attr = tchecker::syncprod::system_t::location(loc_id)->attributes();
-    labels_from_attrs(attr.values("labels"), labels);
-  }
-
-  for (std::string const & l : labels) {
-    if (!tchecker::ta::labels_t::is_label(l))
-      tchecker::ta::labels_t::add_label(l);
-  }
-
-  // Set location labels
-  tchecker::label_id_t const & labels_count = this->labels_count();
-
-  _labels.clear();
-  _labels.resize(locations_count);
-
-  for (tchecker::loc_id_t loc_id = 0; loc_id < locations_count; ++loc_id) {
-    _labels[loc_id].resize(labels_count);
-    _labels[loc_id].reset();
-    auto const & attr = tchecker::syncprod::system_t::location(loc_id)->attributes();
-    labels.clear();
-    labels_from_attrs(attr.values("labels"), labels);
-    for (std::string const & l : labels)
-      _labels[loc_id].set(this->label_id(l));
-  }
 }
 
 static tchecker::expression_t *

@@ -12,6 +12,8 @@
 #include <type_traits>
 #include <vector>
 
+#include <boost/dynamic_bitset.hpp>
+
 #include "tchecker/basictypes.hh"
 #include "tchecker/ts/state.hh"
 #include "tchecker/ts/transition.hh"
@@ -161,6 +163,15 @@ public:
         v.push_back(std::make_tuple(status, next_state, transition));
     }
   }
+
+  /*!
+  \brief Checks if a state satisfies a set of labels
+  \param s : a state
+  \param labels : a set of labels
+  \return true if labels is not empty and labels is included in the set of
+  labels of state s, false otherwise
+   */
+  virtual bool satisfies(CONST_STATE const & s, boost::dynamic_bitset<> const & labels) = 0;
 };
 
 } // end of namespace ts

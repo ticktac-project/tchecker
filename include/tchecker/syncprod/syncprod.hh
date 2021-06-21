@@ -272,13 +272,44 @@ inline enum tchecker::state_status_t next(tchecker::syncprod::system_t const & s
 }
 
 /*!
-\brief Compute set of committed processes in a vloc
-\param system : a system
-\param vloc : tuple of locations
-\return the set of processes from system that are committed in vloc
+ \brief Compute set of committed processes in a vloc
+ \param system : a system
+ \param vloc : tuple of locations
+ \return the set of processes from system that are committed in vloc
 */
 boost::dynamic_bitset<> committed_processes(tchecker::syncprod::system_t const & system,
                                             tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc);
+
+/*!
+ \brief Compute labels in a tuple of locations
+ \param system : a system of timed processes
+ \param vloc : tuple of locations
+ \return a dynamic bitset of size system.labels_count() that contains all labels
+ on locations in vloc
+ */
+boost::dynamic_bitset<> labels(tchecker::syncprod::system_t const & system, tchecker::vloc_t const & vloc);
+
+/*!
+ \brief Checks if a vloc satisfies a set of labels
+ \param system : a system
+ \param vloc : tuple of locations
+ \param labels : set of labels
+ \return true if labels is not empty and labels is included in the set of labels
+ in vloc, false otherwise
+*/
+bool satisfies(tchecker::syncprod::system_t const & system, tchecker::vloc_t const & vloc,
+               boost::dynamic_bitset<> const & labels);
+
+/*!
+ \brief Checks if a state satisfies a set of labels
+ \param system : a system
+ \param s : a state
+ \param labels : set of labels
+ \return true if labels is not empty and labels is included in the set of labels
+ in s, false otherwise
+*/
+bool satisfies(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t const & s,
+               boost::dynamic_bitset<> const & labels);
 
 /*!
  \class syncprod_t
@@ -392,6 +423,15 @@ public:
                               tchecker::syncprod::outgoing_edges_range_t, tchecker::syncprod::initial_value_t,
                               tchecker::syncprod::outgoing_edges_value_t>::next(s, v, mask);
   }
+
+  /*!
+  \brief Checks if a state satisfies a set of labels
+  \param s : a state
+  \param labels : a set of labels
+  \return true if labels is not empty and labels is included in the set of
+  labels of state s, false otherwise
+   */
+  virtual bool satisfies(tchecker::syncprod::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels);
 
   /*!
    \brief Accessor

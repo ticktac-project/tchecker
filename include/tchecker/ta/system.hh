@@ -21,7 +21,6 @@
 #include "tchecker/syncprod/system.hh"
 #include "tchecker/system/attribute.hh"
 #include "tchecker/system/system.hh"
-#include "tchecker/ta/label.hh"
 #include "tchecker/utils/iterator.hh"
 #include "tchecker/vm/vm.hh"
 
@@ -38,7 +37,7 @@ namespace ta {
  \class system_t
  \brief System of processes for timed automata
  */
-class system_t : private tchecker::syncprod::system_t, private tchecker::ta::labels_t {
+class system_t : private tchecker::syncprod::system_t {
 public:
   /*!
    \brief Constructor
@@ -162,10 +161,11 @@ public:
   using tchecker::syncprod::system_t::is_intvar;
 
   // Labels
-  using tchecker::ta::labels_t::is_label;
-  using tchecker::ta::labels_t::label_id;
-  using tchecker::ta::labels_t::label_name;
-  using tchecker::ta::labels_t::labels_count;
+  using tchecker::syncprod::system_t::is_label;
+  using tchecker::syncprod::system_t::label_id;
+  using tchecker::syncprod::system_t::label_name;
+  using tchecker::syncprod::system_t::labels;
+  using tchecker::syncprod::system_t::labels_count;
 
   // Locations
   using tchecker::syncprod::system_t::initial_locations;
@@ -182,22 +182,6 @@ public:
    \return true if location id is urgent, false otherwise
    */
   bool is_urgent(tchecker::loc_id_t id) const;
-
-  /*!
-   \brief Accessor
-   \param id : location identifier
-   \pre id is a location identifier (checked by assertion)
-   \return set of labels in location id
-   */
-  boost::dynamic_bitset<> const & labels(tchecker::loc_id_t id) const;
-
-  /*!
-   \brief Compute labels set from list of labels
-   \param labels : comma-separated list of labels
-   \return a set of size labels_count(), corresponding to labels
-   \throw std::invalid_argument : if labels contains an undeclared label
-  */
-  boost::dynamic_bitset<> labels(std::string const & labels) const;
 
   /*!
    \brief Accessor
@@ -240,9 +224,6 @@ public:
   constexpr inline tchecker::syncprod::system_t const & as_syncprod_system() const { return *this; }
 
 private:
-  // Hidden modifiers and accessors
-  using tchecker::ta::labels_t::add_label;
-
   /*!
    \brief Typed and compiled expression
    */
@@ -264,11 +245,6 @@ private:
    \throw std::invalid_argument : if system has a transition over a weakly synchronized event
    */
   void compute_from_syncprod_system();
-
-  /*!
-  \brief Compute labels index and set state labels
-   */
-  void set_labels();
 
   /*!
    \brief Set location invariant
@@ -317,7 +293,6 @@ private:
   std::vector<compiled_expression_t> _invariants; /*!< Map : location identifier -> invariant */
   std::vector<compiled_expression_t> _guards;     /*!< Map : edge identifier -> guard */
   std::vector<compiled_statement_t> _statements;  /*!< Map : edge identifier -> statement */
-  std::vector<boost::dynamic_bitset<>> _labels;   /*!< Map: location identifier -> labels */
   boost::dynamic_bitset<> _urgent;                /*!< Urgent locations */
 };
 

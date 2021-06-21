@@ -7,9 +7,9 @@
 
 #include <boost/dynamic_bitset.hpp>
 
+#include "tchecker/syncprod/syncprod.hh"
+#include "tchecker/syncprod/system.hh"
 #include "tchecker/syncprod/vloc.hh"
-#include "tchecker/ta/system.hh"
-#include "tchecker/ta/ta.hh"
 #include "tchecker/utils/log.hh"
 
 #include "testutils/utils.hh"
@@ -35,7 +35,7 @@ TEST_CASE("Labels in tuple of locations", "[labels]")
   std::unique_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model, log)};
   assert(sysdecl != nullptr);
 
-  tchecker::ta::system_t system{*sysdecl};
+  tchecker::syncprod::system_t system{*sysdecl};
 
   tchecker::process_id_t const P1 = system.process_id("P1");
   tchecker::process_id_t const P2 = system.process_id("P2");
@@ -61,7 +61,7 @@ TEST_CASE("Labels in tuple of locations", "[labels]")
     (*vloc)[P2] = P2_l1;
     (*vloc)[P3] = P3_l0;
 
-    boost::dynamic_bitset<> labels = tchecker::ta::labels(system, *vloc);
+    boost::dynamic_bitset<> labels = tchecker::syncprod::labels(system, *vloc);
     REQUIRE(labels.size() == system.labels_count());
     REQUIRE(labels.none());
   }
@@ -72,7 +72,7 @@ TEST_CASE("Labels in tuple of locations", "[labels]")
     (*vloc)[P2] = P2_l0;
     (*vloc)[P3] = P3_l0;
 
-    boost::dynamic_bitset<> labels = tchecker::ta::labels(system, *vloc);
+    boost::dynamic_bitset<> labels = tchecker::syncprod::labels(system, *vloc);
     REQUIRE(labels.size() == system.labels_count());
     REQUIRE(labels.count() == 1);
     REQUIRE(labels[a]);
@@ -87,7 +87,7 @@ TEST_CASE("Labels in tuple of locations", "[labels]")
     (*vloc)[P2] = P2_l0;
     (*vloc)[P3] = P3_l0;
 
-    boost::dynamic_bitset<> labels = tchecker::ta::labels(system, *vloc);
+    boost::dynamic_bitset<> labels = tchecker::syncprod::labels(system, *vloc);
     REQUIRE(labels.size() == system.labels_count());
     REQUIRE(labels.count() == 2);
     REQUIRE(labels[a]);
@@ -102,7 +102,7 @@ TEST_CASE("Labels in tuple of locations", "[labels]")
     (*vloc)[P2] = P2_l0;
     (*vloc)[P3] = P3_l1;
 
-    boost::dynamic_bitset<> labels = tchecker::ta::labels(system, *vloc);
+    boost::dynamic_bitset<> labels = tchecker::syncprod::labels(system, *vloc);
     REQUIRE(labels.size() == system.labels_count());
     REQUIRE(labels.count() == 4);
     REQUIRE(labels[a]);
@@ -135,7 +135,7 @@ TEST_CASE("Labels from comma-separated strings", "[labels]")
   std::unique_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model, log)};
   assert(sysdecl != nullptr);
 
-  tchecker::ta::system_t system{*sysdecl};
+  tchecker::syncprod::system_t system{*sysdecl};
 
   tchecker::label_id_t const a = system.label_id("a");
   tchecker::label_id_t const b = system.label_id("b");

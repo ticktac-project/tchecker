@@ -444,6 +444,73 @@ TEST_CASE("is_synchronized", "[refdbm]")
   }
 }
 
+TEST_CASE("is_synchronizable", "[refdbm]")
+{
+  std::vector<std::string> refclocks{"$0", "$1", "$2"};
+  tchecker::reference_clock_variables_t r(refclocks);
+  r.declare("x1", "$0");
+  r.declare("x2", "$0");
+  r.declare("y", "$1");
+  r.declare("z1", "$2");
+  r.declare("z2", "$2");
+
+  tchecker::clock_id_t const rdim = r.size();
+  tchecker::dbm::db_t rdbm[rdim * rdim];
+
+  tchecker::clock_id_t const t0 = r.id("$0");
+  tchecker::clock_id_t const t1 = r.id("$1");
+  tchecker::clock_id_t const t2 = r.id("$2");
+  tchecker::clock_id_t const x1 = r.id("x1");
+  tchecker::clock_id_t const x2 = r.id("x2");
+  tchecker::clock_id_t const y = r.id("y");
+  tchecker::clock_id_t const z1 = r.id("z1");
+  tchecker::clock_id_t const z2 = r.id("z2");
+
+  SECTION("Zero DBM with reference clocks is synchronizable")
+  {
+    tchecker::refdbm::zero(rdbm, r);
+    REQUIRE(tchecker::refdbm::is_synchronizable(rdbm, r));
+  }
+
+  SECTION("Universal positive DBM with reference clocks is synchronizable")
+  {
+    tchecker::refdbm::universal_positive(rdbm, r);
+    REQUIRE(tchecker::refdbm::is_synchronizable(rdbm, r));
+  }
+
+  SECTION("Some synchronizable DBM with reference clocks")
+  {
+    tchecker::refdbm::universal_positive(rdbm, r);
+    RDBM(x1, x2) = tchecker::dbm::db(tchecker::dbm::LE, 1);
+    RDBM(x1, y) = tchecker::dbm::db(tchecker::dbm::LT, -1);
+    RDBM(z1, z2) = tchecker::dbm::db(tchecker::dbm::LE, 5);
+    tchecker::refdbm::tighten(rdbm, r);
+    REQUIRE_FALSE(tchecker::refdbm::is_empty_0(rdbm, r));
+    REQUIRE(tchecker::refdbm::is_synchronizable(rdbm, r));
+  }
+
+  SECTION("Some non-synchronizable DBM with reference clocks")
+  {
+    tchecker::refdbm::universal_positive(rdbm, r);
+    RDBM(t1, t2) = tchecker::dbm::db(tchecker::dbm::LE, -1);
+    tchecker::refdbm::tighten(rdbm, r);
+    REQUIRE_FALSE(tchecker::refdbm::is_empty_0(rdbm, r));
+    REQUIRE_FALSE(tchecker::refdbm::is_synchronizable(rdbm, r));
+  }
+
+  SECTION("Some, non-trivial, non-synchronizable DBM with reference clocks")
+  {
+    tchecker::refdbm::universal_positive(rdbm, r);
+    RDBM(x1, t0) = tchecker::dbm::db(tchecker::dbm::LE, 1);
+    RDBM(y, x1) = tchecker::dbm::db(tchecker::dbm::LT, -5);
+    RDBM(t1, y) = tchecker::dbm::db(tchecker::dbm::LE, 2);
+    RDBM(t1, t0) = tchecker::dbm::db(tchecker::dbm::LE, 4);
+    tchecker::refdbm::tighten(rdbm, r);
+    REQUIRE_FALSE(tchecker::refdbm::is_empty_0(rdbm, r));
+    REQUIRE_FALSE(tchecker::refdbm::is_synchronizable(rdbm, r));
+  }
+}
+
 TEST_CASE("is_equal", "[refdbm]")
 {
   std::vector<std::string> refclocks{"$0", "$1", "$2"};

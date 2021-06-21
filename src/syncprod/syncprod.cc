@@ -159,6 +159,30 @@ boost::dynamic_bitset<> committed_processes(tchecker::syncprod::system_t const &
   return committed;
 }
 
+/* labels */
+
+boost::dynamic_bitset<> labels(tchecker::syncprod::system_t const & system, tchecker::vloc_t const & vloc)
+{
+  boost::dynamic_bitset<> l(system.labels_count());
+  for (tchecker::loc_id_t loc_id : vloc)
+    l |= system.labels(loc_id);
+  return l;
+}
+
+bool satisfies(tchecker::syncprod::system_t const & system, tchecker::vloc_t const & vloc,
+               boost::dynamic_bitset<> const & labels)
+{
+  if (labels.none())
+    return false;
+  return labels <= tchecker::syncprod::labels(system, vloc);
+}
+
+bool satisfies(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t const & s,
+               boost::dynamic_bitset<> const & labels)
+{
+  return tchecker::syncprod::satisfies(system, s.vloc(), labels);
+}
+
 /* syncprod_t */
 
 syncprod_t::syncprod_t(std::shared_ptr<tchecker::syncprod::system_t const> const & system, std::size_t block_size,
@@ -193,6 +217,11 @@ syncprod_t::next(tchecker::syncprod::const_state_sptr_t const & s, tchecker::syn
   tchecker::syncprod::transition_sptr_t t = _transition_allocator.construct();
   enum tchecker::state_status_t status = tchecker::syncprod::next(*_system, *nexts, *t, v);
   return std::make_tuple(status, nexts, t);
+}
+
+bool syncprod_t::satisfies(tchecker::syncprod::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels)
+{
+  return tchecker::syncprod::satisfies(*_system, *s, labels);
 }
 
 tchecker::syncprod::system_t const & syncprod_t::system() const { return *_system; }

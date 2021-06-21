@@ -228,6 +228,19 @@ bool is_synchronized(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock
                      boost::dynamic_bitset<> const & sync_ref_clocks);
 
 /*!
+ \brief Check if a DBM with reference clocks contains a synchronized valuation
+ \param rdbm : a DBM
+ \param r : reference clocks for rdbm
+ \pre rdbm is not nullptr (checked by assertion)
+ rdbm is a r.size()*r.size() array of difference bounds
+ rdbm is consistent (checked by assertion)
+ rdbm is tight (checked by assertion)
+ rdbm is a DBM over reference clocks r
+ \return true dbm contains a synchronized valuation, false otherwise
+ */
+bool is_synchronizable(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r);
+
+/*!
  \brief Equality predicate on DBMs with reference clocks
  \param rdbm1 : a first DBM
  \param rdbm2 : a second DBM

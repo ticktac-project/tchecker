@@ -14,6 +14,7 @@
 #include <boost/dynamic_bitset/dynamic_bitset.hpp>
 
 #include "tchecker/parsing/declaration.hh"
+#include "tchecker/syncprod/label.hh"
 #include "tchecker/system/edge.hh"
 #include "tchecker/system/system.hh"
 #include "tchecker/utils/iterator.hh"
@@ -31,7 +32,7 @@ namespace syncprod {
  \class system_t
  \brief System of processes
  */
-class system_t : private tchecker::system::system_t {
+class system_t : private tchecker::system::system_t, private tchecker::syncprod::labels_t {
   /*!
    \brief Type of collection of asynchronous edges
    */
@@ -159,6 +160,28 @@ public:
   using tchecker::system::system_t::intvars_count;
   using tchecker::system::system_t::is_intvar;
 
+  // Labels
+  using tchecker::syncprod::labels_t::is_label;
+  using tchecker::syncprod::labels_t::label_id;
+  using tchecker::syncprod::labels_t::label_name;
+  using tchecker::syncprod::labels_t::labels_count;
+
+  /*!
+   \brief Accessor
+   \param id : location identifier
+   \pre id is a location identifier (checked by assertion)
+   \return set of labels in location id
+   */
+  boost::dynamic_bitset<> const & labels(tchecker::loc_id_t id) const;
+
+  /*!
+   \brief Compute labels set from list of labels
+   \param labels : comma-separated list of labels
+   \return a set of size labels_count(), corresponding to labels
+   \throw std::invalid_argument : if labels contains an undeclared label
+  */
+  boost::dynamic_bitset<> labels(std::string const & labels) const;
+
   // Locations
   using tchecker::system::system_t::initial_locations;
   using tchecker::system::system_t::is_location;
@@ -196,6 +219,7 @@ public:
 
 private:
   // Hidden modifiers
+  using tchecker::syncprod::labels_t::add_label;
   using tchecker::system::system_t::add_clock;
   using tchecker::system::system_t::add_edge;
   using tchecker::system::system_t::add_event;
@@ -215,6 +239,11 @@ private:
   \post _committed reflects the committed locations in the system
   */
   void compute_committed_locations();
+
+  /*!
+  \brief Compute labels index and set state labels
+   */
+  void compute_labels();
 
   /*!
    \brief Add asynchronous edge
@@ -237,6 +266,7 @@ private:
   std::vector<asynchronous_edges_collection_t> _async_incoming_edges; /*!< Map : loc id -> asynchronous incoming edges */
   static asynchronous_edges_collection_t const _empty_async_edges;    /*!< Empty collection of asynchronous edges */
   boost::dynamic_bitset<> _committed;                                 /*!< Committed locations */
+  std::vector<boost::dynamic_bitset<>> _labels;                       /*!< Map: location identifier -> labels */
 };
 
 /*!

@@ -220,13 +220,14 @@ boost::dynamic_bitset<> sync_refclocks(tchecker::ta::system_t const & system, tc
                                        tchecker::vedge_t const & vedge);
 
 /*!
- \brief Compute labels in a tuple of locations
+ \brief Checks if a state satisfies a set of labels
  \param system : a system of timed processes
- \param vloc : tuple of locations
- \return a dynamic bitset of size system.labels_count() that contains all labels
- on locations in vloc
- */
-boost::dynamic_bitset<> labels(tchecker::ta::system_t const & system, tchecker::vloc_t const & vloc);
+ \param s : a state
+ \param labels : a set of labels
+ \return true if labels is not empty and labels is included in the set of
+ labels of state s, false otherwise
+*/
+bool satisfies(tchecker::ta::system_t const & system, tchecker::ta::state_t const & s, boost::dynamic_bitset<> const & labels);
 
 /*!
  \class ta_t
@@ -334,6 +335,15 @@ public:
                               tchecker::ta::initial_range_t, tchecker::ta::outgoing_edges_range_t,
                               tchecker::ta::initial_value_t, tchecker::ta::outgoing_edges_value_t>::next(s, v, mask);
   }
+
+  /*!
+    \brief Checks if a state satisfies a set of labels
+    \param s : a state
+    \param labels : a set of labels
+    \return true if labels is not empty and labels is included in the set of
+    labels of state s, false otherwise
+     */
+  virtual bool satisfies(tchecker::ta::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels);
 
   /*!
    \brief Accessor

@@ -184,6 +184,25 @@ bool is_synchronized(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock
   return true;
 }
 
+bool is_synchronizable(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r)
+{
+  // rdbm has a synchronized valuation iff there is no negative weight between
+  // two reference clocks
+  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const refcount = r.refcount();
+
+  for (tchecker::clock_id_t t1 = 0; t1 < refcount; ++t1) {
+    for (tchecker::clock_id_t t2 = 0; t2 < refcount; ++t2) {
+      if (t1 == t2)
+        continue;
+      if (RDBM(t1, t2) < tchecker::dbm::LE_ZERO)
+        return false;
+    }
+  }
+  return true;
+  // TODO: Unit tests
+}
+
 bool is_equal(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
               tchecker::reference_clock_variables_t const & r)
 {

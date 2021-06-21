@@ -5,11 +5,11 @@
  *
  */
 
-#include "tchecker/ta/label.hh"
+#include "tchecker/syncprod/label.hh"
 
 namespace tchecker {
 
-namespace ta {
+namespace syncprod {
 
 void labels_t::add_label(std::string const & name) { _labels_index.add(name, _labels_index.size()); }
 
@@ -17,6 +17,6 @@ bool labels_t::is_label(tchecker::label_id_t id) const { return _labels_index.fi
 
 bool labels_t::is_label(std::string const & name) const { return _labels_index.find_key(name) != _labels_index.end_key_map(); }
 
-} // end of namespace ta
+} // end of namespace syncprod
 
 } // end of namespace tchecker

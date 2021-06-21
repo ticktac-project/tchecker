@@ -246,6 +246,17 @@ inline enum tchecker::state_status_t next(tchecker::ta::system_t const & system,
 }
 
 /*!
+ \brief Checks if a state satisfies a set of labels
+ \param system : a system of timed processes
+ \param s : a state
+ \param labels : a set of labels
+ \return true if labels is not empty and labels is included in the set of
+ labels of state s, false otherwise
+*/
+bool satisfies(tchecker::ta::system_t const & system, tchecker::refzg::state_t const & s,
+               boost::dynamic_bitset<> const & labels);
+
+/*!
  \class refzg_t
  \brief Zone graph with reference clocks of a timed automaton
  */
@@ -361,6 +372,15 @@ public:
                               tchecker::refzg::outgoing_edges_range_t, tchecker::refzg::initial_value_t,
                               tchecker::refzg::outgoing_edges_value_t>::next(s, v, mask);
   }
+
+  /*!
+  \brief Checks if a state satisfies a set of labels
+  \param s : a state
+  \param labels : a set of labels
+  \return true if labels is not empty and labels is included in the set of
+  labels of state s, false otherwise
+  */
+  virtual bool satisfies(tchecker::refzg::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels);
 
   /*!
    \brief Accessor

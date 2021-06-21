@@ -27,6 +27,8 @@ bool zone_t::is_empty() const { return tchecker::refdbm::is_empty_0(dbm_ptr(), *
 
 bool zone_t::is_universal_positive() const { return tchecker::refdbm::is_universal_positive(dbm_ptr(), *_ref_clocks); }
 
+bool zone_t::is_synchronizable() const { return tchecker::refdbm::is_synchronizable(dbm_ptr(), *_ref_clocks); }
+
 bool zone_t::operator==(tchecker::refzg::zone_t const & zone) const
 {
   return (_ref_clocks == zone._ref_clocks) && tchecker::refdbm::is_equal(dbm_ptr(), zone.dbm_ptr(), *_ref_clocks);

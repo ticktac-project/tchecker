@@ -60,6 +60,12 @@ public:
   bool is_universal_positive() const;
 
   /*!
+   \brief Checks if the zone contains a synchronized valuation
+   \return true is the zone contains a synchronized valuation, false otherwise
+  */
+  bool is_synchronizable() const;
+
+  /*!
    \brief Equality predicate
    \param zone : a zone
    \return true if this is equal to zone (same shared reference clocks, same

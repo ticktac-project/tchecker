@@ -10,6 +10,8 @@
 #include <tuple>
 #include <unordered_set>
 
+#include <boost/algorithm/string.hpp>
+
 #include "tchecker/basictypes.hh"
 #include "tchecker/syncprod/allocators.hh"
 #include "tchecker/syncprod/syncprod.hh"
@@ -27,12 +29,14 @@ system_t::system_t(tchecker::parsing::system_declaration_t const & sysdecl) : tc
 {
   extract_asynchronous_edges();
   compute_committed_locations();
+  compute_labels();
 }
 
 system_t::system_t(tchecker::system::system_t const & system) : tchecker::system::system_t(system)
 {
   extract_asynchronous_edges();
   compute_committed_locations();
+  compute_labels();
 }
 
 bool system_t::is_asynchronous(tchecker::system::edge_t const & edge) const
@@ -77,6 +81,28 @@ system_t::asynchronous_incoming_edges(tchecker::loc_id_t loc) const
                               asynchronous_edges_const_iterator_t(_async_incoming_edges[loc].end()));
 }
 
+boost::dynamic_bitset<> const & system_t::labels(tchecker::loc_id_t id) const
+{
+  assert(is_location(id));
+  return _labels[id];
+}
+
+boost::dynamic_bitset<> system_t::labels(std::string const & labels) const
+{
+  boost::dynamic_bitset<> s{this->labels_count()};
+  if (labels == "")
+    return s;
+
+  std::vector<std::string> v;
+  boost::split(v, labels, boost::is_any_of(","));
+  for (std::string const & l : v) {
+    if (!this->is_label(l))
+      throw std::invalid_argument("Unknown label");
+    s.set(this->label_id(l));
+  }
+  return s;
+}
+
 bool system_t::is_committed(tchecker::loc_id_t id) const
 {
   assert(is_location(id));
@@ -98,6 +124,49 @@ void system_t::compute_committed_locations()
   for (tchecker::loc_id_t id = 0; id < locations_count; ++id) {
     auto const & attr = tchecker::syncprod::system_t::location(id)->attributes();
     set_committed(id, attr.values("committed"));
+  }
+}
+
+static void labels_from_attrs(tchecker::range_t<tchecker::system::attributes_t::const_iterator_t> const & attrs,
+                              std::vector<std::string> & labels)
+{
+  std::vector<std::string> splitted_labels;
+  for (auto && [key, value] : attrs) {
+    boost::split(splitted_labels, value, boost::is_any_of(","));
+    labels.insert(labels.end(), splitted_labels.begin(), splitted_labels.end());
+  }
+}
+
+void system_t::compute_labels()
+{
+  tchecker::loc_id_t const locations_count = this->locations_count();
+
+  // Compute labels index
+  std::vector<std::string> labels;
+  for (tchecker::loc_id_t loc_id = 0; loc_id < locations_count; ++loc_id) {
+    auto const & attr = tchecker::syncprod::system_t::location(loc_id)->attributes();
+    labels_from_attrs(attr.values("labels"), labels);
+  }
+
+  for (std::string const & l : labels) {
+    if (!tchecker::syncprod::labels_t::is_label(l))
+      tchecker::syncprod::labels_t::add_label(l);
+  }
+
+  // Set location labels
+  tchecker::label_id_t const & labels_count = this->labels_count();
+
+  _labels.clear();
+  _labels.resize(locations_count);
+
+  for (tchecker::loc_id_t loc_id = 0; loc_id < locations_count; ++loc_id) {
+    _labels[loc_id].resize(labels_count);
+    _labels[loc_id].reset();
+    auto const & attr = tchecker::syncprod::system_t::location(loc_id)->attributes();
+    labels.clear();
+    labels_from_attrs(attr.values("labels"), labels);
+    for (std::string const & l : labels)
+      _labels[loc_id].set(this->label_id(l));
   }
 }
 
