@@ -200,7 +200,6 @@ bool is_synchronizable(tchecker::dbm::db_t const * rdbm, tchecker::reference_clo
     }
   }
   return true;
-  // TODO: Unit tests
 }
 
 bool is_equal(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
