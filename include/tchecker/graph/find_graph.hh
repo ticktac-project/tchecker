@@ -47,6 +47,39 @@ public:
   using equal_t = EQUAL;
 
   /*!
+   \brief Constructor
+   \param table_size : size of hash table
+  */
+  find_graph_t(std::size_t table_size = 65536) : _nodes(table_size) {}
+
+  /*!
+   \brief Copy constructor
+  */
+  find_graph_t(tchecker::graph::find_graph_t<NODE_PTR, HASH, EQUAL> const &) = default;
+
+  /*!
+   \brief Move constructor
+  */
+  find_graph_t(tchecker::graph::find_graph_t<NODE_PTR, HASH, EQUAL> &&) = default;
+
+  /*!
+   \brief Destructor
+  */
+  ~find_graph_t() = default;
+
+  /*!
+   \brief Assignment operator
+   */
+  tchecker::graph::find_graph_t<NODE_PTR, HASH, EQUAL> &
+  operator=(tchecker::graph::find_graph_t<NODE_PTR, HASH, EQUAL> const &) = default;
+
+  /*!
+   \brief Move-assignment operator
+   */
+  tchecker::graph::find_graph_t<NODE_PTR, HASH, EQUAL> &
+  operator=(tchecker::graph::find_graph_t<NODE_PTR, HASH, EQUAL> &&) = default;
+
+  /*!
    \brief Clear
    \post The graph is empty
    \note No destructor call on nodes
