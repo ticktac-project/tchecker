@@ -5,8 +5,10 @@
  *
  */
 
-#include "tchecker/refzg/zone.hh"
+#include <sstream>
+
 #include "tchecker/dbm/refdbm.hh"
+#include "tchecker/refzg/zone.hh"
 
 namespace tchecker {
 
@@ -97,5 +99,12 @@ zone_t::zone_t(tchecker::refzg::zone_t const & zone) : _ref_clocks(zone._ref_clo
 zone_t::~zone_t() = default;
 
 } // end of namespace refzg
+
+std::string to_string(tchecker::refzg::zone_t const & zone, tchecker::clock_index_t const & index)
+{
+  std::stringstream sstream;
+  zone.output(sstream, index);
+  return sstream.str();
+}
 
 } // end of namespace tchecker

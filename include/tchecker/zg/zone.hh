@@ -8,6 +8,8 @@
 #ifndef TCHECKER_ZG_ZONE_HH
 #define TCHECKER_ZG_ZONE_HH
 
+#include <string>
+
 #include "tchecker/basictypes.hh"
 #include "tchecker/clockbounds/clockbounds.hh"
 #include "tchecker/dbm/dbm.hh"
@@ -300,6 +302,14 @@ template <class... ARGS> tchecker::zg::zone_t * zone_allocate_and_construct(tche
 void zone_destruct_and_deallocate(tchecker::zg::zone_t * zone);
 
 } // end of namespace zg
+
+/*!
+ \brief Output a zone to a string
+ \param zone : va zone
+ \param index : a clock index
+ \return a string corresponding to output of zone using index
+ */
+std::string to_string(tchecker::zg::zone_t const & zone, tchecker::clock_index_t const & index);
 
 } // end of namespace tchecker
 

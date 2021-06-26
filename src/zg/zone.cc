@@ -5,6 +5,7 @@
  *
  */
 
+#include <sstream>
 #include <string>
 
 #include "tchecker/dbm/dbm.hh"
@@ -108,5 +109,12 @@ void zone_destruct_and_deallocate(tchecker::zg::zone_t * zone)
 }
 
 } // end of namespace zg
+
+std::string to_string(tchecker::zg::zone_t const & zone, tchecker::clock_index_t const & index)
+{
+  std::stringstream sstream;
+  zone.output(sstream, index);
+  return sstream.str();
+}
 
 } // end of namespace tchecker

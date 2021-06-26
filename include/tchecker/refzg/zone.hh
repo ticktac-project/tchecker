@@ -9,6 +9,7 @@
 #define TCHECKER_REFZG_ZONE_HH
 
 #include <memory>
+#include <string>
 
 #include "tchecker/basictypes.hh"
 #include "tchecker/clockbounds/clockbounds.hh"
@@ -343,6 +344,14 @@ zone_allocate_and_construct(std::shared_ptr<tchecker::reference_clock_variables_
 void zone_destruct_and_deallocate(tchecker::refzg::zone_t * zone);
 
 } // end of namespace refzg
+
+/*!
+ \brief Output to string
+ \param zone : z zone
+ \param index : clock index (map clock ID -> clock name)
+ \return a string corresponding to the output of zone using index
+ */
+std::string to_string(tchecker::refzg::zone_t const & zone, tchecker::clock_index_t const & index);
 
 } // end of namespace tchecker
 
