@@ -246,13 +246,33 @@ inline enum tchecker::state_status_t next(tchecker::ta::system_t const & system,
 bool satisfies(tchecker::ta::system_t const & system, tchecker::zg::state_t const & s, boost::dynamic_bitset<> const & labels);
 
 /*!
+ \brief Accessor to state attributes as strings
+ \param system : a system
+ \param s : a state
+ \param m : a map of string pairs (key, value)
+ \post the tuple of locations, the integer variables valuation and the zone in
+ s have been added to map m
+ */
+void attributes(tchecker::ta::system_t const & system, tchecker::zg::state_t const & s, std::map<std::string, std::string> & m);
+
+/*!
+ \brief Accessor to transition attributes as strings
+ \param system : a system
+ \param t : a transition
+ \param m : a map of string pairs (key, value)
+ \post the tuple of edges in t has been added to map m
+ */
+void attributes(tchecker::ta::system_t const & system, tchecker::zg::transition_t const & t,
+                std::map<std::string, std::string> & m);
+
+/*!
  \class zg_t
  \brief Zone graph of a timed automaton
  */
-class zg_t
-    : public tchecker::ts::ts_t<tchecker::zg::state_sptr_t, tchecker::zg::const_state_sptr_t, tchecker::zg::transition_sptr_t,
-                                tchecker::zg::initial_range_t, tchecker::zg::outgoing_edges_range_t,
-                                tchecker::zg::initial_value_t, tchecker::zg::outgoing_edges_value_t> {
+class zg_t : public tchecker::ts::ts_t<tchecker::zg::state_sptr_t, tchecker::zg::const_state_sptr_t,
+                                       tchecker::zg::transition_sptr_t, tchecker::zg::const_transition_sptr_t,
+                                       tchecker::zg::initial_range_t, tchecker::zg::outgoing_edges_range_t,
+                                       tchecker::zg::initial_value_t, tchecker::zg::outgoing_edges_value_t> {
 public:
   /*!
    \brief Constructor
@@ -335,8 +355,9 @@ public:
   virtual inline void initial(std::vector<sst_t> & v, enum tchecker::state_status_t mask)
   {
     return tchecker::ts::ts_t<tchecker::zg::state_sptr_t, tchecker::zg::const_state_sptr_t, tchecker::zg::transition_sptr_t,
-                              tchecker::zg::initial_range_t, tchecker::zg::outgoing_edges_range_t,
-                              tchecker::zg::initial_value_t, tchecker::zg::outgoing_edges_value_t>::initial(v, mask);
+                              tchecker::zg::const_transition_sptr_t, tchecker::zg::initial_range_t,
+                              tchecker::zg::outgoing_edges_range_t, tchecker::zg::initial_value_t,
+                              tchecker::zg::outgoing_edges_value_t>::initial(v, mask);
   }
 
   /*!
@@ -351,8 +372,9 @@ public:
                            enum tchecker::state_status_t mask)
   {
     return tchecker::ts::ts_t<tchecker::zg::state_sptr_t, tchecker::zg::const_state_sptr_t, tchecker::zg::transition_sptr_t,
-                              tchecker::zg::initial_range_t, tchecker::zg::outgoing_edges_range_t,
-                              tchecker::zg::initial_value_t, tchecker::zg::outgoing_edges_value_t>::next(s, v, mask);
+                              tchecker::zg::const_transition_sptr_t, tchecker::zg::initial_range_t,
+                              tchecker::zg::outgoing_edges_range_t, tchecker::zg::initial_value_t,
+                              tchecker::zg::outgoing_edges_value_t>::next(s, v, mask);
   }
 
   /*!
@@ -363,6 +385,22 @@ public:
     labels of state s, false otherwise
     */
   virtual bool satisfies(tchecker::zg::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels);
+
+  /*!
+   \brief Accessor to state attributes as strings
+   \param s : a state
+   \param m : a map of string pairs (key, value)
+   \post attributes of state s have been added to map m
+   */
+  virtual void attributes(tchecker::zg::const_state_sptr_t const & s, std::map<std::string, std::string> & m);
+
+  /*!
+   \brief Accessor to transition attributes as strings
+   \param t : a transition
+   \param m : a map of string pairs (key, value)
+   \post attributes of transition t have been added to map m
+   */
+  virtual void attributes(tchecker::zg::const_transition_sptr_t const & t, std::map<std::string, std::string> & m);
 
   /*!
    \brief Accessor

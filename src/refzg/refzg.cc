@@ -83,10 +83,27 @@ enum tchecker::state_status_t next(tchecker::ta::system_t const & system,
   return tchecker::STATE_OK;
 }
 
+/* labels */
+
 bool satisfies(tchecker::ta::system_t const & system, tchecker::refzg::state_t const & s,
                boost::dynamic_bitset<> const & labels)
 {
   return !s.zone().is_empty() && s.zone().is_synchronizable() && tchecker::ta::satisfies(system, s, labels);
+}
+
+/* attributes */
+
+void attributes(tchecker::ta::system_t const & system, tchecker::refzg::state_t const & s,
+                std::map<std::string, std::string> & m)
+{
+  tchecker::ta::attributes(system, s, m);
+  m["zone"] = tchecker::to_string(s.zone(), system.clock_variables().flattened().index());
+}
+
+void attributes(tchecker::ta::system_t const & system, tchecker::refzg::transition_t const & t,
+                std::map<std::string, std::string> & m)
+{
+  tchecker::ta::attributes(system, t, m);
 }
 
 /* refzg_t */
@@ -132,6 +149,16 @@ refzg_t::next(tchecker::refzg::const_state_sptr_t const & s, tchecker::refzg::ou
 bool refzg_t::satisfies(tchecker::refzg::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels)
 {
   return tchecker::refzg::satisfies(*_system, *s, labels);
+}
+
+void refzg_t::attributes(tchecker::refzg::const_state_sptr_t const & s, std::map<std::string, std::string> & m)
+{
+  tchecker::refzg::attributes(*_system, *s, m);
+}
+
+void refzg_t::attributes(tchecker::refzg::const_transition_sptr_t const & t, std::map<std::string, std::string> & m)
+{
+  tchecker::refzg::attributes(*_system, *t, m);
 }
 
 tchecker::ta::system_t const & refzg_t::system() const { return *_system; }

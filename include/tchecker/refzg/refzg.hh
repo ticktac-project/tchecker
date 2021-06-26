@@ -257,13 +257,33 @@ bool satisfies(tchecker::ta::system_t const & system, tchecker::refzg::state_t c
                boost::dynamic_bitset<> const & labels);
 
 /*!
+ \brief Accessor to state attributes as strings
+ \param system : a system
+ \param s : a state
+ \param m : a map of string pairs (key, value)
+ \post attributes of state s have been added to map m
+ */
+void attributes(tchecker::ta::system_t const & system, tchecker::refzg::state_t const & s,
+                std::map<std::string, std::string> & m);
+
+/*!
+ \brief Accessor to transition attributes as strings
+ \param system : a system
+ \param t : a transition
+ \param m : a map of string pairs (key, value)
+ \post attributes of transition t have been added to map m
+ */
+void attributes(tchecker::ta::system_t const & system, tchecker::refzg::transition_t const & t,
+                std::map<std::string, std::string> & m);
+
+/*!
  \class refzg_t
  \brief Zone graph with reference clocks of a timed automaton
  */
 class refzg_t : public tchecker::ts::ts_t<tchecker::refzg::state_sptr_t, tchecker::refzg::const_state_sptr_t,
-                                          tchecker::refzg::transition_sptr_t, tchecker::refzg::initial_range_t,
-                                          tchecker::refzg::outgoing_edges_range_t, tchecker::refzg::initial_value_t,
-                                          tchecker::refzg::outgoing_edges_value_t> {
+                                          tchecker::refzg::transition_sptr_t, tchecker::refzg::const_transition_sptr_t,
+                                          tchecker::refzg::initial_range_t, tchecker::refzg::outgoing_edges_range_t,
+                                          tchecker::refzg::initial_value_t, tchecker::refzg::outgoing_edges_value_t> {
 public:
   /*!
    \brief Constructor
@@ -351,9 +371,9 @@ public:
   virtual inline void initial(std::vector<sst_t> & v, enum tchecker::state_status_t mask)
   {
     return tchecker::ts::ts_t<tchecker::refzg::state_sptr_t, tchecker::refzg::const_state_sptr_t,
-                              tchecker::refzg::transition_sptr_t, tchecker::refzg::initial_range_t,
-                              tchecker::refzg::outgoing_edges_range_t, tchecker::refzg::initial_value_t,
-                              tchecker::refzg::outgoing_edges_value_t>::initial(v, mask);
+                              tchecker::refzg::transition_sptr_t, tchecker::refzg::const_transition_sptr_t,
+                              tchecker::refzg::initial_range_t, tchecker::refzg::outgoing_edges_range_t,
+                              tchecker::refzg::initial_value_t, tchecker::refzg::outgoing_edges_value_t>::initial(v, mask);
   }
 
   /*!
@@ -368,9 +388,9 @@ public:
                            enum tchecker::state_status_t mask)
   {
     return tchecker::ts::ts_t<tchecker::refzg::state_sptr_t, tchecker::refzg::const_state_sptr_t,
-                              tchecker::refzg::transition_sptr_t, tchecker::refzg::initial_range_t,
-                              tchecker::refzg::outgoing_edges_range_t, tchecker::refzg::initial_value_t,
-                              tchecker::refzg::outgoing_edges_value_t>::next(s, v, mask);
+                              tchecker::refzg::transition_sptr_t, tchecker::refzg::const_transition_sptr_t,
+                              tchecker::refzg::initial_range_t, tchecker::refzg::outgoing_edges_range_t,
+                              tchecker::refzg::initial_value_t, tchecker::refzg::outgoing_edges_value_t>::next(s, v, mask);
   }
 
   /*!
@@ -381,6 +401,22 @@ public:
   labels of state s, false otherwise
   */
   virtual bool satisfies(tchecker::refzg::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels);
+
+  /*!
+   \brief Accessor to state attributes as strings
+   \param s : a state
+   \param m : a map of string pairs (key, value)
+   \post attributes of state s have been added to map m
+   */
+  virtual void attributes(tchecker::refzg::const_state_sptr_t const & s, std::map<std::string, std::string> & m);
+
+  /*!
+   \brief Accessor to transition attributes as strings
+   \param t : a transition
+   \param m : a map of string pairs (key, value)
+   \post attributes of transition t have been added to map m
+   */
+  virtual void attributes(tchecker::refzg::const_transition_sptr_t const & t, std::map<std::string, std::string> & m);
 
   /*!
    \brief Accessor

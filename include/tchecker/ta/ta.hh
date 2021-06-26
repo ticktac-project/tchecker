@@ -230,13 +230,33 @@ boost::dynamic_bitset<> sync_refclocks(tchecker::ta::system_t const & system, tc
 bool satisfies(tchecker::ta::system_t const & system, tchecker::ta::state_t const & s, boost::dynamic_bitset<> const & labels);
 
 /*!
+ \brief Accessor to state attributes as strings
+ \param system : a system
+ \param s : a state
+ \param m : a map of string pairs (key, value)
+ \post the tuple of locations and integer variables valuation in s have been
+ added to map m
+ */
+void attributes(tchecker::ta::system_t const & system, tchecker::ta::state_t const & s, std::map<std::string, std::string> & m);
+
+/*!
+ \brief Accessor to transition attributes as strings
+ \param system : a system
+ \param t : a transition
+ \param m : a map of string pairs (key, value)
+ \post the tuple of edges in t has been added to map m
+ */
+void attributes(tchecker::ta::system_t const & system, tchecker::ta::transition_t const & t,
+                std::map<std::string, std::string> & m);
+
+/*!
  \class ta_t
  \brief Timed automaton over a system of synchronized timed processes
  */
-class ta_t final
-    : public tchecker::ts::ts_t<tchecker::ta::state_sptr_t, tchecker::ta::const_state_sptr_t, tchecker::ta::transition_sptr_t,
-                                tchecker::ta::initial_range_t, tchecker::ta::outgoing_edges_range_t,
-                                tchecker::ta::initial_value_t, tchecker::ta::outgoing_edges_value_t> {
+class ta_t final : public tchecker::ts::ts_t<tchecker::ta::state_sptr_t, tchecker::ta::const_state_sptr_t,
+                                             tchecker::ta::transition_sptr_t, tchecker::ta::const_transition_sptr_t,
+                                             tchecker::ta::initial_range_t, tchecker::ta::outgoing_edges_range_t,
+                                             tchecker::ta::initial_value_t, tchecker::ta::outgoing_edges_value_t> {
 public:
   /*!
    \brief Constructor
@@ -316,8 +336,9 @@ public:
   virtual inline void initial(std::vector<sst_t> & v, enum tchecker::state_status_t mask)
   {
     return tchecker::ts::ts_t<tchecker::ta::state_sptr_t, tchecker::ta::const_state_sptr_t, tchecker::ta::transition_sptr_t,
-                              tchecker::ta::initial_range_t, tchecker::ta::outgoing_edges_range_t,
-                              tchecker::ta::initial_value_t, tchecker::ta::outgoing_edges_value_t>::initial(v, mask);
+                              tchecker::ta::const_transition_sptr_t, tchecker::ta::initial_range_t,
+                              tchecker::ta::outgoing_edges_range_t, tchecker::ta::initial_value_t,
+                              tchecker::ta::outgoing_edges_value_t>::initial(v, mask);
   }
 
   /*!
@@ -332,18 +353,35 @@ public:
                            enum tchecker::state_status_t mask)
   {
     return tchecker::ts::ts_t<tchecker::ta::state_sptr_t, tchecker::ta::const_state_sptr_t, tchecker::ta::transition_sptr_t,
-                              tchecker::ta::initial_range_t, tchecker::ta::outgoing_edges_range_t,
-                              tchecker::ta::initial_value_t, tchecker::ta::outgoing_edges_value_t>::next(s, v, mask);
+                              tchecker::ta::const_transition_sptr_t, tchecker::ta::initial_range_t,
+                              tchecker::ta::outgoing_edges_range_t, tchecker::ta::initial_value_t,
+                              tchecker::ta::outgoing_edges_value_t>::next(s, v, mask);
   }
 
   /*!
-    \brief Checks if a state satisfies a set of labels
-    \param s : a state
-    \param labels : a set of labels
-    \return true if labels is not empty and labels is included in the set of
-    labels of state s, false otherwise
-     */
+   \brief Checks if a state satisfies a set of labels
+   \param s : a state
+   \param labels : a set of labels
+   \return true if labels is not empty and labels is included in the set of
+   labels of state s, false otherwise
+   */
   virtual bool satisfies(tchecker::ta::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels);
+
+  /*!
+   \brief Accessor to state attributes as strings
+   \param s : a state
+   \param m : a map of string pairs (key, value)
+   \post attributes of state s have been added to map m
+   */
+  virtual void attributes(tchecker::ta::const_state_sptr_t const & s, std::map<std::string, std::string> & m);
+
+  /*!
+   \brief Accessor to transition attributes as strings
+   \param t : a transition
+   \param m : a map of string pairs (key, value)
+   \post attributes of transition t have been added to map m
+   */
+  virtual void attributes(tchecker::ta::const_transition_sptr_t const & t, std::map<std::string, std::string> & m);
 
   /*!
    \brief Accessor

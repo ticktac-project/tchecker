@@ -312,6 +312,26 @@ bool satisfies(tchecker::syncprod::system_t const & system, tchecker::syncprod::
                boost::dynamic_bitset<> const & labels);
 
 /*!
+ \brief Accessor to state attributes as strings
+ \param system : a system
+ \param s : a state
+ \param m : a map of string pairs (key, value)
+ \post attributes of state s have been added to map m
+ */
+void attributes(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t const & s,
+                std::map<std::string, std::string> & m);
+
+/*!
+ \brief Accessor to transition attributes as strings
+ \param system : a system
+ \param t : a transition
+ \param m : a map of string pairs (key, value)
+ \post attributes of transition t have been added to map m
+ */
+void attributes(tchecker::syncprod::system_t const & system, tchecker::syncprod::transition_t const & t,
+                std::map<std::string, std::string> & m);
+
+/*!
  \class syncprod_t
  \brief Synchronized product of timed processes with state and transition
  allocation
@@ -319,9 +339,9 @@ bool satisfies(tchecker::syncprod::system_t const & system, tchecker::syncprod::
  */
 class syncprod_t final
     : public tchecker::ts::ts_t<tchecker::syncprod::state_sptr_t, tchecker::syncprod::const_state_sptr_t,
-                                tchecker::syncprod::transition_sptr_t, tchecker::syncprod::initial_range_t,
-                                tchecker::syncprod::outgoing_edges_range_t, tchecker::syncprod::initial_value_t,
-                                tchecker::syncprod::outgoing_edges_value_t> {
+                                tchecker::syncprod::transition_sptr_t, tchecker::syncprod::const_transition_sptr_t,
+                                tchecker::syncprod::initial_range_t, tchecker::syncprod::outgoing_edges_range_t,
+                                tchecker::syncprod::initial_value_t, tchecker::syncprod::outgoing_edges_value_t> {
 public:
   /*!
    \brief Constructor
@@ -402,9 +422,10 @@ public:
   virtual inline void initial(std::vector<sst_t> & v, enum tchecker::state_status_t mask)
   {
     return tchecker::ts::ts_t<tchecker::syncprod::state_sptr_t, tchecker::syncprod::const_state_sptr_t,
-                              tchecker::syncprod::transition_sptr_t, tchecker::syncprod::initial_range_t,
-                              tchecker::syncprod::outgoing_edges_range_t, tchecker::syncprod::initial_value_t,
-                              tchecker::syncprod::outgoing_edges_value_t>::initial(v, mask);
+                              tchecker::syncprod::transition_sptr_t, tchecker::syncprod::const_transition_sptr_t,
+                              tchecker::syncprod::initial_range_t, tchecker::syncprod::outgoing_edges_range_t,
+                              tchecker::syncprod::initial_value_t, tchecker::syncprod::outgoing_edges_value_t>::initial(v,
+                                                                                                                        mask);
   }
 
   /*!
@@ -419,9 +440,10 @@ public:
                            enum tchecker::state_status_t mask)
   {
     return tchecker::ts::ts_t<tchecker::syncprod::state_sptr_t, tchecker::syncprod::const_state_sptr_t,
-                              tchecker::syncprod::transition_sptr_t, tchecker::syncprod::initial_range_t,
-                              tchecker::syncprod::outgoing_edges_range_t, tchecker::syncprod::initial_value_t,
-                              tchecker::syncprod::outgoing_edges_value_t>::next(s, v, mask);
+                              tchecker::syncprod::transition_sptr_t, tchecker::syncprod::const_transition_sptr_t,
+                              tchecker::syncprod::initial_range_t, tchecker::syncprod::outgoing_edges_range_t,
+                              tchecker::syncprod::initial_value_t, tchecker::syncprod::outgoing_edges_value_t>::next(s, v,
+                                                                                                                     mask);
   }
 
   /*!
@@ -432,6 +454,22 @@ public:
   labels of state s, false otherwise
    */
   virtual bool satisfies(tchecker::syncprod::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels);
+
+  /*!
+   \brief Accessor to state attributes as strings
+   \param s : a state
+   \param m : a map of string pairs (key, value)
+   \post the tuple of locations in s as been added to m
+   */
+  virtual void attributes(tchecker::syncprod::const_state_sptr_t const & s, std::map<std::string, std::string> & m);
+
+  /*!
+   \brief Accessor to transition attributes as strings
+   \param t : a transition
+   \param m : a map of string pairs (key, value)
+   \post the tuple of edges in t has been added to t
+   */
+  virtual void attributes(tchecker::syncprod::const_transition_sptr_t const & t, std::map<std::string, std::string> & m);
 
   /*!
    \brief Accessor

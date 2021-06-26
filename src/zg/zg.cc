@@ -71,9 +71,25 @@ enum tchecker::state_status_t next(tchecker::ta::system_t const & system,
   return tchecker::STATE_OK;
 }
 
+/* labels */
+
 bool satisfies(tchecker::ta::system_t const & system, tchecker::zg::state_t const & s, boost::dynamic_bitset<> const & labels)
 {
   return !s.zone().is_empty() && tchecker::ta::satisfies(system, s, labels);
+}
+
+/* attributes */
+
+void attributes(tchecker::ta::system_t const & system, tchecker::zg::state_t const & s, std::map<std::string, std::string> & m)
+{
+  tchecker::ta::attributes(system, s, m);
+  m["zone"] = tchecker::to_string(s.zone(), system.clock_variables().flattened().index());
+}
+
+void attributes(tchecker::ta::system_t const & system, tchecker::zg::transition_t const & t,
+                std::map<std::string, std::string> & m)
+{
+  tchecker::ta::attributes(system, t, m);
 }
 
 /* zg_t */
@@ -119,6 +135,16 @@ zg_t::next(tchecker::zg::const_state_sptr_t const & s, tchecker::zg::outgoing_ed
 bool zg_t::satisfies(tchecker::zg::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels)
 {
   return tchecker::zg::satisfies(*_system, *s, labels);
+}
+
+void zg_t::attributes(tchecker::zg::const_state_sptr_t const & s, std::map<std::string, std::string> & m)
+{
+  tchecker::zg::attributes(*_system, *s, m);
+}
+
+void zg_t::attributes(tchecker::zg::const_transition_sptr_t const & t, std::map<std::string, std::string> & m)
+{
+  tchecker::zg::attributes(*_system, *t, m);
 }
 
 tchecker::ta::system_t const & zg_t::system() const { return *_system; }

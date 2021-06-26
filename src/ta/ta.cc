@@ -139,6 +139,20 @@ bool satisfies(tchecker::ta::system_t const & system, tchecker::ta::state_t cons
   return tchecker::syncprod::satisfies(system.as_syncprod_system(), s, labels);
 }
 
+/* attributes */
+
+void attributes(tchecker::ta::system_t const & system, tchecker::ta::state_t const & s, std::map<std::string, std::string> & m)
+{
+  tchecker::syncprod::attributes(system.as_syncprod_system(), s, m);
+  m["intval"] = tchecker::to_string(s.intval(), system.integer_variables().flattened().index());
+}
+
+void attributes(tchecker::ta::system_t const & system, tchecker::ta::transition_t const & t,
+                std::map<std::string, std::string> & m)
+{
+  tchecker::syncprod::attributes(system.as_syncprod_system(), t, m);
+}
+
 /* ta_t */
 
 ta_t::ta_t(std::shared_ptr<tchecker::ta::system_t const> const & system, std::size_t block_size, tchecker::gc_t & gc)
@@ -178,6 +192,16 @@ ta_t::next(tchecker::ta::const_state_sptr_t const & s, tchecker::ta::outgoing_ed
 bool ta_t::satisfies(tchecker::ta::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels)
 {
   return tchecker::ta::satisfies(*_system, *s, labels);
+}
+
+void ta_t::attributes(tchecker::ta::const_state_sptr_t const & s, std::map<std::string, std::string> & m)
+{
+  tchecker::ta::attributes(*_system, *s, m);
+}
+
+void ta_t::attributes(tchecker::ta::const_transition_sptr_t const & t, std::map<std::string, std::string> & m)
+{
+  tchecker::ta::attributes(*_system, *t, m);
 }
 
 tchecker::ta::system_t const & ta_t::system() const { return *_system; }

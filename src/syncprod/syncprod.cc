@@ -183,6 +183,20 @@ bool satisfies(tchecker::syncprod::system_t const & system, tchecker::syncprod::
   return tchecker::syncprod::satisfies(system, s.vloc(), labels);
 }
 
+/* attributes */
+
+void attributes(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t const & s,
+                std::map<std::string, std::string> & m)
+{
+  m["vloc"] = tchecker::to_string(s.vloc(), system.as_system_system());
+}
+
+void attributes(tchecker::syncprod::system_t const & system, tchecker::syncprod::transition_t const & t,
+                std::map<std::string, std::string> & m)
+{
+  m["vedge"] = tchecker::to_string(t.vedge(), system.as_system_system());
+}
+
 /* syncprod_t */
 
 syncprod_t::syncprod_t(std::shared_ptr<tchecker::syncprod::system_t const> const & system, std::size_t block_size,
@@ -222,6 +236,16 @@ syncprod_t::next(tchecker::syncprod::const_state_sptr_t const & s, tchecker::syn
 bool syncprod_t::satisfies(tchecker::syncprod::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels)
 {
   return tchecker::syncprod::satisfies(*_system, *s, labels);
+}
+
+void syncprod_t::attributes(tchecker::syncprod::const_state_sptr_t const & s, std::map<std::string, std::string> & m)
+{
+  tchecker::syncprod::attributes(*_system, *s, m);
+}
+
+void syncprod_t::attributes(tchecker::syncprod::const_transition_sptr_t const & t, std::map<std::string, std::string> & m)
+{
+  tchecker::syncprod::attributes(*_system, *t, m);
 }
 
 tchecker::syncprod::system_t const & syncprod_t::system() const { return *_system; }
