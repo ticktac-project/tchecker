@@ -95,7 +95,7 @@ endif()
 
 # TO BE REMOVED
 # FAKE static library for refactoring
-add_library(librefactor STATIC ${CLOCKBOUNDS_SRC} ${DBM_SRC} ${EXPRESSION_SRC} ${OTHER_SRC} ${PARSING_SRC} ${REFZG_SRC} ${STATEMENT_SRC} ${SYNCPROD_SRC} ${SYSTEM_SRC} ${TA_SRC} ${UTILS_SRC} ${VARIABLES_SRC} ${WAITING_SRC} ${VM_SRC} ${ZG_SRC}
+add_library(librefactor STATIC ${ALGORITHMS_SRC} ${CLOCKBOUNDS_SRC} ${DBM_SRC} ${EXPRESSION_SRC} ${GRAPH_SRC} ${OTHER_SRC} ${PARSING_SRC} ${REFZG_SRC} ${STATEMENT_SRC} ${SYNCPROD_SRC} ${SYSTEM_SRC} ${TA_SRC} ${UTILS_SRC} ${VARIABLES_SRC} ${WAITING_SRC} ${VM_SRC} ${ZG_SRC}
             $<TARGET_OBJECTS:program_parsing_static>
             $<TARGET_OBJECTS:system_parsing_static>)
 set_property(TARGET librefactor PROPERTY OUTPUT_NAME refactor)
@@ -114,6 +114,14 @@ add_executable(tck-syntax ${CMAKE_CURRENT_SOURCE_DIR}/tck-syntax/tck-syntax.cc)
 target_link_libraries(tck-syntax librefactor)  # Update to libtchecker_static
 set_property(TARGET tck-syntax PROPERTY CXX_STANDARD 17)
 set_property(TARGET tck-syntax PROPERTY CXX_STANDARD_REQUIRED ON)
+
+# Build tck-reach executable
+add_executable(tck-reach ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/tck-reach.cc
+               ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/zg-reach.cc
+               ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/zg-reach.hh)
+target_link_libraries(tck-reach librefactor)  # Update to libtchecker_static
+set_property(TARGET tck-reach PROPERTY CXX_STANDARD 17)
+set_property(TARGET tck-reach PROPERTY CXX_STANDARD_REQUIRED ON)
 
 # Project view in IDEs (Xcode, etc)
 foreach(FILE ${LIBTCHECKER_SRC}) 
