@@ -9,6 +9,8 @@
 #define TCHECKER_GRAPH_OUTPUT_HH
 
 #include <iostream>
+#include <map>
+#include <ostream>
 #include <string>
 #include <tuple>
 #include <type_traits>
@@ -24,6 +26,47 @@
 namespace tchecker {
 
 namespace graph {
+
+/*!
+ \brief Output graph header in graphviz DOT language
+ \param os : output stream
+ \param name : graph name
+ \post the graph header has been output to os
+ \return os after output
+*/
+std::ostream & dot_output_header(std::ostream & os, std::string const & name);
+
+/*!
+ \brief Output graph footer in graphviz DOT language
+ \param os : output stream
+ \post the graph footer has been output to os
+ \return os after output
+ */
+std::ostream & dot_output_footer(std::ostream & os);
+
+/*!
+ \brief Output node in graphviz DOT language
+ \param os : output stream
+ \param name : node name
+ \param attr : node attributes
+ \post the node has been output to os
+ \return os after output
+*/
+std::ostream & dot_output_node(std::ostream & os, std::string const & name, std::map<std::string, std::string> const & attr);
+
+/*!
+ \brief Output edge in graphviz DOT language
+ \param os : output stream
+ \param src : source node name
+ \param tgt : target node name
+ \param attr : node attributes
+ \post the edge has been output to os
+ \return os after output
+*/
+std::ostream & dot_output_edge(std::ostream & os, std::string const & src, std::string const & tgt,
+                               std::map<std::string, std::string> const & attr);
+
+//////
 
 /*!
  \class node_with_id_t
