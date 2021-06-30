@@ -295,7 +295,7 @@ public:
   \brief Type of node iterator
   */
   using const_node_iterator_t =
-      typename tchecker::graph::find_graph_t<node_sptr_t, node_sptr_hash_t, node_sptr_equal_to_t>::const_iterator_t;
+      typename tchecker::graph::find::graph_t<node_sptr_t, node_sptr_hash_t, node_sptr_equal_to_t>::const_iterator_t;
 
   /*!
   \brief Accessor
@@ -389,10 +389,10 @@ private:
     inline bool operator()(node_sptr_t const & n1, node_sptr_t const & n2) const { return NODE_EQUAL::operator()(*n1, *n2); }
   };
 
-  tchecker::graph::node_pool_allocator_t<shared_node_t> _node_pool;                               /*!< Node pool allocator */
-  tchecker::graph::edge_pool_allocator_t<shared_edge_t> _edge_pool;                               /*!< Edge pool allocator */
-  tchecker::graph::find_graph_t<node_sptr_t, node_sptr_hash_t, node_sptr_equal_to_t> _find_graph; /*!< Node store */
-  tchecker::graph::directed::graph_t<node_sptr_t, edge_sptr_t> _directed_graph;                   /*!< Edge store */
+  tchecker::graph::node_pool_allocator_t<shared_node_t> _node_pool;                                /*!< Node pool allocator */
+  tchecker::graph::edge_pool_allocator_t<shared_edge_t> _edge_pool;                                /*!< Edge pool allocator */
+  tchecker::graph::find::graph_t<node_sptr_t, node_sptr_hash_t, node_sptr_equal_to_t> _find_graph; /*!< Node store */
+  tchecker::graph::directed::graph_t<node_sptr_t, edge_sptr_t> _directed_graph;                    /*!< Edge store */
 };
 
 /* output */

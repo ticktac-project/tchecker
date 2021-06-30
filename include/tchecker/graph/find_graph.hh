@@ -19,8 +19,10 @@ namespace tchecker {
 
 namespace graph {
 
+namespace find {
+
 /*!
- \class find_graph_t
+ \class graph_t
  \brief Graph with node finding
  \tparam NODE_PTR : type of pointer to node
  \tparam HASH : hash function on NODE_PTR (see std::hash)
@@ -29,7 +31,7 @@ namespace graph {
  It does not store edges
  \note each node has a unique instance in this graph w.r.t. EQUAL
  */
-template <class NODE_PTR, class HASH, class EQUAL> class find_graph_t {
+template <class NODE_PTR, class HASH, class EQUAL> class graph_t {
 public:
   /*!
    \brief Type of pointers of node
@@ -50,34 +52,34 @@ public:
    \brief Constructor
    \param table_size : size of hash table
   */
-  find_graph_t(std::size_t table_size = 65536) : _nodes(table_size) {}
+  graph_t(std::size_t table_size = 65536) : _nodes(table_size) {}
 
   /*!
    \brief Copy constructor
   */
-  find_graph_t(tchecker::graph::find_graph_t<NODE_PTR, HASH, EQUAL> const &) = default;
+  graph_t(tchecker::graph::find::graph_t<NODE_PTR, HASH, EQUAL> const &) = default;
 
   /*!
    \brief Move constructor
   */
-  find_graph_t(tchecker::graph::find_graph_t<NODE_PTR, HASH, EQUAL> &&) = default;
+  graph_t(tchecker::graph::find::graph_t<NODE_PTR, HASH, EQUAL> &&) = default;
 
   /*!
    \brief Destructor
   */
-  ~find_graph_t() = default;
+  ~graph_t() = default;
 
   /*!
    \brief Assignment operator
    */
-  tchecker::graph::find_graph_t<NODE_PTR, HASH, EQUAL> &
-  operator=(tchecker::graph::find_graph_t<NODE_PTR, HASH, EQUAL> const &) = default;
+  tchecker::graph::find::graph_t<NODE_PTR, HASH, EQUAL> &
+  operator=(tchecker::graph::find::graph_t<NODE_PTR, HASH, EQUAL> const &) = default;
 
   /*!
    \brief Move-assignment operator
    */
-  tchecker::graph::find_graph_t<NODE_PTR, HASH, EQUAL> &
-  operator=(tchecker::graph::find_graph_t<NODE_PTR, HASH, EQUAL> &&) = default;
+  tchecker::graph::find::graph_t<NODE_PTR, HASH, EQUAL> &
+  operator=(tchecker::graph::find::graph_t<NODE_PTR, HASH, EQUAL> &&) = default;
 
   /*!
    \brief Clear
@@ -127,17 +129,19 @@ public:
    \brief Accessor
    \return iterator on first node if any, past-the-end iterator otherwise
    */
-  inline tchecker::graph::find_graph_t<NODE_PTR, HASH, EQUAL>::const_iterator_t begin() const { return _nodes.begin(); }
+  inline tchecker::graph::find::graph_t<NODE_PTR, HASH, EQUAL>::const_iterator_t begin() const { return _nodes.begin(); }
 
   /*!
    \brief Accessor
    \return past-the-end iterator
    */
-  inline tchecker::graph::find_graph_t<NODE_PTR, HASH, EQUAL>::const_iterator_t end() const { return _nodes.end(); }
+  inline tchecker::graph::find::graph_t<NODE_PTR, HASH, EQUAL>::const_iterator_t end() const { return _nodes.end(); }
 
 protected:
   std::unordered_set<NODE_PTR, HASH, EQUAL> _nodes; /*!< Set of nodes */
 };
+
+} // end of namespace find
 
 } // end of namespace graph
 
