@@ -134,6 +134,16 @@ bool operator==(tchecker::zg::state_t const & s1, tchecker::zg::state_t const & 
 bool operator!=(tchecker::zg::state_t const & s1, tchecker::zg::state_t const & s2);
 
 /*!
+ \brief Covering check
+ \param s1 : state
+ \param s2 : state
+ \return true if s1 and s2 have the same tuple of locations and integer
+ variables valuation, and the zone in s1 is included in the zone in s2, false
+ otherwise
+*/
+bool operator<=(tchecker::zg::state_t const & s1, tchecker::zg::state_t const & s2);
+
+/*!
  \brief Hash
  \param s : state
  \return Hash value for state s

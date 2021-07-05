@@ -40,6 +40,11 @@ bool operator==(tchecker::zg::state_t const & s1, tchecker::zg::state_t const & 
 
 bool operator!=(tchecker::zg::state_t const & s1, tchecker::zg::state_t const & s2) { return !(s1 == s2); }
 
+bool operator<=(tchecker::zg::state_t const & s1, tchecker::zg::state_t const & s2)
+{
+  return tchecker::ta::operator==(s1, s2) && (s1.zone() <= s2.zone());
+}
+
 std::size_t hash_value(tchecker::zg::state_t const & s)
 {
   std::size_t h = tchecker::ta::hash_value(s);
