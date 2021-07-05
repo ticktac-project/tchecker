@@ -151,14 +151,15 @@ namespace graph {
 namespace reachability {
 
 /*!
- \class reachability_graph_t
+ \class graph_t
  \brief Graph that allocates and stores nodes and edges in a reachability graph
  \tparam NODE : type of nodes
  \tparam EDGE : type of edges
  \tparam NODE_HASH : hash function on nodes
  \tparam NODE_EQUAL : equality predicate on nodes
- \note this graph uses nodes of type tchecker::graph::reachability::node_t<NODE,
- EDGE> and edges of type tchecker::graph::reachability::edge_t<NODE, EDGE>
+ \note this graph allocates nodes of type
+ tchecker::graph::reachability::node_t<NODE, EDGE> and edges of type
+ tchecker::graph::reachability::edge_t<NODE, EDGE>
 */
 template <class NODE, class EDGE, class NODE_HASH, class NODE_EQUAL> class graph_t {
 private:
@@ -358,7 +359,7 @@ public:
 private:
   /*!
    \class node_sptr_hash_t
-   \brief Hash functor for nodes
+   \brief Hash functor for node pointers
    */
   class node_sptr_hash_t : public NODE_HASH {
   public:
@@ -374,7 +375,7 @@ private:
 
   /*!
    \class node_sptr_equal_to_t
-   \brief Equality functor on nodes
+   \brief Equality functor for node pointers
    */
   class node_sptr_equal_to_t : public NODE_EQUAL {
   public:
