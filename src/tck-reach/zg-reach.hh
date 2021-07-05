@@ -21,6 +21,7 @@
 #include "tchecker/utils/shared_objects.hh"
 #include "tchecker/waiting/waiting.hh"
 #include "tchecker/zg/state.hh"
+#include "tchecker/zg/transition.hh"
 #include "tchecker/zg/zg.hh"
 
 namespace tchecker {
@@ -129,9 +130,7 @@ private:
 */
 class graph_t : public tchecker::graph::reachability::graph_t<
                     tchecker::tck_reach::zg_reach::node_t, tchecker::tck_reach::zg_reach::edge_t,
-                    tchecker::tck_reach::zg_reach::node_hash_t, tchecker::tck_reach::zg_reach::node_equal_to_t>,
-                public tchecker::graph::reachability::graph_attributes_t<tchecker::tck_reach::zg_reach::node_t,
-                                                                         tchecker::tck_reach::zg_reach::edge_t> {
+                    tchecker::tck_reach::zg_reach::node_hash_t, tchecker::tck_reach::zg_reach::node_equal_to_t> {
 public:
   /*!
    \brief Constructor
@@ -148,6 +147,11 @@ public:
   */
   virtual ~graph_t() = default;
 
+  using tchecker::graph::reachability::graph_t<tchecker::tck_reach::zg_reach::node_t, tchecker::tck_reach::zg_reach::edge_t,
+                                               tchecker::tck_reach::zg_reach::node_hash_t,
+                                               tchecker::tck_reach::zg_reach::node_equal_to_t>::attributes;
+
+protected:
   /*!
    \brief Accessor to node attributes
    \param n : a node

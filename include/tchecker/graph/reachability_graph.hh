@@ -13,7 +13,6 @@
  \brief Reachability graph
  */
 
-#include <functional>
 #include <map>
 #include <set>
 #include <string>
@@ -234,7 +233,7 @@ public:
   /*!
   \brief Destructor
   */
-  ~graph_t() { clear(); }
+  virtual ~graph_t() { clear(); }
 
   /*!
   \brief Assignment operator (deleted)
@@ -356,6 +355,37 @@ public:
    */
   inline node_sptr_t const & edge_tgt(edge_sptr_t const & edge) const { return _directed_graph.edge_tgt(edge); }
 
+  /*!
+   \brief Accessor to node attributes
+   \param n : a node
+   \param m : a map (key, value) of attributes
+   \post attributes of node n have been added to map m
+  */
+  void attributes(node_sptr_t const & n, std::map<std::string, std::string> & m) const { attributes(*n, m); }
+
+  /*!
+   \brief Accessor to edge attributes
+   \param e : an edge
+   \param m : a map (key, value) of attributes
+   \post attributes of edge e have been added to map m
+  */
+  void attributes(edge_sptr_t const & e, std::map<std::string, std::string> & m) const { attributes(*e, m); }
+
+protected:
+  /*!
+   \brief Accessor to node attributes
+   \param n : a node
+   \param m : a map (key, value) of attributes
+  */
+  virtual void attributes(NODE const & n, std::map<std::string, std::string> & m) const = 0;
+
+  /*!
+   \brief Accessor to edge attributes
+   \param e : an edge
+   \param m : a map (key, value) of attributes
+  */
+  virtual void attributes(EDGE const & e, std::map<std::string, std::string> & m) const = 0;
+
 private:
   /*!
    \class node_sptr_hash_t
@@ -399,43 +429,9 @@ private:
 /* output */
 
 /*!
- \class graph_attributes_t
- \brief Access to nodes and edges attributes
- \tparam NODE : type of nodes
- \tparam EDGE : type of edges
-*/
-template <class NODE, class EDGE> class graph_attributes_t {
-public:
-  /*!
-   */
-
-  /*!
-   \brief Destructor
-   */
-  virtual ~graph_attributes_t() = default;
-
-  /*!
-   \brief Accessor to node attributes
-   \param n : a node
-   \param m : a map (key, value) of attributes
-   \post attributes of node n have been added to map m
-  */
-  virtual void attributes(NODE const & n, std::map<std::string, std::string> & m) const = 0;
-
-  /*!
-   \brief Accessor to edge attributes
-   \param e : an edge
-   \param m : a map (key, value) of attributes
-   \post attributes of edge e have been added to map m
-  */
-  virtual void attributes(EDGE const & e, std::map<std::string, std::string> & m) const = 0;
-};
-
-/*!
  \brief Output a graph in graphviz DOT language
  \tparam GRAPH : type of graph, should inherit from
- tchecker::graph::reachability::graph_t and from
- tchecker::graph::reachability::graph_attributes_t
+ tchecker::graph::reachability::graph_t
  \tparam NODE_LE : total order on type GRAPH::const_node_sptr_t
  \tparam EDGE_LE : total order on type GRAPH::const_edge_sptr_t
  \param os : output stream
@@ -465,7 +461,7 @@ std::ostream & dot_output(std::ostream & os, GRAPH const & g, std::string const 
 
   for (auto && [node, name] : node_map) {
     attr.clear();
-    g.attributes(*node, attr);
+    g.attributes(node, attr);
     tchecker::graph::dot_output_node(os, name, attr);
   }
 
@@ -473,7 +469,7 @@ std::ostream & dot_output(std::ostream & os, GRAPH const & g, std::string const 
     std::string const & src = node_map[g.edge_src(edge)];
     std::string const & tgt = node_map[g.edge_tgt(edge)];
     attr.clear();
-    g.attributes(*edge, attr);
+    g.attributes(edge, attr);
     tchecker::graph::dot_output_edge(os, src, tgt, attr);
   }
 
