@@ -139,7 +139,7 @@ tchecker::parsing::system_declaration_t * load_system_declaration(std::string co
 */
 void reach(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl)
 {
-  auto && [stats, graph] = tchecker::algorithms::reach::zg::run(sysdecl, labels, search_order, block_size, table_size);
+  auto && [stats, graph] = tchecker::tck_reach::zg_reach::run(sysdecl, labels, search_order, block_size, table_size);
 
   // stats
   std::map<std::string, std::string> m;
@@ -150,7 +150,7 @@ void reach(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysd
   // graph
   if (output_file != "") {
     std::ofstream ofs{output_file};
-    tchecker::algorithms::reach::zg::dot_output(ofs, *graph, sysdecl->name());
+    tchecker::tck_reach::zg_reach::dot_output(ofs, *graph, sysdecl->name());
     ofs.close();
   }
 }

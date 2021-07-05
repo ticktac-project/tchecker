@@ -25,11 +25,9 @@
 
 namespace tchecker {
 
-namespace algorithms {
+namespace tck_reach {
 
-namespace reach {
-
-namespace zg {
+namespace zg_reach {
 
 /*!
  \class node_t
@@ -78,7 +76,7 @@ public:
   \param n : a node
   \return hash value for n
   */
-  std::size_t operator()(tchecker::algorithms::reach::zg::node_t const & n) const;
+  std::size_t operator()(tchecker::tck_reach::zg_reach::node_t const & n) const;
 };
 
 /*!
@@ -93,7 +91,7 @@ public:
   \param n2 : a node
   \return true if n1 and n2 are equal (i.e. have same zone graph state), false otherwise
   */
-  bool operator()(tchecker::algorithms::reach::zg::node_t const & n1, tchecker::algorithms::reach::zg::node_t const & n2) const;
+  bool operator()(tchecker::tck_reach::zg_reach::node_t const & n1, tchecker::tck_reach::zg_reach::node_t const & n2) const;
 };
 
 /*!
@@ -130,10 +128,10 @@ private:
  \brief Reachability graph over the zone graph
 */
 class graph_t : public tchecker::graph::reachability::graph_t<
-                    tchecker::algorithms::reach::zg::node_t, tchecker::algorithms::reach::zg::edge_t,
-                    tchecker::algorithms::reach::zg::node_hash_t, tchecker::algorithms::reach::zg::node_equal_to_t>,
-                public tchecker::graph::reachability::graph_attributes_t<tchecker::algorithms::reach::zg::node_t,
-                                                                         tchecker::algorithms::reach::zg::edge_t> {
+                    tchecker::tck_reach::zg_reach::node_t, tchecker::tck_reach::zg_reach::edge_t,
+                    tchecker::tck_reach::zg_reach::node_hash_t, tchecker::tck_reach::zg_reach::node_equal_to_t>,
+                public tchecker::graph::reachability::graph_attributes_t<tchecker::tck_reach::zg_reach::node_t,
+                                                                         tchecker::tck_reach::zg_reach::edge_t> {
 public:
   /*!
    \brief Constructor
@@ -156,7 +154,7 @@ public:
    \param m : a map (key, value) of attributes
    \post attributes of node n have been added to map m
   */
-  virtual void attributes(tchecker::algorithms::reach::zg::node_t const & n, std::map<std::string, std::string> & m) const;
+  virtual void attributes(tchecker::tck_reach::zg_reach::node_t const & n, std::map<std::string, std::string> & m) const;
 
   /*!
    \brief Accessor to edge attributes
@@ -164,7 +162,7 @@ public:
    \param m : a map (key, value) of attributes
    \post attributes of edge e have been added to map m
   */
-  virtual void attributes(tchecker::algorithms::reach::zg::edge_t const & e, std::map<std::string, std::string> & m) const;
+  virtual void attributes(tchecker::tck_reach::zg_reach::edge_t const & e, std::map<std::string, std::string> & m) const;
 
 private:
   std::shared_ptr<tchecker::zg::zg_t> _zg; /*!< Zone graph */
@@ -177,16 +175,16 @@ private:
  \param name : graph name
  \post graph g with name has been output to os
 */
-std::ostream & dot_output(std::ostream & os, tchecker::algorithms::reach::zg::graph_t const & g, std::string const & name);
+std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::zg_reach::graph_t const & g, std::string const & name);
 
 /*!
  \class algorithm_t
  \brief Reachability algorithm over the zone graph
 */
 class algorithm_t
-    : public tchecker::algorithms::reach::algorithm_t<tchecker::zg::zg_t, tchecker::algorithms::reach::zg::graph_t> {
+    : public tchecker::algorithms::reach::algorithm_t<tchecker::zg::zg_t, tchecker::tck_reach::zg_reach::graph_t> {
 public:
-  using tchecker::algorithms::reach::algorithm_t<tchecker::zg::zg_t, tchecker::algorithms::reach::zg::graph_t>::algorithm_t;
+  using tchecker::algorithms::reach::algorithm_t<tchecker::zg::zg_t, tchecker::tck_reach::zg_reach::graph_t>::algorithm_t;
 };
 
 /*!
@@ -199,15 +197,13 @@ public:
  search_order must be either "dfs" or "bfs"
  \return statistics on the run
  */
-std::tuple<tchecker::algorithms::reach::stats_t, std::shared_ptr<tchecker::algorithms::reach::zg::graph_t>>
+std::tuple<tchecker::algorithms::reach::stats_t, std::shared_ptr<tchecker::tck_reach::zg_reach::graph_t>>
 run(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl, std::string const & labels = "",
     std::string const & search_order = "bfs", std::size_t block_size = 10000, std::size_t table_size = 65536);
 
-} // end of namespace zg
+} // end of namespace zg_reach
 
-} // end of namespace reach
-
-} // end of namespace algorithms
+} // namespace tck_reach
 
 } // end of namespace tchecker
 
