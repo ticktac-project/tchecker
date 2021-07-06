@@ -39,7 +39,7 @@ namespace reach {
 template <class TS, class GRAPH> class algorithm_t {
 public:
   /*!
-   \brief Build a reachability graph of a transition system fro its initial
+   \brief Build a reachability graph of a transition system from its initial
    states
    \param ts : a transition system
    \param graph : a graph

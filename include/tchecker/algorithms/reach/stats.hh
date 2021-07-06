@@ -62,7 +62,7 @@ public:
   /*!
    \brief Extract statistics as attributes (key, value)
    \param m : attributes map
-   \post every statistics has been added to attr
+   \post every statistics has been added to m
   */
   void attributes(std::map<std::string, std::string> & m) const;
 

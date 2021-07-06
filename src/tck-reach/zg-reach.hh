@@ -199,7 +199,7 @@ public:
  \param block_size : number of elements allocated in one block
  \pre labels must appear as node attributes in sysdecl
  search_order must be either "dfs" or "bfs"
- \return statistics on the run
+ \return statistics on the run and the reachability graph
  */
 std::tuple<tchecker::algorithms::reach::stats_t, std::shared_ptr<tchecker::tck_reach::zg_reach::graph_t>>
 run(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl, std::string const & labels = "",
