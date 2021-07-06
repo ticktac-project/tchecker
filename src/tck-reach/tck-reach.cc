@@ -15,6 +15,7 @@
 #include "tchecker/algorithms/reach/algorithm.hh"
 #include "tchecker/parsing/parsing.hh"
 #include "tchecker/utils/log.hh"
+#include "zg-covreach.hh"
 #include "zg-reach.hh"
 
 /*!
@@ -22,7 +23,8 @@
  \brief Reachability analysis of timed automata
  */
 
-static struct option long_options[] = {{"certificate", no_argument, 0, 'C'},
+static struct option long_options[] = {{"algorithm", required_argument, 0, 'a'},
+                                       {"certificate", no_argument, 0, 'C'},
                                        {"help", no_argument, 0, 'h'},
                                        {"labels", required_argument, 0, 'l'},
                                        {"search-order", no_argument, 0, 's'},
@@ -30,7 +32,7 @@ static struct option long_options[] = {{"certificate", no_argument, 0, 'C'},
                                        {"table-size", required_argument, 0, 0},
                                        {0, 0, 0, 0}};
 
-static char const * const options = (char *)"C:hl:s:";
+static char const * const options = (char *)"a:C:hl:s:";
 
 /*!
   \brief Display usage
@@ -39,6 +41,9 @@ static char const * const options = (char *)"C:hl:s:";
 void usage(char * progname)
 {
   std::cerr << "Usage: " << progname << " [options] [file]" << std::endl;
+  std::cerr << "   -a algorithm  reachability algorithm" << std::endl;
+  std::cerr << "          reach:     standard reachability algorithm" << std::endl;
+  std::cerr << "          covreach:  reachability algorithm with covering" << std::endl;
   std::cerr << "   -C out_file   output a certificate (as a graph) in out_file" << std::endl;
   std::cerr << "   -h            help" << std::endl;
   std::cerr << "   -l l1,l2,...  comma-separated list of searched labels" << std::endl;
@@ -48,12 +53,19 @@ void usage(char * progname)
   std::cerr << "reads from standard input if file is not provided" << std::endl;
 }
 
-static bool help = false;                /*!< Help flag */
-static std::string output_file = "";     /*!< Output file name */
-static std::string search_order = "bfs"; /*!< Search order */
-static std::string labels = "";          /*!< Searched labels */
-static std::size_t block_size = 10000;   /*!< Size of allocated blocks */
-static std::size_t table_size = 65536;   /*!< Size of hash tables */
+enum algorithm_t {
+  ALGO_REACH,    /*!< Reachability algorithm */
+  ALGO_COVREACH, /*!< Covering reachability algorithm */
+  ALGO_NONE,     /*!< No algorithm */
+};
+
+static enum algorithm_t algorithm = ALGO_NONE; /*!< Selected algorithm */
+static bool help = false;                      /*!< Help flag */
+static std::string output_file = "";           /*!< Output file name */
+static std::string search_order = "bfs";       /*!< Search order */
+static std::string labels = "";                /*!< Searched labels */
+static std::size_t block_size = 10000;         /*!< Size of allocated blocks */
+static std::size_t table_size = 65536;         /*!< Size of hash tables */
 
 /*!
  \brief Parse command-line arguments
@@ -78,6 +90,14 @@ int parse_command_line(int argc, char * argv[])
       throw std::runtime_error("Unknown command-line option");
     else if (c != 0) {
       switch (c) {
+      case 'a':
+        if (strcmp(optarg, "reach") == 0)
+          algorithm = ALGO_REACH;
+        else if (strcmp(optarg, "covreach") == 0)
+          algorithm = ALGO_COVREACH;
+        else
+          throw std::runtime_error("Unknown algorithm: " + std::string(optarg));
+        break;
       case 'C':
         output_file = optarg;
         break;
@@ -156,6 +176,31 @@ void reach(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysd
 }
 
 /*!
+ \brief Perform covering reachability analysis
+ \param sysdecl : system declaration
+ \post statistics on covering reachability analysis of command-line specified
+ labels in the system declared by sysdecl have been output to standard output.
+ A certification has been output if required.
+*/
+void covreach(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl)
+{
+  auto && [stats, graph] = tchecker::tck_reach::zg_covreach::run(sysdecl, labels, search_order, block_size, table_size);
+
+  // stats
+  std::map<std::string, std::string> m;
+  stats.attributes(m);
+  for (auto && [key, value] : m)
+    std::cout << key << " " << value << std::endl;
+
+  // graph
+  if (output_file != "") {
+    std::ofstream ofs{output_file};
+    tchecker::tck_reach::zg_covreach::dot_output(ofs, *graph, sysdecl->name());
+    ofs.close();
+  }
+}
+
+/*!
  \brief Main function
 */
 int main(int argc, char * argv[])
@@ -183,7 +228,16 @@ int main(int argc, char * argv[])
     if (log.error_count() > 0)
       return EXIT_FAILURE;
 
-    reach(sysdecl);
+    switch (algorithm) {
+    case ALGO_REACH:
+      reach(sysdecl);
+      break;
+    case ALGO_COVREACH:
+      covreach(sysdecl);
+      break;
+    default:
+      throw std::runtime_error("No algorithm specified");
+    }
   }
   catch (std::exception & e) {
     log.error(e.what());

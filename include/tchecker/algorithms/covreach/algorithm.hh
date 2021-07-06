@@ -8,197 +8,208 @@
 #ifndef TCHECKER_ALGORITHMS_COVREACH_ALGORITHM_HH
 #define TCHECKER_ALGORITHMS_COVREACH_ALGORITHM_HH
 
-#include <functional>
-#include <iterator>
-#include <tuple>
-#include <vector>
-
-#include "tchecker/algorithms/covreach/builder.hh"
-#include "tchecker/algorithms/covreach/graph.hh"
-#include "tchecker/algorithms/covreach/stats.hh"
-#include "tchecker/basictypes.hh"
-
 /*!
  \file algorithm.hh
  \brief Reachability algorithm with covering
  */
 
+#include <iterator>
+#include <vector>
+
+#include <boost/dynamic_bitset.hpp>
+
+#include "tchecker/algorithms/covreach/stats.hh"
+#include "tchecker/graph/subsumption_graph.hh"
+#include "tchecker/waiting/factory.hh"
+
 namespace tchecker {
+
+namespace algorithms {
 
 namespace covreach {
 
 /*!
- \brief Type of accepting condition
- */
-template <class NODE_PTR> using accepting_condition_t = std::function<bool(NODE_PTR const &)>;
-
-/*!
- \brief Type of verdict
- */
-enum outcome_t {
-  REACHABLE,   /*!< Accepting state reachable */
-  UNREACHABLE, /*!< Accepting state unreachable */
-};
-
-/*!
  \class algorithm_t
- \brief Reachability algorithm with node covering
+ \brief Covering reachability algorithm
  \tparam TS : type of transition system, should derive from tchecker::ts::ts_t
- \tparam GRAPH : type of graph, should derive from tchecker::covreach::graph_t
- \tparam WAITING : type of waiting container, should derive from tchecker::covreach::active_waiting_t
- */
-template <class TS, class GRAPH, template <class NPTR> class WAITING> class algorithm_t {
-  using ts_t = TS;
-  using transition_t = typename GRAPH::ts_allocator_t::transition_t;
-  using transition_ptr_t = typename GRAPH::ts_allocator_t::transition_ptr_t;
-  using graph_t = GRAPH;
-  using ts_allocator_t = typename GRAPH::ts_allocator_t;
-  using node_ptr_t = typename GRAPH::node_ptr_t;
-  using edge_ptr_t = typename GRAPH::edge_ptr_t;
-  using waiting_t = WAITING<node_ptr_t>;
-
+ \tparam GRAPH : type of graph, should derive from
+ tchecker::graph::subsumption::graph_t, and nodes of type GRAPH::shared_node_t
+ should have a method state)ptr() that yields a pointer to the corresponding
+ state in TS.
+ For correctness of the algorithm, the covering relation over nodes in GRAPH
+ should be a trace inclusion, and it should be irreflexive: a node should not
+ cover itself
+*/
+template <class TS, class GRAPH> class algorithm_t {
 public:
   /*!
-   \brief Reachability algorithm with node covering
+   \brief Build a covering reachability graph of a transition system from its
+   initial states
    \param ts : a transition system
    \param graph : a graph
-   \param accepting : an accepting function over nodes
-   \pre accepting is monotonous w.r.t. the ordering over nodes in graph: if a node is accepting,
-   then any bigger node is accepting as well (partially checked by assertion)
-   \post this algorithm visits ts and builds graph. Graph stores the maximal nodes in ts and edges
-   between them. There are two kind of edges: actual edges which correspond to a transition in ts,
-   and abstract edges. There is an abstract edge n1->n2 when the actual successor of n1 in ts is
-   smaller than n2 (for some n2 in the graph). The order in which the states of ts are visited
-   depends on the policy implemented by WAITING.
-   The algorithms stops when an accepting node has been found, or when the graph has been entirely
-   visited.
-   \return REACHABLE if TS has an accepting run, UNREACHABLE otherwise
-   \note this algorithm may not terminate if graph is not finite
-   */
-  std::tuple<enum tchecker::covreach::outcome_t, tchecker::covreach::stats_t>
-  run(TS & ts, GRAPH & graph, tchecker::covreach::accepting_condition_t<node_ptr_t> accepting)
+   \param labels : accepting labels
+   \param policy : waiting list policy
+   \post graph is a covering reachability graph of ts built from its initial
+   states, until a state that satisfies labels is reached if any, or until the
+   entire state-space has been exhausted.
+   A node is created for each maximal state in ts, and an edge is created for
+   each transition in ts. Actual edges correspond to transitions in ts. A
+   subsumption edge from node n1 to node n2 means that the actual successor of
+   n1 in ts is subsumed by n2.
+   The order in which the nodes of ts are visited depends on policy.
+   \return Statistics on the run
+   \note if labels is empty, the algorithm explores the entire state-space
+  */
+  tchecker::algorithms::covreach::stats_t run(TS & ts, GRAPH & graph, boost::dynamic_bitset<> const & labels,
+                                              enum tchecker::waiting::policy_t policy)
   {
-    tchecker::covreach::builder_t<TS, ts_allocator_t> builder(ts, graph.ts_allocator());
-    waiting_t waiting;
-    node_ptr_t node{nullptr}, next_node{nullptr}, covering_node{nullptr};
-    std::vector<node_ptr_t> nodes, covered_nodes;
-    auto covered_nodes_inserter = std::back_inserter(covered_nodes);
-    tchecker::covreach::stats_t stats;
+    using node_sptr_t = typename GRAPH::node_sptr_t;
 
-    // initial nodes
+    std::unique_ptr<tchecker::waiting::waiting_t<node_sptr_t>> waiting{tchecker::waiting::factory<node_sptr_t>(policy)};
+    tchecker::algorithms::covreach::stats_t stats;
+    std::vector<node_sptr_t> nodes, covered_nodes;
+    std::size_t removed_nodes_count = 0;
+
+    stats.set_start_time();
+
+    removed_nodes_count = expand_initial_nodes(ts, graph, nodes);
+    stats.covered_leaf_states() += removed_nodes_count;
+    for (node_sptr_t const & n : nodes)
+      waiting->insert(n);
     nodes.clear();
-    expand_initial_nodes(builder, graph, nodes);
-    for (node_ptr_t const & n : nodes)
-      waiting.insert(n);
 
-    // explore waiting nodes
-    while (!waiting.empty()) {
-      node = waiting.first();
-      waiting.remove_first();
+    while (!waiting->empty()) {
+      node_sptr_t node = waiting->first();
+      waiting->remove_first();
 
-      stats.increment_visited_nodes();
+      ++stats.visited_states();
 
-      if (accepting(node))
-        return std::make_tuple(tchecker::covreach::REACHABLE, stats);
+      if (ts.satisfies(node->state_ptr(), labels)) {
+        stats.reachable() = true;
+        break;
+      }
 
-      // expand node
-      nodes.clear();
-      expand_node(node, builder, graph, nodes);
+      removed_nodes_count = expand_next_nodes(node, ts, graph, nodes);
+      stats.covered_leaf_states() += removed_nodes_count;
 
-      // remove small nodes
-      for (node_ptr_t & next_node : nodes) {
-        if (!next_node->is_active()) // covered by another node in next_nodes
-          continue;
-
-        if (graph.is_covered(next_node, covering_node)) {
-          cover_node(next_node, covering_node, graph);
-          next_node->make_inactive();
-          stats.increment_covered_leaf_nodes();
-          continue;
-        }
-
-        waiting.insert(next_node);
-
+      for (node_sptr_t const & next_node : nodes) {
+        waiting->insert(next_node);
+        removed_nodes_count = remove_covered_nodes(graph, node, covered_nodes);
+        stats.covered_nonleaf_states() += removed_nodes_count;
+        for (node_sptr_t const & covered_node : covered_nodes)
+          waiting->remove(covered_node);
         covered_nodes.clear();
-        graph.covered_nodes(next_node, covered_nodes_inserter);
-        for (node_ptr_t & covered_node : covered_nodes) {
-          waiting.remove(covered_node);
-          cover_node(covered_node, next_node, graph);
-          covered_node->make_inactive();
-          stats.increment_covered_nonleaf_nodes();
-        }
+      }
+      nodes.clear();
+    }
+
+    stats.stored_states() = graph.nodes_count();
+
+    stats.set_end_time();
+
+    return stats;
+  }
+
+  /*!
+   \brief Create nodes for initial states
+   \param ts : transition system
+   \param graph : a subsumption graph
+   \param initial_nodes : nodes container
+   \post A node has been created in graph for each initial state of ts which is
+   maximal w.r.t. the node covering in graph. All these maximal nodes have been
+   added to initial_nodes
+   \return the number of non-maximal initial nodes
+   */
+  std::size_t expand_initial_nodes(TS & ts, GRAPH & graph, std::vector<typename GRAPH::node_sptr_t> & initial_nodes)
+  {
+    std::vector<typename TS::sst_t> sst;
+    typename GRAPH::node_sptr_t covering_node;
+    std::size_t non_maximal_nodes_count = 0;
+
+    ts.initial(sst, tchecker::STATE_OK);
+    for (auto && [status, s, t] : sst) {
+      typename GRAPH::node_sptr_t n = graph.add_node(s);
+      if (graph.is_covered(n, covering_node)) {
+        graph.remove_node(n);
+        ++non_maximal_nodes_count;
+      }
+      else
+        initial_nodes.push_back(n);
+    }
+
+    return non_maximal_nodes_count;
+  }
+
+  /*!
+   \brief Create successor nodes of a node
+   \param node : a node
+   \param ts : a transition system
+   \param graph : a subsumption graph
+   \param next_nodes : nodes container
+   \post A node has been created in the graph for each successor of node that
+   is maximal in graph. An actual edge has been created from node to each
+   maximal successor. All maximal successors have been added to next_nodes.
+   For each successor node that is not maximal, a subsumption edge has been
+   created from node to a covering node.
+   \return the number of non-maximal successor nodes of node
+   */
+  std::size_t expand_next_nodes(typename GRAPH::node_sptr_t const & node, TS & ts, GRAPH & graph,
+                                std::vector<typename GRAPH::node_sptr_t> & next_nodes)
+  {
+    std::vector<typename TS::sst_t> sst;
+    typename GRAPH::node_sptr_t covering_node;
+    std::size_t non_maximal_nodes_count = 0;
+
+    ts.next(node->state_ptr(), sst, tchecker::STATE_OK);
+    for (auto && [status, s, t] : sst) {
+      typename GRAPH::node_sptr_t next_node = graph.add_node(s);
+      if (graph.is_covered(next_node, covering_node)) {
+        graph.add_edge(node, covering_node, tchecker::graph::subsumption::EDGE_SUBSUMPTION, *t);
+        graph.remove_node(next_node);
+        ++non_maximal_nodes_count;
+      }
+      else {
+        graph.add_edge(node, next_node, tchecker::graph::subsumption::EDGE_ACTUAL, *t);
+        next_nodes.push_back(next_node);
       }
     }
 
-    return std::make_tuple(tchecker::covreach::UNREACHABLE, stats);
+    return non_maximal_nodes_count;
   }
 
   /*!
-   \brief Expand initial nodes
-   \param builder : a transition system builder
-   \param graph : a graph
-   \param nodes : a vector of nodes
-   \post the initial nodes provided by builder have been added to graph and to nodes
-   */
-  void expand_initial_nodes(tchecker::covreach::builder_t<TS, ts_allocator_t> & builder, GRAPH & graph,
-                            std::vector<node_ptr_t> & nodes)
-  {
-    node_ptr_t node{nullptr};
-    transition_ptr_t transition{nullptr};
-
-    auto initial_range = builder.initial();
-    for (auto it = initial_range.begin(); !it.at_end(); ++it) {
-      std::tie(node, transition) = *it;
-      assert(node != node_ptr_t{nullptr});
-
-      graph.add_node(node, GRAPH::ROOT_NODE);
-
-      nodes.push_back(node);
-    }
-  }
-
-  /*!
-   \brief Expand node
+   \brief Remove non-maximal nodes
+   \param graph : a subsumption graph
    \param node : a node
-   \param builder : a transition system builder
-   \param graph : a graph
-   \param nodes : a vector of nodes
-   \post the successor nodes of n provided by builder have been added to graph and to nodes
-   */
-  void expand_node(node_ptr_t & node, tchecker::covreach::builder_t<TS, ts_allocator_t> & builder, GRAPH & graph,
-                   std::vector<node_ptr_t> & nodes)
+   \param covered_nodes : a container of nodes
+   \post All the nodes in graph that are covered by node have been removed from
+   graph and added to covered_nodes.
+   All incoming edges to covered nodes have been transformed into incoming
+   subsumption edges of node.
+   \return the number of removed nodes
+  */
+  std::size_t remove_covered_nodes(GRAPH & graph, typename GRAPH::node_sptr_t const & node,
+                                   std::vector<typename GRAPH::node_sptr_t> & covered_nodes)
   {
-    node_ptr_t next_node{nullptr};
-    transition_ptr_t transition{nullptr};
+    auto covered_nodes_inserter = std::back_inserter(covered_nodes);
+    std::size_t removed_nodes = 0;
 
-    auto outgoing_range = builder.outgoing(node);
-    for (auto it = outgoing_range.begin(); !it.at_end(); ++it) {
-      std::tie(next_node, transition) = *it;
-      assert(next_node != node_ptr_t{nullptr});
-
-      graph.add_node(next_node);
-      graph.add_edge(node, next_node, tchecker::covreach::ACTUAL_EDGE);
-
-      nodes.push_back(next_node);
+    covered_nodes.clear();
+    graph.covered_nodes(node, covered_nodes_inserter);
+    for (typename GRAPH::node_sptr_t const & covered_node : covered_nodes) {
+      graph.move_incoming_edges(covered_node, node, tchecker::graph::subsumption::EDGE_SUBSUMPTION);
+      graph.remove_edges(covered_node);
+      graph.remove_node(covered_node);
+      ++removed_nodes;
     }
-  }
 
-  /*!
-   \brief Cover a node
-   \param covered_node : covered node
-   \param covering_node : covering node
-   \param graph : a graph
-   \post graph has been updated to let covering_node replace covered_node
-   */
-  void cover_node(node_ptr_t & covered_node, node_ptr_t & covering_node, GRAPH & graph)
-  {
-    graph.move_incoming_edges(covered_node, covering_node, tchecker::covreach::ABSTRACT_EDGE);
-    graph.remove_edges(covered_node);
-    graph.remove_node(covered_node);
+    return removed_nodes;
   }
 };
 
 } // end of namespace covreach
+
+} // end of namespace algorithms
 
 } // end of namespace tchecker
 
