@@ -335,10 +335,10 @@ public:
     */
   virtual inline void initial(std::vector<sst_t> & v, enum tchecker::state_status_t mask)
   {
-    return tchecker::ts::ts_t<tchecker::ta::state_sptr_t, tchecker::ta::const_state_sptr_t, tchecker::ta::transition_sptr_t,
-                              tchecker::ta::const_transition_sptr_t, tchecker::ta::initial_range_t,
-                              tchecker::ta::outgoing_edges_range_t, tchecker::ta::initial_value_t,
-                              tchecker::ta::outgoing_edges_value_t>::initial(v, mask);
+    tchecker::ts::ts_t<tchecker::ta::state_sptr_t, tchecker::ta::const_state_sptr_t, tchecker::ta::transition_sptr_t,
+                       tchecker::ta::const_transition_sptr_t, tchecker::ta::initial_range_t,
+                       tchecker::ta::outgoing_edges_range_t, tchecker::ta::initial_value_t,
+                       tchecker::ta::outgoing_edges_value_t>::initial(v, mask);
   }
 
   /*!
@@ -352,10 +352,10 @@ public:
   virtual inline void next(tchecker::ta::const_state_sptr_t const & s, std::vector<sst_t> & v,
                            enum tchecker::state_status_t mask)
   {
-    return tchecker::ts::ts_t<tchecker::ta::state_sptr_t, tchecker::ta::const_state_sptr_t, tchecker::ta::transition_sptr_t,
-                              tchecker::ta::const_transition_sptr_t, tchecker::ta::initial_range_t,
-                              tchecker::ta::outgoing_edges_range_t, tchecker::ta::initial_value_t,
-                              tchecker::ta::outgoing_edges_value_t>::next(s, v, mask);
+    tchecker::ts::ts_t<tchecker::ta::state_sptr_t, tchecker::ta::const_state_sptr_t, tchecker::ta::transition_sptr_t,
+                       tchecker::ta::const_transition_sptr_t, tchecker::ta::initial_range_t,
+                       tchecker::ta::outgoing_edges_range_t, tchecker::ta::initial_value_t,
+                       tchecker::ta::outgoing_edges_value_t>::next(s, v, mask);
   }
 
   /*!

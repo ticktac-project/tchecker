@@ -421,11 +421,10 @@ public:
   */
   virtual inline void initial(std::vector<sst_t> & v, enum tchecker::state_status_t mask)
   {
-    return tchecker::ts::ts_t<tchecker::syncprod::state_sptr_t, tchecker::syncprod::const_state_sptr_t,
-                              tchecker::syncprod::transition_sptr_t, tchecker::syncprod::const_transition_sptr_t,
-                              tchecker::syncprod::initial_range_t, tchecker::syncprod::outgoing_edges_range_t,
-                              tchecker::syncprod::initial_value_t, tchecker::syncprod::outgoing_edges_value_t>::initial(v,
-                                                                                                                        mask);
+    tchecker::ts::ts_t<tchecker::syncprod::state_sptr_t, tchecker::syncprod::const_state_sptr_t,
+                       tchecker::syncprod::transition_sptr_t, tchecker::syncprod::const_transition_sptr_t,
+                       tchecker::syncprod::initial_range_t, tchecker::syncprod::outgoing_edges_range_t,
+                       tchecker::syncprod::initial_value_t, tchecker::syncprod::outgoing_edges_value_t>::initial(v, mask);
   }
 
   /*!
@@ -439,11 +438,10 @@ public:
   virtual inline void next(tchecker::syncprod::const_state_sptr_t const & s, std::vector<sst_t> & v,
                            enum tchecker::state_status_t mask)
   {
-    return tchecker::ts::ts_t<tchecker::syncprod::state_sptr_t, tchecker::syncprod::const_state_sptr_t,
-                              tchecker::syncprod::transition_sptr_t, tchecker::syncprod::const_transition_sptr_t,
-                              tchecker::syncprod::initial_range_t, tchecker::syncprod::outgoing_edges_range_t,
-                              tchecker::syncprod::initial_value_t, tchecker::syncprod::outgoing_edges_value_t>::next(s, v,
-                                                                                                                     mask);
+    tchecker::ts::ts_t<tchecker::syncprod::state_sptr_t, tchecker::syncprod::const_state_sptr_t,
+                       tchecker::syncprod::transition_sptr_t, tchecker::syncprod::const_transition_sptr_t,
+                       tchecker::syncprod::initial_range_t, tchecker::syncprod::outgoing_edges_range_t,
+                       tchecker::syncprod::initial_value_t, tchecker::syncprod::outgoing_edges_value_t>::next(s, v, mask);
   }
 
   /*!
