@@ -47,6 +47,17 @@ std::size_t hash_value(tchecker::refzg::state_t const & s)
   return h;
 }
 
+bool operator<=(tchecker::refzg::state_t const & s1, tchecker::refzg::state_t const & s2)
+{
+  return tchecker::ta::operator==(s1, s2) && (s1.zone() <= s2.zone());
+}
+
+bool sync_alu_le(tchecker::refzg::state_t const & s1, tchecker::refzg::state_t const & s2,
+                 tchecker::clockbounds::map_t const & l, tchecker::clockbounds::map_t const & u)
+{
+  return tchecker::ta::operator==(s1, s2) && s1.zone().sync_alu_le(s2.zone(), l, u);
+}
+
 int lexical_cmp(tchecker::refzg::state_t const & s1, tchecker::refzg::state_t const & s2)
 {
   int ta_cmp = tchecker::ta::lexical_cmp(s1, s2);

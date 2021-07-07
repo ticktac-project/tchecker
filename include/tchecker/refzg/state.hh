@@ -134,6 +134,29 @@ bool operator==(tchecker::refzg::state_t const & s1, tchecker::refzg::state_t co
 bool operator!=(tchecker::refzg::state_t const & s1, tchecker::refzg::state_t const & s2);
 
 /*!
+ \brief Covering check
+ \param s1 : state
+ \param s2 : state
+ \return true if s1 and s2 have the same tuple of locations and integer
+ variables valuation, and the zone in s1 is included in the zone in s2, false
+ otherwise
+*/
+bool operator<=(tchecker::refzg::state_t const & s1, tchecker::refzg::state_t const & s2);
+
+/*!
+ \brief Sync-subsumption check
+ \param l : clock lower bounds
+ \param u : clock upper bounds
+ \param s1 : state
+ \param s2 : state
+ \return true if s1 and s2 have the same tuple of locations and integer
+ variables valuation, and the zone in s1 is sync-subsumed by the zone in s2,
+ false otherwise
+*/
+bool sync_alu_le(tchecker::refzg::state_t const & s1, tchecker::refzg::state_t const & s2,
+                 tchecker::clockbounds::map_t const & l, tchecker::clockbounds::map_t const & u);
+
+/*!
  \brief Hash
  \param s : state
  \return Hash value for state s
