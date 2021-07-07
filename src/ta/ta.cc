@@ -80,12 +80,12 @@ enum tchecker::state_status_t next(tchecker::ta::system_t const & system,
 
   // check guards
   for (tchecker::system::edge_const_shared_ptr_t const & edge : edges)
-    if (vm.run(system.guard_bytecode(edge->pid()), *intval, guard, throw_clkreset) == 0)
+    if (vm.run(system.guard_bytecode(edge->id()), *intval, guard, throw_clkreset) == 0)
       return tchecker::STATE_INTVARS_GUARD_VIOLATED;
 
   // apply statements
   for (tchecker::system::edge_const_shared_ptr_t const & edge : edges)
-    if (vm.run(system.statement_bytecode(edge->pid()), *intval, throw_clkconstr, reset) == 0)
+    if (vm.run(system.statement_bytecode(edge->id()), *intval, throw_clkconstr, reset) == 0)
       return tchecker::STATE_INTVARS_STATEMENT_FAILED;
 
   // check target invariant
