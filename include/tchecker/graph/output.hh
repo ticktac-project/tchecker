@@ -11,6 +11,7 @@
 #include <iostream>
 #include <map>
 #include <ostream>
+#include <set>
 #include <string>
 #include <tuple>
 #include <type_traits>
@@ -65,6 +66,58 @@ std::ostream & dot_output_node(std::ostream & os, std::string const & name, std:
 */
 std::ostream & dot_output_edge(std::ostream & os, std::string const & src, std::string const & tgt,
                                std::map<std::string, std::string> const & attr);
+
+/*!
+ \brief Output a graph in graphviz DOT language
+ \tparam GRAPH : type of graph, should provide types GRAPH::node_sptr_t,
+ GRAPH::edge_sptr_t, and method GRAPH::nodes() that returns the range of nodes,
+ and a method GRAPH::outgoing_edges(n) that returns the range of outgoing edges
+ of node n
+ \tparam NODE_LE : total order on type GRAPH::node_sptr_t
+ \tparam EDGE_LE : total order on type GRAPH::edge_sptr_t
+ \param os : output stream
+ \param g : a graph
+ \param name : graph name
+ \post the graph g has been output to os in the graphviz DOT language. The nodes
+ and edges are output following the order given by NODE_LE and EDGE_LE
+ */
+template <class GRAPH, class NODE_LE, class EDGE_LE>
+std::ostream & dot_output(std::ostream & os, GRAPH const & g, std::string const & name)
+{
+  // sort nodes and edges
+  unsigned int count = 0;
+  std::map<typename GRAPH::node_sptr_t, std::string, NODE_LE> node_map;
+  std::set<typename GRAPH::edge_sptr_t, EDGE_LE> edge_set;
+  for (typename GRAPH::node_sptr_t const & n : g.nodes()) {
+    node_map.insert(std::make_pair(n, std::to_string(count)));
+    ++count;
+    for (typename GRAPH::edge_sptr_t const & e : g.outgoing_edges(n))
+      edge_set.insert(e);
+  }
+
+  // output graph
+  std::map<std::string, std::string> attr;
+
+  tchecker::graph::dot_output_header(os, name);
+
+  for (auto && [node, name] : node_map) {
+    attr.clear();
+    g.attributes(node, attr);
+    tchecker::graph::dot_output_node(os, name, attr);
+  }
+
+  for (typename GRAPH::edge_sptr_t const & edge : edge_set) {
+    std::string const & src = node_map[g.edge_src(edge)];
+    std::string const & tgt = node_map[g.edge_tgt(edge)];
+    attr.clear();
+    g.attributes(edge, attr);
+    tchecker::graph::dot_output_edge(os, src, tgt, attr);
+  }
+
+  tchecker::graph::dot_output_footer(os);
+
+  return os;
+}
 
 //////
 
