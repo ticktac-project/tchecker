@@ -86,10 +86,10 @@ std::ostream & dot_output(std::ostream & os, GRAPH const & g, std::string const 
 {
   // sort nodes and edges
   unsigned int count = 0;
-  std::map<typename GRAPH::node_sptr_t, std::string, NODE_LE> node_map;
-  std::set<typename GRAPH::edge_sptr_t, EDGE_LE> edge_set;
+  std::map<typename GRAPH::node_sptr_t, unsigned int, NODE_LE> node_map;
+  std::multiset<typename GRAPH::edge_sptr_t, EDGE_LE> edge_set;
   for (typename GRAPH::node_sptr_t const & n : g.nodes()) {
-    node_map.insert(std::make_pair(n, std::to_string(count)));
+    node_map.insert(std::make_pair(n, count));
     ++count;
     for (typename GRAPH::edge_sptr_t const & e : g.outgoing_edges(n))
       edge_set.insert(e);
@@ -107,11 +107,11 @@ std::ostream & dot_output(std::ostream & os, GRAPH const & g, std::string const 
   }
 
   for (typename GRAPH::edge_sptr_t const & edge : edge_set) {
-    std::string const & src = node_map[g.edge_src(edge)];
-    std::string const & tgt = node_map[g.edge_tgt(edge)];
+    unsigned int src = node_map[g.edge_src(edge)];
+    unsigned int tgt = node_map[g.edge_tgt(edge)];
     attr.clear();
     g.attributes(edge, attr);
-    tchecker::graph::dot_output_edge(os, src, tgt, attr);
+    tchecker::graph::dot_output_edge(os, std::to_string(src), std::to_string(tgt), attr);
   }
 
   tchecker::graph::dot_output_footer(os);
