@@ -859,6 +859,12 @@ public:
     return _global_m->bounds(vloc, M);
   }
 
+  /*!
+   \brief Accessor
+   \return Number of clocks
+  */
+  inline tchecker::clock_id_t clock_number() const { return _global_lu->clock_number(); }
+
 private:
   std::shared_ptr<tchecker::clockbounds::global_lu_map_t> _global_lu; /*!< Global LU map */
   std::shared_ptr<tchecker::clockbounds::global_m_map_t> _global_m;   /*!< Global M map */
