@@ -12,9 +12,4 @@ ${TCHECKER_INCLUDE_DIR}/tchecker/graph/find_graph.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/graph/output.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/graph/reachability_graph.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/graph/subsumption_graph.hh
-#${TCHECKER_INCLUDE_DIR}/tchecker/graph/builder.hh
-#${TCHECKER_INCLUDE_DIR}/tchecker/graph/find_builder.hh
-#${TCHECKER_INCLUDE_DIR}/tchecker/graph/graph.hh
-#${TCHECKER_INCLUDE_DIR}/tchecker/graph/output.hh
-#${TCHECKER_INCLUDE_DIR}/tchecker/graph/tracing_graph.hh
 PARENT_SCOPE)

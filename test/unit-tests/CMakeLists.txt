@@ -36,10 +36,7 @@ set(TEST_SRC
 
 add_executable(unittest ${TEST_SRC})
 target_link_libraries(unittest testutils)
- # TO BE REMOVED
-# target_link_libraries(unittest libtchecker_static)
-target_link_libraries(unittest librefactor)
-# / TO BE REMOVED
+target_link_libraries(unittest libtchecker_static)
 target_link_libraries(unittest Catch2::Catch2)
 
 set_property(TARGET unittest PROPERTY CXX_STANDARD 17)

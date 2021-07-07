@@ -5,7 +5,7 @@
 include(${CMAKE_CURRENT_SOURCE_DIR}/TestUtils.cmake)
 
 # Use currently compiled TChecker instead of installed one
-set(TCHECKER "$<TARGET_FILE:tchecker>")
+set(TCK_REACH "$<TARGET_FILE:tck_reach>")
 
 # Sub-directories to recurse into
 set(SUBDIRS unit-tests bugfixes simple-nr covreach explore)
@@ -54,16 +54,16 @@ get_target_property(TESTUTILS_DIR testutils SOURCE_DIR)
 include_directories(${TESTUTILS_DIR})
 
 #
-# Add a "fake" test to build TChecker as a pre-requisite of test suites
+# Add a "fake" test to build TChecker tck_reach as a pre-requisite of test suites
 #
-build_command(BUILD_TCHECKER_COMMAND CONFIGURATION "$<CONFIG>" TARGET tchecker)
-add_test(NAME build-tchecker
+build_command(BUILD_TCK_REACH_COMMAND CONFIGURATION "$<CONFIG>" TARGET tck_reach)
+add_test(NAME build-tck_reach
          COMMAND ${CMAKE_COMMAND}
          --build "${CMAKE_BINARY_DIR}"
          --config "$<CONFIG>"
-         --target tchecker
+         --target tck_reach
          )
-set_tests_properties(build-tchecker PROPERTIES FIXTURES_SETUP BUILD_TCHECKER)
+set_tests_properties(build-tck_reach PROPERTIES FIXTURES_SETUP BUILD_TCHECKER)
 
 set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "Testing")
 

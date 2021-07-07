@@ -41,8 +41,8 @@ add_subdirectory(ta)
 add_subdirectory(ts)
 add_subdirectory(utils)
 add_subdirectory(variables)
-add_subdirectory(waiting)
 add_subdirectory(vm)
+add_subdirectory(waiting)
 add_subdirectory(zg)
 
 set(OTHER_SRC
@@ -55,12 +55,12 @@ ${ALGORITHMS_SRC}
 ${CLOCKBOUNDS_SRC}
 ${DBM_SRC}
 ${EXPRESSION_SRC}
-${SYNCPROD_SRC}
 ${GRAPH_SRC}
 ${OTHER_SRC}
 ${PARSING_SRC}
 ${REFZG_SRC}
 ${STATEMENT_SRC}
+${SYNCPROD_SRC}
 ${SYSTEM_SRC}
 ${TA_SRC}
 ${TS_SRC}
@@ -93,25 +93,9 @@ if(LIBTCHECKER_ENABLE_SHARED)
   endif()
 endif()
 
-# TO BE REMOVED
-# FAKE static library for refactoring
-add_library(librefactor STATIC ${ALGORITHMS_SRC} ${CLOCKBOUNDS_SRC} ${DBM_SRC} ${EXPRESSION_SRC} ${GRAPH_SRC} ${OTHER_SRC} ${PARSING_SRC} ${REFZG_SRC} ${STATEMENT_SRC} ${SYNCPROD_SRC} ${SYSTEM_SRC} ${TA_SRC} ${UTILS_SRC} ${VARIABLES_SRC} ${WAITING_SRC} ${VM_SRC} ${ZG_SRC}
-            $<TARGET_OBJECTS:program_parsing_static>
-            $<TARGET_OBJECTS:system_parsing_static>)
-set_property(TARGET librefactor PROPERTY OUTPUT_NAME refactor)
-set_property(TARGET librefactor PROPERTY CXX_STANDARD 17)
-set_property(TARGET librefactor PROPERTY CXX_STANDARD_REQUIRED ON)
-# / TO BE REMOVED
-
-# Build TChecker executable
-add_executable(tchecker ${CMAKE_CURRENT_SOURCE_DIR}/tchecker/tchecker.cc)
-target_link_libraries(tchecker libtchecker_static)
-set_property(TARGET tchecker PROPERTY CXX_STANDARD 17)
-set_property(TARGET tchecker PROPERTY CXX_STANDARD_REQUIRED ON)
-
 # Build tck-syntax executable
 add_executable(tck-syntax ${CMAKE_CURRENT_SOURCE_DIR}/tck-syntax/tck-syntax.cc)
-target_link_libraries(tck-syntax librefactor)  # Update to libtchecker_static
+target_link_libraries(tck-syntax libtchecker_static)
 set_property(TARGET tck-syntax PROPERTY CXX_STANDARD 17)
 set_property(TARGET tck-syntax PROPERTY CXX_STANDARD_REQUIRED ON)
 
@@ -124,7 +108,7 @@ add_executable(tck-reach
                ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/zg-covreach.hh
                ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/zg-reach.cc
                ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/zg-reach.hh)
-target_link_libraries(tck-reach librefactor)  # Update to libtchecker_static
+target_link_libraries(tck-reach libtchecker_static)
 set_property(TARGET tck-reach PROPERTY CXX_STANDARD 17)
 set_property(TARGET tck-reach PROPERTY CXX_STANDARD_REQUIRED ON)
 
@@ -145,7 +129,7 @@ foreach(FILE ${LIBTCHECKER_SRC})
 endforeach()
 
 # Install rule for binaries, lib and header files
-install(TARGETS tchecker tck-syntax libtchecker_static
+install(TARGETS tck-reach tck-syntax libtchecker_static
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib)
 
