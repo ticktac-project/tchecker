@@ -12,6 +12,7 @@
 #include <memory>
 #include <string>
 
+#include "concur19.hh"
 #include "tchecker/algorithms/reach/algorithm.hh"
 #include "tchecker/parsing/parsing.hh"
 #include "tchecker/utils/log.hh"
@@ -42,8 +43,9 @@ void usage(char * progname)
 {
   std::cerr << "Usage: " << progname << " [options] [file]" << std::endl;
   std::cerr << "   -a algorithm  reachability algorithm" << std::endl;
-  std::cerr << "          reach:     standard reachability algorithm" << std::endl;
-  std::cerr << "          covreach:  reachability algorithm with covering" << std::endl;
+  std::cerr << "          reach:     standard reachability algorithm over the zone graph" << std::endl;
+  std::cerr << "          concur19:  reachability algorithm with covering over the local-time zone graph" << std::endl;
+  std::cerr << "          covreach:  reachability algorithm with covering over the zone graph" << std::endl;
   std::cerr << "   -C out_file   output a certificate (as a graph) in out_file" << std::endl;
   std::cerr << "   -h            help" << std::endl;
   std::cerr << "   -l l1,l2,...  comma-separated list of searched labels" << std::endl;
@@ -55,6 +57,7 @@ void usage(char * progname)
 
 enum algorithm_t {
   ALGO_REACH,    /*!< Reachability algorithm */
+  ALGO_CONCUR19, /*!< Covering reachability algorithm over the local-time zone graph */
   ALGO_COVREACH, /*!< Covering reachability algorithm */
   ALGO_NONE,     /*!< No algorithm */
 };
@@ -93,6 +96,8 @@ int parse_command_line(int argc, char * argv[])
       case 'a':
         if (strcmp(optarg, "reach") == 0)
           algorithm = ALGO_REACH;
+        else if (strcmp(optarg, "concur19") == 0)
+          algorithm = ALGO_CONCUR19;
         else if (strcmp(optarg, "covreach") == 0)
           algorithm = ALGO_COVREACH;
         else
@@ -176,6 +181,34 @@ void reach(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysd
 }
 
 /*!
+ \brief Perform covering reachability analysis over the local-time zone graph
+ \param sysdecl : system declaration
+ \post statistics on covering reachability analysis of command-line specified
+ labels in the system declared by sysdecl have been output to standard output.
+ A certification has been output if required.
+ \note This is the algorithm presented in R. Govind, Frédéric Herbreteau, B.
+ Srivathsan, Igor Walukiewicz: "Revisiting Local Time Semantics for Networks of
+ Timed Automata". CONCUR 2019: 16:1-16:15
+*/
+void concur19(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl)
+{
+  auto && [stats, graph] = tchecker::tck_reach::concur19::run(sysdecl, labels, search_order, block_size, table_size);
+
+  // stats
+  std::map<std::string, std::string> m;
+  stats.attributes(m);
+  for (auto && [key, value] : m)
+    std::cout << key << " " << value << std::endl;
+
+  // graph
+  if (output_file != "") {
+    std::ofstream ofs{output_file};
+    tchecker::tck_reach::concur19::dot_output(ofs, *graph, sysdecl->name());
+    ofs.close();
+  }
+}
+
+/*!
  \brief Perform covering reachability analysis
  \param sysdecl : system declaration
  \post statistics on covering reachability analysis of command-line specified
@@ -231,6 +264,9 @@ int main(int argc, char * argv[])
     switch (algorithm) {
     case ALGO_REACH:
       reach(sysdecl);
+      break;
+    case ALGO_CONCUR19:
+      concur19(sysdecl);
       break;
     case ALGO_COVREACH:
       covreach(sysdecl);

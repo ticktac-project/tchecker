@@ -116,7 +116,10 @@ set_property(TARGET tck-syntax PROPERTY CXX_STANDARD 17)
 set_property(TARGET tck-syntax PROPERTY CXX_STANDARD_REQUIRED ON)
 
 # Build tck-reach executable
-add_executable(tck-reach ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/tck-reach.cc
+add_executable(tck-reach
+               ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/concur19.hh
+               ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/concur19.cc
+               ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/tck-reach.cc
                ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/zg-covreach.cc
                ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/zg-covreach.hh
                ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/zg-reach.cc
