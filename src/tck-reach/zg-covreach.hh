@@ -8,6 +8,11 @@
 #ifndef TCHECKER_ZG_COVREACH_ALGORITHM_HH
 #define TCHECKER_ZG_COVREACH_ALGORITHM_HH
 
+/*!
+ \file zg-covreach.hh
+ \brief Covering reachability algorithm over the zone graph with zone inclusion
+*/
+
 #include "tchecker/algorithms/covreach/algorithm.hh"
 #include "tchecker/graph/subsumption_graph.hh"
 #include "tchecker/syncprod/vedge.hh"
@@ -82,11 +87,11 @@ public:
 class node_le_t {
 public:
   /*!
-  \brief Equality predicate
+  \brief Covering predicate for nodes
   \param n1 : a node
   \param n2 : a node
   \return true if n1 and n2 have same discrete part and the zone of n1 is
-  included in the zone of n2 and n1 != n2, false otherwise
+  included in the zone of n2, false otherwise
   */
   bool operator()(tchecker::tck_reach::zg_covreach::node_t const & n1,
                   tchecker::tck_reach::zg_covreach::node_t const & n2) const;
