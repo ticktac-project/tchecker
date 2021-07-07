@@ -100,10 +100,10 @@ std::ostream & dot_output(std::ostream & os, GRAPH const & g, std::string const 
 
   tchecker::graph::dot_output_header(os, name);
 
-  for (auto && [node, name] : node_map) {
+  for (auto && [node, id] : node_map) {
     attr.clear();
     g.attributes(node, attr);
-    tchecker::graph::dot_output_node(os, name, attr);
+    tchecker::graph::dot_output_node(os, std::to_string(id), attr);
   }
 
   for (typename GRAPH::edge_sptr_t const & edge : edge_set) {
