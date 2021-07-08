@@ -94,7 +94,7 @@ public:
 
       for (node_sptr_t const & next_node : nodes) {
         waiting->insert(next_node);
-        removed_nodes_count = remove_covered_nodes(graph, node, covered_nodes);
+        removed_nodes_count = remove_covered_nodes(graph, next_node, covered_nodes);
         stats.covered_nonleaf_states() += removed_nodes_count;
         for (node_sptr_t const & covered_node : covered_nodes)
           waiting->remove(covered_node);
