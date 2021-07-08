@@ -330,11 +330,11 @@ bool is_am_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdb
  rdbm1 and rdbm2 are consistent (checked by assertion)
  rdbm1 and rdbm2 are positive (checked by assertion)
  rdbm1 and rdbm2 are tight (checked by assertion)
- rdbm1 and rdbm2 are open up (checker by assertion)
  l and u are arrays of size r.size()-r.refcount()
  l[i], u[i] < tchecker::dbm::INF_VALUE for all offset clock i>=0 (checked by
  assertion)
- \return true if sync(rdbm1) <= aLU(sync(rdbm2)), false otherwise
+ \return true if sync(local_time_elapse(rdbm1)) <=
+ aLU(sync(local_time_elapse(rdbm2))), false otherwise
  \note set l[i]/u[i] to tchecker::clockbounds::NO_BOUND if clock i has no
  lower/upper bound
  */
