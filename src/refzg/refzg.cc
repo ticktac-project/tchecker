@@ -45,6 +45,9 @@ enum tchecker::state_status_t initial(tchecker::ta::system_t const & system,
   if (tchecker::refdbm::bound_spread(rdbm, *r, spread) == tchecker::dbm::EMPTY)
     return tchecker::STATE_CLOCKS_EMPTY_SPREAD;
 
+  if (!tchecker::refdbm::is_synchronizable(rdbm, *r))
+    return tchecker::STATE_ZONE_EMPTY_SYNC;
+
   return tchecker::STATE_OK;
 }
 
@@ -79,6 +82,9 @@ enum tchecker::state_status_t next(tchecker::ta::system_t const & system,
 
   if (tchecker::refdbm::bound_spread(rdbm, *r, spread) == tchecker::dbm::EMPTY)
     return tchecker::STATE_CLOCKS_EMPTY_SPREAD;
+
+  if (!tchecker::refdbm::is_synchronizable(rdbm, *r))
+    return tchecker::STATE_ZONE_EMPTY_SYNC;
 
   return tchecker::STATE_OK;
 }

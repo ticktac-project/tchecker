@@ -87,6 +87,8 @@ using initial_value_t = tchecker::ta::initial_value_t;
  contain a clock valuation that satisfy invariant.
  tchecker::STATE_CLOCKS_EMPTY_SPREAD if the initial bounded-spread zone is
  empty.
+ tchecker::STATE_ZONE_EMPTY_SYNC if the resulting zone contains no synchronized
+ valuation
  \throw std::runtime_error : if evaluation of invariant throws an exception
  \note set spread to tchecker::refdbm::UNBOUNDED_SPREAD for unbounded spread
  */
@@ -203,6 +205,8 @@ using outgoing_edges_value_t = tchecker::ta::outgoing_edges_value_t;
  processes involved in vedge yields an empty zone
  tchecker::STATE_CLOCKS_EMPTY_SPREAD if the resulting spread-bounded zone is
  empty
+ tchecker::STATE_ZONE_EMPTY_SYNC if the resulting zone contains no synchronized
+ valuation
  \throw std::invalid_argument : if a pid in edges is greater or equal to the
  size of vloc
  \throw std::runtime_error : if the guard in edges generates clock resets, or if

@@ -169,7 +169,8 @@ enum state_status_t {
   STATE_CLOCKS_TGT_INVARIANT_VIOLATED = 256, /*!< state computation failed due to clocks target invariant violation */
   STATE_CLOCKS_EMPTY_SYNC = 512,             /*!< state computation failed due to empty sync zone */
   STATE_CLOCKS_EMPTY_SPREAD = 1024,          /*!< state computation failed due to empty bounded-spread zone */
-  STATE_EMPTY_ZONE = 2048,                   /*!< state computation resulted in an empty zone (no details provided) */
+  STATE_ZONE_EMPTY = 2048,                   /*!< state computation result in an empty zone (no details provided) */
+  STATE_ZONE_EMPTY_SYNC = 4096,              /*!< state computation result in a ref zone that has no sync valuation */
 };
 
 } // end of namespace tchecker
