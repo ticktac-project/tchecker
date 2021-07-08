@@ -157,21 +157,25 @@ std::ostream & operator<<(std::ostream & os, enum tchecker::sync_strength_t s);
 /*!
  \brief Status of states
  */
-enum state_status_t {
-  STATE_OK = 1,                              /*!< state computation OK */
-  STATE_INCOMPATIBLE_EDGE = 2,               /*!< state computation failed due to unmatching locations */
-  STATE_INTVARS_GUARD_VIOLATED = 4,          /*!< state computation failed due to intvars guard violation */
-  STATE_INTVARS_SRC_INVARIANT_VIOLATED = 8,  /*!< state computation failed due to intvars source invariant violation */
-  STATE_INTVARS_TGT_INVARIANT_VIOLATED = 16, /*!< state computation failed due to intvars target invariant violation */
-  STATE_INTVARS_STATEMENT_FAILED = 32,       /*!< state computation failed due to intvars edge statement */
-  STATE_CLOCKS_GUARD_VIOLATED = 64,          /*!< state computation failed due to clocks guard violation */
-  STATE_CLOCKS_SRC_INVARIANT_VIOLATED = 128, /*!< state computation failed due to clocks source invariant violation */
-  STATE_CLOCKS_TGT_INVARIANT_VIOLATED = 256, /*!< state computation failed due to clocks target invariant violation */
-  STATE_CLOCKS_EMPTY_SYNC = 512,             /*!< state computation failed due to empty sync zone */
-  STATE_CLOCKS_EMPTY_SPREAD = 1024,          /*!< state computation failed due to empty bounded-spread zone */
-  STATE_ZONE_EMPTY = 2048,                   /*!< state computation result in an empty zone (no details provided) */
-  STATE_ZONE_EMPTY_SYNC = 4096,              /*!< state computation result in a ref zone that has no sync valuation */
-};
+using state_status_t = unsigned int;
+
+state_status_t const STATE_OK = 1;                     /*!< state computation OK */
+state_status_t const STATE_INCOMPATIBLE_EDGE = 2;      /*!< state computation failed due to unmatching locations */
+state_status_t const STATE_INTVARS_GUARD_VIOLATED = 4; /*!< state computation failed due to intvars guard violation */
+state_status_t const STATE_INTVARS_SRC_INVARIANT_VIOLATED =
+    8; /*!< state computation failed due to intvars source invariant violation */
+state_status_t const STATE_INTVARS_TGT_INVARIANT_VIOLATED =
+    16; /*!< state computation failed due to intvars target invariant violation */
+state_status_t const STATE_INTVARS_STATEMENT_FAILED = 32; /*!< state computation failed due to intvars edge statement */
+state_status_t const STATE_CLOCKS_GUARD_VIOLATED = 64;    /*!< state computation failed due to clocks guard violation */
+state_status_t const STATE_CLOCKS_SRC_INVARIANT_VIOLATED =
+    128; /*!< state computation failed due to clocks source invariant violation */
+state_status_t const STATE_CLOCKS_TGT_INVARIANT_VIOLATED =
+    256;                                               /*!< state computation failed due to clocks target invariant violation */
+state_status_t const STATE_CLOCKS_EMPTY_SYNC = 512;    /*!< state computation failed due to empty sync zone */
+state_status_t const STATE_CLOCKS_EMPTY_SPREAD = 1024; /*!< state computation failed due to empty bounded-spread zone */
+state_status_t const STATE_ZONE_EMPTY = 2048;          /*!< state computation result in an empty zone (no details provided) */
+state_status_t const STATE_ZONE_EMPTY_SYNC = 4096;     /*!< state computation result in a ref zone that has no sync valuation */
 
 } // end of namespace tchecker
 

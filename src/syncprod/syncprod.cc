@@ -24,10 +24,10 @@ tchecker::syncprod::initial_range_t initial_edges(tchecker::syncprod::system_t c
   return tchecker::make_range(begin, tchecker::past_the_end_iterator);
 }
 
-enum tchecker::state_status_t initial(tchecker::syncprod::system_t const & system,
-                                      tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                                      tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                                      tchecker::syncprod::initial_value_t const & initial_range)
+tchecker::state_status_t initial(tchecker::syncprod::system_t const & system,
+                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
+                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+                                 tchecker::syncprod::initial_value_t const & initial_range)
 {
   auto size = vloc->size();
   if (size != vedge->size())
@@ -125,10 +125,10 @@ outgoing_edges(tchecker::syncprod::system_t const & system,
   return tchecker::make_range(begin, tchecker::past_the_end_iterator);
 }
 
-enum tchecker::state_status_t next(tchecker::syncprod::system_t const & system,
-                                   tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                                   tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                                   tchecker::syncprod::outgoing_edges_value_t const & edges)
+tchecker::state_status_t next(tchecker::syncprod::system_t const & system,
+                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
+                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+                              tchecker::syncprod::outgoing_edges_value_t const & edges)
 {
   auto size = vloc->size();
   if (size != vedge->size())
@@ -210,12 +210,12 @@ syncprod_t::syncprod_t(std::shared_ptr<tchecker::syncprod::system_t const> const
 
 tchecker::syncprod::initial_range_t syncprod_t::initial_edges() { return tchecker::syncprod::initial_edges(*_system); }
 
-std::tuple<enum tchecker::state_status_t, tchecker::syncprod::state_sptr_t, tchecker::syncprod::transition_sptr_t>
+std::tuple<tchecker::state_status_t, tchecker::syncprod::state_sptr_t, tchecker::syncprod::transition_sptr_t>
 syncprod_t::initial(tchecker::syncprod::initial_value_t const & v)
 {
   tchecker::syncprod::state_sptr_t s = _state_allocator.construct();
   tchecker::syncprod::transition_sptr_t t = _transition_allocator.construct();
-  enum tchecker::state_status_t status = tchecker::syncprod::initial(*_system, *s, *t, v);
+  tchecker::state_status_t status = tchecker::syncprod::initial(*_system, *s, *t, v);
   return std::make_tuple(status, s, t);
 }
 
@@ -224,12 +224,12 @@ tchecker::syncprod::outgoing_edges_range_t syncprod_t::outgoing_edges(tchecker::
   return tchecker::syncprod::outgoing_edges(*_system, s->vloc_ptr());
 }
 
-std::tuple<enum tchecker::state_status_t, tchecker::syncprod::state_sptr_t, tchecker::syncprod::transition_sptr_t>
+std::tuple<tchecker::state_status_t, tchecker::syncprod::state_sptr_t, tchecker::syncprod::transition_sptr_t>
 syncprod_t::next(tchecker::syncprod::const_state_sptr_t const & s, tchecker::syncprod::outgoing_edges_value_t const & v)
 {
   tchecker::syncprod::state_sptr_t nexts = _state_allocator.clone(*s);
   tchecker::syncprod::transition_sptr_t t = _transition_allocator.construct();
-  enum tchecker::state_status_t status = tchecker::syncprod::next(*_system, *nexts, *t, v);
+  tchecker::state_status_t status = tchecker::syncprod::next(*_system, *nexts, *t, v);
   return std::make_tuple(status, nexts, t);
 }
 

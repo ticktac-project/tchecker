@@ -20,16 +20,15 @@ namespace refzg {
 
 /* Semantics functions */
 
-enum tchecker::state_status_t initial(tchecker::ta::system_t const & system,
-                                      tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                                      tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                                      tchecker::intrusive_shared_ptr_t<tchecker::refzg::shared_zone_t> const & zone,
-                                      tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                                      tchecker::clock_constraint_container_t & invariant,
-                                      tchecker::refzg::semantics_t & semantics, tchecker::integer_t spread,
-                                      tchecker::refzg::initial_value_t const & initial_range)
+tchecker::state_status_t initial(tchecker::ta::system_t const & system,
+                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
+                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
+                                 tchecker::intrusive_shared_ptr_t<tchecker::refzg::shared_zone_t> const & zone,
+                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+                                 tchecker::clock_constraint_container_t & invariant, tchecker::refzg::semantics_t & semantics,
+                                 tchecker::integer_t spread, tchecker::refzg::initial_value_t const & initial_range)
 {
-  enum tchecker::state_status_t status = tchecker::ta::initial(system, vloc, intval, vedge, invariant, initial_range);
+  tchecker::state_status_t status = tchecker::ta::initial(system, vloc, intval, vedge, invariant, initial_range);
   if (status != tchecker::STATE_OK)
     return status;
 
@@ -51,22 +50,21 @@ enum tchecker::state_status_t initial(tchecker::ta::system_t const & system,
   return tchecker::STATE_OK;
 }
 
-enum tchecker::state_status_t next(tchecker::ta::system_t const & system,
-                                   tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                                   tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                                   tchecker::intrusive_shared_ptr_t<tchecker::refzg::shared_zone_t> const & zone,
-                                   tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                                   tchecker::clock_constraint_container_t & src_invariant,
-                                   tchecker::clock_constraint_container_t & guard, tchecker::clock_reset_container_t & reset,
-                                   tchecker::clock_constraint_container_t & tgt_invariant,
-                                   tchecker::refzg::semantics_t & semantics, tchecker::integer_t spread,
-                                   tchecker::refzg::outgoing_edges_value_t const & edges)
+tchecker::state_status_t next(tchecker::ta::system_t const & system,
+                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
+                              tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
+                              tchecker::intrusive_shared_ptr_t<tchecker::refzg::shared_zone_t> const & zone,
+                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+                              tchecker::clock_constraint_container_t & src_invariant,
+                              tchecker::clock_constraint_container_t & guard, tchecker::clock_reset_container_t & reset,
+                              tchecker::clock_constraint_container_t & tgt_invariant, tchecker::refzg::semantics_t & semantics,
+                              tchecker::integer_t spread, tchecker::refzg::outgoing_edges_value_t const & edges)
 {
   std::shared_ptr<tchecker::reference_clock_variables_t const> r = zone->reference_clock_variables();
 
   boost::dynamic_bitset<> const src_delay_allowed = tchecker::ta::delay_allowed(system, *r, *vloc);
 
-  enum tchecker::state_status_t status =
+  tchecker::state_status_t status =
       tchecker::ta::next(system, vloc, intval, vedge, src_invariant, guard, reset, tgt_invariant, edges);
   if (status != tchecker::STATE_OK)
     return status;
@@ -129,12 +127,12 @@ refzg_t::refzg_t(std::shared_ptr<tchecker::ta::system_t const> const & system,
 
 tchecker::refzg::initial_range_t refzg_t::initial_edges() { return tchecker::refzg::initial_edges(*_system); }
 
-std::tuple<enum tchecker::state_status_t, tchecker::refzg::state_sptr_t, tchecker::refzg::transition_sptr_t>
+std::tuple<tchecker::state_status_t, tchecker::refzg::state_sptr_t, tchecker::refzg::transition_sptr_t>
 refzg_t::initial(tchecker::refzg::initial_value_t const & v)
 {
   tchecker::refzg::state_sptr_t s = _state_allocator.construct();
   tchecker::refzg::transition_sptr_t t = _transition_allocator.construct();
-  enum tchecker::state_status_t status = tchecker::refzg::initial(*_system, *s, *t, *_semantics, _spread, v);
+  tchecker::state_status_t status = tchecker::refzg::initial(*_system, *s, *t, *_semantics, _spread, v);
   return std::make_tuple(status, s, t);
 }
 
@@ -143,12 +141,12 @@ tchecker::refzg::outgoing_edges_range_t refzg_t::outgoing_edges(tchecker::refzg:
   return tchecker::refzg::outgoing_edges(*_system, s->vloc_ptr());
 }
 
-std::tuple<enum tchecker::state_status_t, tchecker::refzg::state_sptr_t, tchecker::refzg::transition_sptr_t>
+std::tuple<tchecker::state_status_t, tchecker::refzg::state_sptr_t, tchecker::refzg::transition_sptr_t>
 refzg_t::next(tchecker::refzg::const_state_sptr_t const & s, tchecker::refzg::outgoing_edges_value_t const & v)
 {
   tchecker::refzg::state_sptr_t nexts = _state_allocator.clone(*s);
   tchecker::refzg::transition_sptr_t t = _transition_allocator.construct();
-  enum tchecker::state_status_t status = tchecker::refzg::next(*_system, *nexts, *t, *_semantics, _spread, v);
+  tchecker::state_status_t status = tchecker::refzg::next(*_system, *nexts, *t, *_semantics, _spread, v);
   return std::make_tuple(status, nexts, t);
 }
 

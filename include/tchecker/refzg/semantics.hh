@@ -49,9 +49,9 @@ public:
   \return STATE_OK if the resulting DBM is not empty, other values if the
   resulting DBM is empty (see details in implementations)
    */
-  virtual enum tchecker::state_status_t initial(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
-                                                boost::dynamic_bitset<> const & delay_allowed,
-                                                tchecker::clock_constraint_container_t const & invariant) = 0;
+  virtual tchecker::state_status_t initial(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
+                                           boost::dynamic_bitset<> const & delay_allowed,
+                                           tchecker::clock_constraint_container_t const & invariant) = 0;
 
   /*!
   \brief Compute next zone with reference clocks
@@ -77,7 +77,7 @@ public:
   \return STATE_OK if the resulting DBM is not empty, other values if the resulting
   DBM is empty (see details in implementations)
    */
-  virtual enum tchecker::state_status_t
+  virtual tchecker::state_status_t
   next(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
        boost::dynamic_bitset<> const & src_delay_allowed, tchecker::clock_constraint_container_t const & src_invariant,
        boost::dynamic_bitset<> const & sync_ref_clocks, tchecker::clock_constraint_container_t const & guard,
@@ -113,9 +113,9 @@ public:
   tchecker::STATE_CLOCKS_SRC_INVARIANT_VIOLATED if the zero valuation does not
   satisfy invariant.
   */
-  virtual enum tchecker::state_status_t initial(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
-                                                boost::dynamic_bitset<> const & delay_allowed,
-                                                tchecker::clock_constraint_container_t const & invariant);
+  virtual tchecker::state_status_t initial(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
+                                           boost::dynamic_bitset<> const & delay_allowed,
+                                           tchecker::clock_constraint_container_t const & invariant);
 
   /*!
   \brief Compute next zone with reference clocks
@@ -153,7 +153,7 @@ public:
   result in an empty zone, tchecker::STATE_CLOCKS_TGT_INVARIANT_VIOLATED if
   intersection with tgt_invariant result in an empty zone
   */
-  virtual enum tchecker::state_status_t
+  virtual tchecker::state_status_t
   next(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
        boost::dynamic_bitset<> const & src_delay_allowed, tchecker::clock_constraint_container_t const & src_invariant,
        boost::dynamic_bitset<> const & sync_ref_clocks, tchecker::clock_constraint_container_t const & guard,
@@ -191,9 +191,9 @@ public:
   tchecker::STATE_CLOCKS_SRC_INVARIANT_VIOLATED if the (time successors of the)
   zero valuation does not satisfy invariant.
   */
-  virtual enum tchecker::state_status_t initial(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
-                                                boost::dynamic_bitset<> const & delay_allowed,
-                                                tchecker::clock_constraint_container_t const & invariant);
+  virtual tchecker::state_status_t initial(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
+                                           boost::dynamic_bitset<> const & delay_allowed,
+                                           tchecker::clock_constraint_container_t const & invariant);
 
   /*!
   \brief Compute next zone with reference clocks
@@ -232,7 +232,7 @@ public:
   result in an empty zone, tchecker::STATE_CLOCKS_TGT_INVARIANT_VIOLATED if
   intersection with tgt_invariant result in an empty zone
   */
-  virtual enum tchecker::state_status_t
+  virtual tchecker::state_status_t
   next(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
        boost::dynamic_bitset<> const & src_delay_allowed, tchecker::clock_constraint_container_t const & src_invariant,
        boost::dynamic_bitset<> const & sync_ref_clocks, tchecker::clock_constraint_container_t const & guard,

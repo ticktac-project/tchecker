@@ -16,10 +16,10 @@ namespace refzg {
 
 /* standard_semantics_t */
 
-enum tchecker::state_status_t standard_semantics_t::initial(tchecker::dbm::db_t * rdbm,
-                                                            tchecker::reference_clock_variables_t const & r,
-                                                            boost::dynamic_bitset<> const & delay_allowed,
-                                                            tchecker::clock_constraint_container_t const & invariant)
+tchecker::state_status_t standard_semantics_t::initial(tchecker::dbm::db_t * rdbm,
+                                                       tchecker::reference_clock_variables_t const & r,
+                                                       boost::dynamic_bitset<> const & delay_allowed,
+                                                       tchecker::clock_constraint_container_t const & invariant)
 {
   tchecker::refdbm::zero(rdbm, r);
 
@@ -29,12 +29,14 @@ enum tchecker::state_status_t standard_semantics_t::initial(tchecker::dbm::db_t 
   return tchecker::STATE_OK;
 }
 
-enum tchecker::state_status_t standard_semantics_t::next(
-    tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
-    boost::dynamic_bitset<> const & src_delay_allowed, tchecker::clock_constraint_container_t const & src_invariant,
-    boost::dynamic_bitset<> const & sync_ref_clocks, tchecker::clock_constraint_container_t const & guard,
-    tchecker::clock_reset_container_t const & clkreset, boost::dynamic_bitset<> const & tgt_delay_allowed,
-    tchecker::clock_constraint_container_t const & tgt_invariant)
+tchecker::state_status_t standard_semantics_t::next(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
+                                                    boost::dynamic_bitset<> const & src_delay_allowed,
+                                                    tchecker::clock_constraint_container_t const & src_invariant,
+                                                    boost::dynamic_bitset<> const & sync_ref_clocks,
+                                                    tchecker::clock_constraint_container_t const & guard,
+                                                    tchecker::clock_reset_container_t const & clkreset,
+                                                    boost::dynamic_bitset<> const & tgt_delay_allowed,
+                                                    tchecker::clock_constraint_container_t const & tgt_invariant)
 {
   if (src_delay_allowed.any()) {
     tchecker::refdbm::asynchronous_open_up(rdbm, r, src_delay_allowed);
@@ -59,10 +61,10 @@ enum tchecker::state_status_t standard_semantics_t::next(
 
 /* elapsed_semantics_t */
 
-enum tchecker::state_status_t elapsed_semantics_t::initial(tchecker::dbm::db_t * rdbm,
-                                                           tchecker::reference_clock_variables_t const & r,
-                                                           boost::dynamic_bitset<> const & delay_allowed,
-                                                           tchecker::clock_constraint_container_t const & invariant)
+tchecker::state_status_t elapsed_semantics_t::initial(tchecker::dbm::db_t * rdbm,
+                                                      tchecker::reference_clock_variables_t const & r,
+                                                      boost::dynamic_bitset<> const & delay_allowed,
+                                                      tchecker::clock_constraint_container_t const & invariant)
 {
   tchecker::refdbm::zero(rdbm, r);
 
@@ -79,13 +81,14 @@ enum tchecker::state_status_t elapsed_semantics_t::initial(tchecker::dbm::db_t *
   return tchecker::STATE_OK;
 }
 
-enum tchecker::state_status_t
-elapsed_semantics_t::next(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
-                          boost::dynamic_bitset<> const & src_delay_allowed,
-                          tchecker::clock_constraint_container_t const & src_invariant,
-                          boost::dynamic_bitset<> const & sync_ref_clocks, tchecker::clock_constraint_container_t const & guard,
-                          tchecker::clock_reset_container_t const & clkreset, boost::dynamic_bitset<> const & tgt_delay_allowed,
-                          tchecker::clock_constraint_container_t const & tgt_invariant)
+tchecker::state_status_t elapsed_semantics_t::next(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
+                                                   boost::dynamic_bitset<> const & src_delay_allowed,
+                                                   tchecker::clock_constraint_container_t const & src_invariant,
+                                                   boost::dynamic_bitset<> const & sync_ref_clocks,
+                                                   tchecker::clock_constraint_container_t const & guard,
+                                                   tchecker::clock_reset_container_t const & clkreset,
+                                                   boost::dynamic_bitset<> const & tgt_delay_allowed,
+                                                   tchecker::clock_constraint_container_t const & tgt_invariant)
 {
   if (tchecker::refdbm::constrain(rdbm, r, src_invariant) == tchecker::dbm::EMPTY)
     return tchecker::STATE_CLOCKS_SRC_INVARIANT_VIOLATED;

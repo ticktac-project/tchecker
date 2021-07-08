@@ -86,14 +86,14 @@ using initial_value_t = tchecker::ta::initial_value_t;
  tchecker::STATE_CLOCKS_SRC_INVARIANT_VIOLATED if the initial zone is empty
  \throw std::runtime_error : if evaluation of invariant throws an exception
  */
-enum tchecker::state_status_t initial(tchecker::ta::system_t const & system,
-                                      tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                                      tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                                      tchecker::intrusive_shared_ptr_t<tchecker::zg::shared_zone_t> const & zone,
-                                      tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                                      tchecker::clock_constraint_container_t & invariant, tchecker::zg::semantics_t & semantics,
-                                      tchecker::zg::extrapolation_t & extrapolation,
-                                      tchecker::zg::initial_value_t const & initial_range);
+tchecker::state_status_t initial(tchecker::ta::system_t const & system,
+                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
+                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
+                                 tchecker::intrusive_shared_ptr_t<tchecker::zg::shared_zone_t> const & zone,
+                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+                                 tchecker::clock_constraint_container_t & invariant, tchecker::zg::semantics_t & semantics,
+                                 tchecker::zg::extrapolation_t & extrapolation,
+                                 tchecker::zg::initial_value_t const & initial_range);
 
 /*!
  \brief Compute initial state and transition
@@ -108,10 +108,9 @@ enum tchecker::state_status_t initial(tchecker::ta::system_t const & system,
  tchecker::zg::initial for returned values when initialization fails
  \throw std::invalid_argument : if s and v have incompatible sizes
 */
-inline enum tchecker::state_status_t initial(tchecker::ta::system_t const & system, tchecker::zg::state_t & s,
-                                             tchecker::zg::transition_t & t, tchecker::zg::semantics_t & semantics,
-                                             tchecker::zg::extrapolation_t & extrapolation,
-                                             tchecker::zg::initial_value_t const & v)
+inline tchecker::state_status_t initial(tchecker::ta::system_t const & system, tchecker::zg::state_t & s,
+                                        tchecker::zg::transition_t & t, tchecker::zg::semantics_t & semantics,
+                                        tchecker::zg::extrapolation_t & extrapolation, tchecker::zg::initial_value_t const & v)
 {
   return tchecker::zg::initial(system, s.vloc_ptr(), s.intval_ptr(), s.zone_ptr(), t.vedge_ptr(), t.src_invariant_container(),
                                semantics, extrapolation, v);
@@ -202,16 +201,16 @@ using outgoing_edges_value_t = tchecker::ta::outgoing_edges_value_t;
  \throw std::runtime_error : if evaluation of invariants, guards or statements
  throws an exception
  */
-enum tchecker::state_status_t next(tchecker::ta::system_t const & system,
-                                   tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                                   tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                                   tchecker::intrusive_shared_ptr_t<tchecker::zg::shared_zone_t> const & zone,
-                                   tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                                   tchecker::clock_constraint_container_t & src_invariant,
-                                   tchecker::clock_constraint_container_t & guard, tchecker::clock_reset_container_t & reset,
-                                   tchecker::clock_constraint_container_t & tgt_invariant,
-                                   tchecker::zg::semantics_t & semantics, tchecker::zg::extrapolation_t & extrapolation,
-                                   tchecker::zg::outgoing_edges_value_t const & edges);
+tchecker::state_status_t next(tchecker::ta::system_t const & system,
+                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
+                              tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
+                              tchecker::intrusive_shared_ptr_t<tchecker::zg::shared_zone_t> const & zone,
+                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+                              tchecker::clock_constraint_container_t & src_invariant,
+                              tchecker::clock_constraint_container_t & guard, tchecker::clock_reset_container_t & reset,
+                              tchecker::clock_constraint_container_t & tgt_invariant, tchecker::zg::semantics_t & semantics,
+                              tchecker::zg::extrapolation_t & extrapolation,
+                              tchecker::zg::outgoing_edges_value_t const & edges);
 
 /*!
  \brief Compute next state and transition
@@ -226,10 +225,10 @@ enum tchecker::state_status_t next(tchecker::ta::system_t const & system,
  \return status of state s after update (see tchecker::zg::next)
  \throw std::invalid_argument : if s and v have incompatible size
 */
-inline enum tchecker::state_status_t next(tchecker::ta::system_t const & system, tchecker::zg::state_t & s,
-                                          tchecker::zg::transition_t & t, tchecker::zg::semantics_t & semantics,
-                                          tchecker::zg::extrapolation_t & extrapolation,
-                                          tchecker::zg::outgoing_edges_value_t const & v)
+inline tchecker::state_status_t next(tchecker::ta::system_t const & system, tchecker::zg::state_t & s,
+                                     tchecker::zg::transition_t & t, tchecker::zg::semantics_t & semantics,
+                                     tchecker::zg::extrapolation_t & extrapolation,
+                                     tchecker::zg::outgoing_edges_value_t const & v)
 {
   return tchecker::zg::next(system, s.vloc_ptr(), s.intval_ptr(), s.zone_ptr(), t.vedge_ptr(), t.src_invariant_container(),
                             t.guard_container(), t.reset_container(), t.tgt_invariant_container(), semantics, extrapolation, v);
@@ -325,7 +324,7 @@ public:
    been computed from v, and status is the status of state s after initialization
    \note t represents an initial transition to s
    */
-  virtual std::tuple<enum tchecker::state_status_t, tchecker::zg::state_sptr_t, tchecker::zg::transition_sptr_t>
+  virtual std::tuple<tchecker::state_status_t, tchecker::zg::state_sptr_t, tchecker::zg::transition_sptr_t>
   initial(tchecker::zg::initial_value_t const & v);
 
   /*!
@@ -342,7 +341,7 @@ public:
    \return (status, s', t) where next state s' and transition t have been
    computed from v, and status is the status of state s'
    */
-  virtual std::tuple<enum tchecker::state_status_t, tchecker::zg::state_sptr_t, tchecker::zg::transition_sptr_t>
+  virtual std::tuple<tchecker::state_status_t, tchecker::zg::state_sptr_t, tchecker::zg::transition_sptr_t>
   next(tchecker::zg::const_state_sptr_t const & s, tchecker::zg::outgoing_edges_value_t const & v);
 
   /*!
@@ -352,7 +351,7 @@ public:
     \post all tuples (status, s, t) of status, initial states and transitions such
     that status matches mask (i.e. status & mask != 0) have been pushed back into v
     */
-  virtual inline void initial(std::vector<sst_t> & v, enum tchecker::state_status_t mask)
+  virtual inline void initial(std::vector<sst_t> & v, tchecker::state_status_t mask)
   {
     tchecker::ts::ts_t<tchecker::zg::state_sptr_t, tchecker::zg::const_state_sptr_t, tchecker::zg::transition_sptr_t,
                        tchecker::zg::const_transition_sptr_t, tchecker::zg::initial_range_t,
@@ -368,8 +367,7 @@ public:
   \post all tuples (status, s', t) such that s -t-> s' is a transition and the
   status of s' matches mask (i.e. status & mask != 0) have been pushed to v
   */
-  virtual inline void next(tchecker::zg::const_state_sptr_t const & s, std::vector<sst_t> & v,
-                           enum tchecker::state_status_t mask)
+  virtual inline void next(tchecker::zg::const_state_sptr_t const & s, std::vector<sst_t> & v, tchecker::state_status_t mask)
   {
     tchecker::ts::ts_t<tchecker::zg::state_sptr_t, tchecker::zg::const_state_sptr_t, tchecker::zg::transition_sptr_t,
                        tchecker::zg::const_transition_sptr_t, tchecker::zg::initial_range_t,

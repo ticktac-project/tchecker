@@ -14,16 +14,16 @@ namespace zg {
 
 /* Semantics functions */
 
-enum tchecker::state_status_t initial(tchecker::ta::system_t const & system,
-                                      tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                                      tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                                      tchecker::intrusive_shared_ptr_t<tchecker::zg::shared_zone_t> const & zone,
-                                      tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                                      tchecker::clock_constraint_container_t & invariant, tchecker::zg::semantics_t & semantics,
-                                      tchecker::zg::extrapolation_t & extrapolation,
-                                      tchecker::zg::initial_value_t const & initial_range)
+tchecker::state_status_t initial(tchecker::ta::system_t const & system,
+                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
+                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
+                                 tchecker::intrusive_shared_ptr_t<tchecker::zg::shared_zone_t> const & zone,
+                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+                                 tchecker::clock_constraint_container_t & invariant, tchecker::zg::semantics_t & semantics,
+                                 tchecker::zg::extrapolation_t & extrapolation,
+                                 tchecker::zg::initial_value_t const & initial_range)
 {
-  enum tchecker::state_status_t status = tchecker::ta::initial(system, vloc, intval, vedge, invariant, initial_range);
+  tchecker::state_status_t status = tchecker::ta::initial(system, vloc, intval, vedge, invariant, initial_range);
   if (status != tchecker::STATE_OK)
     return status;
 
@@ -40,20 +40,19 @@ enum tchecker::state_status_t initial(tchecker::ta::system_t const & system,
   return tchecker::STATE_OK;
 }
 
-enum tchecker::state_status_t next(tchecker::ta::system_t const & system,
-                                   tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                                   tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                                   tchecker::intrusive_shared_ptr_t<tchecker::zg::shared_zone_t> const & zone,
-                                   tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                                   tchecker::clock_constraint_container_t & src_invariant,
-                                   tchecker::clock_constraint_container_t & guard, tchecker::clock_reset_container_t & reset,
-                                   tchecker::clock_constraint_container_t & tgt_invariant,
-                                   tchecker::zg::semantics_t & semantics, tchecker::zg::extrapolation_t & extrapolation,
-                                   tchecker::zg::outgoing_edges_value_t const & edges)
+tchecker::state_status_t next(tchecker::ta::system_t const & system,
+                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
+                              tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
+                              tchecker::intrusive_shared_ptr_t<tchecker::zg::shared_zone_t> const & zone,
+                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+                              tchecker::clock_constraint_container_t & src_invariant,
+                              tchecker::clock_constraint_container_t & guard, tchecker::clock_reset_container_t & reset,
+                              tchecker::clock_constraint_container_t & tgt_invariant, tchecker::zg::semantics_t & semantics,
+                              tchecker::zg::extrapolation_t & extrapolation, tchecker::zg::outgoing_edges_value_t const & edges)
 {
   bool src_delay_allowed = tchecker::ta::delay_allowed(system, *vloc);
 
-  enum tchecker::state_status_t status =
+  tchecker::state_status_t status =
       tchecker::ta::next(system, vloc, intval, vedge, src_invariant, guard, reset, tgt_invariant, edges);
   if (status != tchecker::STATE_OK)
     return status;
@@ -109,12 +108,12 @@ zg_t::zg_t(std::shared_ptr<tchecker::ta::system_t const> const & system,
 
 tchecker::zg::initial_range_t zg_t::initial_edges() { return tchecker::zg::initial_edges(*_system); }
 
-std::tuple<enum tchecker::state_status_t, tchecker::zg::state_sptr_t, tchecker::zg::transition_sptr_t>
+std::tuple<tchecker::state_status_t, tchecker::zg::state_sptr_t, tchecker::zg::transition_sptr_t>
 zg_t::initial(tchecker::zg::initial_value_t const & v)
 {
   tchecker::zg::state_sptr_t s = _state_allocator.construct();
   tchecker::zg::transition_sptr_t t = _transition_allocator.construct();
-  enum tchecker::state_status_t status = tchecker::zg::initial(*_system, *s, *t, *_semantics, *_extrapolation, v);
+  tchecker::state_status_t status = tchecker::zg::initial(*_system, *s, *t, *_semantics, *_extrapolation, v);
   return std::make_tuple(status, s, t);
 }
 
@@ -123,12 +122,12 @@ tchecker::zg::outgoing_edges_range_t zg_t::outgoing_edges(tchecker::zg::const_st
   return tchecker::zg::outgoing_edges(*_system, s->vloc_ptr());
 }
 
-std::tuple<enum tchecker::state_status_t, tchecker::zg::state_sptr_t, tchecker::zg::transition_sptr_t>
+std::tuple<tchecker::state_status_t, tchecker::zg::state_sptr_t, tchecker::zg::transition_sptr_t>
 zg_t::next(tchecker::zg::const_state_sptr_t const & s, tchecker::zg::outgoing_edges_value_t const & v)
 {
   tchecker::zg::state_sptr_t nexts = _state_allocator.clone(*s);
   tchecker::zg::transition_sptr_t t = _transition_allocator.construct();
-  enum tchecker::state_status_t status = tchecker::zg::next(*_system, *nexts, *t, *_semantics, *_extrapolation, v);
+  tchecker::state_status_t status = tchecker::zg::next(*_system, *nexts, *t, *_semantics, *_extrapolation, v);
   return std::make_tuple(status, nexts, t);
 }
 

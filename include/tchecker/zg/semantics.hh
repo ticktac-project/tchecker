@@ -42,8 +42,8 @@ public:
   \return STATE_OK if the resulting dbm is not empty, other values if the
   resulting dbm is empty (see details in implementations)
    */
-  virtual enum tchecker::state_status_t initial(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, bool delay_allowed,
-                                                tchecker::clock_constraint_container_t const & invariant) = 0;
+  virtual tchecker::state_status_t initial(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, bool delay_allowed,
+                                           tchecker::clock_constraint_container_t const & invariant) = 0;
 
   /*!
   \brief Compute next zone
@@ -60,11 +60,11 @@ public:
   \return STATE_OK if the resulting dbm is not empty, other values if the resulting
   dbm is empty (see details in implementations)
    */
-  virtual enum tchecker::state_status_t next(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, bool src_delay_allowed,
-                                             tchecker::clock_constraint_container_t const & src_invariant,
-                                             tchecker::clock_constraint_container_t const & guard,
-                                             tchecker::clock_reset_container_t const & clkreset, bool tgt_delay_allowed,
-                                             tchecker::clock_constraint_container_t const & tgt_invariant) = 0;
+  virtual tchecker::state_status_t next(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, bool src_delay_allowed,
+                                        tchecker::clock_constraint_container_t const & src_invariant,
+                                        tchecker::clock_constraint_container_t const & guard,
+                                        tchecker::clock_reset_container_t const & clkreset, bool tgt_delay_allowed,
+                                        tchecker::clock_constraint_container_t const & tgt_invariant) = 0;
 };
 
 /*!
@@ -90,8 +90,8 @@ public:
   tchecker::STATE_CLOCKS_SRC_INVARIANT_VIOLATED if the zero valuation does not
   satisfy invariant.
    */
-  virtual enum tchecker::state_status_t initial(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, bool delay_allowed,
-                                                tchecker::clock_constraint_container_t const & invariant);
+  virtual tchecker::state_status_t initial(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, bool delay_allowed,
+                                           tchecker::clock_constraint_container_t const & invariant);
 
   /*!
   \brief Compute next zone
@@ -113,11 +113,11 @@ public:
   tchecker::STATE_CLOCKS_TGT_INVARIANT_VIOLATED if intersection with
   tgt_invariant result in an empty zone
   */
-  virtual enum tchecker::state_status_t next(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, bool src_delay_allowed,
-                                             tchecker::clock_constraint_container_t const & src_invariant,
-                                             tchecker::clock_constraint_container_t const & guard,
-                                             tchecker::clock_reset_container_t const & clkreset, bool tgt_delay_allowed,
-                                             tchecker::clock_constraint_container_t const & tgt_invariant);
+  virtual tchecker::state_status_t next(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, bool src_delay_allowed,
+                                        tchecker::clock_constraint_container_t const & src_invariant,
+                                        tchecker::clock_constraint_container_t const & guard,
+                                        tchecker::clock_reset_container_t const & clkreset, bool tgt_delay_allowed,
+                                        tchecker::clock_constraint_container_t const & tgt_invariant);
 };
 
 /*!
@@ -145,8 +145,8 @@ public:
   tchecker::STATE_CLOCKS_SRC_INVARIANT_VIOLATED if the (time successors of the)
   zero valuation does not satisfy invariant.
    */
-  virtual enum tchecker::state_status_t initial(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, bool delay_allowed,
-                                                tchecker::clock_constraint_container_t const & invariant);
+  virtual tchecker::state_status_t initial(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, bool delay_allowed,
+                                           tchecker::clock_constraint_container_t const & invariant);
 
   /*!
   \brief Compute next zone
@@ -168,11 +168,11 @@ public:
   tchecker::STATE_CLOCKS_TGT_INVARIANT_VIOLATED if intersection with
   tgt_invariant result in an empty zone
   */
-  virtual enum tchecker::state_status_t next(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, bool src_delay_allowed,
-                                             tchecker::clock_constraint_container_t const & src_invariant,
-                                             tchecker::clock_constraint_container_t const & guard,
-                                             tchecker::clock_reset_container_t const & clkreset, bool tgt_delay_allowed,
-                                             tchecker::clock_constraint_container_t const & tgt_invariant);
+  virtual tchecker::state_status_t next(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, bool src_delay_allowed,
+                                        tchecker::clock_constraint_container_t const & src_invariant,
+                                        tchecker::clock_constraint_container_t const & guard,
+                                        tchecker::clock_reset_container_t const & clkreset, bool tgt_delay_allowed,
+                                        tchecker::clock_constraint_container_t const & tgt_invariant);
 };
 
 /*!

@@ -14,9 +14,8 @@ namespace zg {
 
 /* standard_semantics_t */
 
-enum tchecker::state_status_t standard_semantics_t::initial(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim,
-                                                            bool delay_allowed,
-                                                            tchecker::clock_constraint_container_t const & invariant)
+tchecker::state_status_t standard_semantics_t::initial(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, bool delay_allowed,
+                                                       tchecker::clock_constraint_container_t const & invariant)
 {
   tchecker::dbm::zero(dbm, dim);
 
@@ -26,13 +25,11 @@ enum tchecker::state_status_t standard_semantics_t::initial(tchecker::dbm::db_t 
   return tchecker::STATE_OK;
 }
 
-enum tchecker::state_status_t standard_semantics_t::next(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim,
-                                                         bool src_delay_allowed,
-                                                         tchecker::clock_constraint_container_t const & src_invariant,
-                                                         tchecker::clock_constraint_container_t const & guard,
-                                                         tchecker::clock_reset_container_t const & clkreset,
-                                                         bool tgt_delay_allowed,
-                                                         tchecker::clock_constraint_container_t const & tgt_invariant)
+tchecker::state_status_t standard_semantics_t::next(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, bool src_delay_allowed,
+                                                    tchecker::clock_constraint_container_t const & src_invariant,
+                                                    tchecker::clock_constraint_container_t const & guard,
+                                                    tchecker::clock_reset_container_t const & clkreset, bool tgt_delay_allowed,
+                                                    tchecker::clock_constraint_container_t const & tgt_invariant)
 {
   if (src_delay_allowed) {
     tchecker::dbm::open_up(dbm, dim);
@@ -54,9 +51,8 @@ enum tchecker::state_status_t standard_semantics_t::next(tchecker::dbm::db_t * d
 
 /* elapsed_semantics_t */
 
-enum tchecker::state_status_t elapsed_semantics_t::initial(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim,
-                                                           bool delay_allowed,
-                                                           tchecker::clock_constraint_container_t const & invariant)
+tchecker::state_status_t elapsed_semantics_t::initial(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, bool delay_allowed,
+                                                      tchecker::clock_constraint_container_t const & invariant)
 {
   tchecker::dbm::zero(dbm, dim);
 
@@ -73,13 +69,11 @@ enum tchecker::state_status_t elapsed_semantics_t::initial(tchecker::dbm::db_t *
   return tchecker::STATE_OK;
 }
 
-enum tchecker::state_status_t elapsed_semantics_t::next(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim,
-                                                        bool src_delay_allowed,
-                                                        tchecker::clock_constraint_container_t const & src_invariant,
-                                                        tchecker::clock_constraint_container_t const & guard,
-                                                        tchecker::clock_reset_container_t const & clkreset,
-                                                        bool tgt_delay_allowed,
-                                                        tchecker::clock_constraint_container_t const & tgt_invariant)
+tchecker::state_status_t elapsed_semantics_t::next(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, bool src_delay_allowed,
+                                                   tchecker::clock_constraint_container_t const & src_invariant,
+                                                   tchecker::clock_constraint_container_t const & guard,
+                                                   tchecker::clock_reset_container_t const & clkreset, bool tgt_delay_allowed,
+                                                   tchecker::clock_constraint_container_t const & tgt_invariant)
 {
   if (tchecker::dbm::constrain(dbm, dim, src_invariant) == tchecker::dbm::EMPTY)
     return tchecker::STATE_CLOCKS_SRC_INVARIANT_VIOLATED;

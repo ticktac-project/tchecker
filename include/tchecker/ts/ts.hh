@@ -91,7 +91,7 @@ public:
   /*!
   \brief Type of tuples (status, state, transition)
   */
-  using sst_t = std::tuple<enum tchecker::state_status_t, STATE, TRANSITION>;
+  using sst_t = std::tuple<tchecker::state_status_t, STATE, TRANSITION>;
 
   /*!
    \brief Destructor
@@ -112,7 +112,7 @@ public:
    been computed from v, and status is the status of state s after initialization
    \note t represents an initial transition to s
    */
-  virtual std::tuple<enum tchecker::state_status_t, STATE, TRANSITION> initial(INITIAL_VALUE const & v) = 0;
+  virtual std::tuple<tchecker::state_status_t, STATE, TRANSITION> initial(INITIAL_VALUE const & v) = 0;
 
   /*!
    \brief Accessor
@@ -128,8 +128,8 @@ public:
    \return (status, s', t) where next state s' and transition t have been
    computed from v, and status is the status of state s'
    */
-  virtual std::tuple<enum tchecker::state_status_t, STATE, TRANSITION> next(CONST_STATE const & s,
-                                                                            OUTGOING_EDGES_VALUE const & v) = 0;
+  virtual std::tuple<tchecker::state_status_t, STATE, TRANSITION> next(CONST_STATE const & s,
+                                                                       OUTGOING_EDGES_VALUE const & v) = 0;
 
   /*!
   \brief Initial states and transitions with selected status
@@ -138,9 +138,9 @@ public:
   \post all tuples (status, s, t) of status, initial states and transitions such
   that status matches mask (i.e. status & mask != 0) have been pushed back into v
    */
-  virtual void initial(std::vector<sst_t> & v, enum tchecker::state_status_t mask)
+  virtual void initial(std::vector<sst_t> & v, tchecker::state_status_t mask)
   {
-    enum tchecker::state_status_t status;
+    tchecker::state_status_t status;
     STATE state;
     TRANSITION transition;
     INITIAL_RANGE edges = initial_edges();
@@ -159,9 +159,9 @@ public:
   \post all tuples (status, s', t) such that s -t-> s' is a transition and the
   status of s' matches mask (i.e. status & mask != 0) have been pushed to v
   */
-  virtual void next(CONST_STATE const & s, std::vector<sst_t> & v, enum tchecker::state_status_t mask)
+  virtual void next(CONST_STATE const & s, std::vector<sst_t> & v, tchecker::state_status_t mask)
   {
-    enum tchecker::state_status_t status;
+    tchecker::state_status_t status;
     STATE next_state;
     TRANSITION transition;
     OUTGOING_EDGES_RANGE edges = outgoing_edges(s);

@@ -70,10 +70,10 @@ using initial_value_t = std::iterator_traits<tchecker::syncprod::initial_iterato
  \return tchecker::STATE_OK
  \throw std::invalid_argument : if the size of vloc, vedge and initial_range do not coincide
  */
-enum tchecker::state_status_t initial(tchecker::syncprod::system_t const & system,
-                                      tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                                      tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                                      tchecker::syncprod::initial_value_t const & initial_range);
+tchecker::state_status_t initial(tchecker::syncprod::system_t const & system,
+                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
+                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+                                 tchecker::syncprod::initial_value_t const & initial_range);
 
 /*!
 \brief Compute initial state and transition
@@ -85,9 +85,8 @@ enum tchecker::state_status_t initial(tchecker::syncprod::system_t const & syste
 \return tchecker::STATE_OK
 \throw std::invalid_argument : if s and v have incompatible sizes
 */
-inline enum tchecker::state_status_t initial(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t & s,
-                                             tchecker::syncprod::transition_t & t,
-                                             tchecker::syncprod::initial_value_t const & v)
+inline tchecker::state_status_t initial(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t & s,
+                                        tchecker::syncprod::transition_t & t, tchecker::syncprod::initial_value_t const & v)
 {
   return tchecker::syncprod::initial(system, s.vloc_ptr(), t.vedge_ptr(), v);
 }
@@ -249,10 +248,10 @@ using outgoing_edges_value_t = tchecker::range_t<tchecker::syncprod::edges_itera
  \throw std::invalid_argument : if the sizes of vloc and vedge do not match, or
  if the pid of an edge in edges is greater or equal to the size of vloc/vedge
  */
-enum tchecker::state_status_t next(tchecker::syncprod::system_t const & system,
-                                   tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                                   tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                                   tchecker::syncprod::outgoing_edges_value_t const & edges);
+tchecker::state_status_t next(tchecker::syncprod::system_t const & system,
+                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
+                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+                              tchecker::syncprod::outgoing_edges_value_t const & edges);
 
 /*!
 \brief Compute next state and transition
@@ -264,9 +263,8 @@ enum tchecker::state_status_t next(tchecker::syncprod::system_t const & system,
 \return status of state s after update
 \throw std::invalid_argument : if s and v have incompatible size
 */
-inline enum tchecker::state_status_t next(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t & s,
-                                          tchecker::syncprod::transition_t & t,
-                                          tchecker::syncprod::outgoing_edges_value_t const & v)
+inline tchecker::state_status_t next(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t & s,
+                                     tchecker::syncprod::transition_t & t, tchecker::syncprod::outgoing_edges_value_t const & v)
 {
   return tchecker::syncprod::next(system, s.vloc_ptr(), t.vedge_ptr(), v);
 }
@@ -391,7 +389,7 @@ public:
    been computed from v, and status is the status of state s after initialization
    \note s and t are deallocated automatically
    */
-  virtual std::tuple<enum tchecker::state_status_t, tchecker::syncprod::state_sptr_t, tchecker::syncprod::transition_sptr_t>
+  virtual std::tuple<tchecker::state_status_t, tchecker::syncprod::state_sptr_t, tchecker::syncprod::transition_sptr_t>
   initial(tchecker::syncprod::initial_value_t const & v);
 
   /*!
@@ -409,7 +407,7 @@ public:
    computed from v, and status is the status of state s'
    \note s' and t are deallocated automatically
    */
-  virtual std::tuple<enum tchecker::state_status_t, tchecker::syncprod::state_sptr_t, tchecker::syncprod::transition_sptr_t>
+  virtual std::tuple<tchecker::state_status_t, tchecker::syncprod::state_sptr_t, tchecker::syncprod::transition_sptr_t>
   next(tchecker::syncprod::const_state_sptr_t const & s, tchecker::syncprod::outgoing_edges_value_t const & v);
 
   /*!
@@ -419,7 +417,7 @@ public:
   \post all tuples (status, s, t) of status, initial states and transitions such
   that status matches mask (i.e. status & mask != 0) have been pushed back into v
   */
-  virtual inline void initial(std::vector<sst_t> & v, enum tchecker::state_status_t mask)
+  virtual inline void initial(std::vector<sst_t> & v, tchecker::state_status_t mask)
   {
     tchecker::ts::ts_t<tchecker::syncprod::state_sptr_t, tchecker::syncprod::const_state_sptr_t,
                        tchecker::syncprod::transition_sptr_t, tchecker::syncprod::const_transition_sptr_t,
@@ -436,7 +434,7 @@ public:
   status of s' matches mask (i.e. status & mask != 0) have been pushed to v
   */
   virtual inline void next(tchecker::syncprod::const_state_sptr_t const & s, std::vector<sst_t> & v,
-                           enum tchecker::state_status_t mask)
+                           tchecker::state_status_t mask)
   {
     tchecker::ts::ts_t<tchecker::syncprod::state_sptr_t, tchecker::syncprod::const_state_sptr_t,
                        tchecker::syncprod::transition_sptr_t, tchecker::syncprod::const_transition_sptr_t,
