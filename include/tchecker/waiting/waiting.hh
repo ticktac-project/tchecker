@@ -46,6 +46,12 @@ public:
   virtual bool empty() = 0;
 
   /*!
+   \brief Clear the container
+   \post this container is empty
+   */
+  virtual void clear() = 0;
+
+  /*!
    \brief Insert
    \param t : element
    \post t has been inserted in this container
@@ -159,6 +165,12 @@ public:
     remove_non_waiting_first();
     return _w.empty();
   }
+
+  /*!
+   \brief Clear the container
+   \post this container is empty
+  */
+  virtual void clear() { _w.clear(); }
 
   /*!
    \brief Insert

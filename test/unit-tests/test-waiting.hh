@@ -61,6 +61,18 @@ TEST_CASE("waiting queue", "[waiting]")
     REQUIRE(non_empty_queue.empty());
   }
 
+  SECTION("clear an empty queue")
+  {
+    empty_queue.clear();
+    REQUIRE(empty_queue.empty());
+  }
+
+  SECTION("clear a non-empty queue")
+  {
+    non_empty_queue.clear();
+    REQUIRE(non_empty_queue.empty());
+  }
+
   SECTION("remove first element")
   {
     non_empty_queue.remove_first();
@@ -189,6 +201,18 @@ TEST_CASE("fast remove waiting queue", "[waiting]")
     REQUIRE_FALSE(non_empty_queue.empty());
     REQUIRE(non_empty_queue.first() == x);
     non_empty_queue.remove_first();
+    REQUIRE(non_empty_queue.empty());
+  }
+
+  SECTION("clear an empty queue")
+  {
+    empty_queue.clear();
+    REQUIRE(empty_queue.empty());
+  }
+
+  SECTION("clear a non-empty queue")
+  {
+    non_empty_queue.clear();
     REQUIRE(non_empty_queue.empty());
   }
 
@@ -331,6 +355,18 @@ TEST_CASE("waiting stack", "[waiting]")
     non_empty_stack.remove_first();
     REQUIRE_FALSE(non_empty_stack.empty());
     non_empty_stack.remove_first();
+    REQUIRE(non_empty_stack.empty());
+  }
+
+  SECTION("clear an empty stack")
+  {
+    empty_stack.clear();
+    REQUIRE(empty_stack.empty());
+  }
+
+  SECTION("clear a non-empty stack")
+  {
+    non_empty_stack.clear();
     REQUIRE(non_empty_stack.empty());
   }
 
@@ -483,6 +519,18 @@ TEST_CASE("fast remove waiting stack", "[waiting]")
     non_empty_stack.remove_first();
     REQUIRE_FALSE(non_empty_stack.empty());
     non_empty_stack.remove_first();
+    REQUIRE(non_empty_stack.empty());
+  }
+
+  SECTION("clear an empty stack")
+  {
+    empty_stack.clear();
+    REQUIRE(empty_stack.empty());
+  }
+
+  SECTION("clear a non-empty stack")
+  {
+    non_empty_stack.clear();
     REQUIRE(non_empty_stack.empty());
   }
 

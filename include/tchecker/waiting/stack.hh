@@ -40,6 +40,12 @@ public:
   virtual inline bool empty() { return _dq.empty(); }
 
   /*!
+   \brief Clear the container
+   \post this container is empty
+   */
+  virtual inline void clear() { _dq.clear(); }
+
+  /*!
    \brief Insert
    \param t : element
    \post t has been inserted on top of the stack
