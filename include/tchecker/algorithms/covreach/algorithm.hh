@@ -99,6 +99,8 @@ public:
       nodes.clear();
     }
 
+    waiting->clear();
+
     stats.stored_states() = graph.nodes_count();
 
     stats.set_end_time();

@@ -140,7 +140,7 @@ private:
 
       if (ts.satisfies(node->state_ptr(), labels)) {
         stats.reachable() = true;
-        return;
+        break;
       }
 
       ts.next(node->state_ptr(), sst, tchecker::STATE_OK);
@@ -152,6 +152,8 @@ private:
       }
       sst.clear();
     }
+
+    waiting.clear();
   }
 };
 
