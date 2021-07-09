@@ -14,19 +14,15 @@ namespace tchecker {
 namespace algorithms {
 namespace covreach {
 
-stats_t::stats_t() : _visited_states(0), _covered_leaf_states(0), _covered_nonleaf_states(0), _reachable(false) {}
+stats_t::stats_t() : _visited_states(0), _covered_states(0), _reachable(false) {}
 
 unsigned long & stats_t::visited_states() { return _visited_states; }
 
 unsigned long stats_t::visited_states() const { return _visited_states; }
 
-unsigned long & stats_t::covered_leaf_states() { return _covered_leaf_states; }
+unsigned long & stats_t::covered_states() { return _covered_states; }
 
-unsigned long stats_t::covered_leaf_states() const { return _covered_leaf_states; }
-
-unsigned long & stats_t::covered_nonleaf_states() { return _covered_nonleaf_states; }
-
-unsigned long stats_t::covered_nonleaf_states() const { return _covered_nonleaf_states; }
+unsigned long stats_t::covered_states() const { return _covered_states; }
 
 unsigned long & stats_t::stored_states() { return _stored_states; }
 
@@ -46,12 +42,8 @@ void stats_t::attributes(std::map<std::string, std::string> & m) const
   m["VISITED_STATES"] = sstream.str();
 
   sstream.str("");
-  sstream << _covered_leaf_states;
-  m["COVERED_LEAF_STATES"] = sstream.str();
-
-  sstream.str("");
-  sstream << _covered_nonleaf_states;
-  m["COVERED_NON_LEAF_STATES"] = sstream.str();
+  sstream << _covered_states;
+  m["COVERED_STATES"] = sstream.str();
 
   sstream.str("");
   sstream << _stored_states;

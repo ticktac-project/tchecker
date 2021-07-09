@@ -68,12 +68,10 @@ public:
     std::unique_ptr<tchecker::waiting::waiting_t<node_sptr_t>> waiting{tchecker::waiting::factory<node_sptr_t>(policy)};
     tchecker::algorithms::covreach::stats_t stats;
     std::vector<node_sptr_t> nodes, covered_nodes;
-    std::size_t removed_nodes_count = 0;
 
     stats.set_start_time();
 
-    removed_nodes_count = expand_initial_nodes(ts, graph, nodes);
-    stats.covered_leaf_states() += removed_nodes_count;
+    expand_initial_nodes(ts, graph, nodes, stats);
     for (node_sptr_t const & n : nodes)
       waiting->insert(n);
     nodes.clear();
@@ -89,13 +87,11 @@ public:
         break;
       }
 
-      removed_nodes_count = expand_next_nodes(node, ts, graph, nodes);
-      stats.covered_leaf_states() += removed_nodes_count;
+      expand_next_nodes(node, ts, graph, nodes, stats);
 
       for (node_sptr_t const & next_node : nodes) {
         waiting->insert(next_node);
-        removed_nodes_count = remove_covered_nodes(graph, next_node, covered_nodes);
-        stats.covered_nonleaf_states() += removed_nodes_count;
+        remove_covered_nodes(graph, next_node, covered_nodes, stats);
         for (node_sptr_t const & covered_node : covered_nodes)
           waiting->remove(covered_node);
         covered_nodes.clear();
@@ -115,29 +111,28 @@ public:
    \param ts : transition system
    \param graph : a subsumption graph
    \param initial_nodes : nodes container
+   \param stats : statistics
    \post A node has been created in graph for each initial state of ts which is
    maximal w.r.t. the node covering in graph. All these maximal nodes have been
    added to initial_nodes
-   \return the number of non-maximal initial nodes
+   All covered initial nodes have been counted in stats
    */
-  std::size_t expand_initial_nodes(TS & ts, GRAPH & graph, std::vector<typename GRAPH::node_sptr_t> & initial_nodes)
+  void expand_initial_nodes(TS & ts, GRAPH & graph, std::vector<typename GRAPH::node_sptr_t> & initial_nodes,
+                            tchecker::algorithms::covreach::stats_t & stats)
   {
     std::vector<typename TS::sst_t> sst;
     typename GRAPH::node_sptr_t covering_node;
-    std::size_t non_maximal_nodes_count = 0;
 
     ts.initial(sst, tchecker::STATE_OK);
     for (auto && [status, s, t] : sst) {
       typename GRAPH::node_sptr_t n = graph.add_node(s);
       if (graph.is_covered(n, covering_node)) {
         graph.remove_node(n);
-        ++non_maximal_nodes_count;
+        ++stats.covered_states();
       }
       else
         initial_nodes.push_back(n);
     }
-
-    return non_maximal_nodes_count;
   }
 
   /*!
@@ -146,19 +141,19 @@ public:
    \param ts : a transition system
    \param graph : a subsumption graph
    \param next_nodes : nodes container
+   \param stats : statistics
    \post A node has been created in the graph for each successor of node that
    is maximal in graph. An actual edge has been created from node to each
    maximal successor. All maximal successors have been added to next_nodes.
    For each successor node that is not maximal, a subsumption edge has been
    created from node to a covering node.
-   \return the number of non-maximal successor nodes of node
+   All covered successor nodes have been counted in stats.
    */
-  std::size_t expand_next_nodes(typename GRAPH::node_sptr_t const & node, TS & ts, GRAPH & graph,
-                                std::vector<typename GRAPH::node_sptr_t> & next_nodes)
+  void expand_next_nodes(typename GRAPH::node_sptr_t const & node, TS & ts, GRAPH & graph,
+                         std::vector<typename GRAPH::node_sptr_t> & next_nodes, tchecker::algorithms::covreach::stats_t & stats)
   {
     std::vector<typename TS::sst_t> sst;
     typename GRAPH::node_sptr_t covering_node;
-    std::size_t non_maximal_nodes_count = 0;
 
     ts.next(node->state_ptr(), sst, tchecker::STATE_OK);
     for (auto && [status, s, t] : sst) {
@@ -166,15 +161,13 @@ public:
       if (graph.is_covered(next_node, covering_node)) {
         graph.add_edge(node, covering_node, tchecker::graph::subsumption::EDGE_SUBSUMPTION, *t);
         graph.remove_node(next_node);
-        ++non_maximal_nodes_count;
+        ++stats.covered_states();
       }
       else {
         graph.add_edge(node, next_node, tchecker::graph::subsumption::EDGE_ACTUAL, *t);
         next_nodes.push_back(next_node);
       }
     }
-
-    return non_maximal_nodes_count;
   }
 
   /*!
@@ -182,17 +175,18 @@ public:
    \param graph : a subsumption graph
    \param node : a node
    \param covered_nodes : a container of nodes
+   \param stats : statistics
    \post All the nodes in graph that are covered by node have been removed from
    graph and added to covered_nodes.
    All incoming edges to covered nodes have been transformed into incoming
    subsumption edges of node.
-   \return the number of removed nodes
+   Removed nodes have been counted in stats
   */
-  std::size_t remove_covered_nodes(GRAPH & graph, typename GRAPH::node_sptr_t const & node,
-                                   std::vector<typename GRAPH::node_sptr_t> & covered_nodes)
+  void remove_covered_nodes(GRAPH & graph, typename GRAPH::node_sptr_t const & node,
+                            std::vector<typename GRAPH::node_sptr_t> & covered_nodes,
+                            tchecker::algorithms::covreach::stats_t & stats)
   {
     auto covered_nodes_inserter = std::back_inserter(covered_nodes);
-    std::size_t removed_nodes = 0;
 
     covered_nodes.clear();
     graph.covered_nodes(node, covered_nodes_inserter);
@@ -200,10 +194,8 @@ public:
       graph.move_incoming_edges(covered_node, node, tchecker::graph::subsumption::EDGE_SUBSUMPTION);
       graph.remove_edges(covered_node);
       graph.remove_node(covered_node);
-      ++removed_nodes;
+      ++stats.covered_states();
     }
-
-    return removed_nodes;
   }
 };
 

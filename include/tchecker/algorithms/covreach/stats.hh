@@ -49,32 +49,20 @@ public:
 
   /*!
    \brief Accessor
-   \return A reference to the numer of covered leaf states
+   \return A reference to the numer of covered states
    */
-  unsigned long & covered_leaf_states();
+  unsigned long & covered_states();
 
   /*!
    \brief Accessor
-   \return the numer of covered leaf states
+   \return the numer of covered states
    */
-  unsigned long covered_leaf_states() const;
-
-  /*!
-   \brief Accessor
-   \return A reference to the number of covered non-leaf states
-   */
-  unsigned long & covered_nonleaf_states();
-
-  /*!
-   \brief Accessor
-   \return the number of covered non-leaf states
-   */
-  unsigned long covered_nonleaf_states() const;
+  unsigned long covered_states() const;
 
   /*!
    \brief Accessor
    \return A reference to the number of stored states
-  */
+   */
   unsigned long & stored_states();
 
   /*!
@@ -103,11 +91,10 @@ public:
   void attributes(std::map<std::string, std::string> & m) const;
 
 private:
-  unsigned long _visited_states;         /*!< Number of visited states */
-  unsigned long _covered_leaf_states;    /*!< Number of covered leaf states */
-  unsigned long _covered_nonleaf_states; /*!< Number of covered non-leaf states */
-  unsigned long _stored_states;          /*!< Number of stored states */
-  bool _reachable;                       /*!< Reachability of satisfying state */
+  unsigned long _visited_states; /*!< Number of visited states */
+  unsigned long _covered_states; /*!< Number of covered states */
+  unsigned long _stored_states;  /*!< Number of stored states */
+  bool _reachable;               /*!< Reachability of satisfying state */
 };
 
 } // end of namespace covreach
