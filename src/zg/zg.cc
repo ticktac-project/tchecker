@@ -108,13 +108,12 @@ zg_t::zg_t(std::shared_ptr<tchecker::ta::system_t const> const & system,
 
 tchecker::zg::initial_range_t zg_t::initial_edges() { return tchecker::zg::initial_edges(*_system); }
 
-std::tuple<tchecker::state_status_t, tchecker::zg::state_sptr_t, tchecker::zg::transition_sptr_t>
-zg_t::initial(tchecker::zg::initial_value_t const & v)
+void zg_t::initial(tchecker::zg::initial_value_t const & init_edge, std::vector<sst_t> & v)
 {
   tchecker::zg::state_sptr_t s = _state_allocator.construct();
   tchecker::zg::transition_sptr_t t = _transition_allocator.construct();
-  tchecker::state_status_t status = tchecker::zg::initial(*_system, *s, *t, *_semantics, *_extrapolation, v);
-  return std::make_tuple(status, s, t);
+  tchecker::state_status_t status = tchecker::zg::initial(*_system, *s, *t, *_semantics, *_extrapolation, init_edge);
+  v.push_back(std::make_tuple(status, s, t));
 }
 
 tchecker::zg::outgoing_edges_range_t zg_t::outgoing_edges(tchecker::zg::const_state_sptr_t const & s)
@@ -122,13 +121,13 @@ tchecker::zg::outgoing_edges_range_t zg_t::outgoing_edges(tchecker::zg::const_st
   return tchecker::zg::outgoing_edges(*_system, s->vloc_ptr());
 }
 
-std::tuple<tchecker::state_status_t, tchecker::zg::state_sptr_t, tchecker::zg::transition_sptr_t>
-zg_t::next(tchecker::zg::const_state_sptr_t const & s, tchecker::zg::outgoing_edges_value_t const & v)
+void zg_t::next(tchecker::zg::const_state_sptr_t const & s, tchecker::zg::outgoing_edges_value_t const & out_edge,
+                std::vector<sst_t> & v)
 {
   tchecker::zg::state_sptr_t nexts = _state_allocator.clone(*s);
   tchecker::zg::transition_sptr_t t = _transition_allocator.construct();
-  tchecker::state_status_t status = tchecker::zg::next(*_system, *nexts, *t, *_semantics, *_extrapolation, v);
-  return std::make_tuple(status, nexts, t);
+  tchecker::state_status_t status = tchecker::zg::next(*_system, *nexts, *t, *_semantics, *_extrapolation, out_edge);
+  v.push_back(std::make_tuple(status, nexts, t));
 }
 
 bool zg_t::satisfies(tchecker::zg::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels)

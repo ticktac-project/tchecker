@@ -106,13 +106,12 @@ public:
 
   /*!
    \brief Initial state and transition
-   \param v : initial state valuation
-   \post state s and transition t have been initialized from v
-   \return (status, s, t) where initial state s and initial transition t have
-   been computed from v, and status is the status of state s after initialization
-   \note t represents an initial transition to s
+   \param init_edge : initial state valuation
+   \param v : container
+   \post triples (status, s, t) have been added to v, for each initial state s
+   and initial transition t that are initialized from init_edge.
    */
-  virtual std::tuple<tchecker::state_status_t, STATE, TRANSITION> initial(INITIAL_VALUE const & v) = 0;
+  virtual void initial(INITIAL_VALUE const & init_edge, std::vector<sst_t> & v) = 0;
 
   /*!
    \brief Accessor
@@ -124,12 +123,12 @@ public:
   /*!
    \brief Next state and transition
    \param s : state
-   \param v : outgoing edge value
-   \return (status, s', t) where next state s' and transition t have been
-   computed from v, and status is the status of state s'
+   \param out_edge : outgoing edge value
+   \param v : container
+   \post triples (status, s', t') have been added to v, for each successor state
+   s' and transition t from s to s' along outgoing edge out_edge
    */
-  virtual std::tuple<tchecker::state_status_t, STATE, TRANSITION> next(CONST_STATE const & s,
-                                                                       OUTGOING_EDGES_VALUE const & v) = 0;
+  virtual void next(CONST_STATE const & s, OUTGOING_EDGES_VALUE const & out_edge, std::vector<sst_t> & v) = 0;
 
   /*!
   \brief Initial states and transitions with selected status
@@ -140,14 +139,15 @@ public:
    */
   virtual void initial(std::vector<sst_t> & v, tchecker::state_status_t mask)
   {
-    tchecker::state_status_t status;
-    STATE state;
-    TRANSITION transition;
-    INITIAL_RANGE edges = initial_edges();
-    for (INITIAL_VALUE && edge : edges) {
-      std::tie(status, state, transition) = initial(edge);
-      if (status & mask)
-        v.push_back(std::make_tuple(status, state, transition));
+    std::vector<sst_t> sst;
+    INITIAL_RANGE init_edges = initial_edges();
+    for (INITIAL_VALUE && init_edge : init_edges) {
+      initial(init_edge, sst);
+      for (auto && [status, s, t] : sst) {
+        if (status & mask)
+          v.push_back(std::make_tuple(status, s, t));
+      }
+      sst.clear();
     }
   }
 
@@ -161,14 +161,15 @@ public:
   */
   virtual void next(CONST_STATE const & s, std::vector<sst_t> & v, tchecker::state_status_t mask)
   {
-    tchecker::state_status_t status;
-    STATE next_state;
-    TRANSITION transition;
-    OUTGOING_EDGES_RANGE edges = outgoing_edges(s);
-    for (OUTGOING_EDGES_VALUE && edge : edges) {
-      std::tie(status, next_state, transition) = next(s, edge);
-      if (status & mask)
-        v.push_back(std::make_tuple(status, next_state, transition));
+    std::vector<sst_t> sst;
+    OUTGOING_EDGES_RANGE out_edges = outgoing_edges(s);
+    for (OUTGOING_EDGES_VALUE && out_edge : out_edges) {
+      next(s, out_edge, sst);
+      for (auto && [status, next_s, next_t] : sst) {
+        if (status & mask)
+          v.push_back(std::make_tuple(status, next_s, next_t));
+      }
+      sst.clear();
     }
   }
 

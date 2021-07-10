@@ -210,13 +210,12 @@ syncprod_t::syncprod_t(std::shared_ptr<tchecker::syncprod::system_t const> const
 
 tchecker::syncprod::initial_range_t syncprod_t::initial_edges() { return tchecker::syncprod::initial_edges(*_system); }
 
-std::tuple<tchecker::state_status_t, tchecker::syncprod::state_sptr_t, tchecker::syncprod::transition_sptr_t>
-syncprod_t::initial(tchecker::syncprod::initial_value_t const & v)
+void syncprod_t::initial(tchecker::syncprod::initial_value_t const & init_edge, std::vector<sst_t> & v)
 {
   tchecker::syncprod::state_sptr_t s = _state_allocator.construct();
   tchecker::syncprod::transition_sptr_t t = _transition_allocator.construct();
-  tchecker::state_status_t status = tchecker::syncprod::initial(*_system, *s, *t, v);
-  return std::make_tuple(status, s, t);
+  tchecker::state_status_t status = tchecker::syncprod::initial(*_system, *s, *t, init_edge);
+  v.push_back(std::make_tuple(status, s, t));
 }
 
 tchecker::syncprod::outgoing_edges_range_t syncprod_t::outgoing_edges(tchecker::syncprod::const_state_sptr_t const & s)
@@ -224,13 +223,13 @@ tchecker::syncprod::outgoing_edges_range_t syncprod_t::outgoing_edges(tchecker::
   return tchecker::syncprod::outgoing_edges(*_system, s->vloc_ptr());
 }
 
-std::tuple<tchecker::state_status_t, tchecker::syncprod::state_sptr_t, tchecker::syncprod::transition_sptr_t>
-syncprod_t::next(tchecker::syncprod::const_state_sptr_t const & s, tchecker::syncprod::outgoing_edges_value_t const & v)
+void syncprod_t::next(tchecker::syncprod::const_state_sptr_t const & s,
+                      tchecker::syncprod::outgoing_edges_value_t const & out_edge, std::vector<sst_t> & v)
 {
   tchecker::syncprod::state_sptr_t nexts = _state_allocator.clone(*s);
   tchecker::syncprod::transition_sptr_t t = _transition_allocator.construct();
-  tchecker::state_status_t status = tchecker::syncprod::next(*_system, *nexts, *t, v);
-  return std::make_tuple(status, nexts, t);
+  tchecker::state_status_t status = tchecker::syncprod::next(*_system, *nexts, *t, out_edge);
+  v.push_back(std::make_tuple(status, nexts, t));
 }
 
 bool syncprod_t::satisfies(tchecker::syncprod::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels)

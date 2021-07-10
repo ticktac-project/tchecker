@@ -318,14 +318,12 @@ public:
 
   /*!
    \brief Initial state and transition
-   \param v : initial state valuation
-   \post state s and transition t have been initialized from v
-   \return (status, s, t) where initial state s and initial transition t have
-   been computed from v, and status is the status of state s after initialization
-   \note t represents an initial transition to s
+   \param init_edge : initial state valuation
+   \param v : container
+   \post triples (status, s, t) have been added to v, for each initial state s
+   and initial transition t that are initialized from init_edge.
    */
-  virtual std::tuple<tchecker::state_status_t, tchecker::zg::state_sptr_t, tchecker::zg::transition_sptr_t>
-  initial(tchecker::zg::initial_value_t const & v);
+  virtual void initial(tchecker::zg::initial_value_t const & init_edge, std::vector<sst_t> & v);
 
   /*!
    \brief Accessor
@@ -337,12 +335,13 @@ public:
   /*!
    \brief Next state and transition
    \param s : state
-   \param v : outgoing edge value
-   \return (status, s', t) where next state s' and transition t have been
-   computed from v, and status is the status of state s'
+   \param out_edge : outgoing edge value
+   \param v : container
+   \post triples (status, s', t') have been added to v, for each successor state
+   s' and transition t from s to s' along outgoing edge out_edge
    */
-  virtual std::tuple<tchecker::state_status_t, tchecker::zg::state_sptr_t, tchecker::zg::transition_sptr_t>
-  next(tchecker::zg::const_state_sptr_t const & s, tchecker::zg::outgoing_edges_value_t const & v);
+  virtual void next(tchecker::zg::const_state_sptr_t const & s, tchecker::zg::outgoing_edges_value_t const & out_edge,
+                    std::vector<sst_t> & v);
 
   /*!
     \brief Initial states and transitions with selected status
