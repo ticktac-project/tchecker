@@ -194,11 +194,9 @@ public:
    \param refzg : zone graph with reference clocks
    \param block_size : number of objects allocated in a block
    \param table_size : size of hash table
-   \param gc : garbage collector
    \note this keeps a shared pointer on refzg
   */
-  graph_t(std::shared_ptr<tchecker::refzg::refzg_t> const & refzg, std::size_t block_size, std::size_t table_size,
-          tchecker::gc_t & gc);
+  graph_t(std::shared_ptr<tchecker::refzg::refzg_t> const & refzg, std::size_t block_size, std::size_t table_size);
 
   /*!
    \brief Destructor

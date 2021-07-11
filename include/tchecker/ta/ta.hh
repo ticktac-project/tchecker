@@ -20,7 +20,6 @@
 #include "tchecker/ta/state.hh"
 #include "tchecker/ta/system.hh"
 #include "tchecker/ta/transition.hh"
-#include "tchecker/utils/gc.hh"
 #include "tchecker/utils/shared_objects.hh"
 #include "tchecker/variables/clocks.hh"
 #include "tchecker/variables/intvars.hh"
@@ -262,10 +261,9 @@ public:
    \brief Constructor
    \param system : a system of timed processes
    \param block_size : number of objects allocated in a block
-   \param gc : garbage collector
    \note all states and transitions are pool allocated and deallocated automatically
    */
-  ta_t(std::shared_ptr<tchecker::ta::system_t const> const & system, std::size_t block_size, tchecker::gc_t & gc);
+  ta_t(std::shared_ptr<tchecker::ta::system_t const> const & system, std::size_t block_size);
 
   /*!
    \brief Copy constructor (deleted)

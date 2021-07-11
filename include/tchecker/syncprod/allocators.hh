@@ -163,18 +163,6 @@ public:
    */
   std::size_t memsize() const { return tchecker::ts::state_pool_allocator_t<STATE>::memsize() + _vloc_pool.memsize(); }
 
-  /*!
-   \brief Enroll on garbage collector
-   \param gc : garbage collector
-   \post The state and vloc  pool allocators have been enrolled on gc
-   \note this allocator should be enrolled on at most one GC
-   */
-  void enroll(tchecker::gc_t & gc)
-  {
-    tchecker::ts::state_pool_allocator_t<STATE>::enroll(gc);
-    _vloc_pool.enroll(gc);
-  }
-
 protected:
   /*!
    \brief Construct state
@@ -329,18 +317,6 @@ public:
   std::size_t memsize() const
   {
     return tchecker::ts::transition_pool_allocator_t<TRANSITION>::memsize() + _vedge_pool.memsize();
-  }
-
-  /*!
-   \brief Enroll on garbage collector
-   \param gc : garbage collector
-   \post The transition and vedge  pool allocators have been enrolled on gc
-   \note this allocator should be enrolled on at most one GC
-   */
-  void enroll(tchecker::gc_t & gc)
-  {
-    tchecker::ts::transition_pool_allocator_t<TRANSITION>::enroll(gc);
-    _vedge_pool.enroll(gc);
   }
 
 protected:

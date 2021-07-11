@@ -155,13 +155,11 @@ void attributes(tchecker::ta::system_t const & system, tchecker::ta::transition_
 
 /* ta_t */
 
-ta_t::ta_t(std::shared_ptr<tchecker::ta::system_t const> const & system, std::size_t block_size, tchecker::gc_t & gc)
+ta_t::ta_t(std::shared_ptr<tchecker::ta::system_t const> const & system, std::size_t block_size)
     : _system(system), _state_allocator(block_size, block_size, _system->processes_count(), block_size,
                                         _system->intvars_count(tchecker::VK_FLATTENED)),
       _transition_allocator(block_size, block_size, _system->processes_count())
 {
-  _state_allocator.enroll(gc);
-  _transition_allocator.enroll(gc);
 }
 
 tchecker::ta::initial_range_t ta_t::initial_edges() { return tchecker::ta::initial_edges(*_system); }

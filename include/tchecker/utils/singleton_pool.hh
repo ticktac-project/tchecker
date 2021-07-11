@@ -102,17 +102,6 @@ public:
    */
   void free_all() { destruct_all(); }
 
-  /*!
-   \brief Enroll to garbarge collector
-   \param gc : a garbage collector
-   \pre this is not enrolled to a garbage collector yet
-   \post this is enrolled to gc
-   */
-  void enroll(tchecker::gc_t & gc)
-  {
-    gc.enroll([&]() { this->collect(); });
-  }
-
 private:
   T * _t; /*!< Singleton allocated object */
 };

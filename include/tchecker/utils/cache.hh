@@ -15,7 +15,6 @@
 
 #include <vector>
 
-#include "tchecker/utils/gc.hh"
 #include "tchecker/utils/shared_objects.hh"
 #include "tchecker/utils/spinlock.hh"
 
@@ -242,17 +241,6 @@ public:
   {
     for (std::size_t i = 0; i < _table_size; ++i)
       _table[i].collect();
-  }
-
-  /*!
-   \brief Enroll to garbarge collector
-   \param gc : a garbage collector
-   \pre this is not enrolled to a garbage collector yet
-   \post this is enrolled to gc
-   */
-  void enroll(gc_t & gc)
-  {
-    gc.enroll([&]() { this->collect(); });
   }
 
   /*!

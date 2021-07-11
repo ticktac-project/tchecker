@@ -96,7 +96,6 @@ public:
   /*!
    \brief Collect unused nodes
    \post Unused nodes have been deleted
-   \note Use method enroll() to enroll on a tchecker::gc_t garbage collector
    */
   void collect() { _node_pool.collect(); }
 
@@ -111,14 +110,6 @@ public:
    \return Memory used by this node allocator
    */
   std::size_t memsize() const { return _node_pool.memsize(); }
-
-  /*!
-   \brief Enroll on garbage collector
-   \param gc : garbage collector
-   \post The node pool allocator has been enrolled on gc
-   \note this should be enrolled on at most one GC
-   */
-  void enroll(tchecker::gc_t & gc) { _node_pool.enroll(gc); }
 
 protected:
   tchecker::pool_t<NODE> _node_pool; /*!< Pool of nodes */
@@ -197,7 +188,6 @@ public:
   /*!
    \brief Collect unused edges
    \post Unused edges have been deleted
-   \note Use method enroll() to enroll on a tchecker::gc_t garbage collector
    */
   void collect() { _edge_pool.collect(); }
 
@@ -212,14 +202,6 @@ public:
    \return Memory used by this edge allocator
    */
   std::size_t memsize() const { return _edge_pool.memsize(); }
-
-  /*!
-   \brief Enroll on garbage collector
-   \param gc : garbage collector
-   \post The edge pool allocator has been enrolled on gc
-   \note this should be enrolled on at most one GC
-   */
-  void enroll(tchecker::gc_t & gc) { _edge_pool.enroll(gc); }
 
 protected:
   tchecker::pool_t<EDGE> _edge_pool; /*!< Pool of edges */

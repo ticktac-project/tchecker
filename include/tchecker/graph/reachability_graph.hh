@@ -22,7 +22,6 @@
 #include "tchecker/graph/find_graph.hh"
 #include "tchecker/graph/output.hh"
 #include "tchecker/utils/allocation_size.hh"
-#include "tchecker/utils/gc.hh"
 #include "tchecker/utils/shared_objects.hh"
 
 namespace tchecker {
@@ -211,13 +210,10 @@ public:
   \brief Constructor
   \param block_size : number of objects allocated in a block
   \param table_size : size of hash table
-  \param gc : garbage collector
   */
-  graph_t(std::size_t block_size, std::size_t table_size, tchecker::gc_t & gc)
+  graph_t(std::size_t block_size, std::size_t table_size)
       : _node_pool(block_size), _edge_pool(block_size), _find_graph(table_size)
   {
-    _node_pool.enroll(gc);
-    _edge_pool.enroll(gc);
   }
 
   /*!

@@ -170,19 +170,6 @@ public:
     return tchecker::syncprod::details::state_pool_allocator_t<STATE>::memsize() + _intval_pool.memsize();
   }
 
-  /*!
-   \brief Enroll on garbage collector
-   \param gc : garbage collector
-   \post The state allocator, vloc  pool allocator and valuation of bounded integer variables pool allocator have been enrolled
-   on gc
-   \note this allocator should be enrolled on at most one GC
-   */
-  void enroll(tchecker::gc_t & gc)
-  {
-    tchecker::syncprod::details::state_pool_allocator_t<STATE>::enroll(gc);
-    _intval_pool.enroll(gc);
-  }
-
 protected:
   /*!
    \brief Construct state from a state
@@ -232,7 +219,6 @@ public:
   using tchecker::syncprod::details::transition_pool_allocator_t<TRANSITION>::clone;
   using tchecker::syncprod::details::transition_pool_allocator_t<TRANSITION>::destruct;
   using tchecker::syncprod::details::transition_pool_allocator_t<TRANSITION>::destruct_all;
-  using tchecker::syncprod::details::transition_pool_allocator_t<TRANSITION>::enroll;
   using tchecker::syncprod::details::transition_pool_allocator_t<TRANSITION>::memsize;
 
 protected:

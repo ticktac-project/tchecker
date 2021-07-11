@@ -9,7 +9,6 @@
 
 #include "tchecker/algorithms/search_order.hh"
 #include "tchecker/ta/system.hh"
-#include "tchecker/utils/gc.hh"
 #include "zg-reach.hh"
 
 namespace tchecker {
@@ -42,11 +41,10 @@ edge_t::edge_t(tchecker::zg::transition_t const & t) : _vedge(t.vedge_ptr()) {}
 
 /* graph_t */
 
-graph_t::graph_t(std::shared_ptr<tchecker::zg::zg_t> const & zg, std::size_t block_size, std::size_t table_size,
-                 tchecker::gc_t & gc)
+graph_t::graph_t(std::shared_ptr<tchecker::zg::zg_t> const & zg, std::size_t block_size, std::size_t table_size)
     : tchecker::graph::reachability::graph_t<tchecker::tck_reach::zg_reach::node_t, tchecker::tck_reach::zg_reach::edge_t,
                                              tchecker::tck_reach::zg_reach::node_hash_t,
-                                             tchecker::tck_reach::zg_reach::node_equal_to_t>(block_size, table_size, gc),
+                                             tchecker::tck_reach::zg_reach::node_equal_to_t>(block_size, table_size),
       _zg(zg)
 {
 }
@@ -115,15 +113,13 @@ std::tuple<tchecker::algorithms::reach::stats_t, std::shared_ptr<tchecker::tck_r
 run(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl, std::string const & labels,
     std::string const & search_order, std::size_t block_size, std::size_t table_size)
 {
-  tchecker::gc_t gc;
-
   std::shared_ptr<tchecker::ta::system_t const> system{new tchecker::ta::system_t{*sysdecl}};
 
   std::shared_ptr<tchecker::zg::zg_t> zg{
-      tchecker::zg::factory(system, tchecker::zg::ELAPSED_SEMANTICS, tchecker::zg::EXTRA_LU_PLUS_LOCAL, block_size, gc)};
+      tchecker::zg::factory(system, tchecker::zg::ELAPSED_SEMANTICS, tchecker::zg::EXTRA_LU_PLUS_LOCAL, block_size)};
 
   std::shared_ptr<tchecker::tck_reach::zg_reach::graph_t> graph{
-      new tchecker::tck_reach::zg_reach::graph_t{zg, block_size, table_size, gc}};
+      new tchecker::tck_reach::zg_reach::graph_t{zg, block_size, table_size}};
 
   boost::dynamic_bitset<> accepting_labels = system->as_syncprod_system().labels(labels);
 
@@ -131,11 +127,7 @@ run(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl, st
 
   enum tchecker::waiting::policy_t policy = tchecker::algorithms::waiting_policy(search_order);
 
-  gc.start();
-
   tchecker::algorithms::reach::stats_t stats = algorithm.run(*zg, *graph, accepting_labels, policy);
-
-  gc.stop();
 
   return std::make_tuple(stats, graph);
 }

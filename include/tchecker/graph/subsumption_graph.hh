@@ -22,7 +22,6 @@
 #include "tchecker/graph/directed_graph.hh"
 #include "tchecker/graph/output.hh"
 #include "tchecker/utils/allocation_size.hh"
-#include "tchecker/utils/gc.hh"
 #include "tchecker/utils/iterator.hh"
 #include "tchecker/utils/shared_objects.hh"
 
@@ -256,15 +255,11 @@ public:
   \param table_size : size of hash table
   \param node_hash : hash function on nodes
   \param node_le : covering predicate on nodes
-  \param gc : garbage collector
   */
-  graph_t(std::size_t block_size, std::size_t table_size, NODE_HASH const & node_hash, NODE_LE const & node_le,
-          tchecker::gc_t & gc)
+  graph_t(std::size_t block_size, std::size_t table_size, NODE_HASH const & node_hash, NODE_LE const & node_le)
       : _node_pool(block_size), _edge_pool(block_size), _node_sptr_hash(node_hash), _node_sptr_le(node_le),
         _cover_graph(table_size, _node_sptr_hash, _node_sptr_le)
   {
-    _node_pool.enroll(gc);
-    _edge_pool.enroll(gc);
   }
 
   /*!

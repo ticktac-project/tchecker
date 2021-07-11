@@ -11,7 +11,6 @@
 #include "tchecker/ts/state.hh"
 #include "tchecker/ts/transition.hh"
 #include "tchecker/utils/allocation_size.hh"
-#include "tchecker/utils/gc.hh"
 #include "tchecker/utils/pool.hh"
 #include "tchecker/utils/shared_objects.hh"
 #include "tchecker/utils/singleton_pool.hh"
@@ -121,7 +120,6 @@ public:
   /*!
    \brief Collect unused states
    \post Unused states have been deleted
-   \note Use method enroll() to enroll on a tchecker::gc_t garbage collector
    */
   void collect() { _state_pool.collect(); }
 
@@ -136,14 +134,6 @@ public:
    \return Memory used by this state allocator
    */
   std::size_t memsize() const { return _state_pool.memsize(); }
-
-  /*!
-   \brief Enroll on garbage collector
-   \param gc : garbage collector
-   \post The state pool allocator has been enrolled on gc
-   \note this should be enrolled on at most one GC
-   */
-  void enroll(tchecker::gc_t & gc) { _state_pool.enroll(gc); }
 
 protected:
   /*!
@@ -260,7 +250,6 @@ public:
   /*!
    \brief Collect unused transitions
    \post Unused transitions have been deleted
-   \note Use method enroll() to enroll on a tchecker::gc_t garbage collector
    */
   void collect() { _transition_pool.collect(); }
 
@@ -275,14 +264,6 @@ public:
    \return Memory used by this transition allocator
    */
   std::size_t memsize() const { return _transition_pool.memsize(); }
-
-  /*!
-   \brief Enroll on garbage collector
-   \param gc : garbage collector
-   \post The transition pool allocator has been enrolled on gc
-   \note this should be enrolled on at most one GC
-   */
-  void enroll(tchecker::gc_t & gc) { _transition_pool.enroll(gc); }
 
 protected:
   /*!

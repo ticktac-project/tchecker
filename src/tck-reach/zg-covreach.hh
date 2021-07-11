@@ -139,10 +139,9 @@ public:
    \param zg : zone graph
    \param block_size : number of objects allocated in a block
    \param table_size : size of hash table
-   \param gc : garbage collector
    \note this keeps a pointer on zg
   */
-  graph_t(std::shared_ptr<tchecker::zg::zg_t> const & zg, std::size_t block_size, std::size_t table_size, tchecker::gc_t & gc);
+  graph_t(std::shared_ptr<tchecker::zg::zg_t> const & zg, std::size_t block_size, std::size_t table_size);
 
   /*!
    \brief Destructor

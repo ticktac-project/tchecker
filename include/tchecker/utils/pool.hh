@@ -8,9 +8,7 @@
 #ifndef TCHECKER_POOL_HH
 #define TCHECKER_POOL_HH
 
-#include "tchecker/utils/gc.hh"
 #include "tchecker/utils/shared_objects.hh"
-#include "tchecker/utils/spinlock.hh"
 
 /*!
  \file pool.hh
@@ -29,11 +27,7 @@ namespace tchecker {
  size alloc_size. A block contains a fixed alloc_nb chunks. The size of a
  block is alloc_nb * alloc_size + sizeof(void *). The extra size for a pointer
  is used to maintain a simple linked list of blocks.
- \note The pool is *NOT* thread-safe except for one particular usage. A thread
- can run the collect() method while another thread uses the other methods (and
- only the other methods). The first thread plays the role of a garbage collector
- whereas the other thread uses the pool to construct objects. A garbage
- collection thread is implemented in the class tchecker::gc_t.
+ \note The pool is *NOT* thread-safe
  */
 template <class T> class pool_t {
 public:
@@ -54,10 +48,7 @@ public:
    \brief States of the reference counter used by the allocator
    */
   static constexpr typename T::refcount_t COLLECTABLE_CHUNK = 0, // used but not referenced anymore
-      ALLOCATED_CHUNK = T::REFCOUNT_MAX + 1,                     // used but not constructed yet
-      FREE_CHUNK = T::REFCOUNT_MAX + 2;                          // not used
-
-  static_assert(ALLOCATED_CHUNK > T::REFCOUNT_MAX, "overflow on ALLOCATED_CHUNK");
+      FREE_CHUNK = T::REFCOUNT_MAX + 1;                          // collected chunk
 
   static_assert(FREE_CHUNK > T::REFCOUNT_MAX, "overflow on FREE_CHUNK");
 
@@ -151,17 +142,19 @@ public:
    \brief Destruct an object
    \param p : pointer to object
    \pre p has been allocated by this pool
-   p is not nullptr
-   \post the object pointed by p has been destructed and de-allocated if its reference
-   counter is 1 (i.e. p is the only pointer to the obejct), and the pointer p points to
-   nullptr. Does nothing otherwise
+   \post if the reference counter of p is 1, then the object pointed by p has
+   been destructed, p has been set to nullptr, and the memory has been released.
+   Otherwise, if p points to nullptr, or if the reference counter of p is
+   greater than 1, nothing happens
    \return true if the object pointed by p has been destructed, false otherwise
    */
   bool destruct(tchecker::intrusive_shared_ptr_t<T> & p)
   {
+    assert(p->refcount() >= 1);
+
     if (p.ptr() == nullptr)
       return false;
-    if (p->refcount() != 1)
+    if (p->refcount() > 1)
       return false;
 
     T * t = p.ptr();
@@ -287,17 +280,6 @@ public:
    */
   inline constexpr std::size_t memsize() const { return (_blocks_count * _block_size); }
 
-  /*!
-   \brief Enroll to garbarge collector
-   \param gc : a garbage collector
-   \pre this is not enrolled to a garbage collector yet
-   \post this is enrolled to gc
-   */
-  void enroll(tchecker::gc_t & gc)
-  {
-    gc.enroll([&]() { this->collect(); });
-  }
-
 protected:
   /*!
    \brief Accessor to next chunk
@@ -337,37 +319,74 @@ protected:
    */
   inline void * allocate()
   {
-    // Use a free chunk if any
-    _free_head_lock.lock();
-    if (_free_head != nullptr) {
-      typename T::refcount_t * refcount = reinterpret_cast<typename T::refcount_t *>(_free_head);
-      *refcount = ALLOCATED_CHUNK; // protect the first chunk from collection (i.e. method collect())
-      char * chunk = _free_head;
-      _free_head = static_cast<char *>(nextchunk(chunk));
-      _free_head_lock.unlock();
+    // Allocate from the raw block if possible
+    if (_raw_head != _raw_end) {
+      typename T::refcount_t * chunk = reinterpret_cast<typename T::refcount_t *>(allocate_chunk_from_raw_block());
+      *chunk = 0; // set reference counter
       return chunk;
     }
-    _free_head_lock.unlock();
 
-    // Allocate a new block if no chunk available
-    if (_raw_head == _raw_end) {
-      // allocate (collect() may interleave with no problem)
-      _raw_head = new char[_block_size];
-      _raw_end = _raw_head + _block_size;
-      // link to allocated blocks
-      nextblock(_raw_head) = _block_head;
-      _block_head = _raw_head;
-      // jump over 1st word used for linking chunks
-      _raw_head = first_chunk_ptr(_raw_head);
-      // count one more block
-      ++_blocks_count;
+    // Allocate from the free list, collect first if needed
+    if (_free_head == nullptr)
+      collect();
+
+    if (_free_head != nullptr) {
+      typename T::refcount_t * chunk = reinterpret_cast<typename T::refcount_t *>(allocate_chunk_from_free_list());
+      *chunk = 0; // set reference counter
+      return chunk;
     }
 
-    // Allocate a chunk from the raw block
-    typename T::refcount_t * chunk = reinterpret_cast<typename T::refcount_t *>(_raw_head);
-    *chunk = ALLOCATED_CHUNK; // protect the chunk from GC
-    _raw_head += _alloc_size;
+    // Allocate a new raw block, and allocate from the block
+    allocate_raw_block();
+    typename T::refcount_t * chunk = reinterpret_cast<typename T::refcount_t *>(allocate_chunk_from_raw_block());
+    *chunk = 0; // set reference counter
+    return chunk;
+  }
 
+  /*!
+   \brief Allocate a new block
+   \pre The raw block is empty, i.e. _raw_head == _raw_end (checked by
+   assertion)
+   \post A new raw block has been allocated and added to the list of blocks
+  */
+  inline void allocate_raw_block()
+  {
+    assert(_raw_head == _raw_end);
+    // allocate
+    _raw_head = new char[_block_size];
+    _raw_end = _raw_head + _block_size;
+    // link to allocated blocks
+    nextblock(_raw_head) = _block_head;
+    _block_head = _raw_head;
+    // jump over 1st word used for linking chunks
+    _raw_head = first_chunk_ptr(_raw_head);
+    // count one more block
+    ++_blocks_count;
+  }
+
+  /*!
+   \brief Allocate a chunk from the raw block
+   \pre The raw block is not empty (checked by assertion)
+   \return A pointer to the allocated chunk
+   */
+  inline void * allocate_chunk_from_raw_block()
+  {
+    assert(_raw_head != _raw_end);
+    void * chunk = _raw_head;
+    _raw_head += _alloc_size;
+    return chunk;
+  }
+
+  /*!
+   \brief Allocate a chunk from the free list
+   \pre The free list is not empty (checked by assertion)
+   \return A pointer to the allocated chunk
+  */
+  inline void * allocate_chunk_from_free_list()
+  {
+    assert(_free_head != nullptr);
+    char * chunk = _free_head;
+    _free_head = static_cast<char *>(nextchunk(chunk));
     return chunk;
   }
 
@@ -399,10 +418,8 @@ protected:
   {
     void * pbegin = const_cast<void *>(begin);
     void * pend = const_cast<void *>(end);
-    _free_head_lock.lock();
     nextchunk(pend) = _free_head;
     _free_head = static_cast<char *>(pbegin);
-    _free_head_lock.unlock();
   }
 
   std::size_t const _alloc_nb;   /*!< number of chunks per block */
@@ -413,7 +430,6 @@ protected:
   char * _block_head;            /*!< head pointer to list of blocks */
   char * _raw_head;              /*!< pointer to raw block */
   char * _raw_end;               /*!< pointer to past-the-end raw block */
-  spinlock_t _free_head_lock;    /*!< protect access to _free_head */
 };
 
 } // end of namespace tchecker

@@ -17,7 +17,6 @@
 #include "tchecker/syncprod/syncprod.hh"
 #include "tchecker/syncprod/system.hh"
 #include "tchecker/system/synchronization.hh"
-#include "tchecker/utils/gc.hh"
 
 namespace tchecker {
 
@@ -330,15 +329,11 @@ private:
    */
   void locations_edges_events()
   {
-    tchecker::gc_t gc;
-
     tchecker::process_id_t pid = _product.process_id(_process_name);
 
     std::stack<tchecker::syncprod::state_sptr_t> waiting;
-    tchecker::syncprod::syncprod_t sp(_system, 10000, gc);
+    tchecker::syncprod::syncprod_t sp(_system, 10000);
     std::vector<tchecker::syncprod::syncprod_t::sst_t> v;
-
-    gc.start();
 
     sp.initial(v, tchecker::STATE_OK);
     for (auto && [status, state, transition] : v) {
@@ -374,8 +369,6 @@ private:
       }
       v.clear();
     }
-
-    gc.stop();
   }
 
   std::shared_ptr<tchecker::syncprod::system_t const> _system; /*!< System of timed processes */

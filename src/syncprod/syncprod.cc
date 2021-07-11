@@ -199,13 +199,10 @@ void attributes(tchecker::syncprod::system_t const & system, tchecker::syncprod:
 
 /* syncprod_t */
 
-syncprod_t::syncprod_t(std::shared_ptr<tchecker::syncprod::system_t const> const & system, std::size_t block_size,
-                       tchecker::gc_t & gc)
+syncprod_t::syncprod_t(std::shared_ptr<tchecker::syncprod::system_t const> const & system, std::size_t block_size)
     : _system(system), _state_allocator(block_size, block_size, _system->processes_count()),
       _transition_allocator(block_size, block_size, _system->processes_count())
 {
-  _state_allocator.enroll(gc);
-  _transition_allocator.enroll(gc);
 }
 
 tchecker::syncprod::initial_range_t syncprod_t::initial_edges() { return tchecker::syncprod::initial_edges(*_system); }

@@ -42,10 +42,10 @@ namespace tchecker {
  stored in the bytes before the address of this object
  \note The values in 0..std::numeric_limits<REFCOUNT>-RESERVED are used for
  reference counting. The values above REFCOUNT_MAX can be used by allocators
- to represent other states of this object. The default value, 2, is the number
+ to represent other states of this object. The default value, 1, is the number
  of states needed by tchecker::pool_t
  */
-template <class T, class REFCOUNT = unsigned int, std::size_t RESERVED = 2> class make_shared_t final : public T {
+template <class T, class REFCOUNT = unsigned int, std::size_t RESERVED = 1> class make_shared_t final : public T {
 
   static_assert(std::is_unsigned<REFCOUNT>::value, "REFCOUNT must be an unsigned type");
 
@@ -62,11 +62,8 @@ public:
 
   /*!
    \brief Maximal value of the reference counter
-   \note REFCOUNT_MAX is used to identify allocated objects that are not
-   referenced by any pointer them. This protects allocated objects from
-   garbage collection
-   \note All the values beyond REFCOUNT_MAX can be used to represent other
-   states of this object (see tchecker::gc_pool_t)
+   \note Values above REFCOUNT_MAX are used by pool allocators to represent
+   specific states of allocated objects (see tchecker::pool_t)
    */
   constexpr static refcount_t REFCOUNT_MAX = std::numeric_limits<refcount_t>::max() - RESERVED;
 
@@ -159,10 +156,7 @@ public:
   inline void take_reference(void) const
   {
     refcount_t * refcount = refcount_addr();
-    if (*refcount == REFCOUNT_MAX) // allocated object with no reference yet
-      *refcount = 1;               // first reference to this object
-    else
-      *refcount += 1;
+    *refcount += 1;
     if (*refcount == REFCOUNT_MAX) // overflow
       throw std::overflow_error("reference counter overflow");
   }
@@ -191,27 +185,25 @@ private:
   /*!
    \brief Constructor
    \param args : parameters to a constructor of type T
-   \post The reference counter has value REFCOUNT_MAX (i.e. object
-   initialized but not referenced yet)
+   \post The reference counter has value 0
    \note will also act as a copy/move constructor if T has one
    */
   template <class... ARGS> make_shared_t(ARGS &&... args) : T(std::forward<ARGS>(args)...)
   {
-    // initialize reference counter to REFCOUNT_MAX (allocated object)
     refcount_t * const refcount = refcount_addr();
-    *refcount = REFCOUNT_MAX; // yet no reference to this (GC protection)
+    *refcount = 0;
   }
 
   /*!
    \brief Copy-constructor
    \param shared : shared object
    \post this is a copy of shared
+   The reference counter has value 0
    */
   make_shared_t(make_shared_t<T, REFCOUNT, RESERVED> const & shared) : T(shared)
   {
-    // initialize reference counter to REFCOUNT_MAX (allocated object)
     refcount_t * const refcount = refcount_addr();
-    *refcount = REFCOUNT_MAX; // yet no reference to this (GC protection)
+    *refcount = 0;
   }
 
   /*!
