@@ -82,7 +82,7 @@ public:
   /*!
    \brief Type of iterator over actual edge identifiers
    */
-  using iterator_t = boost::filter_iterator<std::function<bool(tchecker::edge_id_t)>, tchecker::edge_array_t::iterator_t>;
+  using iterator_t = boost::filter_iterator<bool (*)(tchecker::edge_id_t), tchecker::edge_array_t::iterator_t>;
 
   /*!
    \brief Accessor
@@ -99,8 +99,7 @@ public:
   /*!
    \brief Type of const iterator over actual edge identifiers
    */
-  using const_iterator_t =
-      boost::filter_iterator<std::function<bool(tchecker::edge_id_t)>, tchecker::edge_array_t::const_iterator_t>;
+  using const_iterator_t = boost::filter_iterator<bool (*)(tchecker::edge_id_t), tchecker::edge_array_t::const_iterator_t>;
 
   /*!
    \brief Accessor
