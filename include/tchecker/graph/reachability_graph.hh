@@ -212,7 +212,7 @@ public:
   \param table_size : size of hash table
   */
   graph_t(std::size_t block_size, std::size_t table_size)
-      : _node_pool(block_size), _edge_pool(block_size), _find_graph(table_size)
+      : _find_graph(table_size), _node_pool(block_size), _edge_pool(block_size)
   {
   }
 
@@ -251,6 +251,8 @@ public:
   {
     _directed_graph.clear(_find_graph.begin(), _find_graph.end());
     _find_graph.clear();
+    _node_pool.destruct_all();
+    _edge_pool.destruct_all();
   }
 
   /*!
@@ -323,7 +325,7 @@ public:
   inline tchecker::range_t<tchecker::graph::reachability::graph_t<NODE, EDGE, NODE_HASH, NODE_EQUAL>::incoming_edges_iterator_t>
   incoming_edges(node_sptr_t const & n) const
   {
-    return _directed_graph.icoming_edges(n);
+    return _directed_graph.incoming_edges(n);
   }
 
   /*!
@@ -416,10 +418,10 @@ private:
     inline bool operator()(node_sptr_t const & n1, node_sptr_t const & n2) const { return NODE_EQUAL::operator()(*n1, *n2); }
   };
 
-  tchecker::graph::node_pool_allocator_t<shared_node_t> _node_pool;                                /*!< Node pool allocator */
-  tchecker::graph::edge_pool_allocator_t<shared_edge_t> _edge_pool;                                /*!< Edge pool allocator */
   tchecker::graph::find::graph_t<node_sptr_t, node_sptr_hash_t, node_sptr_equal_to_t> _find_graph; /*!< Node store */
   tchecker::graph::directed::graph_t<node_sptr_t, edge_sptr_t> _directed_graph;                    /*!< Edge store */
+  tchecker::graph::node_pool_allocator_t<shared_node_t> _node_pool;                                /*!< Node pool allocator */
+  tchecker::graph::edge_pool_allocator_t<shared_edge_t> _edge_pool;                                /*!< Edge pool allocator */
 };
 
 /* output */

@@ -233,16 +233,18 @@ public:
         if ((_raw_head <= chunk) && (chunk < _raw_end))
           break;
 
-        // Destruct all chuncks that have been constructed
+        // Destruct all chunks that are not free
         typename T::refcount_t * refcount = reinterpret_cast<typename T::refcount_t *>(chunk);
 
-        if ((0 <= *refcount) && (*refcount <= T::REFCOUNT_MAX)) {
-          // make the chunk free using its refcount
-          *refcount = FREE_CHUNK;
-          // destruct the object in the chunk
-          T * t = reinterpret_cast<T *>(refcount + 1);
-          T::destruct(t); // t->~T();
-        }
+        if (*refcount > T::REFCOUNT_MAX)
+          continue;
+
+        assert(*refcount == 0);
+        // make the chunk free using its refcount
+        *refcount = FREE_CHUNK;
+        // destruct the object in the chunk
+        T * t = reinterpret_cast<T *>(refcount + 1);
+        T::destruct(t); // t->~T();
       }
     }
 

@@ -145,7 +145,7 @@ public:
   /*!
    \brief Destructor
   */
-  virtual ~graph_t() = default;
+  virtual ~graph_t();
 
   using tchecker::graph::reachability::graph_t<tchecker::tck_reach::zg_reach::node_t, tchecker::tck_reach::zg_reach::edge_t,
                                                tchecker::tck_reach::zg_reach::node_hash_t,

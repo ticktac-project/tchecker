@@ -257,8 +257,8 @@ public:
   \param node_le : covering predicate on nodes
   */
   graph_t(std::size_t block_size, std::size_t table_size, NODE_HASH const & node_hash, NODE_LE const & node_le)
-      : _node_pool(block_size), _edge_pool(block_size), _node_sptr_hash(node_hash), _node_sptr_le(node_le),
-        _cover_graph(table_size, _node_sptr_hash, _node_sptr_le)
+      : _node_sptr_hash(node_hash), _node_sptr_le(node_le), _cover_graph(table_size, _node_sptr_hash, _node_sptr_le),
+        _node_pool(block_size), _edge_pool(block_size)
   {
   }
 
@@ -297,6 +297,8 @@ public:
   {
     _directed_graph.clear(_cover_graph.begin(), _cover_graph.end());
     _cover_graph.clear();
+    _node_pool.destruct_all();
+    _edge_pool.destruct_all();
   }
 
   /*!
@@ -575,12 +577,12 @@ private:
     return (in_edges.begin() != in_edges.end() || out_edges.begin() != out_edges.end());
   }
 
-  tchecker::graph::node_pool_allocator_t<shared_node_t> _node_pool; /*!< Node pool allocator */
-  tchecker::graph::edge_pool_allocator_t<shared_edge_t> _edge_pool; /*!< Edge pool allocator */
-  node_sptr_hash_t _node_sptr_hash;                                 /*!< Hash functor on shared pointers to nodes */
-  node_sptr_le_t _node_sptr_le;                                     /*!< Covering functor on shared pointers to nodes */
+  node_sptr_hash_t _node_sptr_hash; /*!< Hash functor on shared pointers to nodes */
+  node_sptr_le_t _node_sptr_le;     /*!< Covering functor on shared pointers to nodes */
   tchecker::graph::cover::graph_t<node_sptr_t, node_sptr_hash_t, node_sptr_le_t> _cover_graph; /*!< Node store with covering */
   tchecker::graph::directed::graph_t<node_sptr_t, edge_sptr_t> _directed_graph;                /*!< Edge store */
+  tchecker::graph::node_pool_allocator_t<shared_node_t> _node_pool;                            /*!< Node pool allocator */
+  tchecker::graph::edge_pool_allocator_t<shared_edge_t> _edge_pool;                            /*!< Edge pool allocator */
 };
 
 /* output */

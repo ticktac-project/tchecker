@@ -111,6 +111,13 @@ graph_t::graph_t(std::shared_ptr<tchecker::refzg::refzg_t> const & refzg, std::s
 {
 }
 
+graph_t::~graph_t()
+{
+  tchecker::graph::subsumption::graph_t<tchecker::tck_reach::concur19::node_t, tchecker::tck_reach::concur19::edge_t,
+                                        tchecker::tck_reach::concur19::node_hash_t,
+                                        tchecker::tck_reach::concur19::node_le_t>::clear();
+}
+
 void graph_t::attributes(tchecker::tck_reach::concur19::node_t const & n, std::map<std::string, std::string> & m) const
 {
   _refzg->attributes(n.state_ptr(), m);

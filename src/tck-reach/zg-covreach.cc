@@ -56,6 +56,13 @@ graph_t::graph_t(std::shared_ptr<tchecker::zg::zg_t> const & zg, std::size_t blo
 {
 }
 
+graph_t::~graph_t()
+{
+  tchecker::graph::subsumption::graph_t<tchecker::tck_reach::zg_covreach::node_t, tchecker::tck_reach::zg_covreach::edge_t,
+                                        tchecker::tck_reach::zg_covreach::node_hash_t,
+                                        tchecker::tck_reach::zg_covreach::node_le_t>::clear();
+}
+
 void graph_t::attributes(tchecker::tck_reach::zg_covreach::node_t const & n, std::map<std::string, std::string> & m) const
 {
   _zg->attributes(n.state_ptr(), m);
