@@ -18,14 +18,11 @@
 #include "tchecker/statement/static_analysis.hh"
 #include "tchecker/statement/typechecking.hh"
 #include "tchecker/statement/typed_statement.hh"
-#include "tchecker/utils/log.hh"
 #include "tchecker/variables/clocks.hh"
 #include "tchecker/variables/intvars.hh"
 
 TEST_CASE("expression with no array variables", "[extract_variables]")
 {
-  tchecker::log_t log;
-
   tchecker::integer_variables_t intvars;
   intvars.declare("i", 1, 0, 5, 0);
   intvars.declare("j", 1, 0, 1, 1);
@@ -45,7 +42,7 @@ TEST_CASE("expression with no array variables", "[extract_variables]")
   SECTION("single variable")
   {
     std::string expr_str{"x"};
-    tchecker::expression_t * expr = tchecker::parsing::parse_expression("", expr_str, log);
+    tchecker::expression_t * expr = tchecker::parsing::parse_expression("", expr_str);
     REQUIRE(expr != nullptr);
 
     tchecker::integer_variables_t lvars;
@@ -70,7 +67,7 @@ TEST_CASE("expression with no array variables", "[extract_variables]")
   {
     std::string expr_str{"x < i"};
 
-    tchecker::expression_t * expr = tchecker::parsing::parse_expression("", expr_str, log);
+    tchecker::expression_t * expr = tchecker::parsing::parse_expression("", expr_str);
     REQUIRE(expr != nullptr);
 
     tchecker::integer_variables_t lvars;
@@ -96,7 +93,7 @@ TEST_CASE("expression with no array variables", "[extract_variables]")
   {
     std::string expr_str{"x - y < i + 3 * j"};
 
-    tchecker::expression_t * expr = tchecker::parsing::parse_expression("", expr_str, log);
+    tchecker::expression_t * expr = tchecker::parsing::parse_expression("", expr_str);
     REQUIRE(expr != nullptr);
 
     tchecker::integer_variables_t lvars;
@@ -124,7 +121,7 @@ TEST_CASE("expression with no array variables", "[extract_variables]")
   {
     std::string expr_str{"x - y < i + 3 * j && k < i && y >= k - (j / i)"};
 
-    tchecker::expression_t * expr = tchecker::parsing::parse_expression("", expr_str, log);
+    tchecker::expression_t * expr = tchecker::parsing::parse_expression("", expr_str);
     REQUIRE(expr != nullptr);
 
     tchecker::integer_variables_t lvars;
@@ -152,8 +149,6 @@ TEST_CASE("expression with no array variables", "[extract_variables]")
 
 TEST_CASE("expression with array variables", "[extract_variables]")
 {
-  tchecker::log_t log;
-
   tchecker::integer_variables_t intvars;
   intvars.declare("i", 1, 0, 5, 0);
   intvars.declare("j", 1, 0, 1, 1);
@@ -176,7 +171,7 @@ TEST_CASE("expression with array variables", "[extract_variables]")
   {
     std::string expr_str{"t[1]"};
 
-    tchecker::expression_t * expr = tchecker::parsing::parse_expression("", expr_str, log);
+    tchecker::expression_t * expr = tchecker::parsing::parse_expression("", expr_str);
     REQUIRE(expr != nullptr);
 
     tchecker::integer_variables_t lvars;
@@ -201,7 +196,7 @@ TEST_CASE("expression with array variables", "[extract_variables]")
   {
     std::string expr_str{"y[i-7*j]"};
 
-    tchecker::expression_t * expr = tchecker::parsing::parse_expression("", expr_str, log);
+    tchecker::expression_t * expr = tchecker::parsing::parse_expression("", expr_str);
     REQUIRE(expr != nullptr);
 
     tchecker::integer_variables_t lvars;
@@ -230,7 +225,7 @@ TEST_CASE("expression with array variables", "[extract_variables]")
   {
     std::string expr_str{"y[t[7*i] + u[2]]"};
 
-    tchecker::expression_t * expr = tchecker::parsing::parse_expression("", expr_str, log);
+    tchecker::expression_t * expr = tchecker::parsing::parse_expression("", expr_str);
     REQUIRE(expr != nullptr);
 
     tchecker::integer_variables_t lvars;
@@ -262,7 +257,7 @@ TEST_CASE("expression with array variables", "[extract_variables]")
   {
     std::string expr_str{"y[u[2]] < u[0] && x - y[1] == i - 4*j && u[0] == t[j]"};
 
-    tchecker::expression_t * expr = tchecker::parsing::parse_expression("", expr_str, log);
+    tchecker::expression_t * expr = tchecker::parsing::parse_expression("", expr_str);
     REQUIRE(expr != nullptr);
 
     tchecker::integer_variables_t lvars;
@@ -296,8 +291,6 @@ TEST_CASE("expression with array variables", "[extract_variables]")
 
 TEST_CASE("statements with no array variable", "[extract_variables]")
 {
-  tchecker::log_t log;
-
   tchecker::integer_variables_t intvars;
   intvars.declare("i", 1, 0, 5, 0);
   intvars.declare("j", 1, 0, 1, 1);
@@ -320,7 +313,7 @@ TEST_CASE("statements with no array variable", "[extract_variables]")
   {
     std::string stmt_str{"x = 0"};
 
-    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str, log);
+    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str);
     REQUIRE(stmt != nullptr);
 
     tchecker::integer_variables_t lvars;
@@ -350,7 +343,7 @@ TEST_CASE("statements with no array variable", "[extract_variables]")
   {
     std::string stmt_str{"x = i"};
 
-    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str, log);
+    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str);
     REQUIRE(stmt != nullptr);
 
     tchecker::integer_variables_t lvars;
@@ -381,7 +374,7 @@ TEST_CASE("statements with no array variable", "[extract_variables]")
   {
     std::string stmt_str{"y = x"};
 
-    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str, log);
+    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str);
     REQUIRE(stmt != nullptr);
 
     tchecker::integer_variables_t lvars;
@@ -412,7 +405,7 @@ TEST_CASE("statements with no array variable", "[extract_variables]")
   {
     std::string stmt_str{"x = j * k + y"};
 
-    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str, log);
+    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str);
     REQUIRE(stmt != nullptr);
 
     tchecker::integer_variables_t lvars;
@@ -445,7 +438,7 @@ TEST_CASE("statements with no array variable", "[extract_variables]")
   {
     std::string stmt_str{"j = 0"};
 
-    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str, log);
+    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str);
     REQUIRE(stmt != nullptr);
 
     tchecker::integer_variables_t lvars;
@@ -475,7 +468,7 @@ TEST_CASE("statements with no array variable", "[extract_variables]")
   {
     std::string stmt_str{"i = 3 * j - k * i"};
 
-    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str, log);
+    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str);
     REQUIRE(stmt != nullptr);
 
     tchecker::integer_variables_t lvars;
@@ -508,7 +501,7 @@ TEST_CASE("statements with no array variable", "[extract_variables]")
   {
     std::string stmt_str{"x = 1; y = i + 3 * j; z = 1 + z"};
 
-    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str, log);
+    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str);
     REQUIRE(stmt != nullptr);
 
     tchecker::integer_variables_t lvars;
@@ -543,7 +536,7 @@ TEST_CASE("statements with no array variable", "[extract_variables]")
   {
     std::string stmt_str{"i = i + 1; j = 7; k = j - 3 + i"};
 
-    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str, log);
+    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str);
     REQUIRE(stmt != nullptr);
 
     tchecker::integer_variables_t lvars;
@@ -577,7 +570,7 @@ TEST_CASE("statements with no array variable", "[extract_variables]")
   {
     std::string stmt_str{"i = i + 1; x = i; j = 7; y = 3; z = 6 + y; k = k + j"};
 
-    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str, log);
+    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str);
     REQUIRE(stmt != nullptr);
 
     tchecker::integer_variables_t lvars;
@@ -615,8 +608,6 @@ TEST_CASE("statements with no array variable", "[extract_variables]")
 
 TEST_CASE("statements with array variables", "[extract_variables]")
 {
-  tchecker::log_t log;
-
   tchecker::integer_variables_t intvars;
   intvars.declare("i", 1, 0, 5, 0);
   intvars.declare("j", 1, 0, 1, 1);
@@ -641,7 +632,7 @@ TEST_CASE("statements with array variables", "[extract_variables]")
   {
     std::string stmt_str{"y[0] = 1"};
 
-    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str, log);
+    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str);
     REQUIRE(stmt != nullptr);
 
     tchecker::integer_variables_t lvars;
@@ -671,7 +662,7 @@ TEST_CASE("statements with array variables", "[extract_variables]")
   {
     std::string stmt_str{"y[i+3*j] = 0"};
 
-    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str, log);
+    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str);
     REQUIRE(stmt != nullptr);
 
     tchecker::integer_variables_t lvars;
@@ -704,7 +695,7 @@ TEST_CASE("statements with array variables", "[extract_variables]")
   {
     std::string stmt_str{"y[i] = z[3*j]"};
 
-    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str, log);
+    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str);
     REQUIRE(stmt != nullptr);
 
     tchecker::integer_variables_t lvars;
@@ -739,7 +730,7 @@ TEST_CASE("statements with array variables", "[extract_variables]")
   {
     std::string stmt_str{"t[2] = 4"};
 
-    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str, log);
+    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str);
     REQUIRE(stmt != nullptr);
 
     tchecker::integer_variables_t lvars;
@@ -769,7 +760,7 @@ TEST_CASE("statements with array variables", "[extract_variables]")
   {
     std::string stmt_str{"t[7 * i - 4 * u[0]] = 4"};
 
-    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str, log);
+    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str);
     REQUIRE(stmt != nullptr);
 
     tchecker::integer_variables_t lvars;
@@ -802,7 +793,7 @@ TEST_CASE("statements with array variables", "[extract_variables]")
   {
     std::string stmt_str{"i = 1; j = j + 1; x = 0; y[2] = i + x; t[2] = j; u[3*j-t[i]] = t[j] - i; z[u[j]] = y[1]"};
 
-    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str, log);
+    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str);
     REQUIRE(stmt != nullptr);
 
     tchecker::integer_variables_t lvars;

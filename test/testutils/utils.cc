@@ -10,7 +10,6 @@
 
 #include "tchecker/parsing/declaration.hh"
 #include "tchecker/parsing/parsing.hh"
-#include "tchecker/utils/log.hh"
 
 #include "utils.hh"
 
@@ -18,7 +17,7 @@ namespace tchecker {
 
 namespace test {
 
-tchecker::parsing::system_declaration_t const * parse(std::string const & model, tchecker::log_t & log)
+tchecker::parsing::system_declaration_t const * parse(std::string const & model)
 {
   // Create the temporary file from model
   std::FILE * f = tmpfile();
@@ -32,7 +31,7 @@ tchecker::parsing::system_declaration_t const * parse(std::string const & model,
   tchecker::parsing::system_declaration_t const * sysdecl = nullptr;
 
   try {
-    sysdecl = tchecker::parsing::parse_system_declaration(f, "", log);
+    sysdecl = tchecker::parsing::parse_system_declaration(f, "");
   }
   catch (...) {
     delete sysdecl;

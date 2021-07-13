@@ -23,48 +23,42 @@ namespace parsing {
 /*!
  \brief Parser for systems
  \param filename : file to parse
- \param log : logging facility
  \return The system declaration read from filename, nullptr if parsing failed
- \post All errors and warnings have been reported on log
+ \post All errors and warnings have been reported on std::cerr
  */
-tchecker::parsing::system_declaration_t * parse_system_declaration(std::string const & filename, tchecker::log_t & log);
+tchecker::parsing::system_declaration_t * parse_system_declaration(std::string const & filename);
 
 /*!
  \brief Parser for systems
  \param f : file to parse
  \param filename : name of file f
- \param log : logging facility
  \return The system declaration read from f, nullptr if parsing failed
- \post All errors and warnings have been reported on log
+ \post All errors and warnings have been reported on std::cerr
  \note filename is used as context for error/warning messages
  */
-tchecker::parsing::system_declaration_t * parse_system_declaration(std::FILE * f, std::string const & filename,
-                                                                   tchecker::log_t & log);
+tchecker::parsing::system_declaration_t * parse_system_declaration(std::FILE * f, std::string const & filename);
 
 /*!
  \brief Parser for expression
  \param expr_context : context (location in file, etc) for string to parse
  \param expr_str : string to parse
- \param log : logging facility
  \return The expression read from expr_str, nullptr if parsing failed
- \post All errors and warnings have been reported on log
+ \post All errors and warnings have been reported on std::cerr
  \note expr_context is used in error messages to provide context
  information regarding expr_str. It is ignored if empty
  */
-tchecker::expression_t * parse_expression(std::string const & expr_context, std::string const & expr_str,
-                                          tchecker::log_t & log);
+tchecker::expression_t * parse_expression(std::string const & expr_context, std::string const & expr_str);
 
 /*!
  \brief Parser for statements
  \param stmt_context : context (location in file, etc) for string to parse
  \param stmt_str : string to parse
- \param log : logging facility
  \return The statement read from stmt_str, nullptr if parsing failed
- \post All errors and warnings have been reported on log
+ \post All errors and warnings have been reported on std::cerr
  \note stmt_context is used in error messages to provide context
  information regarding stmt_str. It is ignored if empty
  */
-tchecker::statement_t * parse_statement(std::string const & stmt_context, std::string const & stmt_str, tchecker::log_t & log);
+tchecker::statement_t * parse_statement(std::string const & stmt_context, std::string const & stmt_str);
 
 /*!
  \class attributes_parser_t

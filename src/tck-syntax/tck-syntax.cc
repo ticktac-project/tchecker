@@ -96,16 +96,16 @@ int parse_command_line(int argc, char * argv[])
   return optind;
 }
 
-tchecker::parsing::system_declaration_t * load_system(std::string const & filename, tchecker::log_t & log)
+tchecker::parsing::system_declaration_t * load_system(std::string const & filename)
 {
   tchecker::parsing::system_declaration_t * sysdecl = nullptr;
   try {
-    sysdecl = tchecker::parsing::parse_system_declaration(filename, log);
+    sysdecl = tchecker::parsing::parse_system_declaration(filename);
     if (sysdecl == nullptr)
       throw std::runtime_error("nullptr system declaration");
   }
   catch (std::exception const & e) {
-    log.error(e.what());
+    std::cerr << tchecker::log_error << " " << e.what() << std::endl;
   }
   return sysdecl;
 }
@@ -116,13 +116,13 @@ void do_check_syntax(tchecker::parsing::system_declaration_t const & sysdecl)
     tchecker::ta::system_t system(sysdecl);
   }
   catch (std::exception & e) {
-    tchecker::log.error(e.what());
+    std::cerr << tchecker::log_error << e.what() << std::endl;
   }
 
-  if (tchecker::log.error_count() == 0)
+  if (tchecker::log_error_count() == 0)
     std::cout << "Syntax OK" << std::endl;
   else
-    tchecker::log.display_counts();
+    tchecker::log_output_count(std::cout);
 }
 
 void do_synchronized_product(tchecker::parsing::system_declaration_t const & sysdecl, std::string const & process_name,
@@ -135,7 +135,6 @@ void do_synchronized_product(tchecker::parsing::system_declaration_t const & sys
 
 int main(int argc, char * argv[])
 {
-  tchecker::log_t log(&std::cerr);
   tchecker::parsing::system_declaration_t * sysdecl = nullptr;
 
   try {
@@ -161,8 +160,8 @@ int main(int argc, char * argv[])
     else
       os = &std::cout;
 
-    sysdecl = load_system(input_file, log);
-    if (log.error_count() > 0) {
+    sysdecl = load_system(input_file);
+    if (tchecker::log_error_count() > 0) {
       delete sysdecl;
       return EXIT_SUCCESS;
     }
@@ -170,7 +169,7 @@ int main(int argc, char * argv[])
     if (check_syntax)
       do_check_syntax(*sysdecl);
 
-    if (log.error_count() > 0) {
+    if (tchecker::log_error_count() > 0) {
       delete sysdecl;
       return EXIT_SUCCESS;
     }
@@ -179,7 +178,7 @@ int main(int argc, char * argv[])
       do_synchronized_product(*sysdecl, process_name, delimiter, *os);
   }
   catch (std::exception & e) {
-    log.error(e.what());
+    std::cerr << tchecker::log_error << e.what() << std::endl;
   }
 
   delete sysdecl;

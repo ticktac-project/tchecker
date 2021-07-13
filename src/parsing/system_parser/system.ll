@@ -22,7 +22,6 @@
 #define YY_DECL \
 tchecker::parsing::system::parser_t::symbol_type spyylex \
 (std::string const & filename, \
-tchecker::log_t & log, \
 tchecker::parsing::system_declaration_t * & system_declaration)
 
 // Work around an incompatibility in flex (at least versions
@@ -142,10 +141,10 @@ namespace tchecker {
 
   namespace parsing {
 
-    tchecker::parsing::system_declaration_t * parse_system_declaration(std::string const & filename, tchecker::log_t & log)
+    tchecker::parsing::system_declaration_t * parse_system_declaration(std::string const & filename)
     {
       if (filename.empty() || (filename == "-"))
-        return tchecker::parsing::parse_system_declaration(stdin, "", log);
+        return tchecker::parsing::parse_system_declaration(stdin, "");
       
       std::FILE * f = std::fopen(filename.c_str(), "r");
       if (f == nullptr)
@@ -153,7 +152,7 @@ namespace tchecker {
         
       tchecker::parsing::system_declaration_t * sysdecl = nullptr;
       try {
-        sysdecl = tchecker::parsing::parse_system_declaration(f, filename, log);
+        sysdecl = tchecker::parsing::parse_system_declaration(f, filename);
         std::fclose(f);
       }
       catch (...) {
@@ -165,9 +164,9 @@ namespace tchecker {
     
     
     tchecker::parsing::system_declaration_t *
-    parse_system_declaration(std::FILE * f, std::string const & filename, tchecker::log_t & log)
+    parse_system_declaration(std::FILE * f, std::string const & filename)
 		{
-      std::size_t old_error_count = log.error_count();
+      std::size_t old_error_count = tchecker::log_error_count();
       
       spyyrestart(f);
 
@@ -179,7 +178,7 @@ namespace tchecker {
       tchecker::parsing::system_declaration_t * sysdecl = nullptr;
       
       try {
-        tchecker::parsing::system::parser_t parser(filename, log, sysdecl);
+        tchecker::parsing::system::parser_t parser(filename, sysdecl);
 				parser.parse();
         spyy_flush_buffer(YY_CURRENT_BUFFER);
       }
@@ -189,7 +188,7 @@ namespace tchecker {
         throw;
       }
       
-      if (log.error_count() > old_error_count) {
+      if (tchecker::log_error_count() > old_error_count) {
         delete sysdecl;
         sysdecl = nullptr;
       }

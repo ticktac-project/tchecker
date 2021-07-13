@@ -15,7 +15,6 @@
 #include "tchecker/syncprod/vloc.hh"
 #include "tchecker/ta/system.hh"
 #include "tchecker/ta/ta.hh"
-#include "tchecker/utils/log.hh"
 #include "tchecker/variables/clocks.hh"
 #include "tchecker/variables/static_analysis.hh"
 
@@ -35,8 +34,7 @@ TEST_CASE("delay allowed for all reference clocks", "[delay_allowed]")
   location:P3:l0{initial:} \n\
   ";
 
-  tchecker::log_t log(&std::cerr);
-  std::unique_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model, log)};
+  std::unique_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model)};
   assert(sysdecl != nullptr);
 
   tchecker::ta::system_t system{*sysdecl};
@@ -95,8 +93,7 @@ TEST_CASE("delay allowed for some reference clocks", "[delay_allowed]")
   location:P3:l0{initial: : urgent:} \n\
   ";
 
-  tchecker::log_t log(&std::cerr);
-  std::unique_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model, log)};
+  std::unique_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model)};
   assert(sysdecl != nullptr);
 
   tchecker::ta::system_t system{*sysdecl};
@@ -157,8 +154,7 @@ TEST_CASE("delay allowed for no reference clock", "[delay_allowed]")
   location:P3:l0{initial: : urgent:} \n\
   ";
 
-  tchecker::log_t log(&std::cerr);
-  std::unique_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model, log)};
+  std::unique_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model)};
   assert(sysdecl != nullptr);
 
   tchecker::ta::system_t system{*sysdecl};

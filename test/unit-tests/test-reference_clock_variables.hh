@@ -90,8 +90,7 @@ TEST_CASE("Reference clock variables from system - no array", "[reference clock 
   edge:P2:l0:l0:a{provided: i<=3} \n\
   ";
 
-  tchecker::log_t log(&std::cerr);
-  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(declarations, log);
+  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(declarations);
 
   REQUIRE(sysdecl != nullptr);
 
@@ -164,8 +163,7 @@ TEST_CASE("Offset clock variables from system - array", "[offset clock variables
   edge:P3:l1:l2:a{do: z=1+z} \n\
   ";
 
-  tchecker::log_t log(&std::cerr);
-  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(declarations, log);
+  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(declarations);
 
   REQUIRE(sysdecl != nullptr);
 

@@ -25,12 +25,11 @@ namespace test {
 /*!
  \brief Parse a model
  \param model : tchecker model
- \param log : logging facility
  \return the system declaration corresponding to model if model is syntactically correct, nullptr otherwise or if
  a temporary file cannot be created
- \post errors and warnings in model have been reported to log
+ \post errors and warnings in model have been reported to std::cerr
  */
-tchecker::parsing::system_declaration_t const * parse(std::string const & model, tchecker::log_t & log);
+tchecker::parsing::system_declaration_t const * parse(std::string const & model);
 
 } // end of namespace test
 

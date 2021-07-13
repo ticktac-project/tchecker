@@ -251,7 +251,7 @@ private:
    \param id : location identifier
    \param invariants : range of invariants (as strings)
    \post all invariants have been parsed, typed, compiled and set as location id invariant
-   \note all compilation errors have been reported to tchecker::log
+   \note all compilation errors have been reported to std::cerr
    \note previous invariant (if any) has been replaced by the new one
    \throw std::invalid_argument : if compilation of invariants fails
    */
@@ -271,7 +271,7 @@ private:
    \param id : location identifier
    \param guards : range of guards (as strings)
    \post all guards have been parsed, typed, compiled and set as edge id guard
-   \note all compilation errors have been reported to tchecker::log
+   \note all compilation errors have been reported to std::cerr
    \note previous guard (if any) has been replaced by the new one
    \throw std::invalid_argument : if compilation of guards fails
    */
@@ -282,7 +282,7 @@ private:
    \param id : edge identifier
    \param statements : range of statements (as strings)
    \post all statements have been parsed, typed, compiled and set as edge id statement
-   \note all compilation errors have been reported to tchecker::log
+   \note all compilation errors have been reported to std::cerr
    \note previous statement (if any) has been replaced by the new one
    \throw std::invalid_argument : if compilation of statements fails
    */

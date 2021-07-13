@@ -6,6 +6,7 @@
  */
 
 #include <cassert>
+#include <iostream>
 #include <memory>
 #include <string>
 
@@ -136,7 +137,7 @@ conjunction_from_attrs(tchecker::range_t<tchecker::system::attributes_t::const_i
   tchecker::expression_t * expr = nullptr;
 
   for (auto && [key, value] : attrs) {
-    tchecker::expression_t * value_expr = tchecker::parsing::parse_expression(context, value, tchecker::log);
+    tchecker::expression_t * value_expr = tchecker::parsing::parse_expression(context, value);
 
     if (value_expr == nullptr) {
       delete expr;
@@ -172,14 +173,14 @@ void system_t::set_invariant(tchecker::loc_id_t id,
       tchecker::typecheck(*invariant_expr, localvars, integer_variables(), clock_variables())};
 
   if (!tchecker::bool_valued(invariant_typed_expr->type()))
-    tchecker::log.error(context, "expression is not bool valued");
+    std::cerr << tchecker::log_error << context << " expression is not bool valued" << std::endl;
 
   try {
     std::shared_ptr<tchecker::bytecode_t> invariant_bytecode{tchecker::compile(*invariant_typed_expr)};
     _invariants[id] = {invariant_typed_expr, invariant_bytecode};
   }
   catch (std::exception const & e) {
-    tchecker::log.error(context, e.what());
+    std::cerr << tchecker::log_error << context << " " << e.what() << std::endl;
   }
 }
 
@@ -208,14 +209,14 @@ void system_t::set_guards(tchecker::edge_id_t id,
       tchecker::typecheck(*guard_expr, localvars, integer_variables(), clock_variables())};
 
   if (!tchecker::bool_valued(guard_typed_expr->type()))
-    tchecker::log.error(context, "expression is not bool valued");
+    std::cerr << tchecker::log_error << context << " expression is not bool valued" << std::endl;
 
   try {
     std::shared_ptr<tchecker::bytecode_t> guard_bytecode{tchecker::compile(*guard_typed_expr)};
     _guards[id] = {guard_typed_expr, guard_bytecode};
   }
   catch (std::exception const & e) {
-    tchecker::log.error(context, e.what());
+    std::cerr << tchecker::log_error << context << " " << e.what() << std::endl;
   }
 }
 
@@ -226,7 +227,7 @@ sequence_from_attrs(tchecker::range_t<tchecker::system::attributes_t::const_iter
   tchecker::statement_t * stmt = nullptr;
 
   for (auto && [key, value] : attrs) {
-    tchecker::statement_t * value_stmt = tchecker::parsing::parse_statement(context, value, tchecker::log);
+    tchecker::statement_t * value_stmt = tchecker::parsing::parse_statement(context, value);
 
     if (value_stmt == nullptr) {
       delete stmt;
@@ -268,7 +269,7 @@ void system_t::set_statements(tchecker::edge_id_t id,
     _statements[id] = {typed_stmt, bytecode};
   }
   catch (std::exception const & e) {
-    tchecker::log.error(context, e.what());
+    std::cerr << tchecker::log_error << context << " " << e.what() << std::endl;
   }
 }
 

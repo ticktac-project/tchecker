@@ -136,21 +136,20 @@ int parse_command_line(int argc, char * argv[])
 /*!
  \brief Load a system declaration from a file
  \param filename : file name
- \param log : logging facility
  \return pointer to a system declaration loaded from filename, nullptr in case
  of errors
- \post all errors have been reported to log
+ \post all errors have been reported to std::cerr
 */
-tchecker::parsing::system_declaration_t * load_system_declaration(std::string const & filename, tchecker::log_t & log)
+tchecker::parsing::system_declaration_t * load_system_declaration(std::string const & filename)
 {
   tchecker::parsing::system_declaration_t * sysdecl = nullptr;
   try {
-    sysdecl = tchecker::parsing::parse_system_declaration(filename, log);
+    sysdecl = tchecker::parsing::parse_system_declaration(filename);
     if (sysdecl == nullptr)
       throw std::runtime_error("nullptr system declaration");
   }
   catch (std::exception const & e) {
-    log.error(e.what());
+    std::cerr << tchecker::log_error << e.what() << std::endl;
   }
   return sysdecl;
 }
@@ -238,8 +237,6 @@ void covreach(std::shared_ptr<tchecker::parsing::system_declaration_t> const & s
 */
 int main(int argc, char * argv[])
 {
-  tchecker::log_t log(&std::cerr);
-
   try {
     int optindex = parse_command_line(argc, argv);
 
@@ -256,9 +253,9 @@ int main(int argc, char * argv[])
 
     std::string input_file = (optindex == argc ? "" : argv[optindex]);
 
-    std::shared_ptr<tchecker::parsing::system_declaration_t> sysdecl{load_system_declaration(input_file, log)};
+    std::shared_ptr<tchecker::parsing::system_declaration_t> sysdecl{load_system_declaration(input_file)};
 
-    if (log.error_count() > 0)
+    if (tchecker::log_error_count() > 0)
       return EXIT_FAILURE;
 
     switch (algorithm) {
@@ -276,7 +273,7 @@ int main(int argc, char * argv[])
     }
   }
   catch (std::exception & e) {
-    log.error(e.what());
+    std::cerr << tchecker::log_error << e.what() << std::endl;
   }
 
   return EXIT_SUCCESS;

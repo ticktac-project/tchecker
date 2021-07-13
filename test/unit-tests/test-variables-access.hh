@@ -124,8 +124,7 @@ TEST_CASE("variable access map computation - empty system", "[access map]")
   std::string declarations = "system:access_map_empty \n\
   ";
 
-  tchecker::log_t log(&std::cerr);
-  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(declarations, log);
+  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(declarations);
 
   REQUIRE(sysdecl != nullptr);
 
@@ -151,8 +150,7 @@ TEST_CASE("variable access map computation - 1 process", "[access map]")
   edge:P:l0:l1:a{provided: i>0 : do: x=0} \n\
   ";
 
-  tchecker::log_t log(&std::cerr);
-  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(declarations, log);
+  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(declarations);
 
   REQUIRE(sysdecl != nullptr);
 
@@ -286,8 +284,7 @@ TEST_CASE("variable access map computation - 2 processes, no shared variable", "
   edge:P2:l0:l0:a{provided: i<=3} \n\
   ";
 
-  tchecker::log_t log(&std::cerr);
-  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(declarations, log);
+  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(declarations);
 
   REQUIRE(sysdecl != nullptr);
 
@@ -482,8 +479,7 @@ TEST_CASE("variable access map computation - 3 processes, array, shared variable
   edge:P3:l1:l2:a{do: y[i+1]=0; i=1} \n\
   ";
 
-  tchecker::log_t log(&std::cerr);
-  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(declarations, log);
+  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(declarations);
 
   REQUIRE(sysdecl != nullptr);
 
