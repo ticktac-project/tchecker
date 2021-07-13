@@ -10,6 +10,7 @@
 #include <getopt.h>
 #include <iostream>
 #include <map>
+#include <memory>
 #include <string>
 
 #include "tchecker/parsing/parsing.hh"
@@ -96,21 +97,34 @@ int parse_command_line(int argc, char * argv[])
   return optind;
 }
 
-tchecker::parsing::system_declaration_t * load_system(std::string const & filename)
+/*!
+ \brief Load system from a file
+ \param filename : file name
+ \return The system declaration loaded from filename, nullptr if parsing error occurred
+*/
+std::shared_ptr<tchecker::parsing::system_declaration_t> load_system(std::string const & filename)
 {
   tchecker::parsing::system_declaration_t * sysdecl = nullptr;
   try {
     sysdecl = tchecker::parsing::parse_system_declaration(filename);
-    if (sysdecl == nullptr)
-      throw std::runtime_error("nullptr system declaration");
   }
   catch (std::exception const & e) {
     std::cerr << tchecker::log_error << " " << e.what() << std::endl;
   }
-  return sysdecl;
+
+  if (sysdecl == nullptr)
+    tchecker::log_output_count(std::cout);
+
+  return std::shared_ptr<tchecker::parsing::system_declaration_t>(sysdecl);
 }
 
-void do_check_syntax(tchecker::parsing::system_declaration_t const & sysdecl)
+/*!
+ \brief Check timed automaton syntax from a declaration
+ \param sysdecl : system declaration
+ \return true if sydecl contains a syntactically correct declaration of a
+ system of timed automata, false otherwise
+*/
+bool do_check_syntax_ta(tchecker::parsing::system_declaration_t const & sysdecl)
 {
   try {
     tchecker::ta::system_t system(sysdecl);
@@ -119,12 +133,26 @@ void do_check_syntax(tchecker::parsing::system_declaration_t const & sysdecl)
     std::cerr << tchecker::log_error << e.what() << std::endl;
   }
 
-  if (tchecker::log_error_count() == 0)
-    std::cout << "Syntax OK" << std::endl;
-  else
+  if (tchecker::log_error_count() > 0) {
     tchecker::log_output_count(std::cout);
+    return false;
+  }
+
+  std::cout << "Syntax OK" << std::endl;
+  return true;
 }
 
+/*!
+ \brief Flatten a system of processes into a single process
+ \param sysdecl : system declaration
+ \param process_name : name of the resulting process
+ \param delimiter : delimiter used in names of the resulting process
+ \param os : output stream
+ \post The synchronized product of the system in sysdecl has been output to os.
+ The resulting process has name process_name. The names of locations and events
+ are list of location/event names in the original process, seperated by
+ delimiter
+ */
 void do_synchronized_product(tchecker::parsing::system_declaration_t const & sysdecl, std::string const & process_name,
                              std::string const & delimiter, std::ostream & os)
 {
@@ -133,10 +161,11 @@ void do_synchronized_product(tchecker::parsing::system_declaration_t const & sys
   os << product << std::endl;
 }
 
+/*!
+ \brief Main function
+*/
 int main(int argc, char * argv[])
 {
-  tchecker::parsing::system_declaration_t * sysdecl = nullptr;
-
   try {
     int optindex = parse_command_line(argc, argv);
 
@@ -160,19 +189,12 @@ int main(int argc, char * argv[])
     else
       os = &std::cout;
 
-    sysdecl = load_system(input_file);
-    if (tchecker::log_error_count() > 0) {
-      delete sysdecl;
-      return EXIT_SUCCESS;
-    }
+    std::shared_ptr<tchecker::parsing::system_declaration_t> sysdecl{load_system(input_file)};
+    if (sysdecl.get() == nullptr)
+      return EXIT_FAILURE;
 
     if (check_syntax)
-      do_check_syntax(*sysdecl);
-
-    if (tchecker::log_error_count() > 0) {
-      delete sysdecl;
-      return EXIT_SUCCESS;
-    }
+      do_check_syntax_ta(*sysdecl);
 
     if (synchronized_product)
       do_synchronized_product(*sysdecl, process_name, delimiter, *os);
@@ -180,8 +202,6 @@ int main(int argc, char * argv[])
   catch (std::exception & e) {
     std::cerr << tchecker::log_error << e.what() << std::endl;
   }
-
-  delete sysdecl;
 
   return EXIT_SUCCESS;
 }
