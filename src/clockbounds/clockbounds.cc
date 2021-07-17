@@ -64,6 +64,7 @@ bool update(tchecker::clockbounds::map_t & map, tchecker::clockbounds::map_t con
 
 std::ostream & operator<<(std::ostream & os, tchecker::clockbounds::map_t const & map)
 {
+  os << "[";
   for (std::size_t i = 0; i < map.capacity(); ++i) {
     if (i != 0)
       os << ",";
@@ -73,6 +74,7 @@ std::ostream & operator<<(std::ostream & os, tchecker::clockbounds::map_t const 
     else
       os << map[i];
   }
+  os << "]";
   return os;
 }
 
@@ -87,11 +89,10 @@ local_lu_map_t::local_lu_map_t(tchecker::loc_id_t loc_nb, tchecker::clock_id_t c
 local_lu_map_t::local_lu_map_t(tchecker::clockbounds::local_lu_map_t const & m)
     : _loc_nb(m._loc_nb), _clock_nb(m._clock_nb), _L(_loc_nb, nullptr), _U(_loc_nb, nullptr)
 {
-  if (_clock_nb > 0)
-    for (tchecker::loc_id_t id = 0; id < _loc_nb; ++id) {
-      _L[id] = tchecker::clockbounds::clone_map(*m._L[id]);
-      _U[id] = tchecker::clockbounds::clone_map(*m._U[id]);
-    }
+  for (tchecker::loc_id_t id = 0; id < _loc_nb; ++id) {
+    _L[id] = tchecker::clockbounds::clone_map(*m._L[id]);
+    _U[id] = tchecker::clockbounds::clone_map(*m._U[id]);
+  }
 }
 
 local_lu_map_t::local_lu_map_t(tchecker::clockbounds::local_lu_map_t && m)
@@ -114,11 +115,10 @@ tchecker::clockbounds::local_lu_map_t & local_lu_map_t::operator=(tchecker::cloc
     _clock_nb = m._clock_nb;
     _L.resize(_loc_nb, nullptr);
     _U.resize(_loc_nb, nullptr);
-    if (_clock_nb > 0)
-      for (tchecker::loc_id_t id = 0; id < _loc_nb; ++id) {
-        _L[id] = tchecker::clockbounds::clone_map(*m._L[id]);
-        _U[id] = tchecker::clockbounds::clone_map(*m._U[id]);
-      }
+    for (tchecker::loc_id_t id = 0; id < _loc_nb; ++id) {
+      _L[id] = tchecker::clockbounds::clone_map(*m._L[id]);
+      _U[id] = tchecker::clockbounds::clone_map(*m._U[id]);
+    }
   }
   return *this;
 }
@@ -143,11 +143,10 @@ tchecker::clockbounds::local_lu_map_t & local_lu_map_t::operator=(tchecker::cloc
 
 void local_lu_map_t::clear()
 {
-  if (_clock_nb > 0)
-    for (tchecker::loc_id_t id = 0; id < _loc_nb; ++id) {
-      tchecker::clockbounds::deallocate_map(_L[id]);
-      tchecker::clockbounds::deallocate_map(_U[id]);
-    }
+  for (tchecker::loc_id_t id = 0; id < _loc_nb; ++id) {
+    tchecker::clockbounds::deallocate_map(_L[id]);
+    tchecker::clockbounds::deallocate_map(_U[id]);
+  }
   _L.clear();
   _U.clear();
   _loc_nb = 0;
@@ -162,13 +161,12 @@ void local_lu_map_t::resize(tchecker::loc_id_t loc_nb, tchecker::clock_id_t cloc
   _clock_nb = clock_nb;
   _L.resize(_loc_nb, nullptr);
   _U.resize(_loc_nb, nullptr);
-  if (_clock_nb > 0)
-    for (tchecker::loc_id_t id = 0; id < _loc_nb; ++id) {
-      _L[id] = tchecker::clockbounds::allocate_map(_clock_nb);
-      _U[id] = tchecker::clockbounds::allocate_map(_clock_nb);
-      tchecker::clockbounds::clear(*_L[id]);
-      tchecker::clockbounds::clear(*_U[id]);
-    }
+  for (tchecker::loc_id_t id = 0; id < _loc_nb; ++id) {
+    _L[id] = tchecker::clockbounds::allocate_map(_clock_nb);
+    _U[id] = tchecker::clockbounds::allocate_map(_clock_nb);
+    tchecker::clockbounds::clear(*_L[id]);
+    tchecker::clockbounds::clear(*_U[id]);
+  }
 }
 
 tchecker::loc_id_t local_lu_map_t::loc_number() const { return _loc_nb; }
@@ -178,35 +176,30 @@ tchecker::clock_id_t local_lu_map_t::clock_number() const { return _clock_nb; }
 tchecker::clockbounds::map_t & local_lu_map_t::L(tchecker::loc_id_t id)
 {
   assert(id < _loc_nb);
-  assert(_clock_nb > 0);
   return *_L[id];
 }
 
 tchecker::clockbounds::map_t const & local_lu_map_t::L(tchecker::loc_id_t id) const
 {
   assert(id < _loc_nb);
-  assert(_clock_nb > 0);
   return *_L[id];
 }
 
 tchecker::clockbounds::map_t & local_lu_map_t::U(tchecker::loc_id_t id)
 {
   assert(id < _loc_nb);
-  assert(_clock_nb > 0);
   return *_U[id];
 }
 
 tchecker::clockbounds::map_t const & local_lu_map_t::U(tchecker::loc_id_t id) const
 {
   assert(id < _loc_nb);
-  assert(_clock_nb > 0);
   return *_U[id];
 }
 
 void local_lu_map_t::bounds(tchecker::loc_id_t id, tchecker::clockbounds::map_t & L, tchecker::clockbounds::map_t & U) const
 {
   assert(id < _loc_nb);
-  assert(_clock_nb > 0);
   assert(L.capacity() == _clock_nb);
   assert(U.capacity() == _clock_nb);
   tchecker::clockbounds::clear(L);
@@ -218,7 +211,6 @@ void local_lu_map_t::bounds(tchecker::loc_id_t id, tchecker::clockbounds::map_t 
 void local_lu_map_t::bounds(tchecker::vloc_t const & vloc, tchecker::clockbounds::map_t & L,
                             tchecker::clockbounds::map_t & U) const
 {
-  assert(_clock_nb > 0);
   assert(L.capacity() == _clock_nb);
   assert(U.capacity() == _clock_nb);
   tchecker::clockbounds::clear(L);
@@ -232,9 +224,6 @@ void local_lu_map_t::bounds(tchecker::vloc_t const & vloc, tchecker::clockbounds
 
 std::ostream & operator<<(std::ostream & os, tchecker::clockbounds::local_lu_map_t const & map)
 {
-  if (map.clock_number() == 0)
-    return os << "no clock" << std::endl;
-
   tchecker::loc_id_t loc_nb = map.loc_number();
   for (tchecker::loc_id_t l = 0; l < loc_nb; ++l)
     os << l << ": L=" << map.L(l) << " U=" << map.U(l) << std::endl;
@@ -249,10 +238,8 @@ global_lu_map_t::global_lu_map_t(tchecker::clock_id_t clock_nb) : _clock_nb(0), 
 global_lu_map_t::global_lu_map_t(tchecker::clockbounds::global_lu_map_t const & m)
     : _clock_nb(m._clock_nb), _L(nullptr), _U(nullptr)
 {
-  if (_clock_nb > 0) {
-    _L = tchecker::clockbounds::clone_map(*m._L);
-    _U = tchecker::clockbounds::clone_map(*m._U);
-  }
+  _L = tchecker::clockbounds::clone_map(*m._L);
+  _U = tchecker::clockbounds::clone_map(*m._U);
 }
 
 global_lu_map_t::global_lu_map_t(tchecker::clockbounds::global_lu_map_t && m)
@@ -271,10 +258,8 @@ tchecker::clockbounds::global_lu_map_t & global_lu_map_t::operator=(tchecker::cl
     clear();
 
     _clock_nb = m._clock_nb;
-    if (_clock_nb > 0) {
-      _L = tchecker::clockbounds::clone_map(*m._L);
-      _U = tchecker::clockbounds::clone_map(*m._U);
-    }
+    _L = tchecker::clockbounds::clone_map(*m._L);
+    _U = tchecker::clockbounds::clone_map(*m._U);
   }
   return *this;
 }
@@ -297,10 +282,8 @@ tchecker::clockbounds::global_lu_map_t & global_lu_map_t::operator=(tchecker::cl
 
 void global_lu_map_t::clear()
 {
-  if (_clock_nb > 0) {
-    tchecker::clockbounds::deallocate_map(_L);
-    tchecker::clockbounds::deallocate_map(_U);
-  }
+  tchecker::clockbounds::deallocate_map(_L);
+  tchecker::clockbounds::deallocate_map(_U);
   _clock_nb = 0;
 }
 
@@ -309,43 +292,24 @@ void global_lu_map_t::resize(tchecker::clock_id_t clock_nb)
   clear();
 
   _clock_nb = clock_nb;
-  if (_clock_nb > 0) {
-    _L = tchecker::clockbounds::allocate_map(_clock_nb);
-    _U = tchecker::clockbounds::allocate_map(_clock_nb);
-    tchecker::clockbounds::clear(*_L);
-    tchecker::clockbounds::clear(*_U);
-  }
+  _L = tchecker::clockbounds::allocate_map(_clock_nb);
+  _U = tchecker::clockbounds::allocate_map(_clock_nb);
+  tchecker::clockbounds::clear(*_L);
+  tchecker::clockbounds::clear(*_U);
 }
 
 tchecker::clock_id_t global_lu_map_t::clock_number() const { return _clock_nb; }
 
-tchecker::clockbounds::map_t & global_lu_map_t::L(void)
-{
-  assert(_clock_nb > 0);
-  return *_L;
-}
+tchecker::clockbounds::map_t & global_lu_map_t::L(void) { return *_L; }
 
-tchecker::clockbounds::map_t const & global_lu_map_t::L(void) const
-{
-  assert(_clock_nb > 0);
-  return *_L;
-}
+tchecker::clockbounds::map_t const & global_lu_map_t::L(void) const { return *_L; }
 
-tchecker::clockbounds::map_t & global_lu_map_t::U(void)
-{
-  assert(_clock_nb > 0);
-  return *_U;
-}
+tchecker::clockbounds::map_t & global_lu_map_t::U(void) { return *_U; }
 
-tchecker::clockbounds::map_t const & global_lu_map_t::U(void) const
-{
-  assert(_clock_nb > 0);
-  return *_U;
-}
+tchecker::clockbounds::map_t const & global_lu_map_t::U(void) const { return *_U; }
 
 void global_lu_map_t::bounds(tchecker::clockbounds::map_t & L, tchecker::clockbounds::map_t & U) const
 {
-  assert(_clock_nb > 0);
   assert(L.capacity() == _clock_nb);
   assert(U.capacity() == _clock_nb);
   tchecker::clockbounds::clear(L);
@@ -367,8 +331,6 @@ void global_lu_map_t::bounds(tchecker::vloc_t const & vloc, tchecker::clockbound
 
 std::ostream & operator<<(std::ostream & os, tchecker::clockbounds::global_lu_map_t const & map)
 {
-  if (map.clock_number() == 0)
-    return os << "no clock" << std::endl;
   return os << "L=" << map.L() << " U=" << map.U() << std::endl;
 }
 
@@ -383,9 +345,8 @@ local_m_map_t::local_m_map_t(tchecker::loc_id_t loc_nb, tchecker::clock_id_t clo
 local_m_map_t::local_m_map_t(tchecker::clockbounds::local_m_map_t const & m)
     : _loc_nb(m._loc_nb), _clock_nb(m._clock_nb), _M(_loc_nb, nullptr)
 {
-  if (_clock_nb > 0)
-    for (tchecker::loc_id_t id = 0; id < _loc_nb; ++id)
-      _M[id] = tchecker::clockbounds::clone_map(*m._M[id]);
+  for (tchecker::loc_id_t id = 0; id < _loc_nb; ++id)
+    _M[id] = tchecker::clockbounds::clone_map(*m._M[id]);
 }
 
 local_m_map_t::local_m_map_t(tchecker::clockbounds::local_m_map_t && m)
@@ -406,9 +367,8 @@ tchecker::clockbounds::local_m_map_t & local_m_map_t::operator=(tchecker::clockb
     _loc_nb = m._loc_nb;
     _clock_nb = m._clock_nb;
     _M.resize(_loc_nb, nullptr);
-    if (_clock_nb > 0)
-      for (tchecker::loc_id_t id = 0; id < _loc_nb; ++id)
-        _M[id] = tchecker::clockbounds::clone_map(*m._M[id]);
+    for (tchecker::loc_id_t id = 0; id < _loc_nb; ++id)
+      _M[id] = tchecker::clockbounds::clone_map(*m._M[id]);
   }
   return *this;
 }
@@ -431,9 +391,8 @@ tchecker::clockbounds::local_m_map_t & local_m_map_t::operator=(tchecker::clockb
 
 void local_m_map_t::clear()
 {
-  if (_clock_nb > 0)
-    for (tchecker::loc_id_t id = 0; id < _loc_nb; ++id)
-      tchecker::clockbounds::deallocate_map(_M[id]);
+  for (tchecker::loc_id_t id = 0; id < _loc_nb; ++id)
+    tchecker::clockbounds::deallocate_map(_M[id]);
   _M.clear();
   _loc_nb = 0;
   _clock_nb = 0;
@@ -446,11 +405,10 @@ void local_m_map_t::resize(tchecker::loc_id_t loc_nb, tchecker::clock_id_t clock
   _loc_nb = loc_nb;
   _clock_nb = clock_nb;
   _M.resize(_loc_nb, nullptr);
-  if (_clock_nb > 0)
-    for (tchecker::loc_id_t id = 0; id < _loc_nb; ++id) {
-      _M[id] = tchecker::clockbounds::allocate_map(_clock_nb);
-      tchecker::clockbounds::clear(*_M[id]);
-    }
+  for (tchecker::loc_id_t id = 0; id < _loc_nb; ++id) {
+    _M[id] = tchecker::clockbounds::allocate_map(_clock_nb);
+    tchecker::clockbounds::clear(*_M[id]);
+  }
 }
 
 tchecker::loc_id_t local_m_map_t::loc_number() const { return _loc_nb; }
@@ -459,21 +417,18 @@ tchecker::clock_id_t local_m_map_t::clock_number() const { return _clock_nb; }
 
 tchecker::clockbounds::map_t & local_m_map_t::M(tchecker::loc_id_t id)
 {
-  assert(_clock_nb > 0);
   assert(id < _loc_nb);
   return *_M[id];
 }
 
 tchecker::clockbounds::map_t const & local_m_map_t::M(tchecker::loc_id_t id) const
 {
-  assert(_clock_nb > 0);
   assert(id < _loc_nb);
   return *_M[id];
 }
 
 void local_m_map_t::bounds(tchecker::loc_id_t id, tchecker::clockbounds::map_t & M) const
 {
-  assert(_clock_nb > 0);
   assert(id < _loc_nb);
   assert(M.capacity() == _clock_nb);
   tchecker::clockbounds::clear(M);
@@ -482,7 +437,6 @@ void local_m_map_t::bounds(tchecker::loc_id_t id, tchecker::clockbounds::map_t &
 
 void local_m_map_t::bounds(tchecker::vloc_t const & vloc, tchecker::clockbounds::map_t & M) const
 {
-  assert(_clock_nb > 0);
   assert(M.capacity() == _clock_nb);
   tchecker::clockbounds::clear(M);
   for (tchecker::loc_id_t id : vloc) {
@@ -493,9 +447,6 @@ void local_m_map_t::bounds(tchecker::vloc_t const & vloc, tchecker::clockbounds:
 
 std::ostream & operator<<(std::ostream & os, tchecker::clockbounds::local_m_map_t const & map)
 {
-  if (map.clock_number() == 0)
-    return os << "no clock" << std::endl;
-
   tchecker::loc_id_t loc_nb = map.loc_number();
   for (tchecker::loc_id_t l = 0; l < loc_nb; ++l)
     os << l << ": M=" << map.M(l) << std::endl;
@@ -508,8 +459,7 @@ global_m_map_t::global_m_map_t(tchecker::clock_id_t clock_nb) : _clock_nb(0), _M
 
 global_m_map_t::global_m_map_t(tchecker::clockbounds::global_m_map_t const & m) : _clock_nb(m._clock_nb), _M(nullptr)
 {
-  if (_clock_nb > 0)
-    _M = tchecker::clockbounds::clone_map(*m._M);
+  _M = tchecker::clockbounds::clone_map(*m._M);
 }
 
 global_m_map_t::global_m_map_t(tchecker::clockbounds::global_m_map_t && m) : _clock_nb(m._clock_nb), _M(std::move(m._M))
@@ -526,8 +476,7 @@ tchecker::clockbounds::global_m_map_t & global_m_map_t::operator=(tchecker::cloc
     clear();
 
     _clock_nb = m._clock_nb;
-    if (_clock_nb > 0)
-      _M = tchecker::clockbounds::clone_map(*m._M);
+    _M = tchecker::clockbounds::clone_map(*m._M);
   }
   return *this;
 }
@@ -548,8 +497,7 @@ tchecker::clockbounds::global_m_map_t & global_m_map_t::operator=(tchecker::cloc
 
 void global_m_map_t::clear()
 {
-  if (_clock_nb > 0)
-    tchecker::clockbounds::deallocate_map(_M);
+  tchecker::clockbounds::deallocate_map(_M);
   _clock_nb = 0;
   _M = nullptr;
 }
@@ -559,29 +507,18 @@ void global_m_map_t::resize(tchecker::clock_id_t clock_nb)
   clear();
 
   _clock_nb = clock_nb;
-  if (_clock_nb > 0) {
-    _M = tchecker::clockbounds::allocate_map(_clock_nb);
-    tchecker::clockbounds::clear(*_M);
-  }
+  _M = tchecker::clockbounds::allocate_map(_clock_nb);
+  tchecker::clockbounds::clear(*_M);
 }
 
 tchecker::clock_id_t global_m_map_t::clock_number() const { return _clock_nb; }
 
-tchecker::clockbounds::map_t & global_m_map_t::M(void)
-{
-  assert(_clock_nb > 0);
-  return *_M;
-}
+tchecker::clockbounds::map_t & global_m_map_t::M(void) { return *_M; }
 
-tchecker::clockbounds::map_t const & global_m_map_t::M(void) const
-{
-  assert(_clock_nb > 0);
-  return *_M;
-}
+tchecker::clockbounds::map_t const & global_m_map_t::M(void) const { return *_M; }
 
 void global_m_map_t::bounds(tchecker::clockbounds::map_t & M) const
 {
-  assert(_clock_nb > 0);
   tchecker::clockbounds::clear(M);
   tchecker::clockbounds::update(M, *_M);
 }
@@ -592,8 +529,6 @@ void global_m_map_t::bounds(tchecker::vloc_t const & vloc, tchecker::clockbounds
 
 std::ostream & operator<<(std::ostream & os, tchecker::clockbounds::global_m_map_t const & map)
 {
-  if (map.clock_number() == 0)
-    return os << "no clock" << std::endl;
   return os << "M=" << map.M() << std::endl;
 }
 
