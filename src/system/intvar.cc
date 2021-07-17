@@ -19,9 +19,10 @@ void intvars_t::add_intvar(std::string const & name, tchecker::intvar_id_t size,
                            tchecker::integer_t max, tchecker::integer_t initial, tchecker::system::attributes_t const & attr)
 {
   _integer_variables.declare(name, size, min, max, initial);
-  _integer_variables_attr.emplace_back(attr);
-  assert(_integer_variables.size(tchecker::VK_DECLARED) == _integer_variables_attr.size());
-  assert(_integer_variables.id(name) == _integer_variables_attr.size() - 1);
+  tchecker::intvar_id_t id = _integer_variables.id(name);
+  if (id >= _integer_variables_attr.size())
+    _integer_variables_attr.resize(id + 1);
+  _integer_variables_attr[id] = attr;
 }
 
 tchecker::system::attributes_t const & intvars_t::intvar_attributes(tchecker::intvar_id_t id) const
