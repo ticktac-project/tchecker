@@ -40,7 +40,8 @@ tchecker::state_status_t initial(tchecker::ta::system_t const & system,
 {
   // intialize vloc and vedge
   auto status = tchecker::syncprod::initial(system.as_syncprod_system(), vloc, vedge, initial_range);
-  return status;
+  if (status != STATE_OK)
+    return status;
 
   // initialize intval
   auto const & intvars = system.integer_variables().flattened();
