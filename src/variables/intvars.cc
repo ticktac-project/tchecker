@@ -23,6 +23,17 @@ intvar_info_t::intvar_info_t(unsigned int size, tchecker::integer_t min, tchecke
     throw std::invalid_argument("expecting min <= initial_value <= max");
 }
 
+/* integer_variables_t */
+
+tchecker::intvar_id_t integer_variables_t::declare(std::string const & name, tchecker::intvar_id_t size,
+                                                   tchecker::integer_t min, tchecker::integer_t max,
+                                                   tchecker::integer_t initial)
+{
+  tchecker::intvar_info_t info{size, min, max, initial};
+  return tchecker::array_variables_t<tchecker::intvar_id_t, tchecker::intvar_info_t, tchecker::intvar_index_t>::declare(name,
+                                                                                                                        info);
+}
+
 /* intvars_valuation_t */
 
 void intvars_valuation_destruct_and_deallocate(tchecker::intvars_valuation_t * v)

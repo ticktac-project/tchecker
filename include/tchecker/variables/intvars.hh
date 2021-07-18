@@ -121,12 +121,8 @@ public:
    wirh maximal value 'max', and with initial value 'initial' has been declared
    \throw std::invalid_argument : if the precondition is violated
    */
-  void declare(std::string const & name, tchecker::intvar_id_t size, tchecker::integer_t min, tchecker::integer_t max,
-               tchecker::integer_t initial)
-  {
-    tchecker::intvar_info_t info{size, min, max, initial};
-    tchecker::array_variables_t<tchecker::intvar_id_t, tchecker::intvar_info_t, tchecker::intvar_index_t>::declare(name, info);
-  }
+  tchecker::intvar_id_t declare(std::string const & name, tchecker::intvar_id_t size, tchecker::integer_t min,
+                                tchecker::integer_t max, tchecker::integer_t initial);
 
 protected:
   using tchecker::array_variables_t<tchecker::intvar_id_t, tchecker::intvar_info_t, tchecker::intvar_index_t>::declare;
