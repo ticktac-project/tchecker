@@ -630,7 +630,7 @@ public:
     assertion)
     \return the ID of the reference clock of id in this reference map
    */
-  constexpr inline tchecker::clock_id_t refclock_of_system_clock(tchecker::clock_id_t id) const
+  inline tchecker::clock_id_t refclock_of_system_clock(tchecker::clock_id_t id) const
   {
     assert(id < size() - _refcount);
     return _refmap[translate_system_clock(id)];

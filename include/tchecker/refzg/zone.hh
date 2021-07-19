@@ -259,7 +259,7 @@ protected:
    \param j : clock ID
    \return constraint on xi-xj in this DBM
    */
-  constexpr tchecker::dbm::db_t dbm(tchecker::clock_id_t i, tchecker::clock_id_t j) const
+  tchecker::dbm::db_t dbm(tchecker::clock_id_t i, tchecker::clock_id_t j) const
   {
     return dbm_ptr()[i * _ref_clocks->size() + j];
   }
@@ -289,7 +289,7 @@ public:
    \return Allocation size for objects of type tchecker::refzg::zone_t
    with reference clocks ref_clocks
    */
-  static constexpr std::size_t alloc_size(std::shared_ptr<tchecker::reference_clock_variables_t const> const & ref_clocks)
+  static std::size_t alloc_size(std::shared_ptr<tchecker::reference_clock_variables_t const> const & ref_clocks)
   {
     return (sizeof(tchecker::refzg::zone_t) + ref_clocks->size() * ref_clocks->size() * sizeof(tchecker::dbm::db_t));
   }
