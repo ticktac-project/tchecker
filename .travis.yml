@@ -26,18 +26,14 @@ dist: focal
 
 jobs:
   include:
-  - name : "linux-gcc-int64-covreach"
+  - name : "linux-gcc-int64-algos"
     os: linux
     compiler: gcc
-    env: CONFNAME="covreach:int64:memcheck"
-  - name : "linux-gcc-covreach"
+    env: CONFNAME="algos:int64:memcheck"
+  - name : "linux-gcc-algos"
     os: linux
     compiler: gcc
-    env: CONFNAME="covreach:int32:memcheck"
-  - name : "linux-gcc-explore"
-    os: linux
-    compiler: gcc
-    env: CONFNAME="explore:int32:memcheck"
+    env: CONFNAME="algos:int32:memcheck"
   - name : "linux-gcc-simple_tests+memcheck"
     os: linux
     compiler: gcc

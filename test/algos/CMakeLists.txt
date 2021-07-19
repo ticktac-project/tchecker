@@ -2,9 +2,9 @@
 #
 # See files AUTHORS and LICENSE for copyright details.
 
-option(TCK_ENABLE_REACH_TESTS "enable tests related to tck_reach" ON)
+option(TCK_ENABLE_ALGOS_TESTS "enable tests related to tck_reach" ON)
 
-if(NOT TCK_ENABLE_REACH_TESTS)
+if(NOT TCK_ENABLE_ALGOS_TESTS)
     message(STATUS "tck_reach tests are disabled.")
     return()
 endif()

@@ -9,8 +9,7 @@ set -eu
 
 nbbits="32"
 memcheck="OFF"
-covreach="OFF"
-explore="OFF"
+algos="OFF"
 unittests="OFF"
 simple_nr="OFF"
 bugfixes="OFF"
@@ -30,14 +29,11 @@ for cfgopt in $(sed -e 's/:/ /g' <<< "${CONFNAME}"); do
     "memcheck")
       memcheck="ON"
       ;;
-    "covreach")
-      covreach="ON"
-      ;;
-    "explore")
-      explore="ON"
+    "algos")
+      algos="ON"
       ;;
     "all")
-      covreach="ON"; explore="ON"; unittests="ON"; simple_nr="ON"; bugfixes="ON"
+      algos="ON"; unittests="ON"; simple_nr="ON"; bugfixes="ON"
       ;;
     "smallest")
       unittests="ON"; simple_nr="ON"; bugfixes="ON"
@@ -47,8 +43,7 @@ done
 
 TEST_CONF="-DUSEINT${nbbits}=ON"
 TEST_CONF="${TEST_CONF} -DTCK_ENABLE_MEMCHECK_TESTS=${memcheck}"
-TEST_CONF="${TEST_CONF} -DTCK_ENABLE_COVREACH_TESTS=${covreach}"
-TEST_CONF="${TEST_CONF} -DTCK_ENABLE_EXPLORE_TESTS=${explore}"
+TEST_CONF="${TEST_CONF} -DTCK_ENABLE_ALGOS_TESTS=${algos}"
 TEST_CONF="${TEST_CONF} -DTCK_ENABLE_UNITTESTS=${unittests}"
 TEST_CONF="${TEST_CONF} -DTCK_ENABLE_SIMPLE_NR_TESTS=${simple_nr}"
 TEST_CONF="${TEST_CONF} -DTCK_ENABLE_BUGFIXES_TESTS=${bugfixes}"
