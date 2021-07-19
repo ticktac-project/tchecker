@@ -22,6 +22,7 @@
 %code requires {
   #include <cstdlib>
   #include <iostream>
+  #include <sstream>
   #include <limits>
   #include <string>
   #include <vector>
