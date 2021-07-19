@@ -261,15 +261,21 @@ void system_t::set_statements(tchecker::edge_id_t id,
   if (stmt.get() == nullptr)
     throw std::invalid_argument("Syntax error");
 
+
   std::shared_ptr<tchecker::typed_statement_t> typed_stmt{
-      tchecker::typecheck(*stmt, localvars, integer_variables(), clock_variables())};
+      tchecker::typecheck(*stmt, localvars, integer_variables(), clock_variables(),
+                          [](std::string const &e) {
+                            std::cerr << tchecker::log_error << e << std::endl;
+                          })};
 
   try {
     std::shared_ptr<tchecker::bytecode_t> bytecode{tchecker::compile(*typed_stmt)};
     _statements[id] = {typed_stmt, bytecode};
   }
   catch (std::exception const & e) {
-    std::cerr << tchecker::log_error << context << " " << e.what() << std::endl;
+    std::stringstream oss;
+    oss << context << " " << e.what();
+    throw std::invalid_argument(oss.str());
   }
 }
 
