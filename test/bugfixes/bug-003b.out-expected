@@ -1,2 +1,6 @@
-small
-0: <l0> 
+// REACHABLE false
+// RUNNING_TIME_SECONDS  xxxx
+// VISITED_STATES 1
+digraph small {
+  0 [intval="", vloc="<l0>", zone="()"]
+}

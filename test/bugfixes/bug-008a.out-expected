@@ -1,6 +1,9 @@
-REACHABLE true
-STORED_NODES 1
-VISITED_NODES 1
-COVERED_LEAF_NODES 0
-COVERED_NONLEAF_NODES 0
-
+// COVERED_STATES 1
+// REACHABLE false
+// RUNNING_TIME_SECONDS  xxxx
+// STORED_STATES 1
+// VISITED_STATES 1
+digraph S {
+  0 [intval="", vloc="<A>", zone="()"]
+  0 -> 0 [edge_type="subsumption", vedge="<P@tau>"]
+}

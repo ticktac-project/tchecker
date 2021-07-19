@@ -1,69 +1,73 @@
-S
-0: <A> Un=115
-1: <A> Un=346
-0 -> 1 
-2: <A> Un=173
-1 -> 2 
-3: <A> Un=520
-2 -> 3 
-4: <A> Un=260
-3 -> 4 
-5: <A> Un=130
-4 -> 5 
-6: <A> Un=65
-5 -> 6 
-7: <A> Un=196
-6 -> 7 
-8: <A> Un=98
-7 -> 8 
-9: <A> Un=49
-8 -> 9 
-10: <A> Un=148
-9 -> 10 
-11: <A> Un=74
-10 -> 11 
-12: <A> Un=37
-11 -> 12 
-13: <A> Un=112
-12 -> 13 
-14: <A> Un=56
-13 -> 14 
-15: <A> Un=28
-14 -> 15 
-16: <A> Un=14
-15 -> 16 
-17: <A> Un=7
-16 -> 17 
-18: <A> Un=22
-17 -> 18 
-19: <A> Un=11
-18 -> 19 
-20: <A> Un=34
-19 -> 20 
-21: <A> Un=17
-20 -> 21 
-22: <A> Un=52
-21 -> 22 
-23: <A> Un=26
-22 -> 23 
-24: <A> Un=13
-23 -> 24 
-25: <A> Un=40
-24 -> 25 
-26: <A> Un=20
-25 -> 26 
-27: <A> Un=10
-26 -> 27 
-28: <A> Un=5
-27 -> 28 
-29: <A> Un=16
-28 -> 29 
-30: <A> Un=8
-29 -> 30 
-31: <A> Un=4
-30 -> 31 
-32: <A> Un=2
-31 -> 32 
-33: <A> Un=1
-32 -> 33 
-33 -> 33 
+// REACHABLE false
+// RUNNING_TIME_SECONDS  xxxx
+// VISITED_STATES 34
+digraph S {
+  0 [intval="Un=1", vloc="<A>", zone="()"]
+  1 [intval="Un=2", vloc="<A>", zone="()"]
+  2 [intval="Un=4", vloc="<A>", zone="()"]
+  5 [intval="Un=5", vloc="<A>", zone="()"]
+  16 [intval="Un=7", vloc="<A>", zone="()"]
+  3 [intval="Un=8", vloc="<A>", zone="()"]
+  6 [intval="Un=10", vloc="<A>", zone="()"]
+  14 [intval="Un=11", vloc="<A>", zone="()"]
+  9 [intval="Un=13", vloc="<A>", zone="()"]
+  17 [intval="Un=14", vloc="<A>", zone="()"]
+  4 [intval="Un=16", vloc="<A>", zone="()"]
+  12 [intval="Un=17", vloc="<A>", zone="()"]
+  7 [intval="Un=20", vloc="<A>", zone="()"]
+  15 [intval="Un=22", vloc="<A>", zone="()"]
+  10 [intval="Un=26", vloc="<A>", zone="()"]
+  18 [intval="Un=28", vloc="<A>", zone="()"]
+  13 [intval="Un=34", vloc="<A>", zone="()"]
+  21 [intval="Un=37", vloc="<A>", zone="()"]
+  8 [intval="Un=40", vloc="<A>", zone="()"]
+  24 [intval="Un=49", vloc="<A>", zone="()"]
+  11 [intval="Un=52", vloc="<A>", zone="()"]
+  19 [intval="Un=56", vloc="<A>", zone="()"]
+  27 [intval="Un=65", vloc="<A>", zone="()"]
+  22 [intval="Un=74", vloc="<A>", zone="()"]
+  25 [intval="Un=98", vloc="<A>", zone="()"]
+  20 [intval="Un=112", vloc="<A>", zone="()"]
+  33 [intval="Un=115", vloc="<A>", zone="()"]
+  28 [intval="Un=130", vloc="<A>", zone="()"]
+  23 [intval="Un=148", vloc="<A>", zone="()"]
+  31 [intval="Un=173", vloc="<A>", zone="()"]
+  26 [intval="Un=196", vloc="<A>", zone="()"]
+  29 [intval="Un=260", vloc="<A>", zone="()"]
+  32 [intval="Un=346", vloc="<A>", zone="()"]
+  30 [intval="Un=520", vloc="<A>", zone="()"]
+  0 -> 0 [vedge="<P@a>"]
+  1 -> 0 [vedge="<P@a>"]
+  2 -> 1 [vedge="<P@a>"]
+  3 -> 2 [vedge="<P@a>"]
+  4 -> 3 [vedge="<P@a>"]
+  5 -> 4 [vedge="<P@a>"]
+  6 -> 5 [vedge="<P@a>"]
+  7 -> 6 [vedge="<P@a>"]
+  8 -> 7 [vedge="<P@a>"]
+  9 -> 8 [vedge="<P@a>"]
+  10 -> 9 [vedge="<P@a>"]
+  11 -> 10 [vedge="<P@a>"]
+  12 -> 11 [vedge="<P@a>"]
+  13 -> 12 [vedge="<P@a>"]
+  14 -> 13 [vedge="<P@a>"]
+  15 -> 14 [vedge="<P@a>"]
+  16 -> 15 [vedge="<P@a>"]
+  17 -> 16 [vedge="<P@a>"]
+  18 -> 17 [vedge="<P@a>"]
+  19 -> 18 [vedge="<P@a>"]
+  20 -> 19 [vedge="<P@a>"]
+  21 -> 20 [vedge="<P@a>"]
+  22 -> 21 [vedge="<P@a>"]
+  23 -> 22 [vedge="<P@a>"]
+  24 -> 23 [vedge="<P@a>"]
+  25 -> 24 [vedge="<P@a>"]
+  26 -> 25 [vedge="<P@a>"]
+  27 -> 26 [vedge="<P@a>"]
+  28 -> 27 [vedge="<P@a>"]
+  29 -> 28 [vedge="<P@a>"]
+  30 -> 29 [vedge="<P@a>"]
+  31 -> 30 [vedge="<P@a>"]
+  32 -> 31 [vedge="<P@a>"]
+  33 -> 32 [vedge="<P@a>"]
+}

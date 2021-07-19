@@ -1,5 +1,3 @@
-20.12-13: ERROR, multiple declarations of location l0 in process P
-21.11-12: ERROR, location l1 is not declared in process P
-ERROR, nullptr system declaration
-
-3 error(s)
+ERROR: 20.12-13 multiple declarations of location l0 in process P
+ERROR: 21.11-12 location l1 is not declared in process P
+ERROR: nullptr system declaration

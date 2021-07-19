@@ -6,11 +6,11 @@ then
     exit 1
 fi
 
-if test -n "${TCHECKER}";
+if test -n "${TCK_REACH_SH}";
 then
-    exec ${TCHECKER} explore -m zg:elapsed:extraLUg ${TCK_EXAMPLES_DIR}/ad94.txt
+    exec ${TCK_REACH_SH} -a reach -C /dev/stdout ${TCK_EXAMPLES_DIR}/ad94.txt
 else
-    echo 1>&2 "missing environment variable TCHECKER"
+    echo 1>&2 "missing environment variable TCK_REACH"
     exit 1
 fi
 

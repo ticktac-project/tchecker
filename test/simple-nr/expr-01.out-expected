@@ -1,2 +1,6 @@
-expr_01
-0: <l0> count=0
+// REACHABLE false
+// RUNNING_TIME_SECONDS  xxxx
+// VISITED_STATES 1
+digraph expr_01 {
+  0 [intval="count=0", vloc="<l0>", zone="()"]
+}

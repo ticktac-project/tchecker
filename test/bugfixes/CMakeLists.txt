@@ -14,11 +14,8 @@ set(BUGFIX_TESTS
     bug-003b.tck
     bug-004.sh
     bug-005a.sh
-    bug-005b.sh
-    bug-005c.sh
     bug-007.cc
     bug-008a.sh
-    bug-008b.sh
     bug-009.tck
     bug-041.sh
     bug-045.tck

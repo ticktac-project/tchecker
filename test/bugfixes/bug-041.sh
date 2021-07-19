@@ -2,11 +2,10 @@
 
 set -eu
 
-MODEL=zg:elapsed:NOextra
 INPUTFILE=${SRCDIR}/fischer_2.txt
 
 echo "COVREAH output"
-${TCHECKER} covreach -l foo -m ${MODEL} -f dot ${INPUTFILE}
+${TCK_REACH_SH} -a covreach ${INPUTFILE}
 echo "EXPLORE output"
-${TCHECKER} explore -s bfs -m ${MODEL} -f dot ${INPUTFILE}
+${TCK_REACH_SH} -a reach -s bfs ${INPUTFILE}
 

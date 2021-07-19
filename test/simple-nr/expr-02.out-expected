@@ -1,4 +1,8 @@
-expr_02
-0: <l0> count=0
-1: <l1> count=0
-0 -> 1 
+// REACHABLE false
+// RUNNING_TIME_SECONDS  xxxx
+// VISITED_STATES 2
+digraph expr_02 {
+  1 [intval="count=0", vloc="<l0>", zone="()"]
+  0 [intval="count=0", vloc="<l1>", zone="()"]
+  1 -> 0 [vedge="<P@a>"]
+}
