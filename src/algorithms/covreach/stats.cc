@@ -5,78 +5,57 @@
  *
  */
 
+#include <sstream>
+
 #include "tchecker/algorithms/covreach/stats.hh"
 
 namespace tchecker {
-  
-  namespace covreach {
-    
-    stats_t::stats_t()
-    : _visited_nodes(0), _covered_leaf_nodes(0), _covered_nonleaf_nodes(0)
-    {}
-    
-    
-    stats_t::stats_t(tchecker::covreach::stats_t const &) = default;
-    
-    
-    stats_t::stats_t(tchecker::covreach::stats_t &&) = default;
-    
-    
-    stats_t::~stats_t() = default;
-    
-    
-    tchecker::covreach::stats_t & stats_t::operator= (tchecker::covreach::stats_t const &) = default;
-    
-    
-    tchecker::covreach::stats_t & stats_t::operator= (tchecker::covreach::stats_t &&) = default;
-    
-    
-    unsigned long stats_t::visited_nodes() const
-    {
-      return _visited_nodes;
-    }
-    
-    
-    unsigned long stats_t::covered_leaf_nodes() const
-    {
-      return _covered_leaf_nodes;
-    }
-    
-    
-    unsigned long stats_t::covered_nonleaf_nodes() const
-    {
-      return _covered_nonleaf_nodes;
-    }
-    
-    
-    void stats_t::increment_visited_nodes()
-    {
-      ++ _visited_nodes;
-    }
-    
-    
-    void stats_t::increment_covered_leaf_nodes()
-    {
-      ++ _covered_leaf_nodes;
-    }
-    
-    
-    void stats_t::increment_covered_nonleaf_nodes()
-    {
-      ++ _covered_nonleaf_nodes;
-    }
-    
-    
-    
-    
-    std::ostream & operator<< (std::ostream & os, tchecker::covreach::stats_t const & stats)
-    {
-      os << "VISITED_NODES " << stats.visited_nodes() << std::endl;
-      os << "COVERED_LEAF_NODES " << stats.covered_leaf_nodes() << std::endl;
-      os << "COVERED_NONLEAF_NODES " << stats.covered_nonleaf_nodes() << std::endl;
-      return os;
-    }
-    
-  } // end of namespace covereach
-  
+
+namespace algorithms {
+namespace covreach {
+
+stats_t::stats_t() : _visited_states(0), _covered_states(0), _reachable(false) {}
+
+unsigned long & stats_t::visited_states() { return _visited_states; }
+
+unsigned long stats_t::visited_states() const { return _visited_states; }
+
+unsigned long & stats_t::covered_states() { return _covered_states; }
+
+unsigned long stats_t::covered_states() const { return _covered_states; }
+
+unsigned long & stats_t::stored_states() { return _stored_states; }
+
+unsigned long stats_t::stored_states() const { return _stored_states; }
+
+bool & stats_t::reachable() { return _reachable; }
+
+bool stats_t::reachable() const { return _reachable; }
+
+void stats_t::attributes(std::map<std::string, std::string> & m) const
+{
+  tchecker::algorithms::stats_t::attributes(m);
+
+  std::stringstream sstream;
+
+  sstream << _visited_states;
+  m["VISITED_STATES"] = sstream.str();
+
+  sstream.str("");
+  sstream << _covered_states;
+  m["COVERED_STATES"] = sstream.str();
+
+  sstream.str("");
+  sstream << _stored_states;
+  m["STORED_STATES"] = sstream.str();
+
+  sstream.str("");
+  sstream << std::boolalpha << _reachable;
+  m["REACHABLE"] = sstream.str();
+}
+
+} // end of namespace covreach
+
+} // namespace algorithms
+
 } // end of namespace tchecker

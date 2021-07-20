@@ -7,16 +7,15 @@
 
 #include <string>
 
-#include "tchecker/fsm/fsm.hh"
 #include "tchecker/parsing/declaration.hh"
-#include "tchecker/ta/ta.hh"
+#include "tchecker/ta/system.hh"
 #include "tchecker/utils/log.hh"
 
 #include "utils.hh"
 
-TEST_CASE( "no throw if no weakly synchronized events", "[guard_weak_sync]" ) {
-  std::string model =
-  "system:no_weakly_sync \n\
+TEST_CASE("no throw if no weakly synchronized events", "[guard_weak_sync]")
+{
+  std::string model = "system:no_weakly_sync \n\
   event:a1 \n\
   event:a2 \n\
   event:a3 \n\
@@ -39,21 +38,18 @@ TEST_CASE( "no throw if no weakly synchronized events", "[guard_weak_sync]" ) {
   edge:P3:l0:l1:a3{provided: i3<3} \n\
   \n\
   sync:P1@a1:P2@a2\n";
-  
-  tchecker::log_t log(&std::cerr);
-  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(model, log);
-  
+
+  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(model);
+
   REQUIRE(sysdecl != nullptr);
-  REQUIRE_NOTHROW(tchecker::fsm::model_t(*sysdecl, log));
-  REQUIRE_NOTHROW(tchecker::ta::model_t(*sysdecl, log));
-  
+  REQUIRE_NOTHROW(tchecker::ta::system_t(*sysdecl));
+
   delete sysdecl;
 }
 
-
-TEST_CASE( "no throw if weakly synchronized events have no guard", "[guard_weak_sync]" ) {
-  std::string model =
-  "system:weakly_sync_no_guard \n\
+TEST_CASE("no throw if weakly synchronized events have no guard", "[guard_weak_sync]")
+{
+  std::string model = "system:weakly_sync_no_guard \n\
   event:a1 \n\
   event:a2 \n\
   event:a3 \n\
@@ -75,21 +71,18 @@ TEST_CASE( "no throw if weakly synchronized events have no guard", "[guard_weak_
   edge:P3:l0:l1:a3 \n\
   \n\
   sync:P1@a1:P2@a2?:P3@a3?\n";
-  
-  tchecker::log_t log(&std::cerr);
-  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(model, log);
-  
+
+  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(model);
+
   REQUIRE(sysdecl != nullptr);
-  REQUIRE_NOTHROW(tchecker::fsm::model_t(*sysdecl, log));
-  REQUIRE_NOTHROW(tchecker::ta::model_t(*sysdecl, log));
-  
+  REQUIRE_NOTHROW(tchecker::ta::system_t(*sysdecl));
+
   delete sysdecl;
 }
 
-
-TEST_CASE( "throw if first weakly synchronized event has a guard", "[guard_weak_sync]" ) {
-  std::string model =
-  "system:first_weakly_sync_with_guard \n\
+TEST_CASE("throw if first weakly synchronized event has a guard", "[guard_weak_sync]")
+{
+  std::string model = "system:first_weakly_sync_with_guard \n\
   event:a1 \n\
   event:a2 \n\
   event:a3 \n\
@@ -111,21 +104,18 @@ TEST_CASE( "throw if first weakly synchronized event has a guard", "[guard_weak_
   edge:P3:l0:l1:a3 \n\
   \n\
   sync:P1@a1?:P2@a2:P3@a3\n";
-  
-  tchecker::log_t log(&std::cerr);
-  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(model, log);
-  
+
+  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(model);
+
   REQUIRE(sysdecl != nullptr);
-  REQUIRE_THROWS_AS(tchecker::fsm::model_t(*sysdecl, log), std::runtime_error);
-  REQUIRE_THROWS_AS(tchecker::ta::model_t(*sysdecl, log), std::runtime_error);
-  
+  REQUIRE_THROWS_AS(tchecker::ta::system_t(*sysdecl), std::invalid_argument);
+
   delete sysdecl;
 }
 
-
-TEST_CASE( "throw if last weakly synchronized event has a guard", "[guard_weak_sync]" ) {
-  std::string model =
-  "system:last_weakly_sync_with_guard \n\
+TEST_CASE("throw if last weakly synchronized event has a guard", "[guard_weak_sync]")
+{
+  std::string model = "system:last_weakly_sync_with_guard \n\
   event:a1 \n\
   event:a2 \n\
   event:a3 \n\
@@ -147,21 +137,18 @@ TEST_CASE( "throw if last weakly synchronized event has a guard", "[guard_weak_s
   edge:P3:l0:l1:a3{provided: i3 < 3} \n\
   \n\
   sync:P1@a1:P2@a2:P3@a3?\n";
-  
-  tchecker::log_t log(&std::cerr);
-  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(model, log);
-  
+
+  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(model);
+
   REQUIRE(sysdecl != nullptr);
-  REQUIRE_THROWS_AS(tchecker::fsm::model_t(*sysdecl, log), std::runtime_error);
-  REQUIRE_THROWS_AS(tchecker::ta::model_t(*sysdecl, log), std::runtime_error);
-  
+  REQUIRE_THROWS_AS(tchecker::ta::system_t(*sysdecl), std::invalid_argument);
+
   delete sysdecl;
 }
 
-
-TEST_CASE( "throw if middle weakly synchronized event has a guard", "[guard_weak_sync]" ) {
-  std::string model =
-  "system:middle_weakly_sync_with_guard \n\
+TEST_CASE("throw if middle weakly synchronized event has a guard", "[guard_weak_sync]")
+{
+  std::string model = "system:middle_weakly_sync_with_guard \n\
   event:a1 \n\
   event:a2 \n\
   event:a3 \n\
@@ -183,21 +170,18 @@ TEST_CASE( "throw if middle weakly synchronized event has a guard", "[guard_weak
   edge:P3:l0:l1:a3 \n\
   \n\
   sync:P1@a1:P2@a2?:P3@a3\n";
-  
-  tchecker::log_t log(&std::cerr);
-  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(model, log);
-  
+
+  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(model);
+
   REQUIRE(sysdecl != nullptr);
-  REQUIRE_THROWS_AS(tchecker::fsm::model_t(*sysdecl, log), std::runtime_error);
-  REQUIRE_THROWS_AS(tchecker::ta::model_t(*sysdecl, log), std::runtime_error);
-  
+  REQUIRE_THROWS_AS(tchecker::ta::system_t(*sysdecl), std::invalid_argument);
+
   delete sysdecl;
 }
 
-
-TEST_CASE( "throw if some weakly synchronized event has a guard, several transitions", "[guard_weak_sync]" ) {
-  std::string model =
-  "system:middle_weakly_sync_with_guard \n\
+TEST_CASE("throw if some weakly synchronized event has a guard, several transitions", "[guard_weak_sync]")
+{
+  std::string model = "system:middle_weakly_sync_with_guard \n\
   event:a1 \n\
   event:a2 \n\
   event:a3 \n\
@@ -224,13 +208,11 @@ TEST_CASE( "throw if some weakly synchronized event has a guard, several transit
   edge:P3:l0:l2:a3 \n\
   \n\
   sync:P1@a1?:P2@a2:P3@a3?\n";
-  
-  tchecker::log_t log(&std::cerr);
-  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(model, log);
-  
+
+  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(model);
+
   REQUIRE(sysdecl != nullptr);
-  REQUIRE_THROWS_AS(tchecker::fsm::model_t(*sysdecl, log), std::runtime_error);
-  REQUIRE_THROWS_AS(tchecker::ta::model_t(*sysdecl, log), std::runtime_error);
-  
+  REQUIRE_THROWS_AS(tchecker::ta::system_t(*sysdecl), std::invalid_argument);
+
   delete sysdecl;
 }

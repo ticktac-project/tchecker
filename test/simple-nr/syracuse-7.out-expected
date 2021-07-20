@@ -1,5 +1,9 @@
-S
-0: <A> Un=115,n=0
-1: <A> Un=1,n=33
-0 -> 1 
-1 -> 1 
+// REACHABLE false
+// RUNNING_TIME_SECONDS  xxxx
+// VISITED_STATES 2
+digraph S {
+  0 [intval="Un=1,n=33", vloc="<A>", zone="()"]
+  1 [intval="Un=115,n=0", vloc="<A>", zone="()"]
+  0 -> 0 [vedge="<P@a>"]
+  1 -> 0 [vedge="<P@a>"]
+}

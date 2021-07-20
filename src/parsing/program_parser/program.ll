@@ -21,7 +21,6 @@
 #define YY_DECL \
 tchecker::parsing::program::parser_t::symbol_type ppyylex \
 (std::string const & program_context, \
-tchecker::log_t & log, \
 tchecker::expression_t * & expr, \
 tchecker::statement_t * & stmt)
 
@@ -109,17 +108,16 @@ namespace tchecker {
 		
 		void parse_program(std::string const & prog_context,
                        std::string const & prog_str,
-                       tchecker::log_t & log,
                        tchecker::expression_t * & expr,
                        tchecker::statement_t * & stmt)
 		{
-      std::size_t old_error_count = log.error_count();
+			std::size_t old_error_count = tchecker::log_error_count();
       
 			expr = nullptr;
 			stmt = nullptr;
       
 			// Scan from expr
-      YY_BUFFER_STATE previous_buffer = YY_CURRENT_BUFFER;
+			YY_BUFFER_STATE previous_buffer = YY_CURRENT_BUFFER;
 			YY_BUFFER_STATE current_buffer = ppyy_scan_string(prog_str.c_str());
 			
 			// Initialise
@@ -128,45 +126,43 @@ namespace tchecker {
 			
 			// Parse
 			try {
-				tchecker::parsing::program::parser_t parser(prog_context, log, expr, stmt);
+				tchecker::parsing::program::parser_t parser(prog_context, expr, stmt);
 				parser.parse();
-        ppyy_delete_buffer(current_buffer);
-        ppyy_switch_to_buffer(previous_buffer);
+				ppyy_delete_buffer(current_buffer);
+				ppyy_switch_to_buffer(previous_buffer);
 			}
 			catch (...) {
-        delete expr;
-        delete stmt;
-        expr = nullptr;
-        stmt = nullptr;
-        ppyy_delete_buffer(current_buffer);
-        ppyy_switch_to_buffer(previous_buffer);
+				delete expr;
+				delete stmt;
+				expr = nullptr;
+				stmt = nullptr;
+				ppyy_delete_buffer(current_buffer);
+				ppyy_switch_to_buffer(previous_buffer);
 				throw;
 			}
       
-      if (log.error_count() > old_error_count) {
-        delete expr;
-        delete stmt;
-        expr = nullptr;
-        stmt = nullptr;
-      }
+			if (tchecker::log_error_count() > old_error_count) {
+				delete expr;
+				delete stmt;
+				expr = nullptr;
+				stmt = nullptr;
+			}
 		}
 
 		
 		
 		
-		tchecker::expression_t * parse_expression(std::string const & expr_context,
-																							std::string const & expr_str,
-																							tchecker::log_t & log)
+		tchecker::expression_t * parse_expression(std::string const & expr_context, std::string const & expr_str)
 		{
 			tchecker::expression_t * expr = nullptr;
-      tchecker::statement_t * stmt = nullptr;
+			tchecker::statement_t * stmt = nullptr;
 			
 			try {
-				parse_program(expr_context, expr_str, log, expr, stmt);
+				parse_program(expr_context, expr_str, expr, stmt);
 				assert( (expr == nullptr) || (stmt == nullptr) );
 				if (stmt != nullptr) {
 					delete stmt;
-					log.error(expr_context, "unexpected statement, expression expected");
+					std::cerr << tchecker::log_error << expr_context << " unexpected statement, expression expected" << std::endl;
 				}
 			}
 			catch (...) {
@@ -179,19 +175,17 @@ namespace tchecker {
 		
 		
 		
-    tchecker::statement_t * parse_statement(std::string const & stmt_context,
-																						std::string const & stmt_str,
-																						tchecker::log_t & log)
+		tchecker::statement_t * parse_statement(std::string const & stmt_context, std::string const & stmt_str)
 		{
 			tchecker::expression_t * expr = nullptr;
 			tchecker::statement_t * stmt = nullptr;
 			
 			try {
-				parse_program(stmt_context, stmt_str, log, expr, stmt);
+				parse_program(stmt_context, stmt_str, expr, stmt);
 				assert( (expr == nullptr) || (stmt == nullptr) );
 				if (expr != nullptr) {
 					delete expr;
-					log.error(stmt_context, "unexpected expression, statement expected");
+					std::cerr << tchecker::log_error << stmt_context << " unexpected expression, statement expected" << std::endl;
 				}
 			}
 			catch (...) {

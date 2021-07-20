@@ -1,3 +1,1 @@
-ERROR, out-of-bounds value: 11 out of [0, 10], in evaluation of count[0]=count[0]+1 from valuation count[0]=10,count[1]=0,count[2]=0,count[3]=0,count[4]=0
-
-1 error(s)
+ERROR: out-of-bounds value: 11 out of [0, 10]

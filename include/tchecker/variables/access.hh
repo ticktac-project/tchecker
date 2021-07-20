@@ -32,7 +32,6 @@ enum variable_access_t {
   VACCESS_ANY,
 };
 
-
 /*!
  \brief Type of variable
  */
@@ -40,7 +39,6 @@ enum variable_type_t {
   VTYPE_CLOCK,
   VTYPE_INTVAR,
 };
-
 
 /*!
  \class variable_access_map_t
@@ -53,13 +51,14 @@ class variable_access_map_t {
   using vid_set_t = boost::container::flat_set<tchecker::variable_id_t>;
   using v2p_map_t = boost::container::flat_map<v2p_key_t, pid_set_t>;
   using p2v_map_t = boost::container::flat_map<p2v_key_t, vid_set_t>;
+
 public:
   /*!
    \brief Clear
    \post this map is empty
    */
   void clear();
-  
+
   /*!
    \brief Add a variable access
    \param vid : variable identifier
@@ -72,37 +71,18 @@ public:
    */
   void add(tchecker::variable_id_t vid, enum tchecker::variable_type_t vtype, enum tchecker::variable_access_t vaccess,
            tchecker::process_id_t pid);
-  
+
   /*!
    \brief Accessor
    \return true if there is a shared variable in the map (i.e. a variable accessed by at least 2 processes), false otherwise
    */
   bool has_shared_variable() const;
-  
+
   /*!
    \brief Type of iterator over process identifiers
    */
   using process_id_iterator_t = pid_set_t::const_iterator;
-  
-  /*
-  class process_id_iterator_t : public pid_set_t::const_iterator {
-  public:
-    process_id_iterator_t(pid_set_t::const_iterator const & it) : pid_set_t::const_iterator(it)
-    {}
-    
-    process_id_iterator_t(pid_set_t::const_iterator && it) : pid_set_t::const_iterator(std::move(it))
-    {}
-    
-    using pid_set_t::const_iterator::const_iterator;
-    
-    inline constexpr tchecker::process_id_t operator* () const
-    {
-      return v2p_map_t::const_iterator::operator*().second;
-    }
-  };
-   */
-  
-  
+
   /*!
    \brief Accessor
    \param vid : variable identifier
@@ -113,7 +93,7 @@ public:
   tchecker::range_t<process_id_iterator_t> accessing_processes(tchecker::variable_id_t vid,
                                                                enum tchecker::variable_type_t vtype,
                                                                enum tchecker::variable_access_t vaccess) const;
-  
+
   /*!
    \brief Accessor
    \param vid : variable identifier
@@ -123,53 +103,32 @@ public:
    \return identifier of the process that perform an access of type `vaccess` on variable `vid` of type `vtype`
    \throw std::invalid_argument : if the precondition is violated
    */
-  process_id_t accessing_process(tchecker::variable_id_t vid,
-                                 enum tchecker::variable_type_t vtype,
+  process_id_t accessing_process(tchecker::variable_id_t vid, enum tchecker::variable_type_t vtype,
                                  enum tchecker::variable_access_t vaccess) const;
-  
+
   /*!
    \brief Type of iterator over variable identifiers
    */
   using variable_id_iterator_t = vid_set_t::const_iterator;
-  
-  /*
-  class variable_id_iterator_t : public p2v_map_t::const_iterator {
-  public:
-    variable_id_iterator_t(p2v_map_t::const_iterator const & it) : p2v_map_t::const_iterator(it)
-    {}
-    
-    variable_id_iterator_t(p2v_map_t::const_iterator && it) : p2v_map_t::const_iterator(std::move(it))
-    {}
-    
-    using p2v_map_t::const_iterator::const_iterator;
-    
-    inline constexpr tchecker::variable_id_t operator* () const
-    {
-      return p2v_map_t::const_iterator::operator*().second;
-    }
-  };
-   */
-  
-  //using variable_id_iterator_t = p2v_map_t::const_iterator;
-  
+
   /*!
    \brief Accessor
    \param pid : process identifier
    \param vtype : type of variable
    \param vaccess : variable access
-   \retyrn the range of identifiers of the variables of type `vtype` that are accessed by process `pid`, with an access of type `vaccess`
+   \retyrn the range of identifiers of the variables of type `vtype` that are accessed by process `pid`, with an access of type
+   `vaccess`
    */
-  tchecker::range_t<variable_id_iterator_t> accessed_variables(tchecker::process_id_t pid,
-                                                               enum tchecker::variable_type_t vtype,
+  tchecker::range_t<variable_id_iterator_t> accessed_variables(tchecker::process_id_t pid, enum tchecker::variable_type_t vtype,
                                                                enum tchecker::variable_access_t vaccess) const;
+
 private:
-  v2p_map_t _v2p_map;        /*!< Map : variable ID -> accessing process IDs */
-  p2v_map_t _p2v_map;        /*!< Map : process ID -> accessed variable IDs */
-  pid_set_t _empty_pid_set;  /*!< Empty process ID set */
-  vid_set_t _empty_vid_set;  /*!< Empty variable ID set */
+  v2p_map_t _v2p_map;       /*!< Map : variable ID -> accessing process IDs */
+  p2v_map_t _p2v_map;       /*!< Map : process ID -> accessed variable IDs */
+  pid_set_t _empty_pid_set; /*!< Empty process ID set */
+  vid_set_t _empty_vid_set; /*!< Empty variable ID set */
 };
 
 } // end of namespace tchecker
 
 #endif // TCHECKER_VARIABLES_ACCESS_HH
-

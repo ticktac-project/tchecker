@@ -21,8 +21,8 @@
 
 %code requires {
   #include <exception>
+  #include <iostream>
   #include <limits>
-  #include <sstream>
   #include <string>
   #include <tuple>
   
@@ -35,7 +35,6 @@
 
 
 %param { std::string const & program_context }
-%param { tchecker::log_t & log }
 %param { tchecker::expression_t * & expr }
 %param { tchecker::statement_t * & stmt }
 
@@ -46,21 +45,20 @@
   // Declare the lexer for the parser's sake.
   tchecker::parsing::program::parser_t::symbol_type ppyylex
   (std::string const & program_context,
-  tchecker::log_t & log,
   tchecker::expression_t * & expr,
   tchecker::statement_t * & stmt);
   
   
   // Global variables
-  static unsigned int error_count;
+  static unsigned int old_error_count;
   
   
   // Fake expression used is case of syntax error to allow parsing of the
   // entire expression
   class fake_expression_t final : public tchecker::lvalue_expression_t {
-    public:
+  public:
     virtual ~fake_expression_t() = default;
-    private:
+  private:
     virtual std::ostream & do_output(std::ostream & os) const
     {
       return os;
@@ -79,11 +77,11 @@
   // Fake variable expression used is case of syntax error to allow parsing of
   // the entire expression
   class fake_var_expression_t final : public tchecker::var_expression_t {
-    public:
+  public:
     fake_var_expression_t() : tchecker::var_expression_t("fake") {}
     
     virtual ~fake_var_expression_t() = default;
-    private:
+  private:
     virtual std::ostream & do_output(std::ostream & os) const
     {
       return os;
@@ -103,9 +101,9 @@
   // Fake statement used in case of syntax error to allow parsing of the
   // entire statement
   class fake_statement_t final : public tchecker::statement_t {
-    public:
+  public:
     virtual ~fake_statement_t() = default;
-    private:
+  private:
     virtual std::ostream & do_output(std::ostream & os) const
     {
       return os;
@@ -123,7 +121,7 @@
 
 
 %initial-action {
-  error_count = 0;
+  old_error_count = tchecker::log_error_count();
 };
 
 
@@ -210,7 +208,7 @@
 program:
 sequence_statement
 { expr = nullptr;
-  if (error_count > 0) {
+  if (tchecker::log_error_count() > old_error_count) {
     stmt = nullptr;
     delete $1;
   }
@@ -219,7 +217,7 @@ sequence_statement
 }
 | conjunctive_formula
 {
-  if (error_count > 0) {
+  if (tchecker::log_error_count() > old_error_count) {
     expr = nullptr;
     delete $1;
   }
@@ -243,7 +241,7 @@ statement opt_semicolon
     $$ = new tchecker::sequence_statement_t($1, $3);
   }
   catch (std::exception const & e) {
-    error(@$, e.what());
+    std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
     $$ = new fake_statement_t();
   }
 }
@@ -296,7 +294,7 @@ lvalue_term "=" term
     $$ = new tchecker::assign_statement_t($1, $3);
   }
   catch (std::exception const & e) {
-    error(@$, e.what());
+    std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
     $$ = new fake_statement_t();
   }
 }
@@ -318,7 +316,7 @@ non_atomic_conjunctive_formula:
     $$ = new tchecker::par_expression_t($2);
   }
   catch (std::exception const & e) {
-    error(@$, e.what());
+    std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
     $$ = new fake_expression_t();
   }
 }
@@ -328,7 +326,7 @@ non_atomic_conjunctive_formula:
     $$ = new tchecker::binary_expression_t(tchecker::EXPR_OP_LAND, $1, $3);
   }
   catch (std::exception const & e) {
-    error(@$, e.what());
+    std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
     $$ = new fake_expression_t();
   }
 }
@@ -346,7 +344,7 @@ term
     $$ = new tchecker::unary_expression_t(tchecker::EXPR_OP_LNOT, $2);
   }
   catch (std::exception const & e) {
-    error(@$, e.what());
+    std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
     $$ = new fake_expression_t();
   }
 }
@@ -360,7 +358,7 @@ predicate_formula:
     $$ = new tchecker::par_expression_t($2);
   }
   catch (std::exception const & e) {
-    error(@$, e.what());
+    std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
     $$ = new fake_expression_t();
   }
 }
@@ -370,7 +368,7 @@ predicate_formula:
     $$ = new tchecker::binary_expression_t($2, $1, $3);
   }
   catch (std::exception const & e) {
-    error(@$, e.what());
+    std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
     $$ = new fake_expression_t();
   }
 }
@@ -394,7 +392,7 @@ integer
     $$ = new tchecker::int_expression_t($1);
   }
   catch (std::exception const & e) {
-    error(@$, e.what());
+    std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
     $$ = new fake_expression_t();
   }
 }
@@ -406,7 +404,7 @@ integer
     $$ = new tchecker::par_expression_t($2);
   }
   catch (std::exception const & e) {
-    error(@$, e.what());
+    std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
     $$ = new fake_expression_t();
   }
 }
@@ -416,7 +414,7 @@ integer
     $$ = new tchecker::unary_expression_t(tchecker::EXPR_OP_NEG, $2);
   }
   catch (std::exception const & e) {
-    error(@$, e.what());
+    std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
     $$ = new fake_expression_t();
   }
 }
@@ -426,7 +424,7 @@ integer
     $$ = new tchecker::binary_expression_t(tchecker::EXPR_OP_PLUS, $1, $3);
   }
   catch (std::exception const & e) {
-    error(@$, e.what());
+    std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
     $$ = new fake_expression_t();
   }
 }
@@ -436,7 +434,7 @@ integer
     $$ = new tchecker::binary_expression_t(tchecker::EXPR_OP_MINUS, $1, $3);
   }
   catch (std::exception const & e) {
-    error(@$, e.what());
+    std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
     $$ = new fake_expression_t();
   }
 }
@@ -446,7 +444,7 @@ integer
     $$ = new tchecker::binary_expression_t(tchecker::EXPR_OP_TIMES, $1, $3);
   }
   catch (std::exception const & e) {
-    error(@$, e.what());
+    std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
     $$ = new fake_expression_t();
   }
 }
@@ -456,7 +454,7 @@ integer
     $$ = new tchecker::binary_expression_t(tchecker::EXPR_OP_DIV, $1, $3);
   }
   catch (std::exception const & e) {
-    error(@$, e.what());
+    std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
     $$ = new fake_expression_t();
   }
 }
@@ -466,7 +464,7 @@ integer
     $$ = new tchecker::binary_expression_t(tchecker::EXPR_OP_MOD, $1, $3);
   }
   catch (std::exception const & e) {
-    error(@$, e.what());
+    std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
     $$ = new fake_expression_t();
   }
 }
@@ -476,7 +474,7 @@ integer
     $$ = new tchecker::ite_expression_t($3, $5, $7);
   }
   catch (std::exception const & e) {
-    error(@$, e.what());
+    std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
     $$ = new fake_expression_t();
   }
 }
@@ -492,7 +490,7 @@ variable_term
     $$ = new tchecker::array_expression_t($1, $3);
   }
   catch (std::exception const & e) {
-    error(@$, e.what());
+    std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
     $$ = new fake_expression_t();
   }
 }
@@ -506,7 +504,7 @@ TOK_ID
     $$ = new tchecker::var_expression_t($1);
   }
   catch (std::exception const & e) {
-    error(@$, e.what());
+    std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
     $$ = new fake_var_expression_t();
   }
 }
@@ -519,12 +517,12 @@ TOK_INTEGER
   try {
     long long l = std::stoll($1, nullptr, 10);
     if ( (l < std::numeric_limits<integer_t>::min()) || (l > std::numeric_limits<integer_t>::max()) )
-    throw std::out_of_range("");
+      throw std::out_of_range("");
     $$ = static_cast<tchecker::integer_t>(l);
   }
   catch (std::exception const & e) {
-    error(@1, "value " + $1 + " out of range " + std::to_string(std::numeric_limits<integer_t>::min()) + "," +
-    std::to_string(std::numeric_limits<integer_t>::max()) );
+    std::cerr << tchecker::log_error << @1 << " value " << $1 << " out of range ";
+    std::cerr << std::numeric_limits<integer_t>::min() << "," << std::numeric_limits<integer_t>::max() << std::endl;
     $$ = 0;
   }
 }
@@ -536,13 +534,8 @@ TOK_INTEGER
 
 void tchecker::parsing::program::parser_t::error(location_type const & l, std::string const & msg)
 {
-  if (program_context.empty()) {
-    log.error(l, msg);
-  }
-  else {
-    std::stringstream strl;
-    strl << l;
-    log.error(program_context, msg + " (at " + strl.str() + ")");
-  }
-  ++ error_count;
+  if (program_context.empty())
+    std::cerr << tchecker::log_error << l << " " << msg << std::endl;
+  else
+    std::cerr << tchecker::log_error << program_context << " " << msg << " (at " << l << ")" << std::endl;
 }

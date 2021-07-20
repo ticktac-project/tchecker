@@ -1,3 +1,7 @@
-S
-0: <A,sink> 
-1: <B,sink> 
+// REACHABLE false
+// RUNNING_TIME_SECONDS  xxxx
+// VISITED_STATES 2
+digraph S {
+  0 [intval="", vloc="<A,sink>", zone="()"]
+  1 [intval="", vloc="<B,sink>", zone="()"]
+}

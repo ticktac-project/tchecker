@@ -28,23 +28,22 @@ include_directories(${TCHECKER_BINARY_INCLUDE_DIR})
 include_directories(${Boost_INCLUDE_DIRS})
 
 add_subdirectory(algorithms)
-add_subdirectory(async_zg)
 add_subdirectory(clockbounds)
 add_subdirectory(dbm)
 add_subdirectory(expression)
-add_subdirectory(flat_system)
-add_subdirectory(fsm)
 add_subdirectory(graph)
 add_subdirectory(parsing)
+add_subdirectory(refzg)
 add_subdirectory(statement)
+add_subdirectory(syncprod)
 add_subdirectory(system)
 add_subdirectory(ta)
 add_subdirectory(ts)
 add_subdirectory(utils)
 add_subdirectory(variables)
 add_subdirectory(vm)
+add_subdirectory(waiting)
 add_subdirectory(zg)
-add_subdirectory(zone)
 
 set(OTHER_SRC
 ${CMAKE_CURRENT_SOURCE_DIR}/basictypes.cc
@@ -53,25 +52,23 @@ ${TCHECKER_INCLUDE_DIR}/tchecker/basictypes.hh
 
 set(LIBTCHECKER_SRC
 ${ALGORITHMS_SRC}
-${ASYNC_ZG_SRC}
 ${CLOCKBOUNDS_SRC}
 ${DBM_SRC}
 ${EXPRESSION_SRC}
-${FSM_SRC}
-${FLAT_SYSTEM_SRC}
 ${GRAPH_SRC}
 ${OTHER_SRC}
 ${PARSING_SRC}
+${REFZG_SRC}
 ${STATEMENT_SRC}
-${SYNTAX_SRC}
+${SYNCPROD_SRC}
 ${SYSTEM_SRC}
 ${TA_SRC}
 ${TS_SRC}
 ${UTILS_SRC}
 ${VARIABLES_SRC}
+${WAITING_SRC}
 ${VM_SRC}
-${ZG_SRC}
-${ZONE_SRC})
+${ZG_SRC})
 
 
 # Build TChecker static library
@@ -96,13 +93,24 @@ if(LIBTCHECKER_ENABLE_SHARED)
   endif()
 endif()
 
+# Build tck-syntax executable
+add_executable(tck-syntax ${CMAKE_CURRENT_SOURCE_DIR}/tck-syntax/tck-syntax.cc)
+target_link_libraries(tck-syntax libtchecker_static)
+set_property(TARGET tck-syntax PROPERTY CXX_STANDARD 17)
+set_property(TARGET tck-syntax PROPERTY CXX_STANDARD_REQUIRED ON)
 
-# Build TChecker executable
-add_executable(tchecker ${CMAKE_CURRENT_SOURCE_DIR}/tchecker/tchecker.cc)
-target_link_libraries(tchecker libtchecker_static)
-set_property(TARGET tchecker PROPERTY CXX_STANDARD 17)
-set_property(TARGET tchecker PROPERTY CXX_STANDARD_REQUIRED ON)
-
+# Build tck-reach executable
+add_executable(tck-reach
+               ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/concur19.hh
+               ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/concur19.cc
+               ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/tck-reach.cc
+               ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/zg-covreach.cc
+               ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/zg-covreach.hh
+               ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/zg-reach.cc
+               ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/zg-reach.hh)
+target_link_libraries(tck-reach libtchecker_static)
+set_property(TARGET tck-reach PROPERTY CXX_STANDARD 17)
+set_property(TARGET tck-reach PROPERTY CXX_STANDARD_REQUIRED ON)
 
 # Project view in IDEs (Xcode, etc)
 foreach(FILE ${LIBTCHECKER_SRC}) 
@@ -121,7 +129,7 @@ foreach(FILE ${LIBTCHECKER_SRC})
 endforeach()
 
 # Install rule for binaries, lib and header files
-install(TARGETS tchecker libtchecker_static
+install(TARGETS tck-reach tck-syntax libtchecker_static
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib)
 

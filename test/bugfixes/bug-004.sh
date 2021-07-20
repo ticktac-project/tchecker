@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-if test -n "${TCHECKER}";
+if test -n "${TCK_REACH}";
 then
-    exec ${TCHECKER} covreach < /dev/null
+    exec ${TCK_REACH} -a covreach < /dev/null
 else
-    echo 1>&2 "missing environment variable TCHECKER"
+    echo 1>&2 "missing environment variable TCK_REACH"
     exit 1
 fi
 

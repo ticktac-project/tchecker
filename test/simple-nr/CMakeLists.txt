@@ -18,6 +18,7 @@ file(GLOB SIMPLE_NR_TESTS
      "parsing-*.tck"
      "properties-?.tck"
      "stuck-process-?.tck"
+     "simple-loop-?.tck"
      "syracuse-?.tck"
     )
 

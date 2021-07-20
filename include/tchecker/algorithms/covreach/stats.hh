@@ -8,7 +8,10 @@
 #ifndef TCHECKER_ALGORITHMS_COVREACH_STATS_HH
 #define TCHECKER_ALGORITHMS_COVREACH_STATS_HH
 
-#include <iostream>
+#include <map>
+#include <string>
+
+#include "tchecker/algorithms/stats.hh"
 
 /*!
  \file stats.hh
@@ -16,100 +19,88 @@
  */
 
 namespace tchecker {
-  
-  namespace covreach {
-    
-    /*!
-     \class stats_t
-     \brief Statistics for covering reachability algorithm
-     */
-    class stats_t {
-    public:
-      /*!
-       \brief Constructor
-       */
-      stats_t();
-      
-      /*!
-       \brief Copy constructor
-       */
-      stats_t(tchecker::covreach::stats_t const &);
-      
-      /*!
-       \brief Move constructor
-       */
-      stats_t(tchecker::covreach::stats_t &&);
-      
-      /*!
-       \brief Destructor
-       */
-      ~stats_t();
-      
-      /*!
-       \brief Assignment operator
-       */
-      tchecker::covreach::stats_t & operator= (tchecker::covreach::stats_t const &);
-      
-      /*!
-       \brief Move-assignment operator
-       */
-      tchecker::covreach::stats_t & operator= (tchecker::covreach::stats_t &&);
-      
-      /*!
-       \brief Accessor
-       \return the number of visited nodes
-       */
-      unsigned long visited_nodes() const;
-      
-      /*!
-       \brief Accessor
-       \return the numer of covered leaf nodes
-       */
-      unsigned long covered_leaf_nodes() const;
-      
-      /*!
-       \brief Accessor
-       \return the number of covered non-leaf nodes
-       */
-      unsigned long covered_nonleaf_nodes() const;
-      
-      /*!
-       \brief Increment counter of visited nodes
-       \post the number of visited nodes has increased by 1
-       */
-      void increment_visited_nodes();
-      
-      /*!
-       \brief Increment counter of covered leaf nodes
-       \post the number of covered leaf nodes has increased by 1
-       */
-      void increment_covered_leaf_nodes();
-      
-      /*!
-       \brief Increment counter of covered non-leaf nodes
-       \post the number of covered non-leaf nodes has increased by 1
-       */
-      void increment_covered_nonleaf_nodes();
-    private:
-      unsigned long _visited_nodes;          /*!< Number of visited nodes */
-      unsigned long _covered_leaf_nodes;     /*!< Number of covered leaf nodes */
-      unsigned long _covered_nonleaf_nodes;  /*!< Number of covered non-leaf nodes */
-    };
-    
-    
-    
-    
-    /*!
-     \brief Output operator for stats
-     \param os : output stream
-     \param s : stats
-     \post s has been output to os
-     \return os after output
-     */
-    std::ostream & operator<< (std::ostream & os, tchecker::covreach::stats_t const & stats);
-    
-  } // end of namespace covereach
-  
+
+namespace algorithms {
+
+namespace covreach {
+
+/*!
+ \class stats_t
+ \brief Statistics for covering reachability algorithm
+ */
+class stats_t : public tchecker::algorithms::stats_t {
+public:
+  /*!
+   \brief Constructor
+   */
+  stats_t();
+
+  /*!
+   \brief Accessor
+   \return A reference to the number of visited states
+  */
+  unsigned long & visited_states();
+
+  /*!
+   \brief Accessor
+   \return the number of visited states
+   */
+  unsigned long visited_states() const;
+
+  /*!
+   \brief Accessor
+   \return A reference to the numer of covered states
+   */
+  unsigned long & covered_states();
+
+  /*!
+   \brief Accessor
+   \return the numer of covered states
+   */
+  unsigned long covered_states() const;
+
+  /*!
+   \brief Accessor
+   \return A reference to the number of stored states
+   */
+  unsigned long & stored_states();
+
+  /*!
+   \brief Accessor
+   \return The number of stored states
+  */
+  unsigned long stored_states() const;
+
+  /*!
+   \brief Accessor
+   \return A reference to the reachable state flag
+  */
+  bool & reachable();
+
+  /*!
+   \brief Accessor
+   \return true if a satisfying state is reachable, false otherwise
+  */
+  bool reachable() const;
+
+  /*!
+   \brief Extract statistics as attributes (key, value)
+   \param m : attributes map
+   \post every statistics has been added to m
+  */
+  void attributes(std::map<std::string, std::string> & m) const;
+
+private:
+  unsigned long _visited_states; /*!< Number of visited states */
+  unsigned long _covered_states; /*!< Number of covered states */
+  unsigned long _stored_states;  /*!< Number of stored states */
+  bool _reachable;               /*!< Reachability of satisfying state */
+};
+
+} // end of namespace covreach
+
+} // end of namespace algorithms
+
 } // end of namespace tchecker
 
 #endif // TCHECKER_ALGORITHMS_COVREACH_STATS_HH

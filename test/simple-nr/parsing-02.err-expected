@@ -1,4 +1,2 @@
-21.14-15: ERROR, event a1 is not declared
-ERROR, nullptr system declaration
-
-2 error(s)
+ERROR: 21.14-15 event a1 is not declared
+ERROR: nullptr system declaration
