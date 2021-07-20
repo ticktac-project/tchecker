@@ -183,12 +183,24 @@ bool satisfies(tchecker::syncprod::system_t const & system, tchecker::syncprod::
   return tchecker::syncprod::satisfies(system, s.vloc(), labels);
 }
 
+/* is_initial */
+
+bool is_initial(tchecker::syncprod::system_t const & system, tchecker::vloc_t const & vloc)
+{
+  for (tchecker::loc_id_t id : vloc)
+    if (!system.is_initial_location(id))
+      return false;
+  return true;
+}
+
 /* attributes */
 
 void attributes(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t const & s,
                 std::map<std::string, std::string> & m)
 {
   m["vloc"] = tchecker::to_string(s.vloc(), system.as_system_system());
+  if (tchecker::syncprod::is_initial(system, s.vloc()))
+    m["initial"] = "true";
 }
 
 void attributes(tchecker::syncprod::system_t const & system, tchecker::syncprod::transition_t const & t,

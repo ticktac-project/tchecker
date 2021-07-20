@@ -184,6 +184,7 @@ public:
 
   // Locations
   using tchecker::system::system_t::initial_locations;
+  using tchecker::system::system_t::is_initial_location;
   using tchecker::system::system_t::is_location;
   using tchecker::system::system_t::location;
   using tchecker::system::system_t::locations;

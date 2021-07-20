@@ -125,6 +125,18 @@ bool locs_t::is_location(tchecker::process_id_t pid, std::string const & name) c
   return _locs_index[pid].find_key(name) != _locs_index[pid].end_key_map();
 }
 
+bool locs_t::is_initial_location(tchecker::loc_id_t id) const
+{
+  if (!is_location(id))
+    throw std::invalid_argument("Unknown location identifier");
+  tchecker::process_id_t pid = _locs[id]->pid();
+  for (tchecker::system::loc_shared_ptr_t const & loc : _initial_locs[pid]) {
+    if (loc->id() == id)
+      return true;
+  }
+  return false;
+}
+
 // Empty set of locations
 std::vector<tchecker::system::loc_shared_ptr_t> const locs_t::_empty_locs;
 

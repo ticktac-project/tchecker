@@ -309,6 +309,14 @@ bool satisfies(tchecker::syncprod::system_t const & system, tchecker::syncprod::
                boost::dynamic_bitset<> const & labels);
 
 /*!
+ \brief Checks if a tuple of locations is initial
+ \param system : a system
+ \param vloc : tuple of locations
+ \return true if all locations in vloc are initial in system, false otherwise
+ */
+bool is_initial(tchecker::syncprod::system_t const & system, tchecker::vloc_t const & vloc);
+
+/*!
  \brief Accessor to state attributes as strings
  \param system : a system
  \param s : a state

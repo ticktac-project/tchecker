@@ -170,6 +170,7 @@ public:
   // Locations
   using tchecker::syncprod::system_t::initial_locations;
   using tchecker::syncprod::system_t::is_committed;
+  using tchecker::syncprod::system_t::is_initial_location;
   using tchecker::syncprod::system_t::is_location;
   using tchecker::syncprod::system_t::location;
   using tchecker::syncprod::system_t::locations;

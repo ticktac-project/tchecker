@@ -168,6 +168,7 @@ public:
   void add_location(tchecker::process_id_t pid, std::string const & name, tchecker::system::attributes_t const & attr);
 
   using tchecker::system::locs_t::initial_locations;
+  using tchecker::system::locs_t::is_initial_location;
   using tchecker::system::locs_t::is_location;
   using tchecker::system::locs_t::location;
   using tchecker::system::locs_t::locations;

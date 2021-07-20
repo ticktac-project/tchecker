@@ -243,6 +243,15 @@ public:
    */
   bool is_location(tchecker::process_id_t pid, std::string const & name) const;
 
+  /*!
+   \brief Checks if a location is initial
+   \param id : location identifier
+   \pre id is a valid location identifier
+   \return true if id is an initial location, false otherwise
+   \throw std::invalid_argument : if is is not a valid location identifier
+  */
+  bool is_initial_location(tchecker::loc_id_t id) const;
+
 private:
   /*!
    \brief Duplicate locations

@@ -84,31 +84,61 @@ std::ostream & dot_output_edge(std::ostream & os, std::string const & src, std::
 template <class GRAPH, class NODE_LE, class EDGE_LE>
 std::ostream & dot_output(std::ostream & os, GRAPH const & g, std::string const & name)
 {
-  // sort nodes and edges
-  unsigned int count = 0;
-  std::map<typename GRAPH::node_sptr_t, unsigned int, NODE_LE> node_map;
-  std::multiset<typename GRAPH::edge_sptr_t, EDGE_LE> edge_set;
-  for (typename GRAPH::node_sptr_t const & n : g.nodes()) {
-    node_map.insert(std::make_pair(n, count));
+  using node_id_t = std::size_t;
+  using extended_edge_t = std::tuple<node_id_t, node_id_t, typename GRAPH::edge_sptr_t>; // <src, tgt, edge_sptr>
+
+  // Extend EDGE_LE on triples (src, tgt, edge)
+  class extended_edge_le_t : private EDGE_LE {
+  public:
+    bool operator()(extended_edge_t const & e1, extended_edge_t const & e2) const
+    {
+      auto && [src1, tgt1, edge_sptr1] = e1;
+      auto && [src2, tgt2, edge_sptr2] = e2;
+      if (src1 < src2)
+        return true;
+      else if (src1 > src2)
+        return false;
+      else if (tgt1 < tgt2)
+        return true;
+      else if (tgt1 > tgt2)
+        return false;
+      else
+        return EDGE_LE::operator()(edge_sptr1, edge_sptr2);
+    }
+  };
+
+  // Sort nodes and given them an ID
+  std::map<typename GRAPH::node_sptr_t, node_id_t, NODE_LE> nodes_map;
+  for (typename GRAPH::node_sptr_t const & n : g.nodes())
+    nodes_map.insert(std::make_pair(n, 0));
+
+  node_id_t count = 0;
+  for (auto & [node, id] : nodes_map) {
+    id = count;
     ++count;
-    for (typename GRAPH::edge_sptr_t const & e : g.outgoing_edges(n))
-      edge_set.insert(e);
   }
+
+  // Sort (extended) edges
+  std::multiset<extended_edge_t, extended_edge_le_t> edges_set;
+  for (typename GRAPH::node_sptr_t const & n : g.nodes())
+    for (typename GRAPH::edge_sptr_t const & e : g.outgoing_edges(n)) {
+      node_id_t src = nodes_map[g.edge_src(e)];
+      node_id_t tgt = nodes_map[g.edge_tgt(e)];
+      edges_set.insert(std::make_tuple(src, tgt, e));
+    }
 
   // output graph
   std::map<std::string, std::string> attr;
 
   tchecker::graph::dot_output_header(os, name);
 
-  for (auto && [node, id] : node_map) {
+  for (auto && [node, id] : nodes_map) {
     attr.clear();
     g.attributes(node, attr);
     tchecker::graph::dot_output_node(os, std::to_string(id), attr);
   }
 
-  for (typename GRAPH::edge_sptr_t const & edge : edge_set) {
-    unsigned int src = node_map[g.edge_src(edge)];
-    unsigned int tgt = node_map[g.edge_tgt(edge)];
+  for (auto && [src, tgt, edge] : edges_set) {
     attr.clear();
     g.attributes(edge, attr);
     tchecker::graph::dot_output_edge(os, std::to_string(src), std::to_string(tgt), attr);
