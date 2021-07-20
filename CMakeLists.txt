@@ -3,6 +3,16 @@
 # See files AUTHORS and LICENSE for copyright details.
 
 cmake_minimum_required(VERSION 2.8.12)
+
+set(LOCAL_CONFIG "${CMAKE_SOURCE_DIR}/localconfig-${CMAKE_BUILD_TYPE}.cmake")
+if(EXISTS ${LOCAL_CONFIG})
+    cmake_policy(SET CMP0077 NEW)
+    message(STATUS "Loading ${LOCAL_CONFIG} file.")
+    include(${LOCAL_CONFIG})
+else()
+    message(STATUS "no ${LOCAL_CONFIG} file.")
+endif()
+
 project(tchecker LANGUAGES CXX)
 
 set(TCK_CMAKE_SCRIPT_DIR "${CMAKE_SOURCE_DIR}/cmake")

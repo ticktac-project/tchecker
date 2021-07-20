@@ -1,0 +1,42 @@
+name: Build and test TChecker
+on:
+  push:
+    branches:
+      - '*'
+
+env:
+  CATCH2_REPO_URL : https://github.com/catchorg/Catch2.git
+  CATCH2_BRANCH : v2.13.2
+  TCHECKER_BUILD_TYPE : Debug
+  BUILD_TYPE : Debug
+  NB_CPUS : 2
+  CATCH2_DIRECTORY : ${{ github.workspace }}/tmp/Catch2
+  INSTALL_DIR : ${{ github.workspace }}/tmp/install
+
+jobs:
+  build-and-test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        intsize: [int16, int32, int64]
+        cxx: [g++, clang++]
+    name: ${{ matrix.os }} / ${{ matrix.intsize }} / ${{ matrix.cxx }}
+    runs-on: ${{ matrix.os }}
+    env:
+      CONFNAME: all:${{ matrix.intsize }}:memcheck
+      CXX: ${{ matrix.cxx }}
+    steps:
+      - name: Getting project repo
+        uses: actions/checkout@v2
+
+      - if: ${{ matrix.os == 'macos-latest' }}
+        run: echo "/usr/local/opt/bison/bin" >> $GITHUB_PATH
+
+      - name: Install pre-requesites
+        run: |
+          ci-scripts/install-$RUNNER_OS.sh
+          ci-scripts/show-config.sh
+      - name: Build TChecker
+        run: ci-scripts/build.sh
+      - name: Testing TChecker
+        run: ci-scripts/test.sh
