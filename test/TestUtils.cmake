@@ -279,7 +279,7 @@ function(tck_add_nr_memcheck_test testfile testnamevar slist)
     set(${slist} ${testlist} PARENT_SCOPE)
 endfunction()
 
-option(TCK_ENABLE_MEMCHECK_TESTS "enable tests related to bug fixes" OFF)
+option(TCK_ENABLE_MEMCHECK_TESTS "enable tests related to memory leaks" OFF)
 find_program(VALGRIND_PROGRAM NAMES valgrind)
 
 if (VALGRIND_PROGRAM)
