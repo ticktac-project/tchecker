@@ -179,7 +179,8 @@ void system_t::set_invariant(tchecker::loc_id_t id,
   }
 
   try {
-    std::shared_ptr<tchecker::bytecode_t> invariant_bytecode{tchecker::compile(*invariant_typed_expr)};
+    std::shared_ptr<tchecker::bytecode_t> invariant_bytecode{tchecker::compile(*invariant_typed_expr),
+                                                             std::default_delete<tchecker::bytecode_t[]>()};
     _invariants[id] = {invariant_typed_expr, invariant_bytecode};
   }
   catch (std::exception const & e) {
@@ -220,7 +221,8 @@ void system_t::set_guards(tchecker::edge_id_t id,
   }
 
   try {
-    std::shared_ptr<tchecker::bytecode_t> guard_bytecode{tchecker::compile(*guard_typed_expr)};
+    std::shared_ptr<tchecker::bytecode_t> guard_bytecode{tchecker::compile(*guard_typed_expr),
+                                                         std::default_delete<tchecker::bytecode_t[]>()};
     _guards[id] = {guard_typed_expr, guard_bytecode};
   }
   catch (std::exception const & e) {
@@ -279,7 +281,8 @@ void system_t::set_statements(tchecker::edge_id_t id,
                           })};
 
   try {
-    std::shared_ptr<tchecker::bytecode_t> bytecode{tchecker::compile(*typed_stmt)};
+    std::shared_ptr<tchecker::bytecode_t> bytecode{tchecker::compile(*typed_stmt),
+                                                   std::default_delete<tchecker::bytecode_t[]>()};
     _statements[id] = {typed_stmt, bytecode};
   }
   catch (std::exception const & e) {
