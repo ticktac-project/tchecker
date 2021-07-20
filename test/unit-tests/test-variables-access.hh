@@ -745,7 +745,7 @@ TEST_CASE("variable access map computation - 3 processes, array, shared variable
   {
     auto range = map.accessed_variables(P2, tchecker::VTYPE_INTVAR, tchecker::VACCESS_ANY);
 
-    std::size_t t_size = system.integer_variables().info(t).size();
+    long unsigned int t_size = system.integer_variables().info(t).size();
 
     REQUIRE(std::distance(range.begin(), range.end()) == 1 + t_size); // i + t[]
 
@@ -775,7 +775,7 @@ TEST_CASE("variable access map computation - 3 processes, array, shared variable
   {
     auto range = map.accessed_variables(P2, tchecker::VTYPE_INTVAR, tchecker::VACCESS_WRITE);
 
-    std::size_t t_size = system.integer_variables().info(t).size();
+    long unsigned int t_size = system.integer_variables().info(t).size();
 
     REQUIRE(std::distance(range.begin(), range.end()) == t_size); // t[]
 
@@ -854,7 +854,7 @@ TEST_CASE("variable access map computation - 3 processes, array, shared variable
   {
     auto range = map.accessed_variables(P3, tchecker::VTYPE_CLOCK, tchecker::VACCESS_ANY);
 
-    std::size_t y_size = system.clock_variables().info(y).size();
+    long unsigned int y_size = system.clock_variables().info(y).size();
 
     REQUIRE(std::distance(range.begin(), range.end()) == y_size); // y[]
 
@@ -875,7 +875,7 @@ TEST_CASE("variable access map computation - 3 processes, array, shared variable
   {
     auto range = map.accessed_variables(P3, tchecker::VTYPE_CLOCK, tchecker::VACCESS_READ);
 
-    std::size_t y_size = system.clock_variables().info(y).size();
+    long unsigned int y_size = system.clock_variables().info(y).size();
 
     REQUIRE(std::distance(range.begin(), range.end()) == y_size); // y[]
 
@@ -896,7 +896,7 @@ TEST_CASE("variable access map computation - 3 processes, array, shared variable
   {
     auto range = map.accessed_variables(P3, tchecker::VTYPE_CLOCK, tchecker::VACCESS_WRITE);
 
-    std::size_t y_size = system.clock_variables().info(y).size();
+    long unsigned int y_size = system.clock_variables().info(y).size();
 
     REQUIRE(std::distance(range.begin(), range.end()) == y_size); // y[]
 
