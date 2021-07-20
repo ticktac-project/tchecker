@@ -1,4 +1,1 @@
 ERROR: In process P, edge from l0 to l1 with event a, provided expression is not bool valued
-ERROR: In process P, edge from l0 to l1 with event a, provided compiling expression !count, invalid expression
-ERROR: in expression count+1, invalid composition of expressions count and 1
-ERROR: invalid lvalue expression

@@ -2,8 +2,8 @@
 // RUNNING_TIME_SECONDS  xxxx
 // VISITED_STATES 2
 digraph expr_04 {
-  1 [intval="count=0", vloc="<l0>", zone="()"]
-  0 [intval="count=1", vloc="<l1>", zone="()"]
-  1 -> 0 [vedge="<P@a>"]
-  0 -> 0 [vedge="<P@a>"]
+  0 [initial="true", intval="count=0", vloc="<l0>", zone="()"]
+  1 [intval="count=1", vloc="<l1>", zone="()"]
+  0 -> 1 [vedge="<P@a>"]
+  1 -> 1 [vedge="<P@a>"]
 }

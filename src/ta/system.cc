@@ -172,15 +172,20 @@ void system_t::set_invariant(tchecker::loc_id_t id,
   std::shared_ptr<tchecker::typed_expression_t> invariant_typed_expr{
       tchecker::typecheck(*invariant_expr, localvars, integer_variables(), clock_variables())};
 
-  if (!tchecker::bool_valued(invariant_typed_expr->type()))
-    std::cerr << tchecker::log_error << context << " expression is not bool valued" << std::endl;
+  if (!tchecker::bool_valued(invariant_typed_expr->type())) {
+      std::stringstream oss;
+      oss << context << " expression is not bool valued";
+      throw std::invalid_argument (oss.str ());
+  }
 
   try {
     std::shared_ptr<tchecker::bytecode_t> invariant_bytecode{tchecker::compile(*invariant_typed_expr)};
     _invariants[id] = {invariant_typed_expr, invariant_bytecode};
   }
   catch (std::exception const & e) {
-    std::cerr << tchecker::log_error << context << " " << e.what() << std::endl;
+    std::stringstream oss;
+    oss << context << " " << e.what();
+    throw std::invalid_argument (oss.str ());
   }
 }
 
@@ -208,15 +213,20 @@ void system_t::set_guards(tchecker::edge_id_t id,
   std::shared_ptr<tchecker::typed_expression_t> guard_typed_expr{
       tchecker::typecheck(*guard_expr, localvars, integer_variables(), clock_variables())};
 
-  if (!tchecker::bool_valued(guard_typed_expr->type()))
-    std::cerr << tchecker::log_error << context << " expression is not bool valued" << std::endl;
+  if (!tchecker::bool_valued (guard_typed_expr->type ())) {
+    std::stringstream oss;
+    oss << context << " expression is not bool valued";
+    throw std::invalid_argument (oss.str ());
+  }
 
   try {
     std::shared_ptr<tchecker::bytecode_t> guard_bytecode{tchecker::compile(*guard_typed_expr)};
     _guards[id] = {guard_typed_expr, guard_bytecode};
   }
   catch (std::exception const & e) {
-    std::cerr << tchecker::log_error << context << " " << e.what() << std::endl;
+    std::stringstream oss;
+    oss << context << " " << e.what();
+    throw std::invalid_argument (oss.str ());
   }
 }
 
