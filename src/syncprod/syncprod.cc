@@ -199,8 +199,6 @@ void attributes(tchecker::syncprod::system_t const & system, tchecker::syncprod:
                 std::map<std::string, std::string> & m)
 {
   m["vloc"] = tchecker::to_string(s.vloc(), system.as_system_system());
-  if (tchecker::syncprod::is_initial(system, s.vloc()))
-    m["initial"] = "true";
 }
 
 void attributes(tchecker::syncprod::system_t const & system, tchecker::syncprod::transition_t const & t,
