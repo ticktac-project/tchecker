@@ -2,7 +2,7 @@
 // RUNNING_TIME_SECONDS  xxxx
 // VISITED_STATES 4
 digraph weak_error {
-  0 [initial="true", intval="", vloc="<l0,l0>", zone="(0<=x)"]
+  0 [intval="", vloc="<l0,l0>", zone="(0<=x)"]
   1 [intval="", vloc="<l0,l1>", zone="(0<=x)"]
   2 [intval="", vloc="<l1,l0>", zone="(0<=x)"]
   3 [intval="", vloc="<l1,l1>", zone="(0<=x)"]

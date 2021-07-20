@@ -4,7 +4,7 @@
 // STORED_STATES 4
 // VISITED_STATES 4
 digraph ad94_fig10 {
-  0 [initial="true", intval="", vloc="<l0>", zone="($0-$x<=0 & $0-$y<=0 & $x=$y)"]
+  0 [intval="", vloc="<l0>", zone="($0-$x<=0 & $0-$y<=0 & $x=$y)"]
   1 [intval="", vloc="<l1>", zone="($0-$x<=0 & $0-$y<=0 & 0<=$x-$y)"]
   2 [intval="", vloc="<l2>", zone="($0-$x<=-1 & $0-$y<=-1 & 0<=$x-$y)"]
   3 [intval="", vloc="<l3>", zone="($0-$x<=0 & $0-$y<=0 & 0<=$x-$y<1)"]

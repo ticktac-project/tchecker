@@ -4,14 +4,14 @@
 // STORED_STATES 56
 // VISITED_STATES 56
 digraph train_gate_2 {
-  0 [initial="true", intval="buffer[0]=1,buffer[1]=1,head=0,length=0", vloc="<Free,Safe,Safe>", zone="(0<=x1 & 0<=x2)"]
-  1 [initial="true", intval="buffer[0]=1,buffer[1]=1,head=1,length=0", vloc="<Free,Safe,Safe>", zone="(0<=x1 & 0<=x2)"]
-  2 [initial="true", intval="buffer[0]=1,buffer[1]=2,head=0,length=0", vloc="<Free,Safe,Safe>", zone="(0<=x1 & 0<=x2)"]
-  3 [initial="true", intval="buffer[0]=1,buffer[1]=2,head=1,length=0", vloc="<Free,Safe,Safe>", zone="(0<=x1 & 0<=x2)"]
-  4 [initial="true", intval="buffer[0]=2,buffer[1]=1,head=0,length=0", vloc="<Free,Safe,Safe>", zone="(0<=x1 & 0<=x2)"]
-  5 [initial="true", intval="buffer[0]=2,buffer[1]=1,head=1,length=0", vloc="<Free,Safe,Safe>", zone="(0<=x1 & 0<=x2)"]
-  6 [initial="true", intval="buffer[0]=2,buffer[1]=2,head=0,length=0", vloc="<Free,Safe,Safe>", zone="(0<=x1 & 0<=x2)"]
-  7 [initial="true", intval="buffer[0]=2,buffer[1]=2,head=1,length=0", vloc="<Free,Safe,Safe>", zone="(0<=x1 & 0<=x2)"]
+  0 [intval="buffer[0]=1,buffer[1]=1,head=0,length=0", vloc="<Free,Safe,Safe>", zone="(0<=x1 & 0<=x2)"]
+  1 [intval="buffer[0]=1,buffer[1]=1,head=1,length=0", vloc="<Free,Safe,Safe>", zone="(0<=x1 & 0<=x2)"]
+  2 [intval="buffer[0]=1,buffer[1]=2,head=0,length=0", vloc="<Free,Safe,Safe>", zone="(0<=x1 & 0<=x2)"]
+  3 [intval="buffer[0]=1,buffer[1]=2,head=1,length=0", vloc="<Free,Safe,Safe>", zone="(0<=x1 & 0<=x2)"]
+  4 [intval="buffer[0]=2,buffer[1]=1,head=0,length=0", vloc="<Free,Safe,Safe>", zone="(0<=x1 & 0<=x2)"]
+  5 [intval="buffer[0]=2,buffer[1]=1,head=1,length=0", vloc="<Free,Safe,Safe>", zone="(0<=x1 & 0<=x2)"]
+  6 [intval="buffer[0]=2,buffer[1]=2,head=0,length=0", vloc="<Free,Safe,Safe>", zone="(0<=x1 & 0<=x2)"]
+  7 [intval="buffer[0]=2,buffer[1]=2,head=1,length=0", vloc="<Free,Safe,Safe>", zone="(0<=x1 & 0<=x2)"]
   8 [intval="buffer[0]=1,buffer[1]=2,head=1,length=1", vloc="<Free,Safe,Stop>", zone="(0<=x1 & 0<=x2)"]
   9 [intval="buffer[0]=2,buffer[1]=1,head=0,length=1", vloc="<Free,Safe,Stop>", zone="(0<=x1 & 0<=x2)"]
   10 [intval="buffer[0]=1,buffer[1]=2,head=0,length=1", vloc="<Free,Stop,Safe>", zone="(0<=x1 & 0<=x2)"]

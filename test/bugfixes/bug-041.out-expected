@@ -5,7 +5,7 @@ COVREAH output
 // STORED_STATES 4
 // VISITED_STATES 4
 digraph fischer_async_2_10 {
-  0 [initial="true", intval="id1=0,id2=0", vloc="<A,A,l,l>", zone="(0<=x1 & 0<=x2)"]
+  0 [intval="id1=0,id2=0", vloc="<A,A,l,l>", zone="(0<=x1 & 0<=x2)"]
   1 [intval="id1=0,id2=0", vloc="<A,req,l,l>", zone="(0<=x1 & 0<=x2)"]
   2 [intval="id1=0,id2=0", vloc="<req,A,l,l>", zone="(0<=x1 & 0<=x2)"]
   3 [intval="id1=0,id2=0", vloc="<req,req,l,l>", zone="(0<=x1 & 0<=x2)"]
@@ -19,7 +19,7 @@ EXPLORE output
 // RUNNING_TIME_SECONDS  xxxx
 // VISITED_STATES 4
 digraph fischer_async_2_10 {
-  0 [initial="true", intval="id1=0,id2=0", vloc="<A,A,l,l>", zone="(0<=x1 & 0<=x2)"]
+  0 [intval="id1=0,id2=0", vloc="<A,A,l,l>", zone="(0<=x1 & 0<=x2)"]
   1 [intval="id1=0,id2=0", vloc="<A,req,l,l>", zone="(0<=x1 & 0<=x2)"]
   2 [intval="id1=0,id2=0", vloc="<req,A,l,l>", zone="(0<=x1 & 0<=x2)"]
   3 [intval="id1=0,id2=0", vloc="<req,req,l,l>", zone="(0<=x1 & 0<=x2)"]

@@ -2,5 +2,5 @@
 // RUNNING_TIME_SECONDS  xxxx
 // VISITED_STATES 1
 digraph S {
-  0 [initial="true", intval="N=1", vloc="<A,sink>", zone="()"]
+  0 [intval="N=1", vloc="<A,sink>", zone="()"]
 }
