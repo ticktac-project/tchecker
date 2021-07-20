@@ -450,6 +450,8 @@ TEST_CASE("variable access map computation - 2 processes, no shared variable", "
     auto range = map.accessed_variables(P2, tchecker::VTYPE_CLOCK, tchecker::VACCESS_WRITE);
     REQUIRE(std::distance(range.begin(), range.end()) == 0);
   }
+
+  delete sysdecl;
 }
 
 TEST_CASE("variable access map computation - 3 processes, array, shared variables", "[access map]")
@@ -912,4 +914,6 @@ TEST_CASE("variable access map computation - 3 processes, array, shared variable
     for (std::size_t i = 0; i < y_size; ++i)
       REQUIRE(access_y[i]);
   }
+
+  delete sysdecl;
 }

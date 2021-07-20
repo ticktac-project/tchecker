@@ -133,6 +133,7 @@ TEST_CASE("Reference clock variables from system - no array", "[reference clock 
     REQUIRE(reference_clocks.refmap()[xx] == P1);
     REQUIRE(reference_clocks.refmap()[yy] == P1);
   }
+  delete sysdecl;
 }
 
 TEST_CASE("Offset clock variables from system - array", "[offset clock variables]")
@@ -221,6 +222,7 @@ TEST_CASE("Offset clock variables from system - array", "[offset clock variables
     REQUIRE(reference_clocks.refmap()[yy1] == P3);
     REQUIRE(reference_clocks.refmap()[zz] == P3);
   }
+  delete sysdecl;
 }
 
 TEST_CASE("translation of clock constraints", "[clocks]")
