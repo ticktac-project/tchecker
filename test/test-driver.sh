@@ -14,25 +14,26 @@ done
 
 echo "${TEST} ${TEST_ARGS}"
 
+#if test "${IS_MEMCHECK_TEST}" = "yes";
+#then
+#    eval ${TEST} ${TEST_ARGS}
+#    exit $?
+#fi
+
+eval ${TEST} ${TEST_ARGS} > "${OUTPUT_FILE}" 2> "${ERROR_FILE}"
+retcode=$?
+
 if test "${IS_MEMCHECK_TEST}" = "yes";
 then
-    eval ${TEST} ${TEST_ARGS}
-    exit $?
+  if grep -q -e "^==[0-9][0-9]*== " "${ERROR_FILE}";
+  then
+    echo 1>&2 "valgrind produces following error lines in ${ERROR_FILE}:"
+    grep -e "^==[0-9][0-9]*== " "${ERROR_FILE}" 1>&2
+    exit 1
+  else
+    exit 0
+  fi
 fi
-
-if test "x${HASH_PROGRAM}" = "x";
-then
-    eval ${TEST} ${TEST_ARGS} > "${OUTPUT_FILE}" 2> "${ERROR_FILE}"
-    retcode=$?
-else
-    TMPFILE="${OUTPUT_FILE}-$$"
-    trap -- "rm ${TMPFILE}" EXIT
-    eval ${TEST} ${TEST_ARGS} > "${TMPFILE}" 2> "${ERROR_FILE}"
-    retcode=$?
-
-    ${HASH_PROGRAM} "${TMPFILE}" | awk '{ print $1 }' > "${OUTPUT_FILE}"
-fi
-
 
 if test ${retcode} -eq 0;
 then
