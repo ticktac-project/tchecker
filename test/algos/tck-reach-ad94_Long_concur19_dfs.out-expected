@@ -1,0 +1,14 @@
+// COVERED_STATES 0
+// REACHABLE true
+// RUNNING_TIME_SECONDS  xxxx
+// STORED_STATES 4
+// VISITED_STATES 3
+digraph ad94_fig10_longVersion {
+  0 [intval="", vloc="<l0>", zone="($0-$x<=0 & $0-$y<=0 & $x=$y)"]
+  1 [intval="", vloc="<l1>", zone="($0-$x<=0 & $0-$y<=0 & 0<=$x-$y)"]
+  2 [intval="", vloc="<l2>", zone="($0-$x<=-10000000000 & $0-$y<=-10000000000 & 0<=$x-$y)"]
+  3 [intval="", vloc="<l3>", zone="($0-$x<=0 & $0-$y<=0 & 0<=$x-$y<10000000000)"]
+  0 -> 1 [edge_type="actual", vedge="<P@a>"]
+  1 -> 2 [edge_type="actual", vedge="<P@b>"]
+  1 -> 3 [edge_type="actual", vedge="<P@c>"]
+}
