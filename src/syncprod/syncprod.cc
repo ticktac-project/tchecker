@@ -174,7 +174,7 @@ bool satisfies(tchecker::syncprod::system_t const & system, tchecker::vloc_t con
 {
   if (labels.none())
     return false;
-  return labels <= tchecker::syncprod::labels(system, vloc);
+  return labels.is_subset_of(tchecker::syncprod::labels(system, vloc));
 }
 
 bool satisfies(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t const & s,
