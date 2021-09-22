@@ -27,22 +27,23 @@ namespace tchecker {
 namespace system {
 
 /*!
- \brief Output attributes following tchecker syntax
- \param os : output stream
- \param attr : attributes
- \post attr has been output to os
- \return os after output
- */
-std::ostream & operator<<(std::ostream & os, tchecker::system::attributes_t const & attr);
-
-/*!
- \brief Output system following tchecker syntax
+ \brief Output a system following the TChecker syntax
  \param os : output stream
  \param s : system
- \post s name has been output to os
- \return os after output
- */
-std::ostream & operator<<(std::ostream & os, tchecker::system::system_t const & s);
+ \post s has been output to os following the TChecker syntax
+*/
+void output_tck(std::ostream & os, tchecker::system::system_t const & s);
+
+/*!
+ \brief Output a system following the dot graphviz syntax
+ \param os : output stream
+ \param s : system
+ \param delimiter : separator between process name and location name for node
+ names
+ \post s has been output to os following the dot graphviz syntax
+ \throw std::runtime_error : if a location or an edge in s has an attribute "label"
+*/
+void output_dot(std::ostream & os, tchecker::system::system_t const & s, std::string const & delimiter);
 
 } // end of namespace system
 

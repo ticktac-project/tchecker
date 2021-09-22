@@ -30,16 +30,18 @@ static struct option long_options[] = {{"check", no_argument, 0, 'c'},
                                        {"output", required_argument, 0, 'o'},
                                        {"delimiter", required_argument, 0, 'd'},
                                        {"process-name", required_argument, 0, 'n'},
+                                       {"transform", no_argument, 0, 't'},
                                        {"help", no_argument, 0, 'h'},
                                        {0, 0, 0, 0}};
 
-static char * const options = (char *)"cd:hn:o:p";
+static char * const options = (char *)"cd:hn:o:pt";
 
 void usage(char * progname)
 {
   std::cerr << "Usage: " << progname << " [options] [file]" << std::endl;
   std::cerr << "   -c          syntax check (timed automaton)" << std::endl;
   std::cerr << "   -p          synchronized product" << std::endl;
+  std::cerr << "   -t          transform a system into dot graphviz file format" << std::endl;
   std::cerr << "   -o file     output file" << std::endl;
   std::cerr << "   -d delim    delimiter string (default: _)" << std::endl;
   std::cerr << "   -n name     name of synchronized process (default: P)" << std::endl;
@@ -49,6 +51,7 @@ void usage(char * progname)
 
 static bool check_syntax = false;
 static bool synchronized_product = false;
+static bool transform = false;
 static bool help = false;
 static std::string delimiter = "_";
 static std::string process_name = "P";
@@ -88,6 +91,9 @@ int parse_command_line(int argc, char * argv[])
     case 'p':
       synchronized_product = true;
       break;
+    case 't':
+      transform = true;
+      break;
     default:
       throw std::runtime_error("I should never be executed");
       break;
@@ -121,7 +127,7 @@ std::shared_ptr<tchecker::parsing::system_declaration_t> load_system(std::string
 /*!
  \brief Check timed automaton syntax from a declaration
  \param sysdecl : system declaration
- \return true if sydecl contains a syntactically correct declaration of a
+ \return true if sysdecl contains a syntactically correct declaration of a
  system of timed automata, false otherwise
 */
 bool do_check_syntax_ta(tchecker::parsing::system_declaration_t const & sysdecl)
@@ -158,7 +164,24 @@ void do_synchronized_product(tchecker::parsing::system_declaration_t const & sys
 {
   std::shared_ptr<tchecker::syncprod::system_t> system(new tchecker::syncprod::system_t(sysdecl));
   tchecker::system::system_t product = tchecker::syncprod::synchronized_product(system, process_name, delimiter);
-  os << product << std::endl;
+  tchecker::system::output_tck(os, product);
+  os << std::endl;
+}
+
+/*!
+ \brief Output a system of processes following the dot graphviz format
+ \param sysdecl : system declaration
+ \param delimiter : delimiter used in node names
+ \param os : output stream
+ \post The system of processes in sysdecl has been output to os following the
+ dot graphviz format, using delimiter as a separator between process name and
+ location name for node names.
+*/
+void do_output_dot(tchecker::parsing::system_declaration_t const & sysdecl, std::string const & delimiter, std::ostream & os)
+{
+  std::shared_ptr<tchecker::system::system_t> system(new tchecker::system::system_t(sysdecl));
+  tchecker::system::output_dot(os, *system, delimiter);
+  os << std::endl;
 }
 
 /*!
@@ -171,6 +194,12 @@ int main(int argc, char * argv[])
 
     if (argc - optindex > 1) {
       std::cerr << "Too many input files" << std::endl;
+      usage(argv[0]);
+      return EXIT_FAILURE;
+    }
+
+    if (synchronized_product && transform) {
+      std::cerr << "Command line options -p and -t are incompatible" << std::endl;
       usage(argv[0]);
       return EXIT_FAILURE;
     }
@@ -198,6 +227,9 @@ int main(int argc, char * argv[])
 
     if (synchronized_product)
       do_synchronized_product(*sysdecl, process_name, delimiter, *os);
+
+    if (transform)
+      do_output_dot(*sysdecl, delimiter, *os);
   }
   catch (std::exception & e) {
     std::cerr << tchecker::log_error << e.what() << std::endl;
