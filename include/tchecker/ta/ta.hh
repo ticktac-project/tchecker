@@ -252,10 +252,10 @@ void attributes(tchecker::ta::system_t const & system, tchecker::ta::transition_
  \class ta_t
  \brief Timed automaton over a system of synchronized timed processes
  */
-class ta_t final : public tchecker::ts::ts_t<tchecker::ta::state_sptr_t, tchecker::ta::const_state_sptr_t,
-                                             tchecker::ta::transition_sptr_t, tchecker::ta::const_transition_sptr_t,
-                                             tchecker::ta::initial_range_t, tchecker::ta::outgoing_edges_range_t,
-                                             tchecker::ta::initial_value_t, tchecker::ta::outgoing_edges_value_t> {
+class ta_t final : public tchecker::ts::full_ts_t<tchecker::ta::state_sptr_t, tchecker::ta::const_state_sptr_t,
+                                                  tchecker::ta::transition_sptr_t, tchecker::ta::const_transition_sptr_t,
+                                                  tchecker::ta::initial_range_t, tchecker::ta::outgoing_edges_range_t,
+                                                  tchecker::ta::initial_value_t, tchecker::ta::outgoing_edges_value_t> {
 public:
   /*!
    \brief Constructor
@@ -332,10 +332,10 @@ public:
     */
   virtual inline void initial(std::vector<sst_t> & v, tchecker::state_status_t mask)
   {
-    tchecker::ts::ts_t<tchecker::ta::state_sptr_t, tchecker::ta::const_state_sptr_t, tchecker::ta::transition_sptr_t,
-                       tchecker::ta::const_transition_sptr_t, tchecker::ta::initial_range_t,
-                       tchecker::ta::outgoing_edges_range_t, tchecker::ta::initial_value_t,
-                       tchecker::ta::outgoing_edges_value_t>::initial(v, mask);
+    tchecker::ts::full_ts_t<tchecker::ta::state_sptr_t, tchecker::ta::const_state_sptr_t, tchecker::ta::transition_sptr_t,
+                            tchecker::ta::const_transition_sptr_t, tchecker::ta::initial_range_t,
+                            tchecker::ta::outgoing_edges_range_t, tchecker::ta::initial_value_t,
+                            tchecker::ta::outgoing_edges_value_t>::initial(v, mask);
   }
 
   /*!
@@ -348,10 +348,10 @@ public:
   */
   virtual inline void next(tchecker::ta::const_state_sptr_t const & s, std::vector<sst_t> & v, tchecker::state_status_t mask)
   {
-    tchecker::ts::ts_t<tchecker::ta::state_sptr_t, tchecker::ta::const_state_sptr_t, tchecker::ta::transition_sptr_t,
-                       tchecker::ta::const_transition_sptr_t, tchecker::ta::initial_range_t,
-                       tchecker::ta::outgoing_edges_range_t, tchecker::ta::initial_value_t,
-                       tchecker::ta::outgoing_edges_value_t>::next(s, v, mask);
+    tchecker::ts::full_ts_t<tchecker::ta::state_sptr_t, tchecker::ta::const_state_sptr_t, tchecker::ta::transition_sptr_t,
+                            tchecker::ta::const_transition_sptr_t, tchecker::ta::initial_range_t,
+                            tchecker::ta::outgoing_edges_range_t, tchecker::ta::initial_value_t,
+                            tchecker::ta::outgoing_edges_value_t>::next(s, v, mask);
   }
 
   /*!

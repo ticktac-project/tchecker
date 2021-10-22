@@ -30,23 +30,14 @@ namespace tchecker {
 namespace ts {
 
 /*!
- \class ts_t
- \brief Transition system
- \tparam STATE : type of state
- \tparam CONST_STATE : type of const state
- \tparam TRANSITION : type of transition
- \tparam CONST_TRANSITION : type of const transition
- \tparam INITIAL_RANGE : type of range of initial states, should be tchecker::make_range_t<...>
- \tparam OUTGOING_EDGES_RANGE : type of range of outgoing edges, should be tchecker::make_range_t<...>
- \tparam INITIAL_VALUE : type of value in INITIAL_RANGE
- \tparam OUTGOING_EDGES_VALUE : type of value in OUTGOING_EDGES_RANGE
- */
-template <class STATE, class CONST_STATE, class TRANSITION, class CONST_TRANSITION, class INITIAL_RANGE,
-          class OUTGOING_EDGES_RANGE,
-          class INITIAL_VALUE = typename std::iterator_traits<typename INITIAL_RANGE::begin_iterator_t>::reference_type const,
-          class OUTGOING_EDGES_VALUE =
-              typename std::iterator_traits<typename OUTGOING_EDGES_RANGE::begin_iterator_t>::reference_type const>
-class ts_t {
+\class ts_t
+\brief Transition system
+\tparam STATE : type of state
+\tparam CONST_STATE : type of const state
+\tparam TRANSITION : type of transition
+\tparam CONST_TRANSITION : type of const transition
+*/
+template <class STATE, class CONST_STATE, class TRANSITION, class CONST_TRANSITION> class ts_t {
 public:
   /*!
    \brief Type of state
@@ -67,6 +58,100 @@ public:
    \brief Type of const transition
   */
   using const_transition_t = CONST_TRANSITION;
+
+  /*!
+  \brief Type of tuples (status, state, transition)
+  */
+  using sst_t = std::tuple<tchecker::state_status_t, STATE, TRANSITION>;
+
+  /*!
+   \brief Destructor
+   */
+  virtual ~ts_t() = default;
+
+  /*!
+  \brief Initial states and transitions with selected status
+  \param v : container
+  \param mask : mask on initial states
+  \post all tuples (status, s, t) of status, initial states and transitions such
+  that status matches mask (i.e. status & mask != 0) have been pushed back into v
+   */
+  virtual void initial(std::vector<sst_t> & v, tchecker::state_status_t mask) = 0;
+
+  /*!
+  \brief Next states and transitions with selected status
+  \param s : state
+  \param v : container
+  \param mask : mask on next states
+  \post all tuples (status, s', t) such that s -t-> s' is a transition and the
+  status of s' matches mask (i.e. status & mask != 0) have been pushed to v
+  */
+  virtual void next(CONST_STATE const & s, std::vector<sst_t> & v, tchecker::state_status_t mask) = 0;
+
+  /*!
+  \brief Checks if a state satisfies a set of labels
+  \param s : a state
+  \param labels : a set of labels
+  \return true if labels is not empty and labels is included in the set of
+  labels of state s, false otherwise
+   */
+  virtual bool satisfies(CONST_STATE const & s, boost::dynamic_bitset<> const & labels) = 0;
+
+  /*!
+   \brief Accessor to state attributes as strings
+   \param s : a state
+   \param m : a map of string pairs (key, value)
+   \post attributes of state s have been added to map m
+   */
+  virtual void attributes(CONST_STATE const & s, std::map<std::string, std::string> & m) = 0;
+
+  /*!
+   \brief Accessor to transition attributes as strings
+   \param t : a transition
+   \param m : a map of string pairs (key, value)
+   \post attributes of transition t have been added to map m
+   */
+  virtual void attributes(CONST_TRANSITION const & t, std::map<std::string, std::string> & m) = 0;
+};
+
+/*!
+ \class full_ts_t
+ \brief Transition system with full access to initial/outgoing edges
+ \tparam STATE : type of state
+ \tparam CONST_STATE : type of const state
+ \tparam TRANSITION : type of transition
+ \tparam CONST_TRANSITION : type of const transition
+ \tparam INITIAL_RANGE : type of range of initial states, should be tchecker::make_range_t<...>
+ \tparam OUTGOING_EDGES_RANGE : type of range of outgoing edges, should be tchecker::make_range_t<...>
+ \tparam INITIAL_VALUE : type of value in INITIAL_RANGE
+ \tparam OUTGOING_EDGES_VALUE : type of value in OUTGOING_EDGES_RANGE
+ */
+template <class STATE, class CONST_STATE, class TRANSITION, class CONST_TRANSITION, class INITIAL_RANGE,
+          class OUTGOING_EDGES_RANGE,
+          class INITIAL_VALUE = typename std::iterator_traits<typename INITIAL_RANGE::begin_iterator_t>::reference_type const,
+          class OUTGOING_EDGES_VALUE =
+              typename std::iterator_traits<typename OUTGOING_EDGES_RANGE::begin_iterator_t>::reference_type const>
+class full_ts_t : public tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION> {
+public:
+  /*!
+   \brief Type of state
+   */
+  using state_t = typename tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::state_t;
+
+  /*!
+  \brief Type of const state
+  */
+  using const_state_t = typename tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::const_state_t;
+
+  /*!
+   \brief Type of transition
+   */
+  using transition_t = typename tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::transition_t;
+
+  /*!
+   \brief Type of const transition
+  */
+  using const_transition_t = typename tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::const_transition_t;
 
   /*!
    \brief Type of range of initial states
@@ -91,12 +176,12 @@ public:
   /*!
   \brief Type of tuples (status, state, transition)
   */
-  using sst_t = std::tuple<tchecker::state_status_t, STATE, TRANSITION>;
+  using sst_t = typename tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::sst_t;
 
   /*!
    \brief Destructor
    */
-  virtual ~ts_t() = default;
+  virtual ~full_ts_t() = default;
 
   /*!
    \brief Accessor
@@ -173,30 +258,8 @@ public:
     }
   }
 
-  /*!
-  \brief Checks if a state satisfies a set of labels
-  \param s : a state
-  \param labels : a set of labels
-  \return true if labels is not empty and labels is included in the set of
-  labels of state s, false otherwise
-   */
-  virtual bool satisfies(CONST_STATE const & s, boost::dynamic_bitset<> const & labels) = 0;
-
-  /*!
-   \brief Accessor to state attributes as strings
-   \param s : a state
-   \param m : a map of string pairs (key, value)
-   \post attributes of state s have been added to map m
-   */
-  virtual void attributes(CONST_STATE const & s, std::map<std::string, std::string> & m) = 0;
-
-  /*!
-   \brief Accessor to transition attributes as strings
-   \param t : a transition
-   \param m : a map of string pairs (key, value)
-   \post attributes of transition t have been added to map m
-   */
-  virtual void attributes(CONST_TRANSITION const & t, std::map<std::string, std::string> & m) = 0;
+  using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::satisfies;
+  using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::attributes;
 };
 
 } // end of namespace ts

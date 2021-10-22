@@ -343,10 +343,10 @@ void attributes(tchecker::syncprod::system_t const & system, tchecker::syncprod:
  \note all returned states and transitions deallocated automatically
  */
 class syncprod_t final
-    : public tchecker::ts::ts_t<tchecker::syncprod::state_sptr_t, tchecker::syncprod::const_state_sptr_t,
-                                tchecker::syncprod::transition_sptr_t, tchecker::syncprod::const_transition_sptr_t,
-                                tchecker::syncprod::initial_range_t, tchecker::syncprod::outgoing_edges_range_t,
-                                tchecker::syncprod::initial_value_t, tchecker::syncprod::outgoing_edges_value_t> {
+    : public tchecker::ts::full_ts_t<tchecker::syncprod::state_sptr_t, tchecker::syncprod::const_state_sptr_t,
+                                     tchecker::syncprod::transition_sptr_t, tchecker::syncprod::const_transition_sptr_t,
+                                     tchecker::syncprod::initial_range_t, tchecker::syncprod::outgoing_edges_range_t,
+                                     tchecker::syncprod::initial_value_t, tchecker::syncprod::outgoing_edges_value_t> {
 public:
   /*!
    \brief Constructor
@@ -424,10 +424,10 @@ public:
   */
   virtual inline void initial(std::vector<sst_t> & v, tchecker::state_status_t mask)
   {
-    tchecker::ts::ts_t<tchecker::syncprod::state_sptr_t, tchecker::syncprod::const_state_sptr_t,
-                       tchecker::syncprod::transition_sptr_t, tchecker::syncprod::const_transition_sptr_t,
-                       tchecker::syncprod::initial_range_t, tchecker::syncprod::outgoing_edges_range_t,
-                       tchecker::syncprod::initial_value_t, tchecker::syncprod::outgoing_edges_value_t>::initial(v, mask);
+    tchecker::ts::full_ts_t<tchecker::syncprod::state_sptr_t, tchecker::syncprod::const_state_sptr_t,
+                            tchecker::syncprod::transition_sptr_t, tchecker::syncprod::const_transition_sptr_t,
+                            tchecker::syncprod::initial_range_t, tchecker::syncprod::outgoing_edges_range_t,
+                            tchecker::syncprod::initial_value_t, tchecker::syncprod::outgoing_edges_value_t>::initial(v, mask);
   }
 
   /*!
@@ -441,10 +441,10 @@ public:
   virtual inline void next(tchecker::syncprod::const_state_sptr_t const & s, std::vector<sst_t> & v,
                            tchecker::state_status_t mask)
   {
-    tchecker::ts::ts_t<tchecker::syncprod::state_sptr_t, tchecker::syncprod::const_state_sptr_t,
-                       tchecker::syncprod::transition_sptr_t, tchecker::syncprod::const_transition_sptr_t,
-                       tchecker::syncprod::initial_range_t, tchecker::syncprod::outgoing_edges_range_t,
-                       tchecker::syncprod::initial_value_t, tchecker::syncprod::outgoing_edges_value_t>::next(s, v, mask);
+    tchecker::ts::full_ts_t<tchecker::syncprod::state_sptr_t, tchecker::syncprod::const_state_sptr_t,
+                            tchecker::syncprod::transition_sptr_t, tchecker::syncprod::const_transition_sptr_t,
+                            tchecker::syncprod::initial_range_t, tchecker::syncprod::outgoing_edges_range_t,
+                            tchecker::syncprod::initial_value_t, tchecker::syncprod::outgoing_edges_value_t>::next(s, v, mask);
   }
 
   /*!
