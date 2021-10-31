@@ -53,7 +53,7 @@ inline bool operator!=(tchecker::zg::transition_t const & t1, tchecker::zg::tran
 std::size_t hash_value(tchecker::zg::transition_t const & t);
 
 /*!
- \brief Lexical ordering on transitions of timed automata
+ \brief Lexical ordering on transitions of the zone graph
  \param t1 : first transition
  \param t2 : second transition
  \return 0 if t1 and t2 are equal, a negative value if t1 is smaller than t2 w.r.t. lexical ordering on tuple of edges, source

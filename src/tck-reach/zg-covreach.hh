@@ -198,6 +198,7 @@ public:
  \param labels : comma-separated string of labels
  \param search_order : search order
  \param block_size : number of elements allocated in one block
+ \param table_size : size of hash tables
  \pre labels must appear as node attributes in sysdecl
  search_order must be either "dfs" or "bfs"
  \return statistics on the run and the covering reachability graph

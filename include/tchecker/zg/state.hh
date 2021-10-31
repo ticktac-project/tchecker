@@ -151,7 +151,7 @@ bool operator<=(tchecker::zg::state_t const & s1, tchecker::zg::state_t const & 
 std::size_t hash_value(tchecker::zg::state_t const & s);
 
 /*!
- \brief Lexical ordering on states of timed automata
+ \brief Lexical ordering on states of the zone graph
  \param s1 : a state
  \param s2 : a state
  \return 0 if s1 and s2 are equal, a negative value if s1 is smaller than s2

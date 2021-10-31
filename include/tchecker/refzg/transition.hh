@@ -56,7 +56,7 @@ inline bool operator!=(tchecker::refzg::transition_t const & t1, tchecker::refzg
 std::size_t hash_value(tchecker::refzg::transition_t const & t);
 
 /*!
- \brief Lexical ordering on transitions of timed automata
+ \brief Lexical ordering on transitions of the local-time zone graph
  \param t1 : first transition
  \param t2 : second transition
  \return 0 if t1 and t2 are equal, a negative value if t1 is smaller than t2
