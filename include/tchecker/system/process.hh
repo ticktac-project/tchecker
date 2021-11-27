@@ -52,7 +52,15 @@ public:
    \return identifier of process name
    \throw std::invalid_argument : if name is not a process
    */
-  inline tchecker::process_id_t process_id(std::string const & name) const { return _procs_index.value(name); }
+  inline tchecker::process_id_t process_id(std::string const & name) const
+  {
+    try {
+      return _procs_index.value(name);
+    }
+    catch (...) {
+      throw std::invalid_argument("Unknown process " + name);
+    }
+  }
 
   /*!
    \brief Accessor
@@ -60,7 +68,15 @@ public:
    \return name of process id
    \throw std::invalid_argument : if id is not a process
    */
-  inline std::string const & process_name(tchecker::process_id_t id) const { return _procs_index.key(id); }
+  inline std::string const & process_name(tchecker::process_id_t id) const
+  {
+    try {
+      return _procs_index.key(id);
+    }
+    catch (...) {
+      throw std::invalid_argument("Unknown process identifier " + std::to_string(id));
+    }
+  }
 
   /*!
    \brief Accessor
