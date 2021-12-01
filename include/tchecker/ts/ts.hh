@@ -256,8 +256,23 @@ public:
     }
   }
 
-  using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::initial;
-  using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::next;
+  /*!
+  \brief Initial states and transitions
+  \param v : container
+  \post all tuples (status, s, t) of status, initial states and transitions such
+  that s has status tchecker::STATE_OK have been pushed back into v
+   */
+  virtual void initial(std::vector<sst_t> & v) { initial(v, tchecker::STATE_OK); }
+
+  /*!
+  \brief Next states and transitions
+  \param s : state
+  \param v : container
+  \post all tuples (status, s', t) such that s -t-> s' is a transition and s'
+  has status tchecker::STATE_OK have been pushed to v
+  */
+  virtual void next(CONST_STATE const & s, std::vector<sst_t> & v) { next(s, v, tchecker::STATE_OK); }
+
   using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::satisfies;
   using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::attributes;
 };

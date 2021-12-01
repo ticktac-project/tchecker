@@ -323,56 +323,15 @@ public:
   virtual void next(tchecker::ta::const_state_sptr_t const & s, tchecker::ta::outgoing_edges_value_t const & out_edge,
                     std::vector<sst_t> & v);
 
-  /*!
-    \brief Initial states and transitions with selected status
-    \param v : container
-    \param mask : mask on initial states
-    \post all tuples (status, s, t) of status, initial states and transitions such
-    that status matches mask (i.e. status & mask != 0) have been pushed back into v
-    */
-  inline void initial(std::vector<sst_t> & v, tchecker::state_status_t mask)
-  {
-    tchecker::ts::full_ts_t<tchecker::ta::state_sptr_t, tchecker::ta::const_state_sptr_t, tchecker::ta::transition_sptr_t,
-                            tchecker::ta::const_transition_sptr_t, tchecker::ta::initial_range_t,
-                            tchecker::ta::outgoing_edges_range_t, tchecker::ta::initial_value_t,
-                            tchecker::ta::outgoing_edges_value_t>::initial(v, mask);
-  }
+  using tchecker::ts::full_ts_t<tchecker::ta::state_sptr_t, tchecker::ta::const_state_sptr_t, tchecker::ta::transition_sptr_t,
+                                tchecker::ta::const_transition_sptr_t, tchecker::ta::initial_range_t,
+                                tchecker::ta::outgoing_edges_range_t, tchecker::ta::initial_value_t,
+                                tchecker::ta::outgoing_edges_value_t>::initial;
 
-  /*!
-  \brief Next states and transitions with selected status
-  \param s : state
-  \param v : container
-  \param mask : mask on next states
-  \post all tuples (status, s', t) such that s -t-> s' is a transition and the
-  status of s' matches mask (i.e. status & mask != 0) have been pushed to v
-  */
-  inline void next(tchecker::ta::const_state_sptr_t const & s, std::vector<sst_t> & v, tchecker::state_status_t mask)
-  {
-    tchecker::ts::full_ts_t<tchecker::ta::state_sptr_t, tchecker::ta::const_state_sptr_t, tchecker::ta::transition_sptr_t,
-                            tchecker::ta::const_transition_sptr_t, tchecker::ta::initial_range_t,
-                            tchecker::ta::outgoing_edges_range_t, tchecker::ta::initial_value_t,
-                            tchecker::ta::outgoing_edges_value_t>::next(s, v, mask);
-  }
-
-  /*!
-  \brief Initial states and transitions
-  \param v : container
-  \post all tuples (status, s, t) of status, initial states and transitions have
-  been pushed back into v, with status tchecker::STATE_OK
-  */
-  virtual inline void initial(std::vector<sst_t> & v) { return initial(v, tchecker::STATE_OK); }
-
-  /*!
-  \brief Next states and transitions
-  \param s : state
-  \param v : container
-  \post all tuples (status, s', t) such that s -t-> s' is a transition have been
-  pushed to v, with status tchecker::STATE_OK
-  */
-  virtual inline void next(tchecker::ta::const_state_sptr_t const & s, std::vector<sst_t> & v)
-  {
-    return next(s, v, tchecker::STATE_OK);
-  }
+  using tchecker::ts::full_ts_t<tchecker::ta::state_sptr_t, tchecker::ta::const_state_sptr_t, tchecker::ta::transition_sptr_t,
+                                tchecker::ta::const_transition_sptr_t, tchecker::ta::initial_range_t,
+                                tchecker::ta::outgoing_edges_range_t, tchecker::ta::initial_value_t,
+                                tchecker::ta::outgoing_edges_value_t>::next;
 
   /*!
    \brief Checks if a state satisfies a set of labels
