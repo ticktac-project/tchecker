@@ -65,7 +65,7 @@ public:
     stats.set_start_time();
 
     std::vector<typename TS::sst_t> sst;
-    ts.initial(sst, tchecker::STATE_OK);
+    ts.initial(sst);
     for (auto && [status, s, t] : sst) {
       auto && [is_new_node, initial_node] = graph.add_node(s);
       if (is_new_node)
@@ -143,7 +143,7 @@ private:
         break;
       }
 
-      ts.next(node->state_ptr(), sst, tchecker::STATE_OK);
+      ts.next(node->state_ptr(), sst);
       for (auto && [status, s, t] : sst) {
         auto && [is_new_node, next_node] = graph.add_node(s);
         if (is_new_node)

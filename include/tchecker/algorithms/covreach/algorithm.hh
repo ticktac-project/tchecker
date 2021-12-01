@@ -125,7 +125,7 @@ public:
     std::vector<typename TS::sst_t> sst;
     typename GRAPH::node_sptr_t covering_node;
 
-    ts.initial(sst, tchecker::STATE_OK);
+    ts.initial(sst);
     for (auto && [status, s, t] : sst) {
       typename GRAPH::node_sptr_t n = graph.add_node(s);
       if (graph.is_covered(n, covering_node)) {
@@ -157,7 +157,7 @@ public:
     std::vector<typename TS::sst_t> sst;
     typename GRAPH::node_sptr_t covering_node;
 
-    ts.next(node->state_ptr(), sst, tchecker::STATE_OK);
+    ts.next(node->state_ptr(), sst);
     for (auto && [status, s, t] : sst) {
       typename GRAPH::node_sptr_t next_node = graph.add_node(s);
       if (graph.is_covered(next_node, covering_node)) {

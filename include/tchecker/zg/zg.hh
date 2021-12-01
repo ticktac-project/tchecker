@@ -343,13 +343,13 @@ public:
                     std::vector<sst_t> & v);
 
   /*!
-    \brief Initial states and transitions with selected status
-    \param v : container
-    \param mask : mask on initial states
-    \post all tuples (status, s, t) of status, initial states and transitions such
-    that status matches mask (i.e. status & mask != 0) have been pushed back into v
-    */
-  virtual inline void initial(std::vector<sst_t> & v, tchecker::state_status_t mask)
+  \brief Initial states and transitions with selected status
+  \param v : container
+  \param mask : mask on initial states
+  \post all tuples (status, s, t) of status, initial states and transitions such
+  that status matches mask (i.e. status & mask != 0) have been pushed back into v
+  */
+  inline void initial(std::vector<sst_t> & v, tchecker::state_status_t mask)
   {
     tchecker::ts::full_ts_t<tchecker::zg::state_sptr_t, tchecker::zg::const_state_sptr_t, tchecker::zg::transition_sptr_t,
                             tchecker::zg::const_transition_sptr_t, tchecker::zg::initial_range_t,
@@ -365,12 +365,32 @@ public:
   \post all tuples (status, s', t) such that s -t-> s' is a transition and the
   status of s' matches mask (i.e. status & mask != 0) have been pushed to v
   */
-  virtual inline void next(tchecker::zg::const_state_sptr_t const & s, std::vector<sst_t> & v, tchecker::state_status_t mask)
+  inline void next(tchecker::zg::const_state_sptr_t const & s, std::vector<sst_t> & v, tchecker::state_status_t mask)
   {
     tchecker::ts::full_ts_t<tchecker::zg::state_sptr_t, tchecker::zg::const_state_sptr_t, tchecker::zg::transition_sptr_t,
                             tchecker::zg::const_transition_sptr_t, tchecker::zg::initial_range_t,
                             tchecker::zg::outgoing_edges_range_t, tchecker::zg::initial_value_t,
                             tchecker::zg::outgoing_edges_value_t>::next(s, v, mask);
+  }
+
+  /*!
+  \brief Initial states and transitions
+  \param v : container
+  \post all tuples (status, s, t) of status, initial states and transitions have
+  been pushed back into v, with status tchecker::STATE_OK
+  */
+  virtual inline void initial(std::vector<sst_t> & v) { return initial(v, tchecker::STATE_OK); }
+
+  /*!
+  \brief Next states and transitions
+  \param s : state
+  \param v : container
+  \post all tuples (status, s', t) such that s -t-> s' is a transition have been
+  pushed to v, with status tchecker::STATE_OK
+  */
+  virtual inline void next(tchecker::zg::const_state_sptr_t const & s, std::vector<sst_t> & v)
+  {
+    return next(s, v, tchecker::STATE_OK);
   }
 
   /*!

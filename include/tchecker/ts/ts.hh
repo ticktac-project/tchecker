@@ -70,23 +70,21 @@ public:
   virtual ~ts_t() = default;
 
   /*!
-  \brief Initial states and transitions with selected status
+  \brief Initial states and transitions
   \param v : container
-  \param mask : mask on initial states
-  \post all tuples (status, s, t) of status, initial states and transitions such
-  that status matches mask (i.e. status & mask != 0) have been pushed back into v
+  \post all tuples (status, s, t) of status, initial states and transitions have
+  been pushed back into v
    */
-  virtual void initial(std::vector<sst_t> & v, tchecker::state_status_t mask) = 0;
+  virtual void initial(std::vector<sst_t> & v) = 0;
 
   /*!
-  \brief Next states and transitions with selected status
+  \brief Next states and transitions
   \param s : state
   \param v : container
-  \param mask : mask on next states
-  \post all tuples (status, s', t) such that s -t-> s' is a transition and the
-  status of s' matches mask (i.e. status & mask != 0) have been pushed to v
+  \post all tuples (status, s', t) such that s -t-> s' is a transition have been
+  pushed to v
   */
-  virtual void next(CONST_STATE const & s, std::vector<sst_t> & v, tchecker::state_status_t mask) = 0;
+  virtual void next(CONST_STATE const & s, std::vector<sst_t> & v) = 0;
 
   /*!
   \brief Checks if a state satisfies a set of labels
@@ -222,7 +220,7 @@ public:
   \post all tuples (status, s, t) of status, initial states and transitions such
   that status matches mask (i.e. status & mask != 0) have been pushed back into v
    */
-  virtual void initial(std::vector<sst_t> & v, tchecker::state_status_t mask)
+  void initial(std::vector<sst_t> & v, tchecker::state_status_t mask)
   {
     std::vector<sst_t> sst;
     INITIAL_RANGE init_edges = initial_edges();
@@ -244,7 +242,7 @@ public:
   \post all tuples (status, s', t) such that s -t-> s' is a transition and the
   status of s' matches mask (i.e. status & mask != 0) have been pushed to v
   */
-  virtual void next(CONST_STATE const & s, std::vector<sst_t> & v, tchecker::state_status_t mask)
+  void next(CONST_STATE const & s, std::vector<sst_t> & v, tchecker::state_status_t mask)
   {
     std::vector<sst_t> sst;
     OUTGOING_EDGES_RANGE out_edges = outgoing_edges(s);
@@ -258,6 +256,8 @@ public:
     }
   }
 
+  using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::initial;
+  using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::next;
   using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::satisfies;
   using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::attributes;
 };
