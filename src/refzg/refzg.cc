@@ -32,22 +32,13 @@ tchecker::state_status_t initial(tchecker::ta::system_t const & system,
   if (status != tchecker::STATE_OK)
     return status;
 
-  tchecker::dbm::db_t * rdbm = zone->dbm();
   std::shared_ptr<tchecker::reference_clock_variables_t const> r = zone->reference_clock_variables();
 
   boost::dynamic_bitset<> delay_allowed = tchecker::ta::delay_allowed(system, *r, *vloc);
 
-  status = semantics.initial(rdbm, *r, delay_allowed, invariant);
-  if (status != tchecker::STATE_OK)
-    return status;
+  tchecker::dbm::db_t * rdbm = zone->dbm();
 
-  if (tchecker::refdbm::bound_spread(rdbm, *r, spread) == tchecker::dbm::EMPTY)
-    return tchecker::STATE_CLOCKS_EMPTY_SPREAD;
-
-  if (!tchecker::refdbm::is_synchronizable(rdbm, *r))
-    return tchecker::STATE_ZONE_EMPTY_SYNC;
-
-  return tchecker::STATE_OK;
+  return semantics.initial(rdbm, *r, delay_allowed, invariant, spread);
 }
 
 tchecker::state_status_t next(tchecker::ta::system_t const & system,
@@ -73,18 +64,8 @@ tchecker::state_status_t next(tchecker::ta::system_t const & system,
   boost::dynamic_bitset<> const sync_refclocks = tchecker::ta::sync_refclocks(system, *r, *vedge);
 
   tchecker::dbm::db_t * rdbm = zone->dbm();
-  status = semantics.next(rdbm, *r, src_delay_allowed, src_invariant, sync_refclocks, guard, reset, tgt_delay_allowed,
-                          tgt_invariant);
-  if (status != tchecker::STATE_OK)
-    return status;
-
-  if (tchecker::refdbm::bound_spread(rdbm, *r, spread) == tchecker::dbm::EMPTY)
-    return tchecker::STATE_CLOCKS_EMPTY_SPREAD;
-
-  if (!tchecker::refdbm::is_synchronizable(rdbm, *r))
-    return tchecker::STATE_ZONE_EMPTY_SYNC;
-
-  return tchecker::STATE_OK;
+  return semantics.next(rdbm, *r, src_delay_allowed, src_invariant, sync_refclocks, guard, reset, tgt_delay_allowed,
+                        tgt_invariant, spread);
 }
 
 /* labels */
@@ -141,9 +122,9 @@ void refzg_t::next(tchecker::refzg::const_state_sptr_t const & s, tchecker::refz
                    std::vector<sst_t> & v)
 {
   tchecker::refzg::state_sptr_t nexts = _state_allocator.clone(*s);
-  tchecker::refzg::transition_sptr_t t = _transition_allocator.construct();
-  tchecker::state_status_t status = tchecker::refzg::next(*_system, *nexts, *t, *_semantics, _spread, out_edge);
-  v.push_back(std::make_tuple(status, nexts, t));
+  tchecker::refzg::transition_sptr_t nextt = _transition_allocator.construct();
+  tchecker::state_status_t status = tchecker::refzg::next(*_system, *nexts, *nextt, *_semantics, _spread, out_edge);
+  v.push_back(std::make_tuple(status, nexts, nextt));
 }
 
 bool refzg_t::satisfies(tchecker::refzg::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels)

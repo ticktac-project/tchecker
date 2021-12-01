@@ -185,7 +185,7 @@ run(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl, st
   std::shared_ptr<tchecker::ta::system_t const> system{new tchecker::ta::system_t{*sysdecl}};
 
   std::shared_ptr<tchecker::refzg::refzg_t> refzg{tchecker::refzg::factory(system, tchecker::refzg::PROCESS_REFERENCE_CLOCKS,
-                                                                           tchecker::refzg::ELAPSED_SEMANTICS,
+                                                                           tchecker::refzg::SYNC_ELAPSED_SEMANTICS,
                                                                            tchecker::refdbm::UNBOUNDED_SPREAD, block_size)};
 
   std::shared_ptr<tchecker::tck_reach::concur19::graph_t> graph{
