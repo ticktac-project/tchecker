@@ -80,12 +80,12 @@ static_assert((std::numeric_limits<tchecker::clock_id_t>::min() >= std::numeric_
 /*!
 \brief Definition of reference clock ID
 */
+#if not defined(MIN)
+#define MIN(a, b) ((a) <= (b) ? (a) : (b))
+#endif
 
-// required by vm_t
-static_assert(std::numeric_limits<tchecker::clock_id_t>::max() >= std::numeric_limits<tchecker::integer_t>::max(),
-              "clock_id_t max value should be bigger or equal to tchecker::integer_t for definition of REFCLOCK_ID");
-
-tchecker::clock_id_t const REFCLOCK_ID(std::numeric_limits<tchecker::clock_id_t>::max());
+tchecker::clock_id_t const REFCLOCK_ID(MIN(std::numeric_limits<tchecker::clock_id_t>::max(),
+                                           std::numeric_limits<tchecker::integer_t>::max())); // required by vm_t
 
 /*!
 \brief Definition of reference clock name
