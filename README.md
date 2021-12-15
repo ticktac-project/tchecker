@@ -1,6 +1,6 @@
 # TChecker
 
-[![Build Status](https://travis-ci.org/ticktac-project/tchecker.svg?branch=master)](https://travis-ci.org/ticktac-project/tchecker)
+[![Build and test TChecker](https://github.com/ticktac-project/tchecker/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/ticktac-project/tchecker/actions/workflows/build-and-test.yml)
 [![License](https://img.shields.io/badge/license-MIT-informational.svg)](https://github.com/ticktac-project/tchecker/blob/master/LICENSE)
 
 
