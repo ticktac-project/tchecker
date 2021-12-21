@@ -285,7 +285,7 @@ public:
     if (expr.type() == tchecker::EXPR_TYPE_BAD)
       invalid_expression(expr, "a parenthesized");
 
-    // Write bytecode
+    // Write bytecode
     expr.expr().visit(*this);
   }
 
