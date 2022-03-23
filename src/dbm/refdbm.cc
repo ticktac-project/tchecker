@@ -228,8 +228,9 @@ bool is_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
   return tchecker::dbm::is_le(rdbm1, rdbm2, r.size());
 }
 
-bool is_alu_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
-               tchecker::reference_clock_variables_t const & r, tchecker::integer_t const * l, tchecker::integer_t const * u)
+bool is_alu_star_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
+                    tchecker::reference_clock_variables_t const & r, tchecker::integer_t const * l,
+                    tchecker::integer_t const * u)
 {
   assert(rdbm1 != nullptr);
   assert(rdbm2 != nullptr);
@@ -296,10 +297,10 @@ bool is_alu_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rd
   return true;
 }
 
-bool is_am_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
-              tchecker::reference_clock_variables_t const & r, tchecker::integer_t const * m)
+bool is_am_star_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
+                   tchecker::reference_clock_variables_t const & r, tchecker::integer_t const * m)
 {
-  return is_alu_le(rdbm1, rdbm2, r, m, m);
+  return is_alu_star_le(rdbm1, rdbm2, r, m, m);
 }
 
 bool is_sync_alu_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,

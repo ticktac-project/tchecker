@@ -291,8 +291,9 @@ bool is_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
  \note set l[i]/u[i] to tchecker::clockbounds::NO_BOUND if clock i has no
  lower/upper bound
  */
-bool is_alu_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
-               tchecker::reference_clock_variables_t const & r, tchecker::integer_t const * l, tchecker::integer_t const * u);
+bool is_alu_star_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
+                    tchecker::reference_clock_variables_t const & r, tchecker::integer_t const * l,
+                    tchecker::integer_t const * u);
 
 /*!
  \brief Checks inclusion w.r.t. abstraction aM* (i.e. aM over reference DBMs)
@@ -313,8 +314,8 @@ bool is_alu_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rd
  \note set m[i] to tchecker::clockbounds::NO_BOUND if clock i has no lower/upper
  bound
  */
-bool is_am_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
-              tchecker::reference_clock_variables_t const & r, tchecker::integer_t const * m);
+bool is_am_star_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
+                   tchecker::reference_clock_variables_t const & r, tchecker::integer_t const * m);
 
 /*!
  \brief Checks inclusion w.r.t. abstraction aLU over synchronized valuations

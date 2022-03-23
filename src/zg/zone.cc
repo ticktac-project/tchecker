@@ -53,7 +53,7 @@ bool zone_t::operator<=(tchecker::zg::zone_t const & zone) const
   return tchecker::dbm::is_le(dbm_ptr(), zone.dbm_ptr(), _dim);
 }
 
-bool zone_t::am_le(tchecker::zg::zone_t const & zone, tchecker::clockbounds::map_t const & m) const
+bool zone_t::is_am_le(tchecker::zg::zone_t const & zone, tchecker::clockbounds::map_t const & m) const
 {
   if (this->is_empty())
     return true;
@@ -62,8 +62,8 @@ bool zone_t::am_le(tchecker::zg::zone_t const & zone, tchecker::clockbounds::map
   return tchecker::dbm::is_am_le(dbm_ptr(), zone.dbm_ptr(), _dim, m.ptr());
 }
 
-bool zone_t::alu_le(tchecker::zg::zone_t const & zone, tchecker::clockbounds::map_t const & l,
-                    tchecker::clockbounds::map_t const & u) const
+bool zone_t::is_alu_le(tchecker::zg::zone_t const & zone, tchecker::clockbounds::map_t const & l,
+                       tchecker::clockbounds::map_t const & u) const
 {
   if (this->is_empty())
     return true;

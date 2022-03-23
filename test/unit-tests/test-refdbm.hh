@@ -576,7 +576,7 @@ TEST_CASE("is_le", "[refdbm]")
   REQUIRE(tchecker::refdbm::is_le(rdbm_universal_positive, rdbm_universal_positive, r));
 }
 
-TEST_CASE("is_alu_le", "[refdbm]")
+TEST_CASE("is_alu_star_le", "[refdbm]")
 {
   std::vector<std::string> refclocks{"$0", "$1", "$2"};
   tchecker::reference_clock_variables_t r(refclocks);
@@ -609,7 +609,7 @@ TEST_CASE("is_alu_le", "[refdbm]")
       u[i] = 0;
     }
 
-    REQUIRE(tchecker::refdbm::is_alu_le(rdbm1, rdbm2, r, l, u));
+    REQUIRE(tchecker::refdbm::is_alu_star_le(rdbm1, rdbm2, r, l, u));
   }
 
   SECTION("Zero DBM is aLU*-subsumed by universal positive DBM")
@@ -622,7 +622,7 @@ TEST_CASE("is_alu_le", "[refdbm]")
       u[i] = 0;
     }
 
-    REQUIRE(tchecker::refdbm::is_alu_le(rdbm1, rdbm2, r, l, u));
+    REQUIRE(tchecker::refdbm::is_alu_star_le(rdbm1, rdbm2, r, l, u));
   }
 
   SECTION("Universal DBM is not aLU*-subsumed by universal positive DBM with 0 clock bounds")
@@ -635,7 +635,7 @@ TEST_CASE("is_alu_le", "[refdbm]")
       u[i] = 0;
     }
 
-    REQUIRE_FALSE(tchecker::refdbm::is_alu_le(rdbm1, rdbm2, r, l, u));
+    REQUIRE_FALSE(tchecker::refdbm::is_alu_star_le(rdbm1, rdbm2, r, l, u));
   }
 
   SECTION("Universal DBM is aLU*-subsumed by universal positive DBM with no clock bounds")
@@ -648,7 +648,7 @@ TEST_CASE("is_alu_le", "[refdbm]")
       u[i] = tchecker::clockbounds::NO_BOUND;
     }
 
-    REQUIRE(tchecker::refdbm::is_alu_le(rdbm1, rdbm2, r, l, u));
+    REQUIRE(tchecker::refdbm::is_alu_star_le(rdbm1, rdbm2, r, l, u));
   }
 
   SECTION("Universal DBM is not aLU*-subsumed by zero DBM with no clock bounds, due to reference clocks")
@@ -661,7 +661,7 @@ TEST_CASE("is_alu_le", "[refdbm]")
       u[i] = tchecker::clockbounds::NO_BOUND;
     }
 
-    REQUIRE_FALSE(tchecker::refdbm::is_alu_le(rdbm1, rdbm2, r, l, u));
+    REQUIRE_FALSE(tchecker::refdbm::is_alu_star_le(rdbm1, rdbm2, r, l, u));
   }
 
   SECTION("DBM aLU*-subsumed due to no clock bounds")
@@ -694,7 +694,7 @@ TEST_CASE("is_alu_le", "[refdbm]")
       u[i] = tchecker::clockbounds::NO_BOUND;
     }
 
-    REQUIRE(tchecker::refdbm::is_alu_le(rdbm1, rdbm2, r, l, u));
+    REQUIRE(tchecker::refdbm::is_alu_star_le(rdbm1, rdbm2, r, l, u));
   }
 
   SECTION("DBM not aLU*-subsumed due to clock bounds")
@@ -727,7 +727,7 @@ TEST_CASE("is_alu_le", "[refdbm]")
       u[i] = 3;
     }
 
-    REQUIRE_FALSE(tchecker::refdbm::is_alu_le(rdbm1, rdbm2, r, l, u));
+    REQUIRE_FALSE(tchecker::refdbm::is_alu_star_le(rdbm1, rdbm2, r, l, u));
   }
 
   SECTION("DBM aLU*-subsumed")
@@ -752,7 +752,7 @@ TEST_CASE("is_alu_le", "[refdbm]")
     u[y - refcount] = 2;
     u[z - refcount] = tchecker::clockbounds::NO_BOUND;
 
-    REQUIRE(tchecker::refdbm::is_alu_le(rdbm1, rdbm2, r, l, u));
+    REQUIRE(tchecker::refdbm::is_alu_star_le(rdbm1, rdbm2, r, l, u));
   }
 }
 

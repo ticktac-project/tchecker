@@ -153,8 +153,8 @@ bool operator<=(tchecker::refzg::state_t const & s1, tchecker::refzg::state_t co
  variables valuation, and the zone in s1 is sync-subsumed by the zone in s2,
  false otherwise
 */
-bool sync_alu_le(tchecker::refzg::state_t const & s1, tchecker::refzg::state_t const & s2,
-                 tchecker::clockbounds::map_t const & l, tchecker::clockbounds::map_t const & u);
+bool is_sync_alu_le(tchecker::refzg::state_t const & s1, tchecker::refzg::state_t const & s2,
+                    tchecker::clockbounds::map_t const & l, tchecker::clockbounds::map_t const & u);
 
 /*!
  \brief Hash
