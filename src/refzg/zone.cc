@@ -55,6 +55,19 @@ bool zone_t::is_alu_star_le(tchecker::refzg::zone_t const & zone, tchecker::cloc
          tchecker::refdbm::is_alu_star_le(dbm_ptr(), zone.dbm_ptr(), *_ref_clocks, l.ptr(), u.ptr());
 }
 
+bool zone_t::is_time_elapse_am_star_le(tchecker::refzg::zone_t const & zone, tchecker::clockbounds::map_t const & m) const
+{
+  return (_ref_clocks == zone._ref_clocks) &&
+         tchecker::refdbm::is_time_elapse_am_star_le(dbm_ptr(), zone.dbm_ptr(), *_ref_clocks, m.ptr());
+}
+
+bool zone_t::is_time_elapse_alu_star_le(tchecker::refzg::zone_t const & zone, tchecker::clockbounds::map_t const & l,
+                                        tchecker::clockbounds::map_t const & u) const
+{
+  return (_ref_clocks == zone._ref_clocks) &&
+         tchecker::refdbm::is_time_elapse_alu_star_le(dbm_ptr(), zone.dbm_ptr(), *_ref_clocks, l.ptr(), u.ptr());
+}
+
 bool zone_t::is_sync_alu_le(tchecker::refzg::zone_t const & zone, tchecker::clockbounds::map_t const & l,
                             tchecker::clockbounds::map_t const & u) const
 {

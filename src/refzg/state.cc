@@ -52,6 +52,18 @@ bool operator<=(tchecker::refzg::state_t const & s1, tchecker::refzg::state_t co
   return tchecker::ta::operator==(s1, s2) && (s1.zone() <= s2.zone());
 }
 
+bool is_alu_star_le(tchecker::refzg::state_t const & s1, tchecker::refzg::state_t const & s2,
+                    tchecker::clockbounds::map_t const & l, tchecker::clockbounds::map_t const & u)
+{
+  return tchecker::ta::operator==(s1, s2) && s1.zone().is_alu_star_le(s2.zone(), l, u);
+}
+
+bool is_time_elapse_alu_star_le(tchecker::refzg::state_t const & s1, tchecker::refzg::state_t const & s2,
+                                tchecker::clockbounds::map_t const & l, tchecker::clockbounds::map_t const & u)
+{
+  return tchecker::ta::operator==(s1, s2) && s1.zone().is_time_elapse_alu_star_le(s2.zone(), l, u);
+}
+
 bool is_sync_alu_le(tchecker::refzg::state_t const & s1, tchecker::refzg::state_t const & s2,
                     tchecker::clockbounds::map_t const & l, tchecker::clockbounds::map_t const & u)
 {

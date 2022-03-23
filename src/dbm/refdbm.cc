@@ -244,6 +244,53 @@ bool is_alu_star_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const
   // or Z{r(y),y} >= (<=,-Uy) and Z'{t,y} < Z{t,y} for some reference clock t and offset clock y
   // or Z'{x,t} < Z{x,t} and Z'{x,t} + (<,-Lx) < Z{r(x),t} for some reference clock t and offset clock x
   // or Z{r(y),y} >= (<=,-Uy) and Z’{x,y} < Z{x,y} and Z’{x,y} + (<,-Lx) < Z{r(x),y} for some offset clocks x, y
+  //
+  // The last three conditions are identical to the test of aLU* inclusion
+  // w.r.t. to time-elapse zones
+
+  std::size_t const rdim = r.size();
+  std::size_t const refcount = r.refcount();
+
+  // First condition above
+  for (tchecker::clock_id_t t1 = 0; t1 < refcount; ++t1)
+    for (tchecker::clock_id_t t2 = 0; t2 < refcount; ++t2)
+      if (RDBM1(t1, t2) > RDBM2(t1, t2))
+        return false;
+
+  // Other conditions
+  return tchecker::refdbm::is_time_elapse_alu_star_le(rdbm1, rdbm2, r, l, u);
+}
+
+bool is_am_star_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
+                   tchecker::reference_clock_variables_t const & r, tchecker::integer_t const * m)
+{
+  return is_alu_star_le(rdbm1, rdbm2, r, m, m);
+}
+
+bool is_time_elapse_alu_star_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
+                                tchecker::reference_clock_variables_t const & r, tchecker::integer_t const * l,
+                                tchecker::integer_t const * u)
+{
+  assert(rdbm1 != nullptr);
+  assert(rdbm2 != nullptr);
+  assert(tchecker::refdbm::is_tight(rdbm1, r));
+  assert(tchecker::refdbm::is_tight(rdbm2, r));
+  assert(tchecker::refdbm::is_consistent(rdbm1, r));
+  assert(tchecker::refdbm::is_consistent(rdbm2, r));
+
+  // In Z' = time-elapse(Z), we have:
+  // - Z'{t1,t2} = (<,infinity) if t1 != t2 are both reference clocks
+  // - Z'{t1,t2} = (<=,0)       if t1 = t2 are both reference clocks
+  // - Z'{x,y} = Z{x,y}         otherwise
+  //
+  // The inclusion test for aLU* has been adapted to simulate time-elapsed dbms
+  // as above. It only consists in removing the first condition Z{t1,t2} >
+  // Z'{t1,t2} which is never true in a time-elapsed dbm.
+  //
+  // time-elapse(Z) is not included in aLU*(time-elapse(Z')) if:
+  //    Z{r(y),y} >= (<=,-Uy) and Z'{t,y} < Z{t,y} for some reference clock t and offset clock y
+  // or Z'{x,t} < Z{x,t} and Z'{x,t} + (<,-Lx) < Z{r(x),t} for some reference clock t and offset clock x
+  // or Z{r(y),y} >= (<=,-Uy) and Z'{x,y} < Z{x,y} and Z'{x,y} + (<,-Lx) < Z{r(x),y} for some offset clocks x,y
 
   std::size_t const rdim = r.size();
   std::size_t const refcount = r.refcount();
@@ -254,26 +301,30 @@ bool is_alu_star_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const
     assert(Ly < tchecker::dbm::INF_VALUE);
     assert(Uy < tchecker::dbm::INF_VALUE);
 
-    if (Ly == tchecker::clockbounds::NO_BOUND)
-      continue;
-
     tchecker::clock_id_t const ty = r.refmap()[y];
-    tchecker::dbm::db_t const lt_minus_Ly = tchecker::dbm::db(tchecker::dbm::LT, -Ly);
 
-    for (tchecker::clock_id_t t = 0; t < refcount; ++t)
-      if ((RDBM2(y, t) < RDBM1(y, t)) && (tchecker::dbm::sum(RDBM2(y, t), lt_minus_Ly) < RDBM1(ty, t)))
-        return false;
+    // Condition 2 above on y instead of x
+    if (Ly != tchecker::clockbounds::NO_BOUND) {
+      tchecker::dbm::db_t const lt_minus_Ly = tchecker::dbm::db(tchecker::dbm::LT, -Ly);
 
+      for (tchecker::clock_id_t t = 0; t < refcount; ++t)
+        if ((RDBM2(y, t) < RDBM1(y, t)) && (tchecker::dbm::sum(RDBM2(y, t), lt_minus_Ly) < RDBM1(ty, t)))
+          return false;
+    }
+
+    // First part of conditions 1 and 3 above
     if (Uy == tchecker::clockbounds::NO_BOUND)
       continue;
 
     if (RDBM1(ty, y) < tchecker::dbm::db(tchecker::dbm::LE, -Uy))
       continue;
 
+    // Second part of condition 1 above
     for (tchecker::clock_id_t t = 0; t < refcount; ++t)
       if (RDBM2(t, y) < RDBM1(t, y))
         return false;
 
+    // Last two parts of condition 3 above
     for (tchecker::clock_id_t x = refcount; x < rdim; ++x) {
       tchecker::integer_t const Lx = L(x);
       assert(Lx < tchecker::dbm::INF_VALUE);
@@ -289,18 +340,13 @@ bool is_alu_star_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const
     }
   }
 
-  for (tchecker::clock_id_t t1 = 0; t1 < refcount; ++t1)
-    for (tchecker::clock_id_t t2 = 0; t2 < refcount; ++t2)
-      if (RDBM1(t1, t2) > RDBM2(t1, t2))
-        return false;
-
   return true;
 }
 
-bool is_am_star_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
-                   tchecker::reference_clock_variables_t const & r, tchecker::integer_t const * m)
+bool is_time_elapse_am_star_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
+                               tchecker::reference_clock_variables_t const & r, tchecker::integer_t const * m)
 {
-  return is_alu_star_le(rdbm1, rdbm2, r, m, m);
+  return tchecker::refdbm::is_time_elapse_alu_star_le(rdbm1, rdbm2, r, m, m);
 }
 
 bool is_sync_alu_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
