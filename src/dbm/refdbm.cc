@@ -243,10 +243,8 @@ bool is_alu_star_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const
 
   // Z is not included in aLU*(Z') if there exists two clocks x, y such that:
   //     Z'{y,x} < Z{y,x}
-  // and (<=,Ux) + Z{r(x),x} >= (<=,0)
-  // and (<,-Ly) + Z'{y,x} < Z{r(y),x}
-  // considering Ux=infinity if x is a reference clock, and Ly=infinity if y is
-  // a reference clock
+  // and (<=,Ux) + Z{r(x),x} >= (<=,0) if x is a clock (not a reference clock)
+  // and (<,-Ly) + Z'{y,x} < Z{r(y),x} if y is a clock (not a reference clock)
 
   std::size_t const rdim = r.size();
   std::size_t const refcount = r.refcount();
@@ -270,7 +268,8 @@ bool is_alu_star_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const
       if (RDBM2(y, x) >= RDBM1(y, x))
         continue;
 
-      // second condition (<=,Ux) + Z{r(x),x} >= (<=,0) true if x is a ref clock
+      // second condition (<=,Ux) + Z{r(x),x} >= (<=,0) if x is a clock (not a
+      // reference clock)
       if (x >= refcount) {
         tchecker::dbm::db_t const le_Ux = tchecker::dbm::db(tchecker::dbm::LE, Ux);
         tchecker::clock_id_t const rx = refmap[x];
@@ -279,7 +278,8 @@ bool is_alu_star_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const
           continue;
       }
 
-      // third condition (<,-Ly) + Z'{y,x} < Z{r(y),x} true if y is a ref clock
+      // third condition (<,-Ly) + Z'{y,x} < Z{r(y),x} if y is a clock (not a
+      // reference clock)
       if (y >= refcount) {
         tchecker::dbm::db_t const lt_minus_Ly = tchecker::dbm::db(tchecker::dbm::LT, -Ly);
         tchecker::clock_id_t const ry = refmap[y];
@@ -321,10 +321,8 @@ bool is_time_elapse_alu_star_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm
   // Recall the inclusion test for aLU*:
   // Z is not included in aLU*(Z') if there exists two clocks x, y such that:
   //     Z'{y,x} < Z{y,x}
-  // and (<=,Ux) + Z{r(x),x} >= (<=,0)
-  // and (<,-Ly) + Z'{y,x} < Z{r(y),x}
-  // considering Ux=infinity if x is a reference clock, and Ly=infinity if y is
-  // a reference clock
+  // and (<=,Ux) + Z{r(x),x} >= (<=,0) if x is a clock (not a reference clock)
+  // and (<,-Ly) + Z'{y,x} < Z{r(y),x} if y is a clock (not a reference clock)
   //
   // The 1st and 3rd conditions are false in a time-elapse zone if x is a
   // reference clock. So we only need to check for any clock or reference clock
@@ -352,14 +350,15 @@ bool is_time_elapse_alu_star_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm
       if (RDBM2(y, x) >= RDBM1(y, x))
         continue;
 
-      // second condition (<=,Ux) + Z{r(x),x} >= (<=,0)
+      // second condition (<=,Ux) + Z{r(x),x} >= (<=,0) for clock x
       tchecker::dbm::db_t const le_Ux = tchecker::dbm::db(tchecker::dbm::LE, Ux);
       tchecker::clock_id_t const rx = refmap[x];
 
       if (tchecker::dbm::sum(le_Ux, RDBM1(rx, x)) < tchecker::dbm::LE_ZERO)
         continue;
 
-      // third condition (<,-Ly) + Z'{y,x} < Z{r(y),x} true if y is a ref clock
+      // third condition (<,-Ly) + Z'{y,x} < Z{r(y),x} if y is a clock (not a
+      // reference clock)
       if (y >= refcount) {
         tchecker::dbm::db_t const lt_minus_Ly = tchecker::dbm::db(tchecker::dbm::LT, -Ly);
         tchecker::clock_id_t const ry = refmap[y];
