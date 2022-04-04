@@ -232,6 +232,8 @@ bool is_alu_star_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const
                     tchecker::reference_clock_variables_t const & r, tchecker::integer_t const * l,
                     tchecker::integer_t const * u)
 {
+  static_assert(tchecker::dbm::INF_VALUE != tchecker::clockbounds::NO_BOUND);
+
   assert(rdbm1 != nullptr);
   assert(rdbm2 != nullptr);
   assert(tchecker::refdbm::is_tight(rdbm1, r));
@@ -239,26 +241,59 @@ bool is_alu_star_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const
   assert(tchecker::refdbm::is_consistent(rdbm1, r));
   assert(tchecker::refdbm::is_consistent(rdbm2, r));
 
-  // Z is not included in aLU*(Z') if:
-  //    Z{t1,t2} > Z'(t1,t2} for some reference clocks t1, t2
-  // or Z{r(y),y} >= (<=,-Uy) and Z'{t,y} < Z{t,y} for some reference clock t and offset clock y
-  // or Z'{x,t} < Z{x,t} and Z'{x,t} + (<,-Lx) < Z{r(x),t} for some reference clock t and offset clock x
-  // or Z{r(y),y} >= (<=,-Uy) and Z’{x,y} < Z{x,y} and Z’{x,y} + (<,-Lx) < Z{r(x),y} for some offset clocks x, y
-  //
-  // The last three conditions are identical to the test of aLU* inclusion
-  // w.r.t. to time-elapse zones
+  // Z is not included in aLU*(Z') if there exists two clocks x, y such that:
+  //     Z'{y,x} < Z{y,x}
+  // and (<=,Ux) + Z{r(x),x} >= (<=,0)
+  // and (<,-Ly) + Z'{y,x} < Z{r(y),x}
+  // considering Ux=infinity if x is a reference clock, and Ly=infinity if y is
+  // a reference clock
 
   std::size_t const rdim = r.size();
   std::size_t const refcount = r.refcount();
+  std::vector<tchecker::clock_id_t> const & refmap = r.refmap();
 
-  // First condition above
-  for (tchecker::clock_id_t t1 = 0; t1 < refcount; ++t1)
-    for (tchecker::clock_id_t t2 = 0; t2 < refcount; ++t2)
-      if (RDBM1(t1, t2) > RDBM2(t1, t2))
-        return false;
+  for (tchecker::clock_id_t y = 0; y < rdim; ++y) {
+    tchecker::integer_t const Ly = y < refcount ? tchecker::dbm::INF_VALUE : L(y);
 
-  // Other conditions
-  return tchecker::refdbm::is_time_elapse_alu_star_le(rdbm1, rdbm2, r, l, u);
+    // optimization: 3rd condition is false
+    if (Ly == tchecker::clockbounds::NO_BOUND)
+      continue;
+
+    for (tchecker::clock_id_t x = 0; x < rdim; ++x) {
+      tchecker::integer_t const Ux = x < refcount ? tchecker::dbm::INF_VALUE : U(x);
+
+      // optimization: 2nd condition is false
+      if (Ux == tchecker::clockbounds::NO_BOUND)
+        continue;
+
+      // first condition: Z'{y,x} < Z{y,x}
+      if (RDBM2(y, x) >= RDBM1(y, x))
+        continue;
+
+      // second condition (<=,Ux) + Z{r(x),x} >= (<=,0) true if x is a ref clock
+      if (x >= refcount) {
+        tchecker::dbm::db_t const le_Ux = tchecker::dbm::db(tchecker::dbm::LE, Ux);
+        tchecker::clock_id_t const rx = refmap[x];
+
+        if (tchecker::dbm::sum(le_Ux, RDBM1(rx, x)) < tchecker::dbm::LE_ZERO)
+          continue;
+      }
+
+      // third condition (<,-Ly) + Z'{y,x} < Z{r(y),x} true if y is a ref clock
+      if (y >= refcount) {
+        tchecker::dbm::db_t const lt_minus_Ly = tchecker::dbm::db(tchecker::dbm::LT, -Ly);
+        tchecker::clock_id_t const ry = refmap[y];
+
+        if (tchecker::dbm::sum(lt_minus_Ly, RDBM2(y, x)) >= RDBM1(ry, x))
+          continue;
+      }
+
+      // all 3 conditions satisfied
+      return false;
+    }
+  }
+
+  return true;
 }
 
 bool is_am_star_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const * rdbm2,
@@ -279,64 +314,62 @@ bool is_time_elapse_alu_star_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm
   assert(tchecker::refdbm::is_consistent(rdbm2, r));
 
   // In Z' = time-elapse(Z), we have:
-  // - Z'{t1,t2} = (<,infinity) if t1 != t2 are both reference clocks
-  // - Z'{t1,t2} = (<=,0)       if t1 = t2 are both reference clocks
-  // - Z'{x,y} = Z{x,y}         otherwise
+  // - Z'{y,t} = (<,infinity) if t is a reference clock and y is a clock or a
+  //   reference clock, with y != t
+  // - Z'{y,x} = Z{y,x}       otherwise
   //
-  // The inclusion test for aLU* has been adapted to simulate time-elapsed dbms
-  // as above. It only consists in removing the first condition Z{t1,t2} >
-  // Z'{t1,t2} which is never true in a time-elapsed dbm.
+  // Recall the inclusion test for aLU*:
+  // Z is not included in aLU*(Z') if there exists two clocks x, y such that:
+  //     Z'{y,x} < Z{y,x}
+  // and (<=,Ux) + Z{r(x),x} >= (<=,0)
+  // and (<,-Ly) + Z'{y,x} < Z{r(y),x}
+  // considering Ux=infinity if x is a reference clock, and Ly=infinity if y is
+  // a reference clock
   //
-  // time-elapse(Z) is not included in aLU*(time-elapse(Z')) if:
-  //    Z{r(y),y} >= (<=,-Uy) and Z'{t,y} < Z{t,y} for some reference clock t and offset clock y
-  // or Z'{x,t} < Z{x,t} and Z'{x,t} + (<,-Lx) < Z{r(x),t} for some reference clock t and offset clock x
-  // or Z{r(y),y} >= (<=,-Uy) and Z'{x,y} < Z{x,y} and Z'{x,y} + (<,-Lx) < Z{r(x),y} for some offset clocks x,y
+  // The 1st and 3rd conditions are false in a time-elapse zone if x is a
+  // reference clock. So we only need to check for any clock or reference clock
+  // y, and any clock x (not reference clock)
 
   std::size_t const rdim = r.size();
   std::size_t const refcount = r.refcount();
+  std::vector<tchecker::clock_id_t> const & refmap = r.refmap();
 
-  for (tchecker::clock_id_t y = refcount; y < rdim; ++y) {
-    tchecker::integer_t const Ly = L(y);
-    tchecker::integer_t const Uy = U(y);
-    assert(Ly < tchecker::dbm::INF_VALUE);
-    assert(Uy < tchecker::dbm::INF_VALUE);
+  for (tchecker::clock_id_t y = 0; y < rdim; ++y) {
+    tchecker::integer_t const Ly = y < refcount ? tchecker::dbm::INF_VALUE : L(y);
 
-    tchecker::clock_id_t const ty = r.refmap()[y];
-
-    // Condition 2 above on y instead of x
-    if (Ly != tchecker::clockbounds::NO_BOUND) {
-      tchecker::dbm::db_t const lt_minus_Ly = tchecker::dbm::db(tchecker::dbm::LT, -Ly);
-
-      for (tchecker::clock_id_t t = 0; t < refcount; ++t)
-        if ((RDBM2(y, t) < RDBM1(y, t)) && (tchecker::dbm::sum(RDBM2(y, t), lt_minus_Ly) < RDBM1(ty, t)))
-          return false;
-    }
-
-    // First part of conditions 1 and 3 above
-    if (Uy == tchecker::clockbounds::NO_BOUND)
+    // optimization: 3rd condition is false
+    if (Ly == tchecker::clockbounds::NO_BOUND)
       continue;
 
-    if (RDBM1(ty, y) < tchecker::dbm::db(tchecker::dbm::LE, -Uy))
-      continue;
-
-    // Second part of condition 1 above
-    for (tchecker::clock_id_t t = 0; t < refcount; ++t)
-      if (RDBM2(t, y) < RDBM1(t, y))
-        return false;
-
-    // Last two parts of condition 3 above
     for (tchecker::clock_id_t x = refcount; x < rdim; ++x) {
-      tchecker::integer_t const Lx = L(x);
-      assert(Lx < tchecker::dbm::INF_VALUE);
+      tchecker::integer_t const Ux = U(x);
 
-      if (Lx == tchecker::clockbounds::NO_BOUND)
+      // optimization: 2nd condition is false
+      if (Ux == tchecker::clockbounds::NO_BOUND)
         continue;
 
-      tchecker::clock_id_t const tx = r.refmap()[x];
-      tchecker::dbm::db_t const lt_minus_Lx = tchecker::dbm::db(tchecker::dbm::LT, -Lx);
+      // first condition: Z'{y,x} < Z{y,x}
+      if (RDBM2(y, x) >= RDBM1(y, x))
+        continue;
 
-      if ((RDBM2(x, y) < RDBM1(x, y)) && (tchecker::dbm::sum(RDBM2(x, y), lt_minus_Lx) < RDBM1(tx, y)))
-        return false;
+      // second condition (<=,Ux) + Z{r(x),x} >= (<=,0)
+      tchecker::dbm::db_t const le_Ux = tchecker::dbm::db(tchecker::dbm::LE, Ux);
+      tchecker::clock_id_t const rx = refmap[x];
+
+      if (tchecker::dbm::sum(le_Ux, RDBM1(rx, x)) < tchecker::dbm::LE_ZERO)
+        continue;
+
+      // third condition (<,-Ly) + Z'{y,x} < Z{r(y),x} true if y is a ref clock
+      if (y >= refcount) {
+        tchecker::dbm::db_t const lt_minus_Ly = tchecker::dbm::db(tchecker::dbm::LT, -Ly);
+        tchecker::clock_id_t const ry = refmap[y];
+
+        if (tchecker::dbm::sum(lt_minus_Ly, RDBM2(y, x)) >= RDBM1(ry, x))
+          continue;
+      }
+
+      // all 3 conditions satisfied
+      return false;
     }
   }
 
