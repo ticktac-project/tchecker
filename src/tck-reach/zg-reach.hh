@@ -140,7 +140,6 @@ public:
    \note this keeps a pointer on zg
   */
   graph_t(std::shared_ptr<tchecker::zg::zg_t> const & zg, std::size_t block_size, std::size_t table_size);
-  ;
 
   /*!
    \brief Destructor
