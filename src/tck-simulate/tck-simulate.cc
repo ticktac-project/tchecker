@@ -22,10 +22,13 @@
  \brief Command-line simulator for TChecker timed automata models
  */
 
-static struct option long_options[] = {
-    {"random", required_argument, 0, 'r'}, {"output", required_argument, 0, 'o'}, {"help", no_argument, 0, 'h'}, {0, 0, 0, 0}};
+static struct option long_options[] = {{"interactive", no_argument, 0, 'i'},
+                                       {"random", required_argument, 0, 'r'},
+                                       {"output", required_argument, 0, 'o'},
+                                       {"help", no_argument, 0, 'h'},
+                                       {0, 0, 0, 0}};
 
-static char * const options = (char *)"r:ho:";
+static char * const options = (char *)"ir:ho:";
 
 /*!
 \brief Print usage message for program progname
@@ -33,12 +36,14 @@ static char * const options = (char *)"r:ho:";
 void usage(char * progname)
 {
   std::cerr << "Usage: " << progname << " [options] [file]" << std::endl;
+  std::cerr << "   -i          interactive simulation" << std::endl;
   std::cerr << "   -r N        randomized simulation, N steps" << std::endl;
   std::cerr << "   -o file     output file for simulation tarce" << std::endl;
   std::cerr << "   -h          help" << std::endl;
   std::cerr << "reads from standard input if file is not provided" << std::endl;
 }
 
+static bool interactive_simulation = false;
 static bool randomized_simulation = false;
 static bool help = false;
 static std::size_t nsteps = 0;
@@ -64,6 +69,9 @@ int parse_command_line(int argc, char * argv[])
       throw std::runtime_error("Unknown command-line option");
 
     switch (c) {
+    case 'i':
+      interactive_simulation = true;
+      break;
     case 'r': {
       randomized_simulation = true;
       long long int l = std::strtoll(optarg, nullptr, 10);
@@ -115,6 +123,8 @@ std::shared_ptr<tchecker::parsing::system_declaration_t> load_system(std::string
 */
 int main(int argc, char * argv[])
 {
+  std::ostream * os = &std::cout;
+
   try {
     int optindex = parse_command_line(argc, argv);
 
@@ -129,28 +139,36 @@ int main(int argc, char * argv[])
       return EXIT_SUCCESS;
     }
 
+    if (randomized_simulation && interactive_simulation) {
+      std::cerr << "Interactive and randomized simulations are mutually exclusive" << std::endl;
+      return EXIT_FAILURE;
+    }
+
     std::string input_file = (optindex == argc ? "" : argv[optindex]);
     std::shared_ptr<tchecker::parsing::system_declaration_t> sysdecl{load_system(input_file)};
     if (sysdecl.get() == nullptr)
       return EXIT_FAILURE;
 
-    std::ostream * os = nullptr;
-    if (output_filename != "") {
+    if (output_filename != "")
       os = new std::ofstream(output_filename, std::ios::out);
-    }
-    else
-      os = &std::cout;
 
-    if (randomized_simulation) {
-      std::shared_ptr<tchecker::tck_simulate::graph_t> g = tchecker::tck_simulate::randomized_simulation(*sysdecl, nsteps);
-      tchecker::tck_simulate::dot_output(*os, *g, sysdecl->name());
-    }
+    std::shared_ptr<tchecker::tck_simulate::graph_t> g{nullptr};
+    if (interactive_simulation)
+      g = tchecker::tck_simulate::interactive_simulation(*sysdecl);
+    else if (randomized_simulation)
+      g = tchecker::tck_simulate::randomized_simulation(*sysdecl, nsteps);
+    else
+      throw std::runtime_error("Select one of interactive or randomized simulation");
+
+    tchecker::tck_simulate::dot_output(*os, *g, sysdecl->name());
 
     if (os != &std::cout)
       delete os;
   }
   catch (std::exception & e) {
     std::cerr << tchecker::log_error << e.what() << std::endl;
+    if (os != &std::cout)
+      delete os;
   }
 
   return EXIT_SUCCESS;

@@ -33,6 +33,14 @@ system of timed processes sysdecl
 std::shared_ptr<tchecker::tck_simulate::graph_t> randomized_simulation(tchecker::parsing::system_declaration_t const & sysdecl,
                                                                        std::size_t nsteps);
 
+/*!
+\brief Interactive simulation of timed automata
+\param sysdecl : system declaration
+\return the simulation tree built from interactive of the system of timed processes sysdecl
+*/
+std::shared_ptr<tchecker::tck_simulate::graph_t>
+interactive_simulation(tchecker::parsing::system_declaration_t const & sysdecl);
+
 } // namespace tck_simulate
 
 } // namespace tchecker
