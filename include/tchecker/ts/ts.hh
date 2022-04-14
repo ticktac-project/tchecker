@@ -74,21 +74,21 @@ public:
    \param sst : a tuple (status, state, transition)
    \return the status in sst
   */
-  inline tchecker::state_status_t status(sst_t const & sst) { return std::get<0>(sst); }
+  inline tchecker::state_status_t status(sst_t const & sst) const { return std::get<0>(sst); }
 
   /*!
    \brief Accessor
    \param sst : a tuple (status, state, transition)
    \return the state in sst
   */
-  inline STATE state(sst_t const & sst) { return std::get<1>(sst); }
+  inline STATE state(sst_t const & sst) const { return std::get<1>(sst); }
 
   /*!
    \brief Accessor
    \param sst : a tuple (status, state, transition)
    \return the transition in sst
   */
-  inline TRANSITION transition(sst_t const & sst) { return std::get<2>(sst); }
+  inline TRANSITION transition(sst_t const & sst) const { return std::get<2>(sst); }
 
   /*!
   \brief Initial states and transitions
@@ -114,7 +114,7 @@ public:
   \return true if labels is not empty and labels is included in the set of
   labels of state s, false otherwise
    */
-  virtual bool satisfies(CONST_STATE const & s, boost::dynamic_bitset<> const & labels) = 0;
+  virtual bool satisfies(CONST_STATE const & s, boost::dynamic_bitset<> const & labels) const = 0;
 
   /*!
    \brief Accessor to state attributes as strings
@@ -122,7 +122,7 @@ public:
    \param m : a map of string pairs (key, value)
    \post attributes of state s have been added to map m
    */
-  virtual void attributes(CONST_STATE const & s, std::map<std::string, std::string> & m) = 0;
+  virtual void attributes(CONST_STATE const & s, std::map<std::string, std::string> & m) const = 0;
 
   /*!
    \brief Accessor to transition attributes as strings
@@ -130,7 +130,7 @@ public:
    \param m : a map of string pairs (key, value)
    \post attributes of transition t have been added to map m
    */
-  virtual void attributes(CONST_TRANSITION const & t, std::map<std::string, std::string> & m) = 0;
+  virtual void attributes(CONST_TRANSITION const & t, std::map<std::string, std::string> & m) const = 0;
 };
 
 /*!

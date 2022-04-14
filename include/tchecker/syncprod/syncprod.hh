@@ -447,7 +447,7 @@ public:
   \return true if labels is not empty and labels is included in the set of
   labels of state s, false otherwise
    */
-  virtual bool satisfies(tchecker::syncprod::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels);
+  virtual bool satisfies(tchecker::syncprod::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels) const;
 
   /*!
    \brief Accessor to state attributes as strings
@@ -455,7 +455,7 @@ public:
    \param m : a map of string pairs (key, value)
    \post the tuple of locations in s as been added to m
    */
-  virtual void attributes(tchecker::syncprod::const_state_sptr_t const & s, std::map<std::string, std::string> & m);
+  virtual void attributes(tchecker::syncprod::const_state_sptr_t const & s, std::map<std::string, std::string> & m) const;
 
   /*!
    \brief Accessor to transition attributes as strings
@@ -463,7 +463,7 @@ public:
    \param m : a map of string pairs (key, value)
    \post the tuple of edges in t has been added to t
    */
-  virtual void attributes(tchecker::syncprod::const_transition_sptr_t const & t, std::map<std::string, std::string> & m);
+  virtual void attributes(tchecker::syncprod::const_transition_sptr_t const & t, std::map<std::string, std::string> & m) const;
 
   /*!
    \brief Accessor

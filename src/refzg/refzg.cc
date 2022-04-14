@@ -127,17 +127,17 @@ void refzg_t::next(tchecker::refzg::const_state_sptr_t const & s, tchecker::refz
   v.push_back(std::make_tuple(status, nexts, nextt));
 }
 
-bool refzg_t::satisfies(tchecker::refzg::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels)
+bool refzg_t::satisfies(tchecker::refzg::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels) const
 {
   return tchecker::refzg::satisfies(*_system, *s, labels);
 }
 
-void refzg_t::attributes(tchecker::refzg::const_state_sptr_t const & s, std::map<std::string, std::string> & m)
+void refzg_t::attributes(tchecker::refzg::const_state_sptr_t const & s, std::map<std::string, std::string> & m) const
 {
   tchecker::refzg::attributes(*_system, *s, m);
 }
 
-void refzg_t::attributes(tchecker::refzg::const_transition_sptr_t const & t, std::map<std::string, std::string> & m)
+void refzg_t::attributes(tchecker::refzg::const_transition_sptr_t const & t, std::map<std::string, std::string> & m) const
 {
   tchecker::refzg::attributes(*_system, *t, m);
 }
