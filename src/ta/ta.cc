@@ -187,17 +187,17 @@ void ta_t::next(tchecker::ta::const_state_sptr_t const & s, tchecker::ta::outgoi
   v.push_back(std::make_tuple(status, nexts, t));
 }
 
-bool ta_t::satisfies(tchecker::ta::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels)
+bool ta_t::satisfies(tchecker::ta::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels) const
 {
   return tchecker::ta::satisfies(*_system, *s, labels);
 }
 
-void ta_t::attributes(tchecker::ta::const_state_sptr_t const & s, std::map<std::string, std::string> & m)
+void ta_t::attributes(tchecker::ta::const_state_sptr_t const & s, std::map<std::string, std::string> & m) const
 {
   tchecker::ta::attributes(*_system, *s, m);
 }
 
-void ta_t::attributes(tchecker::ta::const_transition_sptr_t const & t, std::map<std::string, std::string> & m)
+void ta_t::attributes(tchecker::ta::const_transition_sptr_t const & t, std::map<std::string, std::string> & m) const
 {
   tchecker::ta::attributes(*_system, *t, m);
 }
