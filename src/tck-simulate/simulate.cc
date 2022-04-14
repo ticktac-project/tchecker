@@ -49,6 +49,8 @@ std::shared_ptr<tchecker::tck_simulate::graph_t> randomized_simulation(tchecker:
 
   zg->initial(v);
   std::size_t k = tchecker::tck_simulate::randomized_select(v);
+  if (k == tchecker::tck_simulate::NO_SELECTION)
+    return g;
   tchecker::tck_simulate::graph_t::node_sptr_t previous_node = g->add_node(zg->state(v[k]));
   v.clear();
 
@@ -56,6 +58,8 @@ std::shared_ptr<tchecker::tck_simulate::graph_t> randomized_simulation(tchecker:
     zg->next(previous_node->state_ptr(), v);
 
     std::size_t k = tchecker::tck_simulate::randomized_select(v);
+    if (k == tchecker::tck_simulate::NO_SELECTION)
+      break;
     tchecker::tck_simulate::graph_t::node_sptr_t node = g->add_node(zg->state(v[k]));
     g->add_edge(previous_node, node, *zg->transition(v[k]));
     v.clear();
