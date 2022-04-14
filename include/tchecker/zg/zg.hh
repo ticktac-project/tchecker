@@ -309,6 +309,21 @@ public:
    */
   tchecker::zg::zg_t & operator=(tchecker::zg::zg_t &&) = delete;
 
+  using tchecker::ts::full_ts_t<tchecker::zg::state_sptr_t, tchecker::zg::const_state_sptr_t, tchecker::zg::transition_sptr_t,
+                                tchecker::zg::const_transition_sptr_t, tchecker::zg::initial_range_t,
+                                tchecker::zg::outgoing_edges_range_t, tchecker::zg::initial_value_t,
+                                tchecker::zg::outgoing_edges_value_t>::status;
+
+  using tchecker::ts::full_ts_t<tchecker::zg::state_sptr_t, tchecker::zg::const_state_sptr_t, tchecker::zg::transition_sptr_t,
+                                tchecker::zg::const_transition_sptr_t, tchecker::zg::initial_range_t,
+                                tchecker::zg::outgoing_edges_range_t, tchecker::zg::initial_value_t,
+                                tchecker::zg::outgoing_edges_value_t>::state;
+
+  using tchecker::ts::full_ts_t<tchecker::zg::state_sptr_t, tchecker::zg::const_state_sptr_t, tchecker::zg::transition_sptr_t,
+                                tchecker::zg::const_transition_sptr_t, tchecker::zg::initial_range_t,
+                                tchecker::zg::outgoing_edges_range_t, tchecker::zg::initial_value_t,
+                                tchecker::zg::outgoing_edges_value_t>::transition;
+
   /*!
    \brief Accessor
    \return range of initial edges

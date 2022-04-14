@@ -70,6 +70,27 @@ public:
   virtual ~ts_t() = default;
 
   /*!
+   \brief Accessor
+   \param sst : a tuple (status, state, transition)
+   \return the status in sst
+  */
+  inline tchecker::state_status_t status(sst_t const & sst) { return std::get<0>(sst); }
+
+  /*!
+   \brief Accessor
+   \param sst : a tuple (status, state, transition)
+   \return the state in sst
+  */
+  inline STATE state(sst_t const & sst) { return std::get<1>(sst); }
+
+  /*!
+   \brief Accessor
+   \param sst : a tuple (status, state, transition)
+   \return the transition in sst
+  */
+  inline TRANSITION transition(sst_t const & sst) { return std::get<2>(sst); }
+
+  /*!
   \brief Initial states and transitions
   \param v : container
   \post all tuples (status, s, t) of status, initial states and transitions have
@@ -273,6 +294,9 @@ public:
   */
   virtual void next(CONST_STATE const & s, std::vector<sst_t> & v) { next(s, v, tchecker::STATE_OK); }
 
+  using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::status;
+  using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::state;
+  using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::transition;
   using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::satisfies;
   using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::attributes;
 };

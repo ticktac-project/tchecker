@@ -381,6 +381,21 @@ public:
    */
   tchecker::syncprod::syncprod_t & operator=(tchecker::syncprod::syncprod_t &&) = delete;
 
+  using tchecker::ts::full_ts_t<tchecker::syncprod::state_sptr_t, tchecker::syncprod::const_state_sptr_t,
+                                tchecker::syncprod::transition_sptr_t, tchecker::syncprod::const_transition_sptr_t,
+                                tchecker::syncprod::initial_range_t, tchecker::syncprod::outgoing_edges_range_t,
+                                tchecker::syncprod::initial_value_t, tchecker::syncprod::outgoing_edges_value_t>::status;
+
+  using tchecker::ts::full_ts_t<tchecker::syncprod::state_sptr_t, tchecker::syncprod::const_state_sptr_t,
+                                tchecker::syncprod::transition_sptr_t, tchecker::syncprod::const_transition_sptr_t,
+                                tchecker::syncprod::initial_range_t, tchecker::syncprod::outgoing_edges_range_t,
+                                tchecker::syncprod::initial_value_t, tchecker::syncprod::outgoing_edges_value_t>::state;
+
+  using tchecker::ts::full_ts_t<tchecker::syncprod::state_sptr_t, tchecker::syncprod::const_state_sptr_t,
+                                tchecker::syncprod::transition_sptr_t, tchecker::syncprod::const_transition_sptr_t,
+                                tchecker::syncprod::initial_range_t, tchecker::syncprod::outgoing_edges_range_t,
+                                tchecker::syncprod::initial_value_t, tchecker::syncprod::outgoing_edges_value_t>::transition;
+
   /*!
    \brief Accessor
    \return initial edges
