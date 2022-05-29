@@ -92,7 +92,7 @@ bool node_le_t::operator()(tchecker::tck_reach::concur19::node_t const & n1,
                            tchecker::tck_reach::concur19::node_t const & n2) const
 {
   _clockbounds->local_lu(n2.state().vloc(), *_l, *_u);
-  return tchecker::refzg::sync_alu_le(n1.state(), n2.state(), *_l, *_u);
+  return tchecker::refzg::is_sync_alu_le(n1.state(), n2.state(), *_l, *_u);
 }
 
 /* edge_t */

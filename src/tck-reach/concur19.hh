@@ -141,7 +141,7 @@ public:
   \param n1 : a node
   \param n2 : a node
   \return true if n1 and n2 have same discrete part and the zone of n1 is
-  sync-subsumed in the zone of n2, false otherwise
+  sync-aLU subsumed in the zone of n2, false otherwise
   */
   bool operator()(tchecker::tck_reach::concur19::node_t const & n1, tchecker::tck_reach::concur19::node_t const & n2) const;
 

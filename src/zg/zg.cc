@@ -128,17 +128,17 @@ void zg_t::next(tchecker::zg::const_state_sptr_t const & s, tchecker::zg::outgoi
   v.push_back(std::make_tuple(status, nexts, t));
 }
 
-bool zg_t::satisfies(tchecker::zg::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels)
+bool zg_t::satisfies(tchecker::zg::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels) const
 {
   return tchecker::zg::satisfies(*_system, *s, labels);
 }
 
-void zg_t::attributes(tchecker::zg::const_state_sptr_t const & s, std::map<std::string, std::string> & m)
+void zg_t::attributes(tchecker::zg::const_state_sptr_t const & s, std::map<std::string, std::string> & m) const
 {
   tchecker::zg::attributes(*_system, *s, m);
 }
 
-void zg_t::attributes(tchecker::zg::const_transition_sptr_t const & t, std::map<std::string, std::string> & m)
+void zg_t::attributes(tchecker::zg::const_transition_sptr_t const & t, std::map<std::string, std::string> & m) const
 {
   tchecker::zg::attributes(*_system, *t, m);
 }

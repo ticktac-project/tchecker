@@ -576,7 +576,7 @@ TEST_CASE("is_le", "[refdbm]")
   REQUIRE(tchecker::refdbm::is_le(rdbm_universal_positive, rdbm_universal_positive, r));
 }
 
-TEST_CASE("is_alu_le", "[refdbm]")
+TEST_CASE("is_alu_star_le", "[refdbm]")
 {
   std::vector<std::string> refclocks{"$0", "$1", "$2"};
   tchecker::reference_clock_variables_t r(refclocks);
@@ -609,7 +609,7 @@ TEST_CASE("is_alu_le", "[refdbm]")
       u[i] = 0;
     }
 
-    REQUIRE(tchecker::refdbm::is_alu_le(rdbm1, rdbm2, r, l, u));
+    REQUIRE(tchecker::refdbm::is_alu_star_le(rdbm1, rdbm2, r, l, u));
   }
 
   SECTION("Zero DBM is aLU*-subsumed by universal positive DBM")
@@ -622,7 +622,7 @@ TEST_CASE("is_alu_le", "[refdbm]")
       u[i] = 0;
     }
 
-    REQUIRE(tchecker::refdbm::is_alu_le(rdbm1, rdbm2, r, l, u));
+    REQUIRE(tchecker::refdbm::is_alu_star_le(rdbm1, rdbm2, r, l, u));
   }
 
   SECTION("Universal DBM is not aLU*-subsumed by universal positive DBM with 0 clock bounds")
@@ -635,7 +635,7 @@ TEST_CASE("is_alu_le", "[refdbm]")
       u[i] = 0;
     }
 
-    REQUIRE_FALSE(tchecker::refdbm::is_alu_le(rdbm1, rdbm2, r, l, u));
+    REQUIRE_FALSE(tchecker::refdbm::is_alu_star_le(rdbm1, rdbm2, r, l, u));
   }
 
   SECTION("Universal DBM is aLU*-subsumed by universal positive DBM with no clock bounds")
@@ -648,7 +648,7 @@ TEST_CASE("is_alu_le", "[refdbm]")
       u[i] = tchecker::clockbounds::NO_BOUND;
     }
 
-    REQUIRE(tchecker::refdbm::is_alu_le(rdbm1, rdbm2, r, l, u));
+    REQUIRE(tchecker::refdbm::is_alu_star_le(rdbm1, rdbm2, r, l, u));
   }
 
   SECTION("Universal DBM is not aLU*-subsumed by zero DBM with no clock bounds, due to reference clocks")
@@ -661,7 +661,7 @@ TEST_CASE("is_alu_le", "[refdbm]")
       u[i] = tchecker::clockbounds::NO_BOUND;
     }
 
-    REQUIRE_FALSE(tchecker::refdbm::is_alu_le(rdbm1, rdbm2, r, l, u));
+    REQUIRE_FALSE(tchecker::refdbm::is_alu_star_le(rdbm1, rdbm2, r, l, u));
   }
 
   SECTION("DBM aLU*-subsumed due to no clock bounds")
@@ -694,7 +694,7 @@ TEST_CASE("is_alu_le", "[refdbm]")
       u[i] = tchecker::clockbounds::NO_BOUND;
     }
 
-    REQUIRE(tchecker::refdbm::is_alu_le(rdbm1, rdbm2, r, l, u));
+    REQUIRE(tchecker::refdbm::is_alu_star_le(rdbm1, rdbm2, r, l, u));
   }
 
   SECTION("DBM not aLU*-subsumed due to clock bounds")
@@ -727,7 +727,7 @@ TEST_CASE("is_alu_le", "[refdbm]")
       u[i] = 3;
     }
 
-    REQUIRE_FALSE(tchecker::refdbm::is_alu_le(rdbm1, rdbm2, r, l, u));
+    REQUIRE_FALSE(tchecker::refdbm::is_alu_star_le(rdbm1, rdbm2, r, l, u));
   }
 
   SECTION("DBM aLU*-subsumed")
@@ -752,7 +752,7 @@ TEST_CASE("is_alu_le", "[refdbm]")
     u[y - refcount] = 2;
     u[z - refcount] = tchecker::clockbounds::NO_BOUND;
 
-    REQUIRE(tchecker::refdbm::is_alu_le(rdbm1, rdbm2, r, l, u));
+    REQUIRE(tchecker::refdbm::is_alu_star_le(rdbm1, rdbm2, r, l, u));
   }
 }
 
@@ -826,6 +826,119 @@ TEST_CASE("is_sync_alu_le", "[refdbm]")
     u[z - refcount] = tchecker::clockbounds::NO_BOUND;
 
     REQUIRE_FALSE(tchecker::refdbm::is_sync_alu_le(rdbm1, rdbm2, r, l, u));
+  }
+}
+
+TEST_CASE("aLU* vs. sync-aLU vs. time-elapse-aLU*", "[refdbm]")
+{
+  std::vector<std::string> refclocks{"$0", "$1", "$2"};
+  tchecker::reference_clock_variables_t r(refclocks);
+  r.declare("x1", "$0");
+  r.declare("x2", "$1");
+
+  tchecker::clock_id_t const x1 = r.id("x1");
+  tchecker::clock_id_t const x2 = r.id("x2");
+  tchecker::clock_id_t const t0 = r.id("$0");
+  tchecker::clock_id_t const t1 = r.id("$1");
+  tchecker::clock_id_t const t2 = r.id("$2");
+
+  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const refcount = r.refcount();
+  tchecker::clock_id_t const offset_dim = rdim - refcount;
+
+  tchecker::dbm::db_t rdbm1[rdim * rdim], rdbm2[rdim * rdim];
+
+  tchecker::integer_t l[offset_dim], u[offset_dim];
+  l[x1 - refcount] = tchecker::clockbounds::NO_BOUND;
+  l[x2 - refcount] = tchecker::clockbounds::NO_BOUND;
+  u[x1 - refcount] = 10;
+  u[x2 - refcount] = 10;
+
+  tchecker::dbm::db_t le_10 = tchecker::dbm::db(tchecker::dbm::LE, 10);
+
+  SECTION("Test case inspired from Fischer model")
+  {
+    //       $0    $1    $2   $x1   $x2
+    // $0         <=10        <=0   <=0
+    // $1                           <=0
+    // $2   <=10  <=10        <=0   <=0
+    // $x1  <=10  <=10              <=0
+    // $x2        <=10
+    tchecker::refdbm::universal(rdbm1, r);
+    RDBM1(t0, t1) = le_10;
+    RDBM1(t0, x1) = tchecker::dbm::LE_ZERO;
+    RDBM1(t0, x2) = tchecker::dbm::LE_ZERO;
+    RDBM1(t1, x2) = tchecker::dbm::LE_ZERO;
+    RDBM1(t2, t0) = le_10;
+    RDBM1(t2, t1) = le_10;
+    RDBM1(t2, x1) = tchecker::dbm::LE_ZERO;
+    RDBM1(t2, x2) = tchecker::dbm::LE_ZERO;
+    RDBM1(x1, t0) = le_10;
+    RDBM1(x1, t1) = le_10;
+    RDBM1(x1, x2) = tchecker::dbm::LE_ZERO;
+    RDBM1(x2, t1) = le_10;
+    tchecker::refdbm::tighten(rdbm1, r);
+
+    //      $0   $1   $2   $x1   $x2
+    // $0                  <=0
+    // $1   <=10           <=0    <=0
+    // $2   <=10 <=10      <=0    <=0
+    // $x1  <=10
+    // $x2  <=10 <=10      <=0
+    tchecker::refdbm::universal(rdbm2, r);
+    RDBM2(t0, x1) = tchecker::dbm::LE_ZERO;
+    RDBM2(t1, t0) = le_10;
+    RDBM2(t1, x1) = tchecker::dbm::LE_ZERO;
+    RDBM2(t1, x2) = tchecker::dbm::LE_ZERO;
+    RDBM2(t2, t0) = le_10;
+    RDBM2(t2, t1) = le_10;
+    RDBM2(t2, x1) = tchecker::dbm::LE_ZERO;
+    RDBM2(t2, x2) = tchecker::dbm::LE_ZERO;
+    RDBM2(x1, t0) = le_10;
+    RDBM2(x2, t0) = le_10;
+    RDBM2(x2, t1) = le_10;
+    RDBM2(x2, x1) = tchecker::dbm::LE_ZERO;
+    tchecker::refdbm::tighten(rdbm2, r);
+
+    REQUIRE_FALSE(tchecker::refdbm::is_alu_star_le(rdbm1, rdbm2, r, l, u));
+    REQUIRE_FALSE(tchecker::refdbm::is_alu_star_le(rdbm2, rdbm1, r, l, u));
+
+    REQUIRE_FALSE(tchecker::refdbm::is_time_elapse_alu_star_le(rdbm1, rdbm2, r, l, u));
+    REQUIRE_FALSE(tchecker::refdbm::is_time_elapse_alu_star_le(rdbm2, rdbm1, r, l, u));
+
+    REQUIRE(tchecker::refdbm::is_sync_alu_le(rdbm1, rdbm2, r, l, u));
+    REQUIRE(tchecker::refdbm::is_sync_alu_le(rdbm2, rdbm1, r, l, u));
+  }
+
+  SECTION("DBMs that only differ in the reference clocks part")
+  {
+    //       $0    $1    $2   $x1   $x2
+    // $0         <=10
+    // $1
+    // $2
+    // $x1
+    // $x2
+    tchecker::refdbm::universal(rdbm1, r);
+    RDBM1(t0, t1) = le_10;
+    tchecker::refdbm::tighten(rdbm1, r);
+
+    //      $0   $1   $2   $x1   $x2
+    // $0
+    // $1   <=10
+    // $2
+    // $x1
+    // $x2
+    tchecker::refdbm::universal(rdbm2, r);
+    RDBM2(t1, t0) = le_10;
+    tchecker::refdbm::tighten(rdbm2, r);
+
+    REQUIRE_FALSE(tchecker::refdbm::is_alu_star_le(rdbm1, rdbm2, r, l, u));
+    REQUIRE_FALSE(tchecker::refdbm::is_alu_star_le(rdbm2, rdbm1, r, l, u));
+
+    REQUIRE(tchecker::refdbm::is_time_elapse_alu_star_le(rdbm1, rdbm2, r, l, u));
+    REQUIRE(tchecker::refdbm::is_time_elapse_alu_star_le(rdbm2, rdbm1, r, l, u));
+
+    // NB: cannot check sync-aLU on this example since zones are not positive
   }
 }
 

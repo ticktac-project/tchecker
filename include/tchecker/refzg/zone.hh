@@ -104,7 +104,7 @@ public:
    \note Two zones that do not share the same reference clocks are seen as
    not included even if their reference clocks are identical
    */
-  bool am_le(tchecker::refzg::zone_t const & zone, tchecker::clockbounds::map_t const & m) const;
+  bool is_am_star_le(tchecker::refzg::zone_t const & zone, tchecker::clockbounds::map_t const & m) const;
 
   /*!
    \brief Checks inclusion wrt abstraction aLU*
@@ -117,8 +117,36 @@ public:
    \note Two zones that do not share the same reference clocks are seen as
    not included even if their reference clocks are identical
    */
-  bool alu_le(tchecker::refzg::zone_t const & zone, tchecker::clockbounds::map_t const & l,
-              tchecker::clockbounds::map_t const & u) const;
+  bool is_alu_star_le(tchecker::refzg::zone_t const & zone, tchecker::clockbounds::map_t const & l,
+                      tchecker::clockbounds::map_t const & u) const;
+
+  /*!
+   \brief Checks inclusion wrt abstraction aM* combined with time-elapse
+   \param zone : a zone
+   \param m : clock bounds
+   \return true if time-elapse(this zone) is included in aM*(time-elapse(zone)),
+   false otherwise
+   \pre m maps offset clocks to clock bounds (no bound for reference clocks)
+   the first offset clock has index 0 in m
+   \note Two zones that do not share the same reference clocks are seen as
+   not included even if their reference clocks are identical
+   */
+  bool is_time_elapse_am_star_le(tchecker::refzg::zone_t const & zone, tchecker::clockbounds::map_t const & m) const;
+
+  /*!
+   \brief Checks inclusion wrt abstraction aLU* combined aith time-elapse
+   \param zone : a zone
+   \param l : clock lower bounds
+   \param u : clock upper bounds
+   \return true if time-elapse(this zone) is included in
+   aLU*(time-elapse(zone)), false otherwise
+   \pre l and u map offset clocks to clock bounds (no bound for reference clocks)
+   the first offset clock has index 0 in l and u
+   \note Two zones that do not share the same reference clocks are seen as
+   not included even if their reference clocks are identical
+   */
+  bool is_time_elapse_alu_star_le(tchecker::refzg::zone_t const & zone, tchecker::clockbounds::map_t const & l,
+                                  tchecker::clockbounds::map_t const & u) const;
 
   /*!
    \brief Checks inclusion wrt abstraction sync-aLU
@@ -131,8 +159,8 @@ public:
    \note Two zones that do not share the same reference clocks are seen as
    not included even if their reference clocks are identical
    */
-  bool sync_alu_le(tchecker::refzg::zone_t const & zone, tchecker::clockbounds::map_t const & l,
-                   tchecker::clockbounds::map_t const & u) const;
+  bool is_sync_alu_le(tchecker::refzg::zone_t const & zone, tchecker::clockbounds::map_t const & l,
+                      tchecker::clockbounds::map_t const & u) const;
 
   /*!
    \brief Lexical ordering

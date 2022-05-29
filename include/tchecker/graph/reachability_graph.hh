@@ -21,6 +21,7 @@
 #include "tchecker/graph/directed_graph.hh"
 #include "tchecker/graph/find_graph.hh"
 #include "tchecker/graph/output.hh"
+#include "tchecker/graph/store_graph.hh"
 #include "tchecker/utils/allocation_size.hh"
 #include "tchecker/utils/shared_objects.hh"
 
@@ -424,12 +425,237 @@ private:
   tchecker::graph::edge_pool_allocator_t<shared_edge_t> _edge_pool;                                /*!< Edge pool allocator */
 };
 
+/*!
+ \class multigraph_t
+ \brief Graph that allocates and stores nodes and edges, allowing multiple
+ copies of the same node
+ \tparam NODE : type of nodes
+ \tparam EDGE : type of edges
+ \note this graph allocates nodes of type tchecker::graph::reachability::node_t<NODE, EDGE> and
+ edges of type tchecker::graph::reachability::edge_t<NODE, EDGE>
+*/
+template <class NODE, class EDGE> class multigraph_t {
+public:
+  /*!
+   \brief Type of nodes
+   */
+  using node_t = NODE;
+
+  /*!
+   \brief Type of shared nodes
+  */
+  using shared_node_t = tchecker::graph::reachability::shared_node_t<NODE, EDGE>;
+
+  /*!
+  \brief Type of pointer to shared nodes
+  */
+  using node_sptr_t = tchecker::graph::reachability::node_sptr_t<NODE, EDGE>;
+
+  /*!
+  \brief Type of pointer to const shared nodes
+  */
+  using const_node_sptr_t = tchecker::graph::reachability::const_node_sptr_t<NODE, EDGE>;
+
+  /*!
+  \brief Type of edges
+  */
+  using edge_t = EDGE;
+
+  /*!
+   \brief Type of shared edge
+  */
+  using shared_edge_t = tchecker::graph::reachability::shared_edge_t<NODE, EDGE>;
+
+  /*!
+  \brief Type of pointer to shared edge
+  */
+  using edge_sptr_t = tchecker::graph::reachability::edge_sptr_t<NODE, EDGE>;
+
+  /*!
+  \brief Type of pointer to const shared edge
+  */
+  using const_edge_sptr_t = tchecker::graph::reachability::const_edge_sptr_t<NODE, EDGE>;
+
+  /*!
+  \brief Constructor
+  \param block_size : number of objects allocated in a block
+  */
+  multigraph_t(std::size_t block_size) : _store_graph(), _node_pool(block_size), _edge_pool(block_size) {}
+
+  /*!
+  \brief Copy constructor (deleted)
+  */
+  multigraph_t(tchecker::graph::reachability::multigraph_t<NODE, EDGE> const &) = delete;
+
+  /*!
+  \brief Move constructor (deleted)
+  */
+  multigraph_t(tchecker::graph::reachability::multigraph_t<NODE, EDGE> &&) = delete;
+
+  /*!
+  \brief Destructor
+  */
+  virtual ~multigraph_t() { clear(); }
+
+  /*!
+  \brief Assignment operator (deleted)
+  */
+  tchecker::graph::reachability::multigraph_t<NODE, EDGE> &
+  operator=(tchecker::graph::reachability::multigraph_t<NODE, EDGE> const &) = delete;
+
+  /*!
+  \brief Move-assignment operator (deleted)
+  */
+  tchecker::graph::reachability::multigraph_t<NODE, EDGE> &
+  operator=(tchecker::graph::reachability::multigraph_t<NODE, EDGE> &&) = delete;
+
+  /*!
+  \brief Clear the tree
+  \post this tree is empty
+  \note all nodes and edges allocated by this tree have been destructed
+  */
+  void clear()
+  {
+    _directed_graph.clear(_store_graph.begin(), _store_graph.end());
+    _store_graph.clear();
+    _node_pool.destruct_all();
+    _edge_pool.destruct_all();
+  }
+
+  /*!
+  \brief Add a node
+  \param args : arguments to a constructor of type NODE
+  \post an instance of NODE(args) has been added to the tree
+  \return the node that has been added to the tree
+  */
+  template <class... ARGS> node_sptr_t add_node(ARGS &&... args)
+  {
+    node_sptr_t node = _node_pool.construct(args...);
+    _store_graph.add_node(node);
+    return node;
+  }
+
+  /*!
+   \brief Add an edge
+   \param n1 : source node
+   \param n2 : target node
+   \param args : arguments to a constructor of EDGE
+   \pre n1 and n2 should be nodes of this tree
+   \post an instance of EDGE(args) from node n1 to node n2 has been added to the
+   tree
+   */
+  template <class... ARGS> void add_edge(node_sptr_t const & n1, node_sptr_t const & n2, ARGS &&... args)
+  {
+    edge_sptr_t edge = _edge_pool.construct(args...);
+    _directed_graph.add_edge(n1, n2, edge);
+  }
+
+  /*!
+  \brief Type of node iterator
+  */
+  using const_node_iterator_t = typename tchecker::graph::store::graph_t<node_sptr_t>::const_iterator_t;
+
+  /*!
+  \brief Accessor
+  \return range of nodes in the tree
+  */
+  inline tchecker::range_t<tchecker::graph::reachability::multigraph_t<NODE, EDGE>::const_node_iterator_t> nodes() const
+  {
+    return tchecker::make_range(_store_graph.begin(), _store_graph.end());
+  }
+
+  /*!
+  \brief Type of incoming edges iterator
+  */
+  using incoming_edges_iterator_t =
+      typename tchecker::graph::directed::graph_t<node_sptr_t, edge_sptr_t>::incoming_edges_iterator_t;
+
+  /*!
+  \brief Type of outgoing edges iterator
+  */
+  using outgoing_edges_iterator_t =
+      typename tchecker::graph::directed::graph_t<node_sptr_t, edge_sptr_t>::outgoing_edges_iterator_t;
+
+  /*!
+   \brief Accessor
+   \param n : node
+   \return range of incoming edges of node n
+   */
+  inline tchecker::range_t<tchecker::graph::reachability::multigraph_t<NODE, EDGE>::incoming_edges_iterator_t>
+  incoming_edges(node_sptr_t const & n) const
+  {
+    return _directed_graph.incoming_edges(n);
+  }
+
+  /*!
+   \brief Accessor
+   \param n : node
+   \return range of outgoing edges of node n
+   */
+  inline tchecker::range_t<tchecker::graph::reachability::multigraph_t<NODE, EDGE>::outgoing_edges_iterator_t>
+  outgoing_edges(node_sptr_t const & n) const
+  {
+    return _directed_graph.outgoing_edges(n);
+  }
+
+  /*!
+   \brief Accessor
+   \param edge : an edge
+   \return the source node of edge
+   */
+  inline node_sptr_t const & edge_src(edge_sptr_t const & edge) const { return _directed_graph.edge_src(edge); }
+
+  /*!
+   \brief Accessor
+   \param edge : an edge
+   \return the target node of edge
+   */
+  inline node_sptr_t const & edge_tgt(edge_sptr_t const & edge) const { return _directed_graph.edge_tgt(edge); }
+
+  /*!
+   \brief Accessor to node attributes
+   \param n : a node
+   \param m : a map (key, value) of attributes
+   \post attributes of node n have been added to map m
+  */
+  void attributes(node_sptr_t const & n, std::map<std::string, std::string> & m) const { attributes(*n, m); }
+
+  /*!
+   \brief Accessor to edge attributes
+   \param e : an edge
+   \param m : a map (key, value) of attributes
+   \post attributes of edge e have been added to map m
+  */
+  void attributes(edge_sptr_t const & e, std::map<std::string, std::string> & m) const { attributes(*e, m); }
+
+protected:
+  /*!
+   \brief Accessor to node attributes
+   \param n : a node
+   \param m : a map (key, value) of attributes
+  */
+  virtual void attributes(NODE const & n, std::map<std::string, std::string> & m) const = 0;
+
+  /*!
+   \brief Accessor to edge attributes
+   \param e : an edge
+   \param m : a map (key, value) of attributes
+  */
+  virtual void attributes(EDGE const & e, std::map<std::string, std::string> & m) const = 0;
+
+private:
+  tchecker::graph::store::graph_t<node_sptr_t> _store_graph;                    /*!< Node store */
+  tchecker::graph::directed::graph_t<node_sptr_t, edge_sptr_t> _directed_graph; /*!< Edge store */
+  tchecker::graph::node_pool_allocator_t<shared_node_t> _node_pool;             /*!< Node pool allocator */
+  tchecker::graph::edge_pool_allocator_t<shared_edge_t> _edge_pool;             /*!< Edge pool allocator */
+};
+
 /* output */
 
 /*!
  \brief Output a graph in graphviz DOT language
  \tparam GRAPH : type of graph, should inherit from
- tchecker::graph::reachability::graph_t
+ tchecker::graph::reachability::graph_t or from tchecker::graph::reachability::multigraph_t
  \tparam NODE_LE : total order on type GRAPH::const_node_sptr_t
  \tparam EDGE_LE : total order on type GRAPH::const_edge_sptr_t
  \param os : output stream

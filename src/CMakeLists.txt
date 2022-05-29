@@ -108,6 +108,17 @@ target_link_libraries(tck-reach libtchecker_static)
 set_property(TARGET tck-reach PROPERTY CXX_STANDARD 17)
 set_property(TARGET tck-reach PROPERTY CXX_STANDARD_REQUIRED ON)
 
+# Build tck-simulate executable
+add_executable(tck-simulate
+               ${CMAKE_CURRENT_SOURCE_DIR}/tck-simulate/graph.hh
+               ${CMAKE_CURRENT_SOURCE_DIR}/tck-simulate/graph.cc
+               ${CMAKE_CURRENT_SOURCE_DIR}/tck-simulate/simulate.hh
+               ${CMAKE_CURRENT_SOURCE_DIR}/tck-simulate/simulate.cc
+               ${CMAKE_CURRENT_SOURCE_DIR}/tck-simulate/tck-simulate.cc)
+target_link_libraries(tck-simulate libtchecker_static)
+set_property(TARGET tck-simulate PROPERTY CXX_STANDARD 17)
+set_property(TARGET tck-simulate PROPERTY CXX_STANDARD_REQUIRED ON)
+
 # Project view in IDEs (Xcode, etc)
 foreach(FILE ${LIBTCHECKER_SRC}) 
     # Get the directory of the source file

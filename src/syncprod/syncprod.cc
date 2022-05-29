@@ -239,17 +239,17 @@ void syncprod_t::next(tchecker::syncprod::const_state_sptr_t const & s,
   v.push_back(std::make_tuple(status, nexts, t));
 }
 
-bool syncprod_t::satisfies(tchecker::syncprod::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels)
+bool syncprod_t::satisfies(tchecker::syncprod::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels) const
 {
   return tchecker::syncprod::satisfies(*_system, *s, labels);
 }
 
-void syncprod_t::attributes(tchecker::syncprod::const_state_sptr_t const & s, std::map<std::string, std::string> & m)
+void syncprod_t::attributes(tchecker::syncprod::const_state_sptr_t const & s, std::map<std::string, std::string> & m) const
 {
   tchecker::syncprod::attributes(*_system, *s, m);
 }
 
-void syncprod_t::attributes(tchecker::syncprod::const_transition_sptr_t const & t, std::map<std::string, std::string> & m)
+void syncprod_t::attributes(tchecker::syncprod::const_transition_sptr_t const & t, std::map<std::string, std::string> & m) const
 {
   tchecker::syncprod::attributes(*_system, *t, m);
 }

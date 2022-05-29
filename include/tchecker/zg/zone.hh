@@ -87,7 +87,7 @@ public:
    \return true if this zone is include in aM(zone), false otherwise
    \pre m is a clock bound map over the clocks in zone
    */
-  bool am_le(tchecker::zg::zone_t const & zone, tchecker::clockbounds::map_t const & m) const;
+  bool is_am_le(tchecker::zg::zone_t const & zone, tchecker::clockbounds::map_t const & m) const;
 
   /*!
    \brief Checks inclusion wrt abstraction aLU
@@ -97,8 +97,8 @@ public:
    \return true if this zone is included in aLU(zone), false otherwise
    \pre l and u are clock bound maps over the clocks in zone
    */
-  bool alu_le(tchecker::zg::zone_t const & zone, tchecker::clockbounds::map_t const & l,
-              tchecker::clockbounds::map_t const & u) const;
+  bool is_alu_le(tchecker::zg::zone_t const & zone, tchecker::clockbounds::map_t const & l,
+                 tchecker::clockbounds::map_t const & u) const;
 
   /*!
    \brief Lexical ordering
