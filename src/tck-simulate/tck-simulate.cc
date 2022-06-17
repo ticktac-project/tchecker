@@ -169,6 +169,7 @@ int main(int argc, char * argv[])
     std::cerr << tchecker::log_error << e.what() << std::endl;
     if (os != &std::cout)
       delete os;
+    return EXIT_FAILURE;
   }
 
   return EXIT_SUCCESS;

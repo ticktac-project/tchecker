@@ -274,6 +274,7 @@ int main(int argc, char * argv[])
   }
   catch (std::exception & e) {
     std::cerr << tchecker::log_error << e.what() << std::endl;
+    return EXIT_FAILURE;
   }
 
   return EXIT_SUCCESS;
