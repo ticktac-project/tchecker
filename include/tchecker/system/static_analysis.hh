@@ -89,6 +89,13 @@ private:
  */
 tchecker::system::process_events_map_t weakly_synchronized_events(tchecker::system::system_t const & system);
 
+/*!
+ \brief Check that all processes in a system have an initial location
+ \param system : a system of processes
+ \return true if all processes in system have an initial location, false otherwise
+*/
+bool every_process_has_initial_location(tchecker::system::system_t const & system);
+
 } // end of namespace system
 
 } // end of namespace tchecker
