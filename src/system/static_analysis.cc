@@ -43,6 +43,15 @@ tchecker::system::process_events_map_t weakly_synchronized_events(tchecker::syst
   return weak_sync_map;
 }
 
+bool every_process_has_initial_location(tchecker::system::system_t const & system)
+{
+  tchecker::process_id_t procs_count = system.processes_count();
+  for (tchecker::process_id_t pid = 0; pid < procs_count; ++pid)
+    if (system.initial_locations(pid).empty())
+      return false;
+  return true;
+}
+
 } // end of namespace system
 
 } // end of namespace tchecker

@@ -33,7 +33,8 @@ void log_output_count(std::ostream & os)
     os << " and ";
   if (tchecker::_log_warning_count > 0)
     os << tchecker::_log_warning_count << " warning(s)";
-  os << std::endl;
+  if (tchecker::_log_error_count > 0 || tchecker::_log_warning_count > 0)
+    os << std::endl;
 }
 
 std::ostream & operator<<(std::ostream & os, struct tchecker::log_error_t const & error)

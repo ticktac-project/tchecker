@@ -81,6 +81,12 @@ public:
   using tchecker::system::system_t::attributes;
   using tchecker::system::system_t::name;
 
+  /*!
+   \brief Accessor
+   \return map of known attributes that are interpreted by this system
+  */
+  static tchecker::system::attribute_keys_map_t const & known_attributes();
+
   // Clocks
   using tchecker::system::system_t::clock_attributes;
   using tchecker::system::system_t::clock_id;

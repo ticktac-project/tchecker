@@ -8,7 +8,9 @@
 #include <boost/dynamic_bitset.hpp>
 
 #include "tchecker/algorithms/search_order.hh"
+#include "tchecker/system/static_analysis.hh"
 #include "tchecker/ta/system.hh"
+#include "tchecker/utils/log.hh"
 #include "zg-reach.hh"
 
 namespace tchecker {
@@ -121,6 +123,8 @@ run(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl, st
     std::string const & search_order, std::size_t block_size, std::size_t table_size)
 {
   std::shared_ptr<tchecker::ta::system_t const> system{new tchecker::ta::system_t{*sysdecl}};
+  if (!tchecker::system::every_process_has_initial_location(system->as_system_system()))
+    std::cerr << tchecker::log_warning << "system has no initial state" << std::endl;
 
   std::shared_ptr<tchecker::zg::zg_t> zg{
       tchecker::zg::factory(system, tchecker::zg::ELAPSED_SEMANTICS, tchecker::zg::EXTRA_LU_PLUS_LOCAL, block_size)};

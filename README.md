@@ -20,6 +20,8 @@ systems. The goal of the project is to implement state-of-the-art algorithms as
 well as benchmarks to evaluate these algorithms, and to share then with the
 community.
 
+**NEW:** [try TChecker online](https://tchecker.labri.fr/)
+
 ## Installation
 
 Please, refer to [Installation of TChecker](https://github.com/ticktac-project/tchecker/wiki/Installation-of-TChecker) or to file INSTALL.md in the repository.

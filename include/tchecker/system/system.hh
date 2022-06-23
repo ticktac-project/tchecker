@@ -95,6 +95,12 @@ public:
    */
   inline tchecker::system::attributes_t const & attributes() const { return _attr; }
 
+  /*!
+   \brief Accessor
+   \return map of known attributes that are interpreted by this system
+  */
+  static tchecker::system::attribute_keys_map_t const & known_attributes();
+
   // Clocks
 
   /*!

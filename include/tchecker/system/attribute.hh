@@ -8,7 +8,9 @@
 #ifndef TCHECKER_SYSTEM_ATTRIBUTE_HH
 #define TCHECKER_SYSTEM_ATTRIBUTE_HH
 
+#include <array>
 #include <iostream>
+#include <set>
 #include <string>
 #include <unordered_map>
 
@@ -107,6 +109,26 @@ public:
 private:
   std::unordered_multimap<std::string, std::string> _attr; /*!< Map : key -> values of attributes */
 };
+
+/*!
+ \brief Attributes categories
+*/
+enum attributes_category_t {
+  ATTR_CLOCK,    /*!< Attributes on clock */
+  ATTR_EDGE,     /*!< Attributes on egde */
+  ATTR_EVENT,    /*!< Attributes on event */
+  ATTR_INTVAR,   /*!< Attributes on integer variable */
+  ATTR_LOCATION, /*!< Attributes on location */
+  ATTR_PROCESS,  /*!< Attributes on process */
+  ATTR_SYNC,     /*!< Attributes on synchronisation */
+  ATTR_SYSTEM,   /*!< Attributes on system */
+  ATTR_END       /*!< End mark */
+};
+
+/*!
+ \brief Map from attributes categories to set of attribute keys for that category
+ */
+using attribute_keys_map_t = std::array<std::set<std::string>, tchecker::system::ATTR_END>;
 
 } // end of namespace system
 

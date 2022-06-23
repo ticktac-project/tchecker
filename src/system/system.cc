@@ -121,6 +121,21 @@ system_t::system_t(tchecker::parsing::system_declaration_t const & sysdecl) : _n
   sysdecl.visit(builder);
 }
 
+tchecker::system::attribute_keys_map_t const & system_t::known_attributes()
+{
+  static tchecker::system::attribute_keys_map_t const known_attr = {{
+      {},          // tchecker::system::ATTR_CLOCK
+      {},          // tchecker::system::ATTR_EDGE
+      {},          // tchecker::system::ATTR_EVENT
+      {},          // tchecker::system::ATTR_INTVAR
+      {"initial"}, // tchecker::system::ATTR_LOCATION
+      {},          // tchecker::system::ATTR_PROCESS
+      {},          // tchecker::system::ATTR_SYNC
+      {}           // tchecker::system::ATTR_SYSTEM
+  }};
+  return known_attr;
+}
+
 void system_t::add_clock(std::string const & name, tchecker::clock_id_t size, tchecker::system::attributes_t const & attr)
 {
   if (has_variable(name))
