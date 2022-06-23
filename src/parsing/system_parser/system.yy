@@ -107,10 +107,10 @@
 %%
 
 system:
-eol_sequence TOK_SYSTEM ":" TOK_ID attr_list {
+eol_sequence TOK_SYSTEM ":" TOK_ID attr_list end_declaration {
   system_declaration = new system_declaration_t($4, std::move($5));
 }
-"\n" eol_sequence declaration_list
+declaration_list
 {
   if (tchecker::log_error_count() > old_error_count) {
     delete system_declaration;
@@ -142,7 +142,7 @@ declaration
 
 
 declaration:
-TOK_CLOCK ":" uinteger ":" TOK_ID attr_list "\n"
+TOK_CLOCK ":" uinteger ":" TOK_ID attr_list end_declaration
 {
   auto const * d = system_declaration->get_clock_declaration($5);
   if (d != nullptr)
@@ -166,7 +166,7 @@ TOK_CLOCK ":" uinteger ":" TOK_ID attr_list "\n"
   }
 }
 
-| TOK_EDGE ":" TOK_ID ":" TOK_ID ":" TOK_ID ":" TOK_ID attr_list "\n"
+| TOK_EDGE ":" TOK_ID ":" TOK_ID ":" TOK_ID ":" TOK_ID attr_list end_declaration
 {
   auto const * proc = system_declaration->get_process_declaration($3);
   if (proc == nullptr)
@@ -200,7 +200,7 @@ TOK_CLOCK ":" uinteger ":" TOK_ID attr_list "\n"
   }
 }
 
-| TOK_EVENT ":" TOK_ID attr_list "\n"
+| TOK_EVENT ":" TOK_ID attr_list end_declaration
 {
   auto const * d = system_declaration->get_event_declaration($3);
   if (d != nullptr)
@@ -219,7 +219,7 @@ TOK_CLOCK ":" uinteger ":" TOK_ID attr_list "\n"
   }
 }
 
-| TOK_INT ":" uinteger ":" integer ":" integer ":" integer ":" TOK_ID attr_list "\n"
+| TOK_INT ":" uinteger ":" integer ":" integer ":" integer ":" TOK_ID attr_list end_declaration
 {
   auto const * d = system_declaration->get_int_declaration($11);
   if (d != nullptr)
@@ -243,7 +243,7 @@ TOK_CLOCK ":" uinteger ":" TOK_ID attr_list "\n"
   }
 }
 
-| TOK_LOCATION ":" TOK_ID ":" TOK_ID attr_list "\n"
+| TOK_LOCATION ":" TOK_ID ":" TOK_ID attr_list end_declaration
 {
   auto const * d = system_declaration->get_location_declaration($3, $5);
   if (d != nullptr)
@@ -267,7 +267,7 @@ TOK_CLOCK ":" uinteger ":" TOK_ID attr_list "\n"
   }
 }
 
-| TOK_PROCESS ":" TOK_ID attr_list "\n"
+| TOK_PROCESS ":" TOK_ID attr_list end_declaration
 {
   auto const * d = system_declaration->get_process_declaration($3);
   if (d != nullptr)
@@ -286,7 +286,7 @@ TOK_CLOCK ":" uinteger ":" TOK_ID attr_list "\n"
   }
 }
 
-| TOK_SYNC ":" sync_constraint_list attr_list "\n"
+| TOK_SYNC ":" sync_constraint_list attr_list end_declaration
 {
   try {
     auto const * d = new tchecker::parsing::sync_declaration_t(std::move($3), std::move($4));
@@ -300,7 +300,7 @@ TOK_CLOCK ":" uinteger ":" TOK_ID attr_list "\n"
   }
 }
 
-| error "\n"
+| error end_declaration
 ;
 
 
@@ -398,6 +398,12 @@ sync_strength:
 { $$ = tchecker::SYNC_WEAK; }
 |
 { $$ = tchecker::SYNC_STRONG; }
+;
+
+
+end_declaration:
+TOK_EOL
+| TOK_EOF
 ;
 
 
