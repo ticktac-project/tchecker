@@ -173,9 +173,9 @@ void system_t::set_invariant(tchecker::loc_id_t id,
       tchecker::typecheck(*invariant_expr, localvars, integer_variables(), clock_variables())};
 
   if (!tchecker::bool_valued(invariant_typed_expr->type())) {
-      std::stringstream oss;
-      oss << context << " expression is not bool valued";
-      throw std::invalid_argument (oss.str ());
+    std::stringstream oss;
+    oss << context << " expression is not bool valued";
+    throw std::invalid_argument(oss.str());
   }
 
   try {
@@ -186,7 +186,7 @@ void system_t::set_invariant(tchecker::loc_id_t id,
   catch (std::exception const & e) {
     std::stringstream oss;
     oss << context << " " << e.what();
-    throw std::invalid_argument (oss.str ());
+    throw std::invalid_argument(oss.str());
   }
 }
 
@@ -214,10 +214,10 @@ void system_t::set_guards(tchecker::edge_id_t id,
   std::shared_ptr<tchecker::typed_expression_t> guard_typed_expr{
       tchecker::typecheck(*guard_expr, localvars, integer_variables(), clock_variables())};
 
-  if (!tchecker::bool_valued (guard_typed_expr->type ())) {
+  if (!tchecker::bool_valued(guard_typed_expr->type())) {
     std::stringstream oss;
     oss << context << " expression is not bool valued";
-    throw std::invalid_argument (oss.str ());
+    throw std::invalid_argument(oss.str());
   }
 
   try {
@@ -228,7 +228,7 @@ void system_t::set_guards(tchecker::edge_id_t id,
   catch (std::exception const & e) {
     std::stringstream oss;
     oss << context << " " << e.what();
-    throw std::invalid_argument (oss.str ());
+    throw std::invalid_argument(oss.str());
   }
 }
 
@@ -273,12 +273,9 @@ void system_t::set_statements(tchecker::edge_id_t id,
   if (stmt.get() == nullptr)
     throw std::invalid_argument("Syntax error");
 
-
   std::shared_ptr<tchecker::typed_statement_t> typed_stmt{
       tchecker::typecheck(*stmt, localvars, integer_variables(), clock_variables(),
-                          [](std::string const &e) {
-                            std::cerr << tchecker::log_error << e << std::endl;
-                          })};
+                          [](std::string const & e) { std::cerr << tchecker::log_error << e << std::endl; })};
 
   try {
     std::shared_ptr<tchecker::bytecode_t> bytecode{tchecker::compile(*typed_stmt),
