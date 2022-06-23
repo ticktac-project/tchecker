@@ -13,6 +13,7 @@
 #include <memory>
 #include <string>
 
+#include "syntax-check.hh"
 #include "tchecker/parsing/parsing.hh"
 #include "tchecker/syncprod/system.hh"
 #include "tchecker/system/output.hh"
@@ -127,25 +128,12 @@ std::shared_ptr<tchecker::parsing::system_declaration_t> load_system(std::string
 /*!
  \brief Check timed automaton syntax from a declaration
  \param sysdecl : system declaration
- \return true if sysdecl contains a syntactically correct declaration of a
- system of timed automata, false otherwise
+ \post error and warnings have been reported to std::cerr
 */
-bool do_check_syntax_ta(tchecker::parsing::system_declaration_t const & sysdecl)
+void do_syntax_check_ta(tchecker::parsing::system_declaration_t const & sysdecl)
 {
-  try {
-    tchecker::ta::system_t system(sysdecl);
-  }
-  catch (std::exception & e) {
-    std::cerr << tchecker::log_error << e.what() << std::endl;
-  }
-
-  if (tchecker::log_error_count() > 0) {
-    tchecker::log_output_count(std::cout);
-    return false;
-  }
-
-  std::cout << "Syntax OK" << std::endl;
-  return true;
+  if (tchecker::tck_syntax::syntax_check_ta(std::cerr, sysdecl))
+    std::cout << "Syntax OK" << std::endl;
 }
 
 /*!
@@ -223,7 +211,7 @@ int main(int argc, char * argv[])
       return EXIT_FAILURE;
 
     if (check_syntax)
-      do_check_syntax_ta(*sysdecl);
+      do_syntax_check_ta(*sysdecl);
 
     if (synchronized_product)
       do_synchronized_product(*sysdecl, process_name, delimiter, *os);

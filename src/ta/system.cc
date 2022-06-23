@@ -57,6 +57,19 @@ tchecker::ta::system_t & system_t::operator=(tchecker::ta::system_t const & syst
   return *this;
 }
 
+tchecker::system::attribute_keys_map_t const & system_t::known_attributes()
+{
+  static tchecker::system::attribute_keys_map_t const known_attr{[&]() {
+    tchecker::system::attribute_keys_map_t attr(tchecker::syncprod::system_t::known_attributes());
+    attr[tchecker::system::ATTR_EDGE].insert("do");
+    attr[tchecker::system::ATTR_EDGE].insert("provided");
+    attr[tchecker::system::ATTR_LOCATION].insert("invariant");
+    attr[tchecker::system::ATTR_LOCATION].insert("urgent");
+    return attr;
+  }()};
+  return known_attr;
+}
+
 tchecker::typed_expression_t const & system_t::guard(tchecker::edge_id_t id) const
 {
   assert(is_edge(id));

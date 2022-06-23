@@ -38,6 +38,17 @@ system_t::system_t(tchecker::system::system_t const & system) : tchecker::system
   compute_labels();
 }
 
+tchecker::system::attribute_keys_map_t const & system_t::known_attributes()
+{
+  static tchecker::system::attribute_keys_map_t const known_attr{[&]() {
+    tchecker::system::attribute_keys_map_t attr(tchecker::system::system_t::known_attributes());
+    attr[tchecker::system::ATTR_LOCATION].insert("committed");
+    attr[tchecker::system::ATTR_LOCATION].insert("labels");
+    return attr;
+  }()};
+  return known_attr;
+}
+
 bool system_t::is_asynchronous(tchecker::system::edge_t const & edge) const
 {
   tchecker::process_id_t pid = edge.pid();

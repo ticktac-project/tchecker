@@ -42,97 +42,102 @@ add_subdirectory(waiting)
 add_subdirectory(zg)
 
 set(OTHER_SRC
-${CMAKE_CURRENT_SOURCE_DIR}/basictypes.cc
-${TCHECKER_INCLUDE_DIR}/tchecker/basictypes.hh
+  ${CMAKE_CURRENT_SOURCE_DIR}/basictypes.cc
+  ${TCHECKER_INCLUDE_DIR}/tchecker/basictypes.hh
 )
 
 set(LIBTCHECKER_SRC
-${ALGORITHMS_SRC}
-${CLOCKBOUNDS_SRC}
-${DBM_SRC}
-${EXPRESSION_SRC}
-${GRAPH_SRC}
-${OTHER_SRC}
-${PARSING_SRC}
-${REFZG_SRC}
-${STATEMENT_SRC}
-${SYNCPROD_SRC}
-${SYSTEM_SRC}
-${TA_SRC}
-${TS_SRC}
-${UTILS_SRC}
-${VARIABLES_SRC}
-${WAITING_SRC}
-${VM_SRC}
-${ZG_SRC})
-
+  ${ALGORITHMS_SRC}
+  ${CLOCKBOUNDS_SRC}
+  ${DBM_SRC}
+  ${EXPRESSION_SRC}
+  ${GRAPH_SRC}
+  ${OTHER_SRC}
+  ${PARSING_SRC}
+  ${REFZG_SRC}
+  ${STATEMENT_SRC}
+  ${SYNCPROD_SRC}
+  ${SYSTEM_SRC}
+  ${TA_SRC}
+  ${TS_SRC}
+  ${UTILS_SRC}
+  ${VARIABLES_SRC}
+  ${WAITING_SRC}
+  ${VM_SRC}
+  ${ZG_SRC})
 
 # Build TChecker static library
 add_library(libtchecker_static STATIC ${LIBTCHECKER_SRC}
-            $<TARGET_OBJECTS:program_parsing_static>
-            $<TARGET_OBJECTS:system_parsing_static>)
+  $<TARGET_OBJECTS:program_parsing_static>
+  $<TARGET_OBJECTS:system_parsing_static>)
 set_property(TARGET libtchecker_static PROPERTY OUTPUT_NAME tchecker)
 set_property(TARGET libtchecker_static PROPERTY CXX_STANDARD 17)
 set_property(TARGET libtchecker_static PROPERTY CXX_STANDARD_REQUIRED ON)
 
-
 # Build TChecker shared library if required
 if(LIBTCHECKER_ENABLE_SHARED)
   add_library(libtchecker_shared SHARED ${LIBTCHECKER_SRC}
-              $<TARGET_OBJECTS:program_parsing_shared>
-              $<TARGET_OBJECTS:system_parsing_shared>)
+    $<TARGET_OBJECTS:program_parsing_shared>
+    $<TARGET_OBJECTS:system_parsing_shared>)
   set_property(TARGET libtchecker_shared PROPERTY OUTPUT_NAME tchecker)
   set_property(TARGET libtchecker_shared PROPERTY CXX_STANDARD 17)
   set_property(TARGET libtchecker_shared PROPERTY CXX_STANDARD_REQUIRED ON)
+
   if(${CMAKE_HOST_SYSTEM_NAME} MATCHES "Linux")
     set_property(TARGET libtchecker_shared PROPERTY POSITION_INDEPENDENT_CODE 1)
   endif()
 endif()
 
 # Build tck-syntax executable
-add_executable(tck-syntax ${CMAKE_CURRENT_SOURCE_DIR}/tck-syntax/tck-syntax.cc)
+add_executable(tck-syntax
+  ${CMAKE_CURRENT_SOURCE_DIR}/tck-syntax/syntax-check.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/tck-syntax/syntax-check.hh
+  ${CMAKE_CURRENT_SOURCE_DIR}/tck-syntax/tck-syntax.cc)
 target_link_libraries(tck-syntax libtchecker_static)
 set_property(TARGET tck-syntax PROPERTY CXX_STANDARD 17)
 set_property(TARGET tck-syntax PROPERTY CXX_STANDARD_REQUIRED ON)
 
 # Build tck-reach executable
 add_executable(tck-reach
-               ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/concur19.hh
-               ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/concur19.cc
-               ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/tck-reach.cc
-               ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/zg-covreach.cc
-               ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/zg-covreach.hh
-               ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/zg-reach.cc
-               ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/zg-reach.hh)
+  ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/concur19.hh
+  ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/concur19.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/tck-reach.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/zg-covreach.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/zg-covreach.hh
+  ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/zg-reach.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/zg-reach.hh)
 target_link_libraries(tck-reach libtchecker_static)
 set_property(TARGET tck-reach PROPERTY CXX_STANDARD 17)
 set_property(TARGET tck-reach PROPERTY CXX_STANDARD_REQUIRED ON)
 
 # Build tck-simulate executable
 add_executable(tck-simulate
-               ${CMAKE_CURRENT_SOURCE_DIR}/tck-simulate/graph.hh
-               ${CMAKE_CURRENT_SOURCE_DIR}/tck-simulate/graph.cc
-               ${CMAKE_CURRENT_SOURCE_DIR}/tck-simulate/simulate.hh
-               ${CMAKE_CURRENT_SOURCE_DIR}/tck-simulate/simulate.cc
-               ${CMAKE_CURRENT_SOURCE_DIR}/tck-simulate/tck-simulate.cc)
+  ${CMAKE_CURRENT_SOURCE_DIR}/tck-simulate/graph.hh
+  ${CMAKE_CURRENT_SOURCE_DIR}/tck-simulate/graph.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/tck-simulate/simulate.hh
+  ${CMAKE_CURRENT_SOURCE_DIR}/tck-simulate/simulate.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/tck-simulate/tck-simulate.cc)
 target_link_libraries(tck-simulate libtchecker_static)
 set_property(TARGET tck-simulate PROPERTY CXX_STANDARD 17)
 set_property(TARGET tck-simulate PROPERTY CXX_STANDARD_REQUIRED ON)
 
 # Project view in IDEs (Xcode, etc)
-foreach(FILE ${LIBTCHECKER_SRC}) 
-    # Get the directory of the source file
-    get_filename_component(PARENT_DIR "${FILE}" DIRECTORY)
-    # Remove common directory prefix to make the group
-    if ("${FILE}" MATCHES ".*\\.cc")
-      string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}" "/" GROUP "${PARENT_DIR}")
-    else()
-      string(REPLACE "${TCHECKER_INCLUDE_DIR}/tchecker" "/" GROUP "${PARENT_DIR}")
-    endif()
-    # Make sure we are using windows slashes
-    string(REPLACE "/" "\\" GROUP "${GROUP}")
-    # Put into group
-    source_group("${GROUP}" FILES "${FILE}")
+foreach(FILE ${LIBTCHECKER_SRC})
+  # Get the directory of the source file
+  get_filename_component(PARENT_DIR "${FILE}" DIRECTORY)
+
+  # Remove common directory prefix to make the group
+  if("${FILE}" MATCHES ".*\\.cc")
+    string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}" "/" GROUP "${PARENT_DIR}")
+  else()
+    string(REPLACE "${TCHECKER_INCLUDE_DIR}/tchecker" "/" GROUP "${PARENT_DIR}")
+  endif()
+
+  # Make sure we are using windows slashes
+  string(REPLACE "/" "\\" GROUP "${GROUP}")
+
+  # Put into group
+  source_group("${GROUP}" FILES "${FILE}")
 endforeach()
 
 # Install rule for binaries, lib and header files
@@ -148,18 +153,18 @@ endif()
 find_package(Doxygen)
 
 if(NOT DOXYGEN_FOUND)
-    message(WARNING "Doxygen not found: API documentation not installed.")
+  message(WARNING "Doxygen not found: API documentation not installed.")
 else()
-    set(doxyfile_in ${CMAKE_CURRENT_SOURCE_DIR}/../doc/Doxyfile.in)
-    set(doxyfile ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+  set(doxyfile_in ${CMAKE_CURRENT_SOURCE_DIR}/../doc/Doxyfile.in)
+  set(doxyfile ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
 
-    configure_file(${doxyfile_in} ${doxyfile} @ONLY)
+  configure_file(${doxyfile_in} ${doxyfile} @ONLY)
 
-    add_custom_target(doc
-        COMMAND ${DOXYGEN_EXECUTABLE} ${doxyfile}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        COMMENT "Generating API documentation with Doxygen"
-        VERBATIM)
+  add_custom_target(doc
+    COMMAND ${DOXYGEN_EXECUTABLE} ${doxyfile}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    COMMENT "Generating API documentation with Doxygen"
+    VERBATIM)
 
-    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html DESTINATION share/doc/tchecker)
+  install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html DESTINATION share/doc/tchecker)
 endif()
