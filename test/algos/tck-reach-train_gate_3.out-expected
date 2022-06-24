@@ -1,15 +1,4 @@
 #labels=cross1:cross2:cross3
-#clock:size:name
-#int:size:min:max:init:name
-#process:name
-#event:name
-#location:process:name{attributes}
-#edge:process:source:target:event:{attributes}
-#sync:events
-#   where
-#   attributes is a colon-separated list of key:value
-#   events is a colon-separated list of process@event
-
 system:train_gate_3
 
 event:tau

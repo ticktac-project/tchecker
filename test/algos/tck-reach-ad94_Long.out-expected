@@ -3,17 +3,6 @@
 #
 # See files AUTHORS and LICENSE for copyright details.
 
-#clock:size:name
-#int:size:min:max:init:name
-#process:name
-#event:name
-#location:process:name{attributes}
-#edge:process:source:target:event:{attributes}
-#sync:events
-#   where
-#   attributes is a colon-separated list of key:value
-#   events is a colon-separated list of process@event
-
 system:ad94_fig10_longVersion
 
 clock:1:x
