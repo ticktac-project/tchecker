@@ -134,7 +134,7 @@ non_empty_declaration_list eol_sequence
 
 
 non_empty_declaration_list:
-declaration
+eol_sequence declaration
 {}
 | non_empty_declaration_list eol_sequence declaration
 {}

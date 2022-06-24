@@ -86,7 +86,7 @@ newline    [\n]
 "system"       { return system::parser_t::make_TOK_SYSTEM(loc); }
 {id}           { return system::parser_t::make_TOK_ID(spyytext, loc); }
 {integer}      { return system::parser_t::make_TOK_INTEGER(spyytext, loc); }
-{blankspace}+ { loc.step(); }
+{blankspace}+  { loc.step(); }
 {newline}+     { loc.lines(static_cast<int>(spyyleng)); loc.step();
                  return system::parser_t::make_TOK_EOL(loc); }
 
