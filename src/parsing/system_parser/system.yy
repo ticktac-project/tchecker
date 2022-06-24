@@ -128,7 +128,7 @@ declaration_list
 declaration_list:
 non_empty_declaration_list eol_sequence
 {}
-|
+| eol_sequence
 {}
 ;
 
