@@ -38,7 +38,7 @@ void usage(char * progname)
   std::cerr << "Usage: " << progname << " [options] [file]" << std::endl;
   std::cerr << "   -i          interactive simulation" << std::endl;
   std::cerr << "   -r N        randomized simulation, N steps" << std::endl;
-  std::cerr << "   -o file     output file for simulation tarce" << std::endl;
+  std::cerr << "   -o file     output file for simulation trace" << std::endl;
   std::cerr << "   -h          help" << std::endl;
   std::cerr << "reads from standard input if file is not provided" << std::endl;
 }
@@ -145,6 +145,8 @@ int main(int argc, char * argv[])
     }
 
     std::string input_file = (optindex == argc ? "" : argv[optindex]);
+    if (input_file == "" || input_file == "-")
+      std::cerr << "Reading model from standard input" << std::endl;
     std::shared_ptr<tchecker::parsing::system_declaration_t> sysdecl{load_system(input_file)};
     if (sysdecl.get() == nullptr)
       return EXIT_FAILURE;

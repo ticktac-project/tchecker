@@ -161,7 +161,7 @@ static std::size_t interactive_select(tchecker::zg::zg_t const & zg, tchecker::z
     std::string s;
     std::cin >> s;
 
-    if (s == "q")
+    if (std::cin.eof() || s == "q")
       return tchecker::tck_simulate::NO_SELECTION;
     else if (s == "r")
       return tchecker::tck_simulate::randomized_select(v);
