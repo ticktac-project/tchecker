@@ -45,8 +45,10 @@ using namespace tchecker::parsing;
 %option noyywrap nounput batch noinput
 /*%option debug*/
 
-id       [[:alpha:]_][[:alnum:]_]*
-integer  [0-9]+
+id         [[:alpha:]_][[:alnum:]_]*
+integer    [0-9]+
+blankspace [ \t\r]
+newline    [\n]
 
 %{
   // Code run each time a pattern is matched.
@@ -91,11 +93,11 @@ integer  [0-9]+
 "nop"          { return program::parser_t::make_TOK_NOP(loc); }
 {integer}      { return program::parser_t::make_TOK_INTEGER(ppyytext,loc); }
 {id}           { return program::parser_t::make_TOK_ID(ppyytext, loc); }
-[\n]+          { loc.lines(static_cast<int>(ppyyleng)); loc.step(); }
-[ \t]+         { loc.step(); }
+{newline}+     { loc.lines(static_cast<int>(ppyyleng)); loc.step(); }
+{blankspace}+  { loc.step(); }
 <<EOF>>        { return program::parser_t::make_TOK_EOF(loc); }
 
-<*>.|\n        { std::stringstream msg;
+<*>.|{newline} { std::stringstream msg;
                  msg << loc << " Invalid character: " << ppyytext;
                  throw std::runtime_error(msg.str()); }
 

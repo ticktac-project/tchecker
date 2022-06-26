@@ -45,8 +45,10 @@ using namespace tchecker::parsing;
 %option noyywrap nounput batch noinput
 /* %option debug */
 
-id        [[:alpha:]_][[:alnum:]_.]*
-integer   [-+]?[0-9]+
+id         [[:alpha:]_][[:alnum:]_.]*
+integer    [-+]?[0-9]+
+blankspace [ \t\r]
+newline    [\n]
 
 %{
   // Code run each time a pattern is matched.
@@ -84,15 +86,16 @@ integer   [-+]?[0-9]+
 "system"       { return system::parser_t::make_TOK_SYSTEM(loc); }
 {id}           { return system::parser_t::make_TOK_ID(spyytext, loc); }
 {integer}      { return system::parser_t::make_TOK_INTEGER(spyytext, loc); }
-[ \t]+         { loc.step(); }
-[\n]+          { loc.lines(static_cast<int>(spyyleng)); loc.step();
-	               return system::parser_t::make_TOK_EOL(loc); }
+{blankspace}+  { loc.step(); }
+{newline}+     { loc.lines(static_cast<int>(spyyleng)); loc.step();
+                 return system::parser_t::make_TOK_EOL(loc); }
+
 <<EOF>>        { return system::parser_t::make_TOK_EOF(loc); }
 
 
 
 <COMMENT>{
-[\n]+          { BEGIN INITIAL;
+{newline}+     { BEGIN INITIAL;
                  loc.lines(static_cast<int>(spyyleng)); loc.step();
 	               return system::parser_t::make_TOK_EOL(loc); }
 .*             ;
@@ -106,8 +109,8 @@ integer   [-+]?[0-9]+
 ":"            { BEGIN ATTR_VALUE;
                  return system::parser_t::make_TOK_COLON(loc); }
 {id}           { return system::parser_t::make_TOK_ID(spyytext, loc); }
-[ \t]+         { loc.step(); }
-[\n]+          { loc.lines(static_cast<int>(spyyleng)); loc.step(); }
+{blankspace}+  { loc.step(); }
+{newline}+     { loc.lines(static_cast<int>(spyyleng)); loc.step(); }
 }
 
 
@@ -115,9 +118,9 @@ integer   [-+]?[0-9]+
 <ATTR_VALUE>{
 ":"            { BEGIN ATTR_KEY;
                  return system::parser_t::make_TOK_COLON(loc); }
-[ \t]*"}"      { BEGIN INITIAL;
+{blankspace}+*"}" { BEGIN INITIAL;
                  return system::parser_t::make_TOK_RBRACE(loc); }
-[\n]+          { loc.lines(static_cast<int>(spyyleng)); loc.step(); }
+{newline}+       { loc.lines(static_cast<int>(spyyleng)); loc.step(); }
 [^:{}#]*       {
                  std::string s(spyytext);
                  size_t nb_nl = std::count(s.begin(), s.end(), '\n');
@@ -128,8 +131,8 @@ integer   [-+]?[0-9]+
 }
 
 
-<*>.|\n        { std::stringstream msg;
-                 msg << loc << " Invalid character: " << spyytext;
+<*>.|{newline}        { std::stringstream msg;
+                 msg << loc << " Invalid character: '" << spyytext << "'";
                  throw std::runtime_error(msg.str()); }
 
 

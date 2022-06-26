@@ -19,6 +19,11 @@ variables:
   variables:
     CC : "gcc"
     CXX : "g++"
+  artifacts:
+    paths:
+    - build/src/tck-reach
+    - build/src/tck-simulate
+    - build/src/tck-syntax
 
 
 gcc_all_int32_no_memcheck:
