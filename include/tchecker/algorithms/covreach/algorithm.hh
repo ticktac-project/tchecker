@@ -34,7 +34,7 @@ namespace covreach {
  \tparam TS : type of transition system, should derive from tchecker::ts::ts_t
  \tparam GRAPH : type of graph, should derive from
  tchecker::graph::subsumption::graph_t, and nodes of type GRAPH::shared_node_t
- should have a method state)ptr() that yields a pointer to the corresponding
+ should have a method state_ptr() that yields a pointer to the corresponding
  state in TS.
  For correctness of the algorithm, the covering relation over nodes in GRAPH
  should be a trace inclusion, and it should be irreflexive: a node should not
