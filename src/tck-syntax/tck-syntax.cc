@@ -32,10 +32,11 @@ static struct option long_options[] = {{"check", no_argument, 0, 'c'},
                                        {"delimiter", required_argument, 0, 'd'},
                                        {"process-name", required_argument, 0, 'n'},
                                        {"transform", no_argument, 0, 't'},
+                                       {"json", no_argument, 0, 'j'},
                                        {"help", no_argument, 0, 'h'},
                                        {0, 0, 0, 0}};
 
-static char * const options = (char *)"cd:hn:o:pt";
+static char * const options = (char *)"cd:hn:o:ptj";
 
 void usage(char * progname)
 {
@@ -43,6 +44,7 @@ void usage(char * progname)
   std::cerr << "   -c          syntax check (timed automaton)" << std::endl;
   std::cerr << "   -p          synchronized product" << std::endl;
   std::cerr << "   -t          transform a system into dot graphviz file format" << std::endl;
+  std::cerr << "   -j          transform a system into json file format" << std::endl;
   std::cerr << "   -o file     output file" << std::endl;
   std::cerr << "   -d delim    delimiter string (default: _)" << std::endl;
   std::cerr << "   -n name     name of synchronized process (default: P)" << std::endl;
@@ -53,6 +55,7 @@ void usage(char * progname)
 static bool check_syntax = false;
 static bool synchronized_product = false;
 static bool transform = false;
+static bool json = false;
 static bool help = false;
 static std::string delimiter = "_";
 static std::string process_name = "P";
@@ -94,6 +97,9 @@ int parse_command_line(int argc, char * argv[])
       break;
     case 't':
       transform = true;
+      break;
+    case 'j':
+      json = true;
       break;
     default:
       throw std::runtime_error("I should never be executed");
@@ -173,6 +179,22 @@ void do_output_dot(tchecker::parsing::system_declaration_t const & sysdecl, std:
 }
 
 /*!
+ \brief Output a system of processes following the JSON format
+ \param sysdecl : system declaration
+ \param delimiter : delimiter used in node names
+ \param os : output stream
+ \post The system of processes in sysdecl has been output to os following the
+ JSON format, using delimiter as a separator between process name and
+ location name for node names.
+*/
+void do_output_json(tchecker::parsing::system_declaration_t const & sysdecl, std::string const & delimiter, std::ostream & os)
+{
+  std::shared_ptr<tchecker::system::system_t> system(new tchecker::system::system_t(sysdecl));
+  tchecker::system::output_json(os, *system, delimiter);
+  os << std::endl;
+}
+
+/*!
  \brief Main function
 */
 int main(int argc, char * argv[])
@@ -218,6 +240,8 @@ int main(int argc, char * argv[])
 
     if (transform)
       do_output_dot(*sysdecl, delimiter, *os);
+    else if (json)
+      do_output_json(*sysdecl, delimiter, *os);
   }
   catch (std::exception & e) {
     std::cerr << tchecker::log_error << e.what() << std::endl;
