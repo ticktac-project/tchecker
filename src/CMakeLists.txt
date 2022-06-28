@@ -88,14 +88,14 @@ if(LIBTCHECKER_ENABLE_SHARED)
   endif()
 endif()
 
-# Build tck-syntax executable
-add_executable(tck-syntax
-  ${CMAKE_CURRENT_SOURCE_DIR}/tck-syntax/syntax-check.cc
-  ${CMAKE_CURRENT_SOURCE_DIR}/tck-syntax/syntax-check.hh
-  ${CMAKE_CURRENT_SOURCE_DIR}/tck-syntax/tck-syntax.cc)
-target_link_libraries(tck-syntax libtchecker_static)
-set_property(TARGET tck-syntax PROPERTY CXX_STANDARD 17)
-set_property(TARGET tck-syntax PROPERTY CXX_STANDARD_REQUIRED ON)
+# Build tck-liveness executable
+add_executable(tck-liveness
+  ${CMAKE_CURRENT_SOURCE_DIR}/tck-liveness/tck-liveness.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/tck-liveness/zg-ndfs.hh
+  ${CMAKE_CURRENT_SOURCE_DIR}/tck-liveness/zg-ndfs.cc)
+target_link_libraries(tck-liveness libtchecker_static)
+set_property(TARGET tck-liveness PROPERTY CXX_STANDARD 17)
+set_property(TARGET tck-liveness PROPERTY CXX_STANDARD_REQUIRED ON)
 
 # Build tck-reach executable
 add_executable(tck-reach
@@ -109,6 +109,15 @@ add_executable(tck-reach
 target_link_libraries(tck-reach libtchecker_static)
 set_property(TARGET tck-reach PROPERTY CXX_STANDARD 17)
 set_property(TARGET tck-reach PROPERTY CXX_STANDARD_REQUIRED ON)
+
+# Build tck-syntax executable
+add_executable(tck-syntax
+  ${CMAKE_CURRENT_SOURCE_DIR}/tck-syntax/syntax-check.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/tck-syntax/syntax-check.hh
+  ${CMAKE_CURRENT_SOURCE_DIR}/tck-syntax/tck-syntax.cc)
+target_link_libraries(tck-syntax libtchecker_static)
+set_property(TARGET tck-syntax PROPERTY CXX_STANDARD 17)
+set_property(TARGET tck-syntax PROPERTY CXX_STANDARD_REQUIRED ON)
 
 # Build tck-simulate executable
 add_executable(tck-simulate
