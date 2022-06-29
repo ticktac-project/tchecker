@@ -137,6 +137,12 @@ public:
    */
   inline tchecker::graph::find::graph_t<NODE_PTR, HASH, EQUAL>::const_iterator_t end() const { return _nodes.end(); }
 
+  /*!
+   \brief Accessor
+   \return Number of nodes in this graph
+   */
+  inline std::size_t size() const { return _nodes.size(); }
+
 protected:
   std::unordered_set<NODE_PTR, HASH, EQUAL> _nodes; /*!< Set of nodes */
 };

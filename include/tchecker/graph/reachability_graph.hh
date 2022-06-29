@@ -307,6 +307,12 @@ public:
   }
 
   /*!
+   \brief Accessor
+   \return the number of nodes in this graph
+   */
+  inline std::size_t nodes_count() const { return _find_graph.size(); }
+
+  /*!
   \brief Type of incoming edges iterator
   */
   using incoming_edges_iterator_t =
@@ -563,6 +569,12 @@ public:
   {
     return tchecker::make_range(_store_graph.begin(), _store_graph.end());
   }
+
+  /*!
+   \brief Accessor
+   \return the number of nodes in this graph
+   */
+  inline std::size_t nodes_count() const { return _store_graph.size(); }
 
   /*!
   \brief Type of incoming edges iterator

@@ -458,7 +458,7 @@ public:
    \brief Accessor
    \return Number of nodes in this graph
    */
-  std::size_t nodes_count() const { return _cover_graph.size(); }
+  inline std::size_t nodes_count() const { return _cover_graph.size(); }
 
   /*!
    \brief Type of iterator on nodes

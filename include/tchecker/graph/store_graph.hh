@@ -67,6 +67,12 @@ public:
    */
   inline tchecker::graph::store::graph_t<NODE_PTR>::const_iterator_t end() const { return _nodes.end(); }
 
+  /*!
+   \brief Accessor
+   \return the number of nodes in this graph
+  */
+  inline std::size_t size() const { return _nodes.size(); }
+
 protected:
   std::vector<NODE_PTR> _nodes; /*!< Set of nodes */
 };
