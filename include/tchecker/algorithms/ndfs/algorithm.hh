@@ -10,6 +10,7 @@
 
 #include <cassert>
 #include <deque>
+#include <iterator>
 #include <stack>
 #include <vector>
 
@@ -125,6 +126,9 @@ public:
       if (stats.cycle())
         break;
     }
+
+    auto nodes_range = graph.nodes();
+    stats.stored_states() = std::distance(nodes_range.begin(), nodes_range.end());
 
     stats.set_end_time();
 
