@@ -31,18 +31,13 @@ namespace algorithms {
 namespace ndfs {
 
 /*!
- \class blue_entry_t
- \brief Entry of the blue stack
-*/
-
-/*!
  \class algorithm_t
  \brief Nested DFS algorithm
  \tparam TS : type of transition system, should derive from tchecker::ts::ts_t
  \tparam GRAPH : type of graph, should derive from
  tchecker::graph::reachability_graph_t, and nodes of type GRAPH::shared_node_t
  should derive from tchecker::algorithms::ndfs::node_t and have a method
- state_ptr()  that yields a pointer to the corresponding state in TS
+ state_ptr() that yields a pointer to the corresponding state in TS
  \note Our implementation is based on the nested DFS algorithm in:
  "Comparison of Algorithms for Checking Emptiness on Büchi Automata",
  Andreas Gaiser and Stefan Schwoon
@@ -106,7 +101,7 @@ public:
    \param labels : accepting labels
    \post graph is built from a traversal of ts starting from its initial states,
    until a cycle that satisfies labels is reached (if any).
-   A node is created for each reachable state in ts, and an edge is created for
+   A node is created for each reached state in ts, and an edge is created for
    each transition in ts.
    \return statistics on the run
    \note if labels is empty, graph is the full state-space of ts
