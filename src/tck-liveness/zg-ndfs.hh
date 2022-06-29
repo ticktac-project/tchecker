@@ -182,7 +182,7 @@ std::ostream & dot_output(std::ostream & os, tchecker::tck_liveness::zg_ndfs::gr
 
 /*!
  \class algorithm_t
- \brief Reachability algorithm over the zone graph
+ \brief Nested DFS algorithm over the zone graph
 */
 class algorithm_t
     : public tchecker::algorithms::ndfs::algorithm_t<tchecker::zg::zg_t, tchecker::tck_liveness::zg_ndfs::graph_t> {
