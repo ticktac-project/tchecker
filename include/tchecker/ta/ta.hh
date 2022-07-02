@@ -229,6 +229,14 @@ boost::dynamic_bitset<> sync_refclocks(tchecker::ta::system_t const & system, tc
 bool satisfies(tchecker::ta::system_t const & system, tchecker::ta::state_t const & s, boost::dynamic_bitset<> const & labels);
 
 /*!
+ \brief Checks is a state is a valid final state
+ \param system : a system
+ \param s : a state
+ \return true
+*/
+bool is_valid_final(tchecker::ta::system_t const & system, tchecker::ta::state_t const & s);
+
+/*!
  \brief Accessor to state attributes as strings
  \param system : a system
  \param s : a state
@@ -356,6 +364,13 @@ public:
    labels of state s, false otherwise
    */
   virtual bool satisfies(tchecker::ta::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels) const;
+
+  /*!
+   \brief Checks if a state is a valid final state
+   \param s : a state
+   \return true if a run ending in s is a valid run, false otherwise
+  */
+  virtual bool is_valid_final(tchecker::ta::const_state_sptr_t const & s) const;
 
   /*!
    \brief Accessor to state attributes as strings

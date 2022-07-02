@@ -117,6 +117,13 @@ public:
   virtual bool satisfies(CONST_STATE const & s, boost::dynamic_bitset<> const & labels) const = 0;
 
   /*!
+   \brief Checks if a state is a valid final state
+   \param s : a state
+   \return true if a run ending in s is a valid run, false otherwise
+  */
+  virtual bool is_valid_final(CONST_STATE const & s) const = 0;
+
+  /*!
    \brief Accessor to state attributes as strings
    \param s : a state
    \param m : a map of string pairs (key, value)
@@ -298,6 +305,7 @@ public:
   using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::state;
   using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::transition;
   using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::satisfies;
+  using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::is_valid_final;
   using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::attributes;
 };
 

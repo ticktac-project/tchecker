@@ -73,7 +73,14 @@ tchecker::state_status_t next(tchecker::ta::system_t const & system,
 bool satisfies(tchecker::ta::system_t const & system, tchecker::refzg::state_t const & s,
                boost::dynamic_bitset<> const & labels)
 {
-  return !s.zone().is_empty() && s.zone().is_synchronizable() && tchecker::ta::satisfies(system, s, labels);
+  return tchecker::ta::satisfies(system, s, labels);
+}
+
+/* is_valid_final */
+
+bool is_valid_final(tchecker::ta::system_t const & system, tchecker::refzg::state_t const & s)
+{
+  return !s.zone().is_empty() && s.zone().is_synchronizable();
 }
 
 /* attributes */
@@ -130,6 +137,11 @@ void refzg_t::next(tchecker::refzg::const_state_sptr_t const & s, tchecker::refz
 bool refzg_t::satisfies(tchecker::refzg::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels) const
 {
   return tchecker::refzg::satisfies(*_system, *s, labels);
+}
+
+bool refzg_t::is_valid_final(tchecker::refzg::const_state_sptr_t const & s) const
+{
+  return tchecker::refzg::is_valid_final(*_system, *s);
 }
 
 void refzg_t::attributes(tchecker::refzg::const_state_sptr_t const & s, std::map<std::string, std::string> & m) const

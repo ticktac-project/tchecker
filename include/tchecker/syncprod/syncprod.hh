@@ -309,6 +309,22 @@ bool satisfies(tchecker::syncprod::system_t const & system, tchecker::syncprod::
                boost::dynamic_bitset<> const & labels);
 
 /*!
+ \brief Checks is a state is a valid final state
+ \param system : a system
+ \param s : a state
+ \return true
+*/
+bool is_valid_final(tchecker::syncprod::system_t const & system, tchecker::vloc_t const & vloc);
+
+/*!
+ \brief Checks is a state is a valid final state
+ \param system : a system
+ \param s : a state
+ \return true
+*/
+bool is_valid_final(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t const & s);
+
+/*!
  \brief Checks if a tuple of locations is initial
  \param system : a system
  \param vloc : tuple of locations
@@ -448,6 +464,13 @@ public:
   labels of state s, false otherwise
    */
   virtual bool satisfies(tchecker::syncprod::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels) const;
+
+  /*!
+  \brief Checks if a state is a valid final state
+  \param s : a state
+  \return true if a run ending in s is a valid run, false otherwise
+  */
+  virtual bool is_valid_final(tchecker::syncprod::const_state_sptr_t const & s) const;
 
   /*!
    \brief Accessor to state attributes as strings

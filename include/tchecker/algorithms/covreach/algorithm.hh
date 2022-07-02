@@ -82,7 +82,7 @@ public:
 
       ++stats.visited_states();
 
-      if (ts.satisfies(node->state_ptr(), labels)) {
+      if (ts.satisfies(node->state_ptr(), labels) && ts.is_valid_final(node->state_ptr())) {
         stats.reachable() = true;
         break;
       }

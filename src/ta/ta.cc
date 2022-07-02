@@ -140,6 +140,13 @@ bool satisfies(tchecker::ta::system_t const & system, tchecker::ta::state_t cons
   return tchecker::syncprod::satisfies(system.as_syncprod_system(), s, labels);
 }
 
+/* is_valid_final */
+
+bool is_valid_final(tchecker::ta::system_t const & system, tchecker::ta::state_t const & s)
+{
+  return tchecker::syncprod::is_valid_final(system.as_syncprod_system(), s);
+}
+
 /* attributes */
 
 void attributes(tchecker::ta::system_t const & system, tchecker::ta::state_t const & s, std::map<std::string, std::string> & m)
@@ -190,6 +197,11 @@ void ta_t::next(tchecker::ta::const_state_sptr_t const & s, tchecker::ta::outgoi
 bool ta_t::satisfies(tchecker::ta::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels) const
 {
   return tchecker::ta::satisfies(*_system, *s, labels);
+}
+
+bool ta_t::is_valid_final(tchecker::ta::const_state_sptr_t const & s) const
+{
+  return tchecker::ta::is_valid_final(*_system, *s);
 }
 
 void ta_t::attributes(tchecker::ta::const_state_sptr_t const & s, std::map<std::string, std::string> & m) const

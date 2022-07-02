@@ -259,6 +259,15 @@ bool satisfies(tchecker::ta::system_t const & system, tchecker::refzg::state_t c
                boost::dynamic_bitset<> const & labels);
 
 /*!
+ \brief Checks is a state is a valid final state
+ \param system : a system
+ \param s : a state
+ \return true if s has a non-empty zone that contains a synchronized valuation,
+ false otherwise
+*/
+bool is_valid_final(tchecker::ta::system_t const & system, tchecker::refzg::state_t const & s);
+
+/*!
  \brief Accessor to state attributes as strings
  \param system : a system
  \param s : a state
@@ -393,6 +402,14 @@ public:
   labels of state s, false otherwise
   */
   virtual bool satisfies(tchecker::refzg::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels) const;
+
+  /*!
+   \brief Checks if a state is a valid final state
+   \param s : a state
+   \return true is s has a non-empty zone that contains a synchronized
+   valuation, false otherwise
+  */
+  virtual bool is_valid_final(tchecker::refzg::const_state_sptr_t const & s) const;
 
   /*!
    \brief Accessor to state attributes as strings

@@ -183,6 +183,15 @@ bool satisfies(tchecker::syncprod::system_t const & system, tchecker::syncprod::
   return tchecker::syncprod::satisfies(system, s.vloc(), labels);
 }
 
+/* is_valid_final */
+
+bool is_valid_final(tchecker::syncprod::system_t const & system, tchecker::vloc_t const & vloc) { return true; }
+
+bool is_valid_final(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t const & s)
+{
+  return tchecker::syncprod::is_valid_final(system, s.vloc());
+}
+
 /* is_initial */
 
 bool is_initial(tchecker::syncprod::system_t const & system, tchecker::vloc_t const & vloc)
@@ -242,6 +251,11 @@ void syncprod_t::next(tchecker::syncprod::const_state_sptr_t const & s,
 bool syncprod_t::satisfies(tchecker::syncprod::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels) const
 {
   return tchecker::syncprod::satisfies(*_system, *s, labels);
+}
+
+bool syncprod_t::is_valid_final(tchecker::syncprod::const_state_sptr_t const & s) const
+{
+  return tchecker::syncprod::is_valid_final(*_system, *s);
 }
 
 void syncprod_t::attributes(tchecker::syncprod::const_state_sptr_t const & s, std::map<std::string, std::string> & m) const

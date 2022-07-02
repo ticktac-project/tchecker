@@ -74,8 +74,12 @@ tchecker::state_status_t next(tchecker::ta::system_t const & system,
 
 bool satisfies(tchecker::ta::system_t const & system, tchecker::zg::state_t const & s, boost::dynamic_bitset<> const & labels)
 {
-  return !s.zone().is_empty() && tchecker::ta::satisfies(system, s, labels);
+  return tchecker::ta::satisfies(system, s, labels);
 }
+
+/* is_valid_final */
+
+bool is_valid_final(tchecker::ta::system_t const & system, tchecker::zg::state_t const & s) { return !s.zone().is_empty(); }
 
 /* attributes */
 
@@ -131,6 +135,11 @@ void zg_t::next(tchecker::zg::const_state_sptr_t const & s, tchecker::zg::outgoi
 bool zg_t::satisfies(tchecker::zg::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels) const
 {
   return tchecker::zg::satisfies(*_system, *s, labels);
+}
+
+bool zg_t::is_valid_final(tchecker::zg::const_state_sptr_t const & s) const
+{
+  return tchecker::zg::is_valid_final(*_system, *s);
 }
 
 void zg_t::attributes(tchecker::zg::const_state_sptr_t const & s, std::map<std::string, std::string> & m) const
