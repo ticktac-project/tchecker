@@ -135,9 +135,9 @@ boost::dynamic_bitset<> sync_refclocks(tchecker::ta::system_t const & system, tc
 
 /* labels */
 
-bool satisfies(tchecker::ta::system_t const & system, tchecker::ta::state_t const & s, boost::dynamic_bitset<> const & labels)
+boost::dynamic_bitset<> labels(tchecker::ta::system_t const & system, tchecker::ta::state_t const & s)
 {
-  return tchecker::syncprod::satisfies(system.as_syncprod_system(), s, labels);
+  return tchecker::syncprod::labels(system.as_syncprod_system(), s);
 }
 
 /* is_valid_final */
@@ -194,9 +194,9 @@ void ta_t::next(tchecker::ta::const_state_sptr_t const & s, tchecker::ta::outgoi
   v.push_back(std::make_tuple(status, nexts, t));
 }
 
-bool ta_t::satisfies(tchecker::ta::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels) const
+boost::dynamic_bitset<> ta_t::labels(tchecker::ta::const_state_sptr_t const & s) const
 {
-  return tchecker::ta::satisfies(*_system, *s, labels);
+  return tchecker::ta::labels(*_system, *s);
 }
 
 bool ta_t::is_valid_final(tchecker::ta::const_state_sptr_t const & s) const

@@ -169,18 +169,9 @@ boost::dynamic_bitset<> labels(tchecker::syncprod::system_t const & system, tche
   return l;
 }
 
-bool satisfies(tchecker::syncprod::system_t const & system, tchecker::vloc_t const & vloc,
-               boost::dynamic_bitset<> const & labels)
+boost::dynamic_bitset<> labels(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t const & s)
 {
-  if (labels.none())
-    return false;
-  return labels.is_subset_of(tchecker::syncprod::labels(system, vloc));
-}
-
-bool satisfies(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t const & s,
-               boost::dynamic_bitset<> const & labels)
-{
-  return tchecker::syncprod::satisfies(system, s.vloc(), labels);
+  return tchecker::syncprod::labels(system, s.vloc());
 }
 
 /* is_valid_final */
@@ -248,9 +239,9 @@ void syncprod_t::next(tchecker::syncprod::const_state_sptr_t const & s,
   v.push_back(std::make_tuple(status, nexts, t));
 }
 
-bool syncprod_t::satisfies(tchecker::syncprod::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels) const
+boost::dynamic_bitset<> syncprod_t::labels(tchecker::syncprod::const_state_sptr_t const & s) const
 {
-  return tchecker::syncprod::satisfies(*_system, *s, labels);
+  return tchecker::syncprod::labels(*_system, *s);
 }
 
 bool syncprod_t::is_valid_final(tchecker::syncprod::const_state_sptr_t const & s) const

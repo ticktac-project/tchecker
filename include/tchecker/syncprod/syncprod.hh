@@ -287,26 +287,13 @@ boost::dynamic_bitset<> committed_processes(tchecker::syncprod::system_t const &
 boost::dynamic_bitset<> labels(tchecker::syncprod::system_t const & system, tchecker::vloc_t const & vloc);
 
 /*!
- \brief Checks if a vloc satisfies a set of labels
- \param system : a system
- \param vloc : tuple of locations
- \param labels : set of labels
- \return true if labels is not empty and labels is included in the set of labels
- in vloc, false otherwise
-*/
-bool satisfies(tchecker::syncprod::system_t const & system, tchecker::vloc_t const & vloc,
-               boost::dynamic_bitset<> const & labels);
-
-/*!
- \brief Checks if a state satisfies a set of labels
+ \brief Compute labels of a state
  \param system : a system
  \param s : a state
- \param labels : set of labels
- \return true if labels is not empty and labels is included in the set of labels
- in s, false otherwise
+ \return a dynamic bitset of size system.labels_count() that contains all labels
+ on state s
 */
-bool satisfies(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t const & s,
-               boost::dynamic_bitset<> const & labels);
+boost::dynamic_bitset<> labels(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t const & s);
 
 /*!
  \brief Checks is a state is a valid final state
@@ -457,13 +444,11 @@ public:
                                 tchecker::syncprod::initial_value_t, tchecker::syncprod::outgoing_edges_value_t>::next;
 
   /*!
-  \brief Checks if a state satisfies a set of labels
-  \param s : a state
-  \param labels : a set of labels
-  \return true if labels is not empty and labels is included in the set of
-  labels of state s, false otherwise
+   \brief Computes the set of labels of a state
+   \param s : a state
+   \return the set of labels on state s
    */
-  virtual bool satisfies(tchecker::syncprod::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels) const;
+  virtual boost::dynamic_bitset<> labels(tchecker::syncprod::const_state_sptr_t const & s) const;
 
   /*!
   \brief Checks if a state is a valid final state

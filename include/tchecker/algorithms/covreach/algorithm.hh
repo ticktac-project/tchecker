@@ -42,6 +42,8 @@ namespace covreach {
 */
 template <class TS, class GRAPH> class algorithm_t {
 public:
+  using node_sptr_t = typename GRAPH::node_sptr_t;
+
   /*!
    \brief Build a covering reachability graph of a transition system from its
    initial states
@@ -63,8 +65,6 @@ public:
   tchecker::algorithms::covreach::stats_t run(TS & ts, GRAPH & graph, boost::dynamic_bitset<> const & labels,
                                               enum tchecker::waiting::policy_t policy)
   {
-    using node_sptr_t = typename GRAPH::node_sptr_t;
-
     std::unique_ptr<tchecker::waiting::waiting_t<node_sptr_t>> waiting{tchecker::waiting::factory<node_sptr_t>(policy)};
     tchecker::algorithms::covreach::stats_t stats;
     std::vector<node_sptr_t> nodes, covered_nodes;
@@ -82,7 +82,7 @@ public:
 
       ++stats.visited_states();
 
-      if (ts.satisfies(node->state_ptr(), labels) && ts.is_valid_final(node->state_ptr())) {
+      if (accepting(node, ts, labels)) {
         stats.reachable() = true;
         break;
       }
@@ -198,6 +198,19 @@ public:
       graph.remove_node(covered_node);
       ++stats.covered_states();
     }
+  }
+
+  /*!
+   \brief Check if a node is accepting
+   \param n : a node
+   \param ts : a transition system
+   \param labels : a set of labels
+   \return true if labels is not empty, and the set of labels in n contain
+   labels, and n is a valid final state in ts, false otherwise
+   */
+  bool accepting(node_sptr_t const & n, TS & ts, boost::dynamic_bitset<> const & labels)
+  {
+    return !labels.none() && labels.is_subset_of(ts.labels(n->state_ptr())) && ts.is_valid_final(n->state_ptr());
   }
 };
 

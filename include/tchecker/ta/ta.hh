@@ -219,14 +219,12 @@ boost::dynamic_bitset<> sync_refclocks(tchecker::ta::system_t const & system, tc
                                        tchecker::vedge_t const & vedge);
 
 /*!
- \brief Checks if a state satisfies a set of labels
- \param system : a system of timed processes
- \param s : a state
- \param labels : a set of labels
- \return true if labels is not empty and labels is included in the set of
- labels of state s, false otherwise
-*/
-bool satisfies(tchecker::ta::system_t const & system, tchecker::ta::state_t const & s, boost::dynamic_bitset<> const & labels);
+  \brief Computes the set of labels of a state
+  \param system : a system
+  \param s : a state
+  \return the set of labels on state s
+  */
+boost::dynamic_bitset<> labels(tchecker::ta::system_t const & system, tchecker::ta::state_t const & s);
 
 /*!
  \brief Checks is a state is a valid final state
@@ -357,13 +355,11 @@ public:
                                 tchecker::ta::outgoing_edges_value_t>::next;
 
   /*!
-   \brief Checks if a state satisfies a set of labels
+   \brief Computes the set of labels of a state
    \param s : a state
-   \param labels : a set of labels
-   \return true if labels is not empty and labels is included in the set of
-   labels of state s, false otherwise
+   \return the set of labels on state s
    */
-  virtual bool satisfies(tchecker::ta::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels) const;
+  virtual boost::dynamic_bitset<> labels(tchecker::ta::const_state_sptr_t const & s) const;
 
   /*!
    \brief Checks if a state is a valid final state

@@ -197,7 +197,7 @@ private:
       if (succ.empty()) {
         if (allred)
           s->color() = tchecker::algorithms::ndfs::RED;
-        else if (ts.satisfies(s->state_ptr(), labels)) {
+        else if (accepting(s, ts, labels)) {
           dfs_red(ts, graph, labels, stats, s);
           s->color() = tchecker::algorithms::ndfs::RED;
         }
@@ -210,8 +210,7 @@ private:
       }
       else {
         node_sptr_t t = stack.top().pick_successor();
-        if (t->color() == tchecker::algorithms::ndfs::CYAN &&
-            (ts.satisfies(s->state_ptr(), labels) || ts.satisfies(t->state_ptr(), labels))) {
+        if (t->color() == tchecker::algorithms::ndfs::CYAN && (accepting(s, ts, labels) || accepting(t, ts, labels))) {
           stats.cycle() = true;
           break;
         }
@@ -224,6 +223,19 @@ private:
           allred = false;
       }
     }
+  }
+
+  /*!
+   \brief Check if a node is accepting
+   \param n : a node
+   \param ts : a transition system
+   \param labels : a set of labels
+   \return true if labels is not empty, and labels is a subset of the labels of
+   node n in ts, false otherwise
+   */
+  bool accepting(node_sptr_t const & n, TS & ts, boost::dynamic_bitset<> const & labels) const
+  {
+    return !labels.none() && labels.is_subset_of(ts.labels(n->state_ptr()));
   }
 
   /*!

@@ -108,13 +108,11 @@ public:
   virtual void next(CONST_STATE const & s, std::vector<sst_t> & v) = 0;
 
   /*!
-  \brief Checks if a state satisfies a set of labels
-  \param s : a state
-  \param labels : a set of labels
-  \return true if labels is not empty and labels is included in the set of
-  labels of state s, false otherwise
+   \brief Computes the set of labels of a state
+   \param s : a state
+   \return the set of labels on state s
    */
-  virtual bool satisfies(CONST_STATE const & s, boost::dynamic_bitset<> const & labels) const = 0;
+  virtual boost::dynamic_bitset<> labels(CONST_STATE const & s) const = 0;
 
   /*!
    \brief Checks if a state is a valid final state
@@ -304,7 +302,7 @@ public:
   using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::status;
   using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::state;
   using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::transition;
-  using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::satisfies;
+  using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::labels;
   using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::is_valid_final;
   using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::attributes;
 };

@@ -72,9 +72,9 @@ tchecker::state_status_t next(tchecker::ta::system_t const & system,
 
 /* labels */
 
-bool satisfies(tchecker::ta::system_t const & system, tchecker::zg::state_t const & s, boost::dynamic_bitset<> const & labels)
+boost::dynamic_bitset<> labels(tchecker::ta::system_t const & system, tchecker::zg::state_t const & s)
 {
-  return tchecker::ta::satisfies(system, s, labels);
+  return tchecker::ta::labels(system, s);
 }
 
 /* is_valid_final */
@@ -132,9 +132,9 @@ void zg_t::next(tchecker::zg::const_state_sptr_t const & s, tchecker::zg::outgoi
   v.push_back(std::make_tuple(status, nexts, t));
 }
 
-bool zg_t::satisfies(tchecker::zg::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels) const
+boost::dynamic_bitset<> zg_t::labels(tchecker::zg::const_state_sptr_t const & s) const
 {
-  return tchecker::zg::satisfies(*_system, *s, labels);
+  return tchecker::zg::labels(*_system, *s);
 }
 
 bool zg_t::is_valid_final(tchecker::zg::const_state_sptr_t const & s) const

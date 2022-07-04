@@ -235,14 +235,12 @@ inline tchecker::state_status_t next(tchecker::ta::system_t const & system, tche
 }
 
 /*!
- \brief Checks if a state satisfies a set of labels
- \param system : a system of timed processes
+ \brief Computes the set of labels of a state
+ \param system : a system
  \param s : a state
- \param labels : a set of labels
- \return true if labels is not empty and labels is included in the set of
- labels of state s, false otherwise
+ \return the set of labels on state s
 */
-bool satisfies(tchecker::ta::system_t const & system, tchecker::zg::state_t const & s, boost::dynamic_bitset<> const & labels);
+boost::dynamic_bitset<> labels(tchecker::ta::system_t const & system, tchecker::zg::state_t const & s);
 
 /*!
  \brief Checks is a state is a valid final state
@@ -382,7 +380,7 @@ public:
     \return true if labels is not empty and labels is included in the set of
     labels of state s, false otherwise
     */
-  virtual bool satisfies(tchecker::zg::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels) const;
+  virtual boost::dynamic_bitset<> labels(tchecker::zg::const_state_sptr_t const & s) const;
 
   /*!
    \brief Checks if a state is a valid final state

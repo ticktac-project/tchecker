@@ -70,10 +70,9 @@ tchecker::state_status_t next(tchecker::ta::system_t const & system,
 
 /* labels */
 
-bool satisfies(tchecker::ta::system_t const & system, tchecker::refzg::state_t const & s,
-               boost::dynamic_bitset<> const & labels)
+boost::dynamic_bitset<> labels(tchecker::ta::system_t const & system, tchecker::refzg::state_t const & s)
 {
-  return tchecker::ta::satisfies(system, s, labels);
+  return tchecker::ta::labels(system, s);
 }
 
 /* is_valid_final */
@@ -134,9 +133,9 @@ void refzg_t::next(tchecker::refzg::const_state_sptr_t const & s, tchecker::refz
   v.push_back(std::make_tuple(status, nexts, nextt));
 }
 
-bool refzg_t::satisfies(tchecker::refzg::const_state_sptr_t const & s, boost::dynamic_bitset<> const & labels) const
+boost::dynamic_bitset<> refzg_t::labels(tchecker::refzg::const_state_sptr_t const & s) const
 {
-  return tchecker::refzg::satisfies(*_system, *s, labels);
+  return tchecker::refzg::labels(*_system, *s);
 }
 
 bool refzg_t::is_valid_final(tchecker::refzg::const_state_sptr_t const & s) const

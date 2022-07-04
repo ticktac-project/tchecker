@@ -38,6 +38,8 @@ namespace reach {
  */
 template <class TS, class GRAPH> class algorithm_t {
 public:
+  using node_sptr_t = typename GRAPH::node_sptr_t;
+
   /*!
    \brief Build a reachability graph of a transition system from its initial
    states
@@ -56,8 +58,6 @@ public:
   tchecker::algorithms::reach::stats_t run(TS & ts, GRAPH & graph, boost::dynamic_bitset<> const & labels,
                                            enum tchecker::waiting::policy_t policy)
   {
-    using node_sptr_t = typename GRAPH::node_sptr_t;
-
     std::unique_ptr<tchecker::waiting::waiting_t<node_sptr_t>> waiting{tchecker::waiting::factory<node_sptr_t>(policy)};
 
     tchecker::algorithms::reach::stats_t stats;
@@ -128,8 +128,6 @@ private:
                         tchecker::waiting::waiting_t<typename GRAPH::node_sptr_t> & waiting,
                         tchecker::algorithms::reach::stats_t & stats)
   {
-    using node_sptr_t = typename GRAPH::node_sptr_t;
-
     std::vector<typename TS::sst_t> sst;
 
     while (!waiting.empty()) {
@@ -138,7 +136,7 @@ private:
 
       ++stats.visited_states();
 
-      if (ts.satisfies(node->state_ptr(), labels) && ts.is_valid_final(node->state_ptr())) {
+      if (accepting(node, ts, labels)) {
         stats.reachable() = true;
         break;
       }
@@ -154,6 +152,19 @@ private:
     }
 
     waiting.clear();
+  }
+
+  /*!
+   \brief Check if a node is accepting
+   \param n : a node
+   \param ts : a transition system
+   \param labels : a set of labels
+   \return true if labels is not empty, and the set of labels in n contain
+   labels, and n is a valid final state in ts, false otherwise
+   */
+  bool accepting(node_sptr_t const & n, TS & ts, boost::dynamic_bitset<> const & labels)
+  {
+    return !labels.none() && labels.is_subset_of(ts.labels(n->state_ptr())) && ts.is_valid_final(n->state_ptr());
   }
 };
 
