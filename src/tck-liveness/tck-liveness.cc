@@ -14,6 +14,7 @@
 
 #include "tchecker/parsing/parsing.hh"
 #include "tchecker/utils/log.hh"
+#include "zg-couvscc.hh"
 #include "zg-ndfs.hh"
 
 /*!
@@ -39,18 +40,22 @@ void usage(char * progname)
 {
   std::cerr << "Usage: " << progname << " [options] [file]" << std::endl;
   std::cerr << "   -a algorithm  liveness algorithm" << std::endl;
+  std::cerr << "          couvscc    Couvreur's SCC-decomposition-based algorithm" << std::endl;
+  std::cerr << "                     search an accepting cycle that visits all labels" << std::endl;
   std::cerr << "          ndfs       nested depth-first search algorithm over the zone graph" << std::endl;
+  std::cerr << "                     search an accepting cycle with a state with all labels" << std::endl;
   std::cerr << "   -C out_file   output a certificate (as a graph) in out_file" << std::endl;
   std::cerr << "   -h            help" << std::endl;
-  std::cerr << "   -l l1,l2,...  comma-separated list of searched labels" << std::endl;
+  std::cerr << "   -l l1,l2,...  comma-separated list of accepting labels" << std::endl;
   std::cerr << "   --block-size  size of allocation blocks" << std::endl;
   std::cerr << "   --table-size  size of hash tables" << std::endl;
   std::cerr << "reads from standard input if file is not provided" << std::endl;
 }
 
 enum algorithm_t {
-  ALGO_NDFS, /*!< Nested DFS algorithm */
-  ALGO_NONE, /*!< No algorithm */
+  ALGO_COUVSCC, /*!< Couvreur's SCC algorithm */
+  ALGO_NDFS,    /*!< Nested DFS algorithm */
+  ALGO_NONE,    /*!< No algorithm */
 };
 
 static enum algorithm_t algorithm = ALGO_NONE; /*!< Selected algorithm */
@@ -86,6 +91,8 @@ int parse_command_line(int argc, char * argv[])
       case 'a':
         if (strcmp(optarg, "ndfs") == 0)
           algorithm = ALGO_NDFS;
+        else if (strcmp(optarg, "couvscc") == 0)
+          algorithm = ALGO_COUVSCC;
         else
           throw std::runtime_error("Unknown algorithm: " + std::string(optarg));
         break;
@@ -163,6 +170,31 @@ void ndfs(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysde
 }
 
 /*!
+ \brief Run Couvreur's algorithm
+ \param sysdecl : system declaration
+ \post statistics on accepting run w.r.t. command-line specified labels in
+ the system declared by sysdecl have been output to standard output.
+ A certificate has been output if required.
+*/
+void couvscc(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl)
+{
+  auto && [stats, graph] = tchecker::tck_liveness::zg_couvscc::run(sysdecl, labels, block_size, table_size);
+
+  // stats
+  std::map<std::string, std::string> m;
+  stats.attributes(m);
+  for (auto && [key, value] : m)
+    std::cout << key << " " << value << std::endl;
+
+  // graph
+  if (output_file != "") {
+    std::ofstream ofs{output_file};
+    tchecker::tck_liveness::zg_couvscc::dot_output(ofs, *graph, sysdecl->name());
+    ofs.close();
+  }
+}
+
+/*!
  \brief Main function
 */
 int main(int argc, char * argv[])
@@ -191,6 +223,9 @@ int main(int argc, char * argv[])
     switch (algorithm) {
     case ALGO_NDFS:
       ndfs(sysdecl);
+      break;
+    case ALGO_COUVSCC:
+      couvscc(sysdecl);
       break;
     default:
       throw std::runtime_error("No algorithm specified");

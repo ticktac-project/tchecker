@@ -91,6 +91,8 @@ endif()
 # Build tck-liveness executable
 add_executable(tck-liveness
   ${CMAKE_CURRENT_SOURCE_DIR}/tck-liveness/tck-liveness.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/tck-liveness/zg-couvscc.hh
+  ${CMAKE_CURRENT_SOURCE_DIR}/tck-liveness/zg-couvscc.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/tck-liveness/zg-ndfs.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/tck-liveness/zg-ndfs.cc)
 target_link_libraries(tck-liveness libtchecker_static)
