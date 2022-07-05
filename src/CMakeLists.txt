@@ -152,7 +152,7 @@ foreach(FILE ${LIBTCHECKER_SRC})
 endforeach()
 
 # Install rule for binaries, lib and header files
-install(TARGETS tck-reach tck-syntax libtchecker_static
+install(TARGETS tck-liveness tck-reach tck-simulate tck-syntax libtchecker_static
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib)
 

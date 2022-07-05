@@ -3,6 +3,10 @@ set(TCHECKER_CONFIG_HH "${CMAKE_CURRENT_BINARY_DIR}/tchecker/config.hh")
 
 configure_file(${TCHECKER_CONFIG_HH_IN} ${TCHECKER_CONFIG_HH} @ONLY)
 
-install(DIRECTORY ../include/ DESTINATION include)
-install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../include/ DESTINATION include)
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/"
+    DESTINATION "include"
+    FILES_MATCHING
+    PATTERN "*.hh"
+)
+
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/tchecker")
