@@ -45,6 +45,17 @@ void output_tck(std::ostream & os, tchecker::system::system_t const & s);
 */
 void output_dot(std::ostream & os, tchecker::system::system_t const & s, std::string const & delimiter);
 
+/*!
+ \brief Output a system following the JSON syntax
+ \param os : output stream
+ \param s : system
+ \param delimiter : separator between process name and location name for node
+ names
+ \post s has been output to os following the dot graphviz syntax
+ \throw std::runtime_error : if a location or an edge in s has an attribute "label"
+*/
+void output_json(std::ostream & os, tchecker::system::system_t const & s, std::string const & delimiter);
+
 } // end of namespace system
 
 } // end of namespace tchecker
