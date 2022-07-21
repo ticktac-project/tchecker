@@ -78,7 +78,7 @@ public:
   /*!
    \brief Move-assignment operator
    */
-  tchecker::graph::cover::node_t & operator=(tchecker::graph::cover::node_t &) = default;
+  tchecker::graph::cover::node_t & operator=(tchecker::graph::cover::node_t &&) = default;
 
 private:
   template <class NODE_PTR, class NODE_HASH, class NODE_LE> friend class tchecker::graph::cover::graph_t;
@@ -185,7 +185,7 @@ public:
    \brief Assignment operator (deleted)
    */
   tchecker::graph::cover::graph_t<NODE_PTR, NODE_HASH, NODE_LE> &
-  operator=(tchecker::graph::cover::graph_t<NODE_PTR, NODE_HASH, NODE_LE> const &) = default;
+  operator=(tchecker::graph::cover::graph_t<NODE_PTR, NODE_HASH, NODE_LE> const &) = delete;
 
   /*!
    \brief Move-assignment operator
