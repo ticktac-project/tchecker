@@ -9,10 +9,10 @@ if(NOT TCK_ENABLE_UNITTESTS)
     return()
 endif()
 
-if (NOT DEFINED Catch2_CONFIG)
+if(NOT DEFINED Catch2_CONFIG)
     message(WARNING "Package Catch2 not found. Unit tests will be ignored")
     return()
-endif ()
+endif()
 
 set(TCHECKER_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -25,6 +25,7 @@ set(TEST_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/test-delay_allowed.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-extract_variables.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-guard_weak_sync.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/test-hashtable.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-labels.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-ordering.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-refdbm.hh
@@ -32,7 +33,7 @@ set(TEST_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/test-variables-access.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-waiting.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/unittest.cc
-    )
+)
 
 add_executable(unittest ${TEST_SRC})
 target_link_libraries(unittest testutils)
@@ -42,16 +43,19 @@ target_link_libraries(unittest Catch2::Catch2)
 set_property(TARGET unittest PROPERTY CXX_STANDARD 17)
 set_property(TARGET unittest PROPERTY CXX_STANDARD_REQUIRED ON)
 
-foreach (FILE ${TEST_SRC})
+foreach(FILE ${TEST_SRC})
     # Get the directory of the source file
     get_filename_component(PARENT_DIR "${FILE}" DIRECTORY)
+
     # Remove common directory prefix to make the group
     string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}" "/" GROUP "${PARENT_DIR}")
+
     # Make sure we are using windows slashes
     string(REPLACE "/" "\\" GROUP "${GROUP}")
+
     # Put into group
     source_group("${GROUP}" FILES "${FILE}")
-endforeach ()
+endforeach()
 
 include(Catch)
 catch_discover_tests(unittest PROPERTIES FIXTURES_SETUP "BUILD_UNITTEST")
@@ -67,6 +71,5 @@ if(TCK_ENABLE_MEMCHECK_TESTS)
     # the exit code of the target that is interpreted as the number of tests
     # supported by the executable. Fortunately this value is not used to produce
     # the test-suite.
-
     catch_discover_tests(memcheck-unittest TEST_SUFFIX " [MEMCHECKED]")
 endif()
