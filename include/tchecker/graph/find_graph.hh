@@ -105,13 +105,25 @@ public:
   /*!
    \brief Add node
    \param n : a node
-   \pre n is not stored in a hashtable
+   \pre n is not stored in a graph
    \post n has been added to the graph unless it already contains an equivalent
    node w.r.t. NODE_SPTR_HASH and NODE_SPTR_EQUAL
    \return true if n has been added to the graph, false otherwise
    \throw std::invalid_argument : if n is already stored in a hashtable
+   \note Invalidates iterators
    */
   bool add_node(NODE_SPTR const & n) { return _nodes.add(n); }
+
+  /*!
+   \brief Remove node from the graph
+   \param n : a node
+   \pre n is stored in this graph
+   \post n has been removed from this graph
+   \throw std::invalid_argument : if n is not stored in this graph
+   \note Contant-time complexity
+   \note Invalidates iterators
+   */
+  void remove_node(NODE_SPTR const & n) { _nodes.remove(n); }
 
   /*!
    \brief Type of iterator on nodes
