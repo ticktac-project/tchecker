@@ -149,7 +149,7 @@ public:
    \pre table_size != tchecker::COLLISION_TABLE_NOT_STORED
    \throw std::invalid_argument : if the precondition is violated
    */
-  collision_table_t(std::size_t table_size, HASH hash) : _table{table_size}, _hash(hash), _size(0)
+  collision_table_t(std::size_t table_size, HASH const & hash) : _table{table_size}, _hash(hash), _size(0)
   {
     if (table_size == tchecker::COLLISION_TABLE_NOT_STORED)
       throw std::invalid_argument("Collision table size is too big");
@@ -413,7 +413,7 @@ public:
    \pre table_size != tchecker::COLLISION_TABLE_NOT_STORED
    \throw std::invalid_argument : if the precondition is violated
    */
-  hashtable_t(std::size_t table_size, HASH hash, EQUAL equal)
+  hashtable_t(std::size_t table_size, HASH const & hash, EQUAL const & equal)
       : tchecker::collision_table_t<SPTR, HASH>(table_size, hash), _equal(equal)
   {
   }
@@ -467,15 +467,15 @@ public:
   }
 
   /*!
-   \brief Check if an object belongs to a hashtable
+   \brief Find an object in the hashtable
    \param o : an object
-   \return true if o belongs to this hashtable, false otherwise
+   \return a pair (found, p) where p is true if an object p equal to o has been
+   found in this hashtable, otherwise found is false and p == o
   */
-  bool find(SPTR const & o) const
+  std::tuple<bool, SPTR const> find(SPTR const & o) const
   {
     tchecker::collision_table_position_t position_in_table = this->compute_position_in_table(o);
-    auto && [found, p] = find(o, this->_table[position_in_table]);
-    return found;
+    return find(o, this->_table[position_in_table]);
   }
 
   /*!

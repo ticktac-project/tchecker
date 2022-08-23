@@ -8,7 +8,7 @@
 #ifndef TCHECKER_FIND_GRAPH_HH
 #define TCHECKER_FIND_GRAPH_HH
 
-#include <unordered_set>
+#include "tchecker/utils/hashtable.hh"
 
 /*!
  \file find_graph.hh
@@ -24,19 +24,21 @@ namespace find {
 /*!
  \class graph_t
  \brief Graph with node finding
- \tparam NODE_PTR : type of pointer to node
- \tparam HASH : hash function on NODE_PTR (see std::hash)
- \tparam EQUAL : equality function on NODE_PTR (see std::equal_to)
+ \tparam NODE_SPTR : type of shared  pointer to node, the pointed node should
+ inherit from tchecker::hashtable_object_t
+ \tparam HASH : hash function on NODE_SPTR (see std::hash), should return the
+ same hash code for nodes which are equal w.r.t. EQUAL
+ \tparam EQUAL : equality function on NODE_SPTR (see std::equal_to)
  \note this graph implementation stores nodes and answers find queries.
  It does not store edges
  \note each node has a unique instance in this graph w.r.t. EQUAL
  */
-template <class NODE_PTR, class HASH, class EQUAL> class graph_t {
+template <class NODE_SPTR, class HASH, class EQUAL> class graph_t {
 public:
   /*!
-   \brief Type of pointers of node
+   \brief Type of shared pointers to node
    */
-  using node_ptr_t = NODE_PTR;
+  using node_sptr_t = NODE_SPTR;
 
   /*!
    \brief Type of hash function
@@ -51,18 +53,20 @@ public:
   /*!
    \brief Constructor
    \param table_size : size of hash table
+   \param hash : hash function
+   \param equal : equality predicate
   */
-  graph_t(std::size_t table_size = 65536) : _nodes(table_size) {}
+  graph_t(std::size_t table_size, HASH const & hash, EQUAL const & equal) : _nodes(table_size, hash, equal) {}
 
   /*!
    \brief Copy constructor
   */
-  graph_t(tchecker::graph::find::graph_t<NODE_PTR, HASH, EQUAL> const &) = default;
+  graph_t(tchecker::graph::find::graph_t<NODE_SPTR, HASH, EQUAL> const &) = default;
 
   /*!
    \brief Move constructor
   */
-  graph_t(tchecker::graph::find::graph_t<NODE_PTR, HASH, EQUAL> &&) = default;
+  graph_t(tchecker::graph::find::graph_t<NODE_SPTR, HASH, EQUAL> &&) = default;
 
   /*!
    \brief Destructor
@@ -72,14 +76,14 @@ public:
   /*!
    \brief Assignment operator
    */
-  tchecker::graph::find::graph_t<NODE_PTR, HASH, EQUAL> &
-  operator=(tchecker::graph::find::graph_t<NODE_PTR, HASH, EQUAL> const &) = default;
+  tchecker::graph::find::graph_t<NODE_SPTR, HASH, EQUAL> &
+  operator=(tchecker::graph::find::graph_t<NODE_SPTR, HASH, EQUAL> const &) = default;
 
   /*!
    \brief Move-assignment operator
    */
-  tchecker::graph::find::graph_t<NODE_PTR, HASH, EQUAL> &
-  operator=(tchecker::graph::find::graph_t<NODE_PTR, HASH, EQUAL> &&) = default;
+  tchecker::graph::find::graph_t<NODE_SPTR, HASH, EQUAL> &
+  operator=(tchecker::graph::find::graph_t<NODE_SPTR, HASH, EQUAL> &&) = default;
 
   /*!
    \brief Clear
@@ -91,51 +95,38 @@ public:
   /*!
    \brief Accessor
    \param n : a node
-   \return the node in the graph equivalent to n w.r.t. HASH and EQUAL if any,
-   n otherwise
-   */
-  NODE_PTR const & find(NODE_PTR const & n)
-  {
-    auto it = _nodes.find(n);
-    if (it != _nodes.end())
-      return *it;
-    return n;
-  }
+   \return a pair (found, p) where p is true if a node p equal to n has been
+   found in this hashtable, otherwise found is false and p == n
+  */
+  std::tuple<bool, NODE_SPTR const> find(NODE_SPTR const & n) { return _nodes.find(n); }
 
   /*!
    \brief Add node
    \param n : a node
+   \pre n is not stored in a hashtable
    \post n has been added to the graph unless it already contains an equivalent
    node w.r.t. HASH and EQUAL
    \return true if n has been added to the graph, false otherwise
+   \throw std::invalid_argument : if n is already stored in a hashtable
    */
-  bool add_node(NODE_PTR const & n)
-  {
-    try {
-      _nodes.insert(n);
-      return true;
-    }
-    catch (...) {
-    }
-    return false;
-  }
+  bool add_node(NODE_SPTR const & n) { return _nodes.add(n); }
 
   /*!
    \brief Type of iterator on nodes
    */
-  using const_iterator_t = typename std::unordered_set<NODE_PTR, HASH, EQUAL>::const_iterator;
+  using const_iterator_t = typename tchecker::hashtable_t<NODE_SPTR, HASH, EQUAL>::const_iterator_t;
 
   /*!
    \brief Accessor
    \return iterator on first node if any, past-the-end iterator otherwise
    */
-  inline tchecker::graph::find::graph_t<NODE_PTR, HASH, EQUAL>::const_iterator_t begin() const { return _nodes.begin(); }
+  inline tchecker::graph::find::graph_t<NODE_SPTR, HASH, EQUAL>::const_iterator_t begin() const { return _nodes.begin(); }
 
   /*!
    \brief Accessor
    \return past-the-end iterator
    */
-  inline tchecker::graph::find::graph_t<NODE_PTR, HASH, EQUAL>::const_iterator_t end() const { return _nodes.end(); }
+  inline tchecker::graph::find::graph_t<NODE_SPTR, HASH, EQUAL>::const_iterator_t end() const { return _nodes.end(); }
 
   /*!
    \brief Accessor
@@ -144,7 +135,7 @@ public:
   inline std::size_t size() const { return _nodes.size(); }
 
 protected:
-  std::unordered_set<NODE_PTR, HASH, EQUAL> _nodes; /*!< Set of nodes */
+  tchecker::hashtable_t<NODE_SPTR, HASH, EQUAL> _nodes; /*!< Set of nodes */
 };
 
 } // end of namespace find

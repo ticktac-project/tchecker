@@ -443,9 +443,18 @@ TEST_CASE("Non-empty hashtable", "[hashtable]")
   SECTION("Finding object in the hashtable")
   {
     t.add(o1);
-    REQUIRE(t.find(o1));
-    REQUIRE(t.find(o1b));
-    REQUIRE_FALSE(t.find(o2));
+
+    auto && [found1, p1] = t.find(o1);
+    REQUIRE(found1);
+    REQUIRE(p1 == o1);
+
+    auto && [found1b, p1b] = t.find(o1b);
+    REQUIRE(found1b);
+    REQUIRE(p1b == o1);
+
+    auto && [found2, p2] = t.find(o2);
+    REQUIRE_FALSE(found2);
+    REQUIRE(p2 == o2);
   }
 
   SECTION("Adding to the hashtable if not found")

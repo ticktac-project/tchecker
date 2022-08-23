@@ -89,7 +89,9 @@ using const_edge_sptr_t = tchecker::intrusive_shared_ptr_t<tchecker::graph::reac
  \tparam EDGE : type of user edge
  */
 template <class NODE, class EDGE>
-class node_t : public NODE, public tchecker::graph::directed::node_t<tchecker::graph::reachability::edge_sptr_t<NODE, EDGE>> {
+class node_t : public NODE,
+               public tchecker::hashtable_object_t,
+               public tchecker::graph::directed::node_t<tchecker::graph::reachability::edge_sptr_t<NODE, EDGE>> {
 public:
   using NODE::NODE;
 };
@@ -211,9 +213,12 @@ public:
   \brief Constructor
   \param block_size : number of objects allocated in a block
   \param table_size : size of hash table
+  \param node_hash : hash function on nodes
+  \param node_equal_to : equality predicate on nodes
   */
-  graph_t(std::size_t block_size, std::size_t table_size)
-      : _find_graph(table_size), _node_pool(block_size), _edge_pool(block_size)
+  graph_t(std::size_t block_size, std::size_t table_size, NODE_HASH const & node_hash, NODE_EQUAL const & node_equal_to)
+      : _node_sptr_hash(node_hash), _node_sptr_equal_to(node_equal_to),
+        _find_graph(table_size, _node_sptr_hash, _node_sptr_equal_to), _node_pool(block_size), _edge_pool(block_size)
   {
   }
 
@@ -268,9 +273,9 @@ public:
   template <class... ARGS> std::tuple<bool, node_sptr_t> add_node(ARGS &&... args)
   {
     node_sptr_t node = _node_pool.construct(args...);
-    node_sptr_t found_node = _find_graph.find(node);
-    if (found_node != node)
-      return std::make_tuple(false, found_node);
+    auto && [found, n] = _find_graph.find(node);
+    if (found)
+      return std::make_tuple(false, n);
     _find_graph.add_node(node);
     return std::make_tuple(true, node);
   }
@@ -396,35 +401,53 @@ private:
    \class node_sptr_hash_t
    \brief Hash functor for node pointers
    */
-  class node_sptr_hash_t : public NODE_HASH {
+  class node_sptr_hash_t {
   public:
-    using NODE_HASH::NODE_HASH;
+    /*!
+     \brief Constructor
+     \param node_hash : hash function on nodes
+     \post this keeps of a copy of node_hash
+    */
+    node_sptr_hash_t(NODE_HASH const & node_hash) : _node_hash(node_hash) {}
 
     /*!
      \brief Hash function on shared pointers to nodes
      \param n : a shared pointer to node
      \return hash value for *n w.r.t. NODE_HASH
      */
-    inline std::size_t operator()(node_sptr_t const & n) const { return NODE_HASH::operator()(*n); }
+    inline std::size_t operator()(node_sptr_t const & n) const { return _node_hash(*n); }
+
+  private:
+    NODE_HASH _node_hash; /*!< Hash function on nodes */
   };
 
   /*!
    \class node_sptr_equal_to_t
    \brief Equality functor for node pointers
    */
-  class node_sptr_equal_to_t : public NODE_EQUAL {
+  class node_sptr_equal_to_t {
   public:
-    using NODE_EQUAL::NODE_EQUAL;
+    /*!
+     \brief Constructor
+     \param node_eq : equality predicate on nodes
+     \post this keeps a copy of node_eq
+     */
+    node_sptr_equal_to_t(NODE_EQUAL const & node_eq) : _node_eq(node_eq) {}
 
     /*!
-     \brief Equality predicate on shared pointers to nodes
+     \brief Rquality predicate on shared pointers to nodes
      \param n1 : a node
      \param n2 : a node
      \return true if *n1 and *n2 are equal w.r.t. NODE_EQUAL, false otherwise
      */
-    inline bool operator()(node_sptr_t const & n1, node_sptr_t const & n2) const { return NODE_EQUAL::operator()(*n1, *n2); }
+    inline bool operator()(node_sptr_t const & n1, node_sptr_t const & n2) const { return _node_eq(*n1, *n2); }
+
+  private:
+    NODE_EQUAL _node_eq; /*!< Equality predicate on nodes */
   };
 
+  node_sptr_hash_t _node_sptr_hash;         /*!< Hash functor on shared pointers to nodes */
+  node_sptr_equal_to_t _node_sptr_equal_to; /*!< Equality functor on shared pointers to nodes */
   tchecker::graph::find::graph_t<node_sptr_t, node_sptr_hash_t, node_sptr_equal_to_t> _find_graph; /*!< Node store */
   tchecker::graph::directed::graph_t<node_sptr_t, edge_sptr_t> _directed_graph;                    /*!< Edge store */
   tchecker::graph::node_pool_allocator_t<shared_node_t> _node_pool;                                /*!< Node pool allocator */

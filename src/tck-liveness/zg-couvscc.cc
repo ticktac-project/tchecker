@@ -48,8 +48,9 @@ edge_t::edge_t(tchecker::zg::transition_t const & t) : _vedge(t.vedge_ptr()) {}
 graph_t::graph_t(std::shared_ptr<tchecker::zg::zg_t> const & zg, std::size_t block_size, std::size_t table_size)
     : tchecker::graph::reachability::graph_t<
           tchecker::tck_liveness::zg_couvscc::node_t, tchecker::tck_liveness::zg_couvscc::edge_t,
-          tchecker::tck_liveness::zg_couvscc::node_hash_t, tchecker::tck_liveness::zg_couvscc::node_equal_to_t>(block_size,
-                                                                                                                table_size),
+          tchecker::tck_liveness::zg_couvscc::node_hash_t, tchecker::tck_liveness::zg_couvscc::node_equal_to_t>(
+          block_size, table_size, tchecker::tck_liveness::zg_couvscc::node_hash_t(),
+          tchecker::tck_liveness::zg_couvscc::node_equal_to_t()),
       _zg(zg)
 {
 }
