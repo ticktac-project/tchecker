@@ -322,7 +322,7 @@ protected:
   */
   void add(SPTR const & o, tchecker::collision_table_position_t h)
   {
-    assert(h == _hash(o));
+    assert(h == compute_position_in_table(o));
     tchecker::collision_table_position_t position_in_collision_list = add(o, _table[h]);
     o->set_position(h, position_in_collision_list);
     ++_size;
