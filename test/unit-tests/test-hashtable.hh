@@ -59,6 +59,14 @@ TEST_CASE("Empty collision table", "[hashtable]")
   tchecker::collision_table_t<cto_sptr_t, cto_sptr_hash_t> t(1024, hash);
 
   SECTION("Empty collision table has size 0") { REQUIRE(t.size() == 0); }
+
+  SECTION("Empty collision table has empty range of objects")
+  {
+    REQUIRE(t.begin() == t.end());
+
+    auto r = t.range();
+    REQUIRE(r.begin() == r.end());
+  }
 }
 
 TEST_CASE("Collision table with one element", "[hashtable]")
@@ -152,6 +160,34 @@ TEST_CASE("Collision table with two elements no collision", "[hashtable]")
 
     auto it = r.begin();
     REQUIRE(*it == o2);
+  }
+
+  SECTION("Removing first object from an iterator")
+  {
+    std::vector<cto_sptr_t> v;
+    for (auto it = t.begin(); it != t.end(); ++it)
+      v.push_back(*it);
+    auto it = t.remove(t.begin());
+    REQUIRE(it != t.end());
+    REQUIRE(*it == v[1]);
+    ++it;
+    REQUIRE(it == t.end());
+  }
+
+  SECTION("Removing last object from an iterator")
+  {
+    std::vector<cto_sptr_t> v;
+    for (auto it = t.begin(); it != t.end(); ++it)
+      v.push_back(*it);
+
+    auto it = ++t.begin();
+    it = t.remove(it);
+    REQUIRE(it == t.end());
+
+    it = t.begin();
+    REQUIRE(*it == v[0]);
+    ++it;
+    REQUIRE(it == t.end());
   }
 
   t.clear();
@@ -342,6 +378,84 @@ TEST_CASE("Collision table with some collisions", "[hashtable]")
     REQUIRE(found[3]);
     REQUIRE(found[4]);
     REQUIRE(found[5]);
+  }
+
+  SECTION("Removing objects that collide, using iterators")
+  {
+    // remove o[0] and o[2]
+    for (auto it = t.begin(); it != t.end();)
+      if (*it == o[0])
+        it = t.remove(it);
+      else if (*it == o[2])
+        it = t.remove(it);
+      else
+        ++it;
+
+    bool found[N] = {};
+    for (cto_sptr_t p : t) {
+      for (std::size_t i = 0; i < N; ++i)
+        if (p == o[i])
+          found[i] = true;
+    }
+    REQUIRE(N == 6);
+    REQUIRE(t.size() == N - 2);
+    REQUIRE_FALSE(found[0]);
+    REQUIRE(found[1]);
+    REQUIRE_FALSE(found[2]);
+    REQUIRE(found[3]);
+    REQUIRE(found[4]);
+    REQUIRE(found[5]);
+  }
+
+  SECTION("Removing objects that do not collide, using iterators")
+  {
+    // remove o[0], o[1] and o[5]
+    for (auto it = t.begin(); it != t.end();)
+      if (*it == o[0])
+        it = t.remove(it);
+      else if (*it == o[1])
+        it = t.remove(it);
+      else if (*it == o[5])
+        it = t.remove(it);
+      else
+        ++it;
+
+    bool found[N] = {};
+    for (cto_sptr_t p : t) {
+      for (std::size_t i = 0; i < N; ++i)
+        if (p == o[i])
+          found[i] = true;
+    }
+    REQUIRE(N == 6);
+    REQUIRE(t.size() == N - 3);
+    REQUIRE_FALSE(found[0]);
+    REQUIRE_FALSE(found[1]);
+    REQUIRE(found[2]);
+    REQUIRE(found[3]);
+    REQUIRE(found[4]);
+    REQUIRE_FALSE(found[5]);
+  }
+
+  SECTION("Removing all object, using iterators")
+  {
+    // remove o[0], o[1] and o[5]
+    for (auto it = t.begin(); it != t.end();)
+      it = t.remove(it);
+
+    bool found[N] = {};
+    for (cto_sptr_t p : t) {
+      for (std::size_t i = 0; i < N; ++i)
+        if (p == o[i])
+          found[i] = true;
+    }
+    REQUIRE(N == 6);
+    REQUIRE(t.size() == 0);
+    REQUIRE_FALSE(found[0]);
+    REQUIRE_FALSE(found[1]);
+    REQUIRE_FALSE(found[2]);
+    REQUIRE_FALSE(found[3]);
+    REQUIRE_FALSE(found[4]);
+    REQUIRE_FALSE(found[5]);
   }
 
   t.clear();

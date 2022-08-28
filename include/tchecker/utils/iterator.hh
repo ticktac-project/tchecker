@@ -185,8 +185,7 @@ template <class C> decltype(auto) make_range(C & c) { return tchecker::make_rang
 \note used to represent past-the-end iterators in ranges, and define dedicated
 past-the-end checks that can be faster than equality checks on some iterators.
 */
-class end_iterator_t {
-};
+class end_iterator_t {};
 
 static end_iterator_t const past_the_end_iterator; /*!< Past-the-end iterator */
 
@@ -197,6 +196,7 @@ static end_iterator_t const past_the_end_iterator; /*!< Past-the-end iterator */
  (x11,...,x1N,...,xK1,...,xKM), skipping empty sub-ranges
  \tparam R : type of range of sub-ranges, should be a tchecker::range_t
  \tparam SUBR : type of sub-range, should be a tchecker::range_t
+ \note All ranges must be constant ranges
  */
 template <class R, class SUBR> class join_iterator_t {
 public:
@@ -320,7 +320,7 @@ public:
    \pre this is not past-the-end (checked by assertion)
    \return current value
    */
-  inline decltype(auto) operator*()
+  inline decltype(auto) operator*() const
   {
     assert((_it != _end) && (_range_it != _range_end));
     return (*_range_it);
