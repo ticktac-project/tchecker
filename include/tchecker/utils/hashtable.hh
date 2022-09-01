@@ -579,10 +579,8 @@ public:
  \tparam SPTR : type of pointer to stored objects. Must be a shared
   pointer, e.g. tchecker::intrusive_shared_ptr_t<...> or std::shared_ptr<...>
  \tparam HASH : hash function over shared pointers of type SPTR
- \tparam EQUAL : equality predicate over chared pointers of type SPTR
+ \tparam EQUAL : equality predicate over shared pointers of type SPTR
  \note stored objects should derive from tchecker::hashtable_object_t
- \note if EQUAL is transitive, the hashtable never contains two objects that are
- equal
 */
 template <class SPTR, class HASH, class EQUAL> class hashtable_t : public tchecker::collision_table_t<SPTR, HASH> {
 public:
