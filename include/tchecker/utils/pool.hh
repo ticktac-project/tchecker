@@ -8,6 +8,9 @@
 #ifndef TCHECKER_POOL_HH
 #define TCHECKER_POOL_HH
 
+#include <memory>
+#include <vector>
+
 #include "tchecker/utils/shared_objects.hh"
 
 /*!
@@ -18,8 +21,26 @@
 namespace tchecker {
 
 /*!
+ \class collectable_t
+ \brief Data structure with object collection
+ */
+class collectable_t {
+public:
+  /*!
+  \brief Destructor
+  */
+  virtual ~collectable_t() = default;
+
+  /*!
+  \brief Collect objects
+  \return number of collected objects
+  */
+  virtual std::size_t collect() = 0;
+};
+
+/*!
  \class pool_t
- \brief Pool allocator with collection
+ \brief Pool allocator with memory collection
  \tparam T : type of allocated objects. Should derive from
  tchecker::make_shared_t<Y> for some Y
  \note Pools allocate blocks of memory. Each block contains a fix number of
@@ -104,7 +125,11 @@ public:
    \post All the objects allocated by the pool have been destructed
    \note see tchecker::pool_t::destruct_all
    */
-  ~pool_t() { destruct_all(); }
+  ~pool_t()
+  {
+    _collectables.clear();
+    destruct_all();
+  }
 
   /*!
    \brief Assignment operator (deleted)
@@ -282,6 +307,16 @@ public:
    */
   inline constexpr std::size_t memsize() const { return (_blocks_count * _block_size); }
 
+  /*!
+   \brief Register a collectable
+   \param collectable : a collectable data structure
+   \post this pool keeps a pointer to collectable
+   \note registered collectables are inspected before this pool collects unused
+   memory in order to collect objects allocated by this pool that are stored in
+   a collectable, but no longer used
+   */
+  void enroll(std::shared_ptr<collectable_t> const & collectable) { _collectables.push_back(collectable); }
+
 protected:
   /*!
    \brief Accessor to next chunk
@@ -318,6 +353,7 @@ protected:
    \brief Memory allocation
    \return a pointer to a chunk of _alloc_size bytes
    \throw std::bad_alloc : if no memory left (i.e. when operator new throws)
+   \note collects unused chunks of memory if needed
    */
   inline void * allocate()
   {
@@ -329,8 +365,13 @@ protected:
     }
 
     // Allocate from the free list, collect first if needed
-    if (_free_head == nullptr)
+    if (_free_head == nullptr) {
+      // collect unsued objects from registered collectables
+      for (std::shared_ptr<tchecker::collectable_t> const & collectable : _collectables)
+        collectable->collect();
+      // then collect free chunks of memory
       collect();
+    }
 
     if (_free_head != nullptr) {
       typename T::refcount_t * chunk = reinterpret_cast<typename T::refcount_t *>(allocate_chunk_from_free_list());
@@ -424,14 +465,15 @@ protected:
     _free_head = static_cast<char *>(pbegin);
   }
 
-  std::size_t const _alloc_nb;   /*!< number of chunks per block */
-  std::size_t const _alloc_size; /*!< size of a chunk (bytes) */
-  std::size_t const _block_size; /*!< size of a block (bytes) */
-  std::size_t _blocks_count;     /*!< number of allocated blocks */
-  char * _free_head;             /*!< head pointer to list of free chunks */
-  char * _block_head;            /*!< head pointer to list of blocks */
-  char * _raw_head;              /*!< pointer to raw block */
-  char * _raw_end;               /*!< pointer to past-the-end raw block */
+  std::size_t const _alloc_nb;                                         /*!< number of chunks per block */
+  std::size_t const _alloc_size;                                       /*!< size of a chunk (bytes) */
+  std::size_t const _block_size;                                       /*!< size of a block (bytes) */
+  std::size_t _blocks_count;                                           /*!< number of allocated blocks */
+  char * _free_head;                                                   /*!< head pointer to list of free chunks */
+  char * _block_head;                                                  /*!< head pointer to list of blocks */
+  char * _raw_head;                                                    /*!< pointer to raw block */
+  char * _raw_end;                                                     /*!< pointer to past-the-end raw block */
+  std::vector<std::shared_ptr<tchecker::collectable_t>> _collectables; /*!< collectable data structures for memory collection */
 };
 
 } // end of namespace tchecker
