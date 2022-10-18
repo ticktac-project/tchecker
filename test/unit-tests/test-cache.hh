@@ -38,6 +38,8 @@ public:
 
 using A_cache_t = tchecker::cache_t<A_sptr_t, A_hash_t, A_equal_t>;
 
+using A_periodic_collectable_cache_t = tchecker::periodic_collectable_cache_t<A_sptr_t, A_hash_t, A_equal_t>;
+
 namespace tchecker {
 template <> class allocation_size_t<A_t> {
 public:
@@ -258,6 +260,81 @@ TEST_CASE("Cache with many elements", "[cache]")
   p3bis = nullptr;
   shared_A_t::destruct_and_deallocate(a3bis);
   shared_A_t::destruct_and_deallocate(a1bis);
+  shared_A_t::destruct_and_deallocate(a4);
+  shared_A_t::destruct_and_deallocate(a3);
+  shared_A_t::destruct_and_deallocate(a2);
+  shared_A_t::destruct_and_deallocate(a1);
+}
+
+TEST_CASE("Periodic collectable cache with nothing to collect", "[cache]")
+{
+  A_periodic_collectable_cache_t cache;
+
+  shared_A_t * a1 = shared_A_t::allocate_and_construct(1, 1);
+  tchecker::intrusive_shared_ptr_t<shared_A_t> p1(a1);
+  shared_A_t * a2 = shared_A_t::allocate_and_construct(1, 2);
+  tchecker::intrusive_shared_ptr_t<shared_A_t> p2(a2);
+  shared_A_t * a3 = shared_A_t::allocate_and_construct(2, 1);
+  tchecker::intrusive_shared_ptr_t<shared_A_t> p3(a3);
+  shared_A_t * a4 = shared_A_t::allocate_and_construct(4, 7);
+  tchecker::intrusive_shared_ptr_t<shared_A_t> p4(a4);
+
+  SECTION("Object collection at work")
+  {
+    cache.find_else_add(p1);
+    cache.find_else_add(p2);
+    cache.find_else_add(p3);
+    cache.find_else_add(p4);
+
+    p1 = nullptr;
+    p4 = nullptr;
+
+    std::size_t ncollect = cache.collect();
+    REQUIRE(ncollect == 2);
+  }
+
+  SECTION("Nothing to collect leads to no collection next time")
+  {
+    cache.find_else_add(p1);
+    cache.find_else_add(p2);
+    cache.find_else_add(p3);
+    cache.find_else_add(p4);
+
+    std::size_t ncollect = cache.collect();
+    REQUIRE(ncollect == 0);
+
+    // make p1 collectable, still should not be collected due to collection period
+    p1 = nullptr;
+    ncollect = cache.collect();
+    REQUIRE(ncollect == 0);
+  }
+
+  SECTION("Nothing to collect leads collection after two calls")
+  {
+    cache.find_else_add(p1);
+    cache.find_else_add(p2);
+    cache.find_else_add(p3);
+    cache.find_else_add(p4);
+
+    std::size_t ncollect = cache.collect();
+    REQUIRE(ncollect == 0);
+
+    // make p1 and p3 collectable, still should not be collected due to collection period
+    p1 = nullptr;
+    p3 = nullptr;
+    ncollect = cache.collect();
+    REQUIRE(ncollect == 0);
+
+    // now collection should occur, as collection period has been reached
+    ncollect = cache.collect();
+    REQUIRE(ncollect == 2);
+  }
+
+  cache.clear();
+  p1 = nullptr;
+  p2 = nullptr;
+  p3 = nullptr;
+  p4 = nullptr;
   shared_A_t::destruct_and_deallocate(a4);
   shared_A_t::destruct_and_deallocate(a3);
   shared_A_t::destruct_and_deallocate(a2);
