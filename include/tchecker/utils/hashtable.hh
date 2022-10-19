@@ -49,14 +49,21 @@ public:
 
   /*!
    \brief Copy constructor
-   \throw std::invalid_argument if object is stored
+   \post this object is not stored (i.e. positions are not copied as this would
+   be invalid). This constructor is provided to allow copy-construction of
+   objects that can be stored in a collision table
    */
   collision_table_object_t(tchecker::collision_table_object_t const &);
 
   /*!
    \brief Move constructor
+   \throw std::invalid_argument : if the object to move is stored in a
+   collision table
+   \post this object is not stored (i.e. positions are not moved as this would
+   be invalid). This constructor is provided to allow move-construction of
+   objects that can be stored in a collisition table
    */
-  collision_table_object_t(tchecker::collision_table_object_t &&) = default;
+  collision_table_object_t(tchecker::collision_table_object_t &&);
 
   /*!
    \brief Destructor
@@ -66,15 +73,29 @@ public:
   /*!
    \brief Assignment operator
    \throw std::runtime_error : if this object is stored in a collision table
-   \throw std::invalid_argument : if parameter object is stored
+   \post this object has kept its positions (i.e. positions are not copied as
+   this would be invalid). This operator is provided to allow assignment to
+   objects that can be stored in a collision table but which are not stored yet
    */
-  tchecker::collision_table_object_t & operator=(tchecker::collision_table_object_t &);
+  tchecker::collision_table_object_t & operator=(tchecker::collision_table_object_t const &);
 
   /*!
    \brief Move-assignment operator
    \throw std::runtime_error : if this object is stored in a collision table
+   \throw std::invalid_argument : if the object to move is stored in a
+   collisition table
+   \post this object has kept its positions (i.e. positions are not moved as
+   this would be invalid). This operator is provided to allow move assignment
+   between objects that can be stored in a collisition table but which are not
+   stored yet
    */
   tchecker::collision_table_object_t & operator=(tchecker::collision_table_object_t &&);
+
+  /*!
+     \brief Check if this object is stored in a collision table based on its positions
+     \return true if this object is stored in a collision table, false otherwise
+     */
+  bool is_stored() const;
 
 private:
   template <class SPTR, class HASH> friend class tchecker::collision_table_t;
@@ -111,12 +132,6 @@ private:
    \post this object position has been cleared
    */
   void clear_position();
-
-  /*!
-   \brief Check if this object is stored in a collision table based on its positions
-   \return true if this object is stored in a collision table, false otherwise
-   */
-  bool is_stored() const;
 
   tchecker::collision_table_position_t _position_in_table;          /*!< Position in the table */
   tchecker::collision_table_position_t _position_in_collision_list; /*!< Position in the collision list */

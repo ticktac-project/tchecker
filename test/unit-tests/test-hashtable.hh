@@ -53,6 +53,115 @@ public:
 
 // Test cases
 
+TEST_CASE("Copy/move constructor and assignment of collection table object", "[cache]")
+{
+  cto_sptr_hash_t hash;
+  tchecker::collision_table_t<cto_sptr_t, cto_sptr_hash_t> t(1024, hash);
+
+  SECTION("Copy construction from an object not in cache")
+  {
+    shared_cto_t * o1 = shared_cto_t::allocate_and_construct(1, 1);
+    REQUIRE_FALSE(o1->is_stored());
+
+    shared_cto_t * o2 = shared_cto_t::allocate_and_construct(*o1);
+    REQUIRE_FALSE(o2->is_stored());
+
+    shared_cto_t::destruct_and_deallocate(o1);
+    shared_cto_t::destruct_and_deallocate(o2);
+  }
+
+  SECTION("Copy construction from an object in cache")
+  {
+    shared_cto_t * o1 = shared_cto_t::allocate_and_construct(1, 1);
+    tchecker::intrusive_shared_ptr_t<shared_cto_t> p1(o1);
+    t.add(p1);
+    REQUIRE(o1->is_stored());
+
+    shared_cto_t * o2 = shared_cto_t::allocate_and_construct(*o1);
+    REQUIRE_FALSE(o2->is_stored());
+
+    t.clear();
+    p1 = nullptr;
+    shared_cto_t::destruct_and_deallocate(o1);
+    shared_cto_t::destruct_and_deallocate(o2);
+  }
+
+  SECTION("Assignement to an object not in cache from an object not in cache")
+  {
+    shared_cto_t * o1 = shared_cto_t::allocate_and_construct(1, 1);
+    REQUIRE_FALSE(o1->is_stored());
+
+    shared_cto_t * o2 = shared_cto_t::allocate_and_construct(2, 3);
+    REQUIRE_FALSE(o2->is_stored());
+
+    *o2 = *o1;
+    REQUIRE_FALSE(o2->is_stored());
+
+    shared_cto_t::destruct_and_deallocate(o1);
+    shared_cto_t::destruct_and_deallocate(o2);
+  }
+
+  SECTION("Assignement to an object not in cache from an object in cache")
+  {
+    shared_cto_t * o1 = shared_cto_t::allocate_and_construct(1, 1);
+    tchecker::intrusive_shared_ptr_t<shared_cto_t> p1(o1);
+    t.add(p1);
+    REQUIRE(o1->is_stored());
+
+    shared_cto_t * o2 = shared_cto_t::allocate_and_construct(2, 3);
+    REQUIRE_FALSE(o2->is_stored());
+
+    *o2 = *o1;
+    REQUIRE_FALSE(o2->is_stored());
+
+    t.clear();
+    p1 = nullptr;
+    shared_cto_t::destruct_and_deallocate(o1);
+    shared_cto_t::destruct_and_deallocate(o2);
+  }
+
+  SECTION("Assignement to an object in cache from an object not in cache")
+  {
+    shared_cto_t * o1 = shared_cto_t::allocate_and_construct(1, 1);
+    REQUIRE_FALSE(o1->is_stored());
+
+    shared_cto_t * o2 = shared_cto_t::allocate_and_construct(2, 3);
+    tchecker::intrusive_shared_ptr_t<shared_cto_t> p2(o2);
+    t.add(p2);
+    REQUIRE(o2->is_stored());
+
+    REQUIRE_THROWS_AS(*o2 = *o1, std::runtime_error);
+    REQUIRE(o2->is_stored());
+
+    t.clear();
+    p2 = nullptr;
+    shared_cto_t::destruct_and_deallocate(o1);
+    shared_cto_t::destruct_and_deallocate(o2);
+  }
+
+  SECTION("Assignement to an object in cache from an object in cache")
+  {
+    shared_cto_t * o1 = shared_cto_t::allocate_and_construct(1, 1);
+    tchecker::intrusive_shared_ptr_t<shared_cto_t> p1(o1);
+    t.add(p1);
+    REQUIRE(o1->is_stored());
+
+    shared_cto_t * o2 = shared_cto_t::allocate_and_construct(2, 3);
+    tchecker::intrusive_shared_ptr_t<shared_cto_t> p2(o2);
+    t.add(p2);
+    REQUIRE(o2->is_stored());
+
+    REQUIRE_THROWS_AS(*o2 = *o1, std::runtime_error);
+    REQUIRE(o2->is_stored());
+
+    t.clear();
+    p1 = nullptr;
+    p2 = nullptr;
+    shared_cto_t::destruct_and_deallocate(o1);
+    shared_cto_t::destruct_and_deallocate(o2);
+  }
+}
+
 TEST_CASE("Empty collision table", "[hashtable]")
 {
   cto_sptr_hash_t hash;
