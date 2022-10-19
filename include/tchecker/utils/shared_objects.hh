@@ -96,7 +96,14 @@ public:
     char * ptr = new char[alloc_size];
     ptr += sizeof(refcount_t); // shared object starts after refcount
 
-    construct(ptr, args...);
+    try {
+      construct(ptr, args...);
+    }
+    catch (...) {
+      ptr -= sizeof(refcount_t);
+      delete[] ptr;
+      throw;
+    }
 
     return reinterpret_cast<tchecker::make_shared_t<T, REFCOUNT, RESERVED> *>(ptr);
   }
