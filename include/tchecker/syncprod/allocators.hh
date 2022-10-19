@@ -8,6 +8,7 @@
 #ifndef TCHECKER_SYNCPROD_ALLOCATORS_HH
 #define TCHECKER_SYNCPROD_ALLOCATORS_HH
 
+#include <memory>
 #include <type_traits>
 
 #include "tchecker/syncprod/state.hh"
@@ -15,6 +16,7 @@
 #include "tchecker/syncprod/vedge.hh"
 #include "tchecker/syncprod/vloc.hh"
 #include "tchecker/ts/allocators.hh"
+#include "tchecker/utils/cache.hh"
 
 /*!
  \file allocators.hh
@@ -35,6 +37,13 @@ namespace details {
  */
 template <class STATE> class state_pool_allocator_t : private tchecker::ts::state_pool_allocator_t<STATE> {
   static_assert(std::is_base_of<tchecker::syncprod::state_t, STATE>::value, "");
+
+  /*!
+   \brief Type of cache of tuple of locations
+  */
+  using vloc_cache_t =
+      tchecker::periodic_collectable_cache_t<tchecker::vloc_sptr_t, tchecker::intrusive_shared_ptr_delegate_hash_t,
+                                             tchecker::intrusive_shared_ptr_delegate_equal_to_t>;
 
 public:
   /*!
@@ -57,11 +66,16 @@ public:
    \param state_alloc_nb : number of states allocated in one block
    \param vloc_alloc_nb : number of tuple of locations allocated in one block
    \param vloc_capacity : capacity of allocated tuples of locations
+   \param table_size : size of hash tables
    */
-  state_pool_allocator_t(std::size_t state_alloc_nb, std::size_t vloc_alloc_nb, std::size_t vloc_capacity)
+  state_pool_allocator_t(std::size_t state_alloc_nb, std::size_t vloc_alloc_nb, std::size_t vloc_capacity,
+                         std::size_t table_size)
       : tchecker::ts::state_pool_allocator_t<STATE>(state_alloc_nb), _vloc_capacity(vloc_capacity),
-        _vloc_pool(vloc_alloc_nb, tchecker::allocation_size_t<tchecker::shared_vloc_t>::alloc_size(_vloc_capacity))
+        _vloc_pool(vloc_alloc_nb, tchecker::allocation_size_t<tchecker::shared_vloc_t>::alloc_size(_vloc_capacity)),
+        _vloc_cache(new vloc_cache_t(table_size))
+
   {
+    _vloc_pool.enroll(_vloc_cache);
   }
 
   /*!
@@ -137,12 +151,27 @@ public:
   }
 
   /*!
+   \brief SHare states components with other states
+   \param p : pointer to state
+   \pre p has been constructed by this allocator
+   \pre p is not nullptr
+   \post the tuple of locations in the state pointed by p has been shared with
+   other states
+  */
+  void share(tchecker::intrusive_shared_ptr_t<STATE> const & p)
+  {
+    tchecker::ts::state_pool_allocator_t<STATE>::share(p);
+    p->vloc_ptr() = _vloc_cache->find_else_add(p->vloc_ptr());
+  }
+
+  /*!
    \brief Collect unused states
    \post Unused states and unused tuples of locations have been collected
    */
   void collect()
   {
     tchecker::ts::state_pool_allocator_t<STATE>::collect();
+    _vloc_cache->collect();
     _vloc_pool.collect();
   }
 
@@ -154,6 +183,7 @@ public:
   void destruct_all()
   {
     tchecker::ts::state_pool_allocator_t<STATE>::destruct_all();
+    _vloc_cache->clear();
     _vloc_pool.destruct_all();
   }
 
@@ -177,6 +207,7 @@ protected:
 
   std::size_t _vloc_capacity;                           /*!< Capacity of tuples of locations */
   tchecker::pool_t<tchecker::shared_vloc_t> _vloc_pool; /*!< Pool of tuples of locations */
+  std::shared_ptr<vloc_cache_t> _vloc_cache;            /*!< Cache of tuples of locations */
 };
 
 /*!
@@ -188,6 +219,13 @@ protected:
  */
 template <class TRANSITION> class transition_pool_allocator_t : private tchecker::ts::transition_pool_allocator_t<TRANSITION> {
   static_assert(std::is_base_of<tchecker::syncprod::transition_t, TRANSITION>::value, "");
+
+  /*!
+   \brief Type of cache of tuple of edges
+  */
+  using vedge_cache_t =
+      tchecker::periodic_collectable_cache_t<tchecker::vedge_sptr_t, tchecker::intrusive_shared_ptr_delegate_hash_t,
+                                             tchecker::intrusive_shared_ptr_delegate_equal_to_t>;
 
 public:
   /*!
@@ -210,11 +248,15 @@ public:
    \param transition_alloc_nb : number of transitions allocated in one block
    \param vedge_alloc_nb : number of tuple of edges allocated in one block
    \param vedge_capacity : capacity of allocated tuples of edges
+   \param table_size : size of hash tables
    */
-  transition_pool_allocator_t(std::size_t transition_alloc_nb, std::size_t vedge_alloc_nb, std::size_t vedge_capacity)
+  transition_pool_allocator_t(std::size_t transition_alloc_nb, std::size_t vedge_alloc_nb, std::size_t vedge_capacity,
+                              std::size_t table_size)
       : tchecker::ts::transition_pool_allocator_t<TRANSITION>(transition_alloc_nb), _vedge_capacity(vedge_capacity),
-        _vedge_pool(vedge_alloc_nb, tchecker::allocation_size_t<tchecker::shared_vedge_t>::alloc_size(_vedge_capacity))
+        _vedge_pool(vedge_alloc_nb, tchecker::allocation_size_t<tchecker::shared_vedge_t>::alloc_size(_vedge_capacity)),
+        _vedge_cache(new vedge_cache_t(table_size))
   {
+    _vedge_pool.enroll(_vedge_cache);
   }
 
   /*!
@@ -290,12 +332,27 @@ public:
   }
 
   /*!
+   \brief Share transitions components with other transitions
+   \param p : pointer to transition
+   \pre p has been allocated by this allocator
+   \pre p is not nullptr
+   \post the tuple of edges in the transitions pointed by p has been shared with
+   other transitions
+  */
+  void share(tchecker::intrusive_shared_ptr_t<TRANSITION> const & p)
+  {
+    tchecker::ts::transition_pool_allocator_t<TRANSITION>::share(p);
+    p->vedge_ptr() = _vedge_cache->find_else_add(p->vedge_ptr());
+  }
+
+  /*!
    \brief Collect unused transitions
    \post Unused transitions and unused tuples of edges have been collected
    */
   void collect()
   {
     tchecker::ts::transition_pool_allocator_t<TRANSITION>::collect();
+    _vedge_cache->collect();
     _vedge_pool.collect();
   }
 
@@ -307,6 +364,7 @@ public:
   void destruct_all()
   {
     tchecker::ts::transition_pool_allocator_t<TRANSITION>::destruct_all();
+    _vedge_cache->clear();
     _vedge_pool.destruct_all();
   }
 
@@ -336,6 +394,7 @@ protected:
 
   std::size_t _vedge_capacity;                            /*!< Capacity of tuples of edges */
   tchecker::pool_t<tchecker::shared_vedge_t> _vedge_pool; /*!< Pool of tuples of edges */
+  std::shared_ptr<vedge_cache_t> _vedge_cache;            /*!< Cache of tuple of edges */
 };
 
 } // end of namespace details

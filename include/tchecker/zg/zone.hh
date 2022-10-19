@@ -14,6 +14,7 @@
 #include "tchecker/clockbounds/clockbounds.hh"
 #include "tchecker/dbm/dbm.hh"
 #include "tchecker/utils/allocation_size.hh"
+#include "tchecker/utils/cache.hh"
 #include "tchecker/variables/clocks.hh"
 
 /*!
@@ -29,7 +30,7 @@ namespace zg {
  \class zone_t
  \brief DBM implementation of zones
  */
-class zone_t {
+class zone_t : public tchecker::cached_object_t {
 public:
   /*!
    \brief Assignment operator

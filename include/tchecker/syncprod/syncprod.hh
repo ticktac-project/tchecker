@@ -355,9 +355,11 @@ public:
    \brief Constructor
    \param system : a system of timed processes
    \param block_size : number of objects allocated in a block
+   \param table_size : size of hash tables
    \note all states and transitions are pool allocated and deallocated automatically
    */
-  syncprod_t(std::shared_ptr<tchecker::syncprod::system_t const> const & system, std::size_t block_size);
+  syncprod_t(std::shared_ptr<tchecker::syncprod::system_t const> const & system, std::size_t block_size,
+             std::size_t table_size);
 
   /*!
    \brief Copy constructor (deleted)

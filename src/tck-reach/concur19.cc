@@ -188,9 +188,9 @@ run(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl, st
   if (!tchecker::system::every_process_has_initial_location(system->as_system_system()))
     std::cerr << tchecker::log_warning << "system has no initial state" << std::endl;
 
-  std::shared_ptr<tchecker::refzg::refzg_t> refzg{tchecker::refzg::factory(system, tchecker::refzg::PROCESS_REFERENCE_CLOCKS,
-                                                                           tchecker::refzg::SYNC_ELAPSED_SEMANTICS,
-                                                                           tchecker::refdbm::UNBOUNDED_SPREAD, block_size)};
+  std::shared_ptr<tchecker::refzg::refzg_t> refzg{
+      tchecker::refzg::factory(system, tchecker::refzg::PROCESS_REFERENCE_CLOCKS, tchecker::refzg::SYNC_ELAPSED_SEMANTICS,
+                               tchecker::refdbm::UNBOUNDED_SPREAD, block_size, table_size)};
 
   std ::shared_ptr<tchecker::tck_reach::concur19::graph_t> graph{
       new tchecker::tck_reach::concur19::graph_t{refzg, block_size, table_size}};

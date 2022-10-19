@@ -209,9 +209,10 @@ void attributes(tchecker::syncprod::system_t const & system, tchecker::syncprod:
 
 /* syncprod_t */
 
-syncprod_t::syncprod_t(std::shared_ptr<tchecker::syncprod::system_t const> const & system, std::size_t block_size)
-    : _system(system), _state_allocator(block_size, block_size, _system->processes_count()),
-      _transition_allocator(block_size, block_size, _system->processes_count())
+syncprod_t::syncprod_t(std::shared_ptr<tchecker::syncprod::system_t const> const & system, std::size_t block_size,
+                       std::size_t table_size)
+    : _system(system), _state_allocator(block_size, block_size, _system->processes_count(), table_size),
+      _transition_allocator(block_size, block_size, _system->processes_count(), table_size)
 {
 }
 

@@ -285,10 +285,11 @@ public:
    \param semantics : a zone semantics
    \param extrapolation : a zone extrapolation
    \param block_size : number of objects allocated in a block
+   \param table_size : size of hash tables
    \note all states and transitions are pool allocated and deallocated automatically
    */
   zg_t(std::shared_ptr<tchecker::ta::system_t const> const & system, std::unique_ptr<tchecker::zg::semantics_t> && semantics,
-       std::unique_ptr<tchecker::zg::extrapolation_t> && extrapolation, std::size_t block_size);
+       std::unique_ptr<tchecker::zg::extrapolation_t> && extrapolation, std::size_t block_size, std::size_t table_size);
 
   /*!
    \brief Copy constructor (deleted)
@@ -425,6 +426,7 @@ private:
  \param semantics_type : type of zone semantics
  \param extrapolation_type : type of zone extrapolation
  \param block_size : number of objects allocated in a block
+ \param table_size : size of hash tables
  \return a zone graph over system with zone semantics and zone extrapolation
  defined from semantics_type and extrapolation_type, and allocation of
  block_size objects at a time, nullptr if clock bounds cannot be inferred from
@@ -432,7 +434,8 @@ private:
  */
 tchecker::zg::zg_t * factory(std::shared_ptr<tchecker::ta::system_t const> const & system,
                              enum tchecker::zg::semantics_type_t semantics_type,
-                             enum tchecker::zg::extrapolation_type_t extrapolation_type, std::size_t block_size);
+                             enum tchecker::zg::extrapolation_type_t extrapolation_type, std::size_t block_size,
+                             std::size_t table_size);
 
 /*!
  \brief Factory of zone graphs
@@ -441,6 +444,7 @@ tchecker::zg::zg_t * factory(std::shared_ptr<tchecker::ta::system_t const> const
  \param extrapolation_type : type of zone extrapolation
  \param clock_bounds : clock bounds
  \param block_size : number of objects allocated in a block
+ \param table_size : size of hash tables
  \return a zone graph over system with zone semantics and zone extrapolation
  defined from semantics_type, extrapolation_type and clock_bounds, and
  allocation of block_size objects at a time
@@ -448,7 +452,8 @@ tchecker::zg::zg_t * factory(std::shared_ptr<tchecker::ta::system_t const> const
 tchecker::zg::zg_t * factory(std::shared_ptr<tchecker::ta::system_t const> const & system,
                              enum tchecker::zg::semantics_type_t semantics_type,
                              enum tchecker::zg::extrapolation_type_t extrapolation_type,
-                             tchecker::clockbounds::clockbounds_t const & clock_bounds, std::size_t block_size);
+                             tchecker::clockbounds::clockbounds_t const & clock_bounds, std::size_t block_size,
+                             std::size_t table_size);
 
 } // end of namespace zg
 

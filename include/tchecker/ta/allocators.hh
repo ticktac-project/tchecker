@@ -8,11 +8,13 @@
 #ifndef TCHECKER_TA_ALLOCATORS_HH
 #define TCHECKER_TA_ALLOCATORS_HH
 
+#include <memory>
 #include <type_traits>
 
 #include "tchecker/syncprod/allocators.hh"
 #include "tchecker/ta/state.hh"
 #include "tchecker/ta/transition.hh"
+#include "tchecker/utils/cache.hh"
 
 /*!
  \file allocators.hh
@@ -32,6 +34,13 @@ namespace details {
  */
 template <class STATE> class state_pool_allocator_t : private tchecker::syncprod::details::state_pool_allocator_t<STATE> {
   static_assert(std::is_base_of<tchecker::ta::state_t, STATE>::value, "");
+
+  /*!
+   \brief Type of cache of integer variables valuation
+  */
+  using intval_cache_t =
+      tchecker::periodic_collectable_cache_t<tchecker::intval_sptr_t, tchecker::intrusive_shared_ptr_delegate_hash_t,
+                                             tchecker::intrusive_shared_ptr_delegate_equal_to_t>;
 
 public:
   /*!
@@ -55,14 +64,18 @@ public:
    \param vloc_alloc_nb : number of tuple of locations allocated in one block
    \param vloc_capacity : capacity of allocated tuples of locations
    \param intval_alloc_nb : number of valuations of bounded integer variables allocated in one block
-   \param intval_capacity : capacity of allocated valuations of bounded integer variables
+   \param intval_capacity : capacity of allocated valuations of bounded integer
+   variables
+   \param table_size : size of hash tables
    */
   state_pool_allocator_t(std::size_t state_alloc_nb, std::size_t vloc_alloc_nb, std::size_t vloc_capacity,
-                         std::size_t intval_alloc_nb, std::size_t intval_capacity)
-      : tchecker::syncprod::details::state_pool_allocator_t<STATE>(state_alloc_nb, vloc_alloc_nb, vloc_capacity),
+                         std::size_t intval_alloc_nb, std::size_t intval_capacity, std::size_t table_size)
+      : tchecker::syncprod::details::state_pool_allocator_t<STATE>(state_alloc_nb, vloc_alloc_nb, vloc_capacity, table_size),
         _intval_capacity(intval_capacity),
-        _intval_pool(intval_alloc_nb, tchecker::allocation_size_t<tchecker::shared_intval_t>::alloc_size(_intval_capacity))
+        _intval_pool(intval_alloc_nb, tchecker::allocation_size_t<tchecker::shared_intval_t>::alloc_size(_intval_capacity)),
+        _intval_cache(new intval_cache_t(table_size))
   {
+    _intval_pool.enroll(_intval_cache);
   }
 
   /*!
@@ -140,12 +153,27 @@ public:
   }
 
   /*!
+   \brief Share state components with other states
+   \param p : pointer to state
+   \pre p has been constructed by this allocator
+   \pre p is not nullptr
+   \post the tuple of locations and the valuation of integer variables in the
+   state pointed by p have been shared
+  */
+  void share(tchecker::intrusive_shared_ptr_t<STATE> const & p)
+  {
+    tchecker::syncprod::details::state_pool_allocator_t<STATE>::share(p);
+    p->intval_ptr() = _intval_cache->find_else_add(p->intval_ptr());
+  }
+
+  /*!
    \brief Collect unused states
    \post Unused states, unused tuples of locations, and unused valuations of bounded integer variables have been collected
    */
   void collect()
   {
     tchecker::syncprod::details::state_pool_allocator_t<STATE>::collect();
+    _intval_cache->collect();
     _intval_pool.collect();
   }
 
@@ -158,6 +186,7 @@ public:
   void destruct_all()
   {
     tchecker::syncprod::details::state_pool_allocator_t<STATE>::destruct_all();
+    _intval_cache->clear();
     _intval_pool.destruct_all();
   }
 
@@ -186,6 +215,7 @@ protected:
 
   std::size_t _intval_capacity;                             /*!< Capacity of valuations of bounded integer variables */
   tchecker::pool_t<tchecker::shared_intval_t> _intval_pool; /*!< Pool of valuations of bounded integer variables */
+  std::shared_ptr<intval_cache_t> _intval_cache;            /*!< Cache of valuations of bounded integer variables */
 };
 
 /*!
@@ -218,6 +248,7 @@ public:
   using tchecker::syncprod::details::transition_pool_allocator_t<TRANSITION>::construct;
   using tchecker::syncprod::details::transition_pool_allocator_t<TRANSITION>::clone;
   using tchecker::syncprod::details::transition_pool_allocator_t<TRANSITION>::destruct;
+  using tchecker::syncprod::details::transition_pool_allocator_t<TRANSITION>::share;
   using tchecker::syncprod::details::transition_pool_allocator_t<TRANSITION>::destruct_all;
   using tchecker::syncprod::details::transition_pool_allocator_t<TRANSITION>::memsize;
 

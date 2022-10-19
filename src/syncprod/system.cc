@@ -343,10 +343,13 @@ private:
    */
   void locations_edges_events()
   {
+    std::size_t const block_size = 10000;
+    std::size_t const table_size = 65536;
+
     tchecker::process_id_t pid = _product.process_id(_process_name);
 
     std::stack<tchecker::syncprod::state_sptr_t> waiting;
-    tchecker::syncprod::syncprod_t sp(_system, 10000);
+    tchecker::syncprod::syncprod_t sp(_system, block_size, table_size);
     std::vector<tchecker::syncprod::syncprod_t::sst_t> v;
 
     sp.initial(v, tchecker::STATE_OK);

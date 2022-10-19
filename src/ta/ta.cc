@@ -163,10 +163,10 @@ void attributes(tchecker::ta::system_t const & system, tchecker::ta::transition_
 
 /* ta_t */
 
-ta_t::ta_t(std::shared_ptr<tchecker::ta::system_t const> const & system, std::size_t block_size)
+ta_t::ta_t(std::shared_ptr<tchecker::ta::system_t const> const & system, std::size_t block_size, std::size_t table_size)
     : _system(system), _state_allocator(block_size, block_size, _system->processes_count(), block_size,
-                                        _system->intvars_count(tchecker::VK_FLATTENED)),
-      _transition_allocator(block_size, block_size, _system->processes_count())
+                                        _system->intvars_count(tchecker::VK_FLATTENED), table_size),
+      _transition_allocator(block_size, block_size, _system->processes_count(), table_size)
 {
 }
 

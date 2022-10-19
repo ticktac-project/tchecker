@@ -14,6 +14,7 @@
 #include "tchecker/basictypes.hh"
 #include "tchecker/utils/allocation_size.hh"
 #include "tchecker/utils/array.hh"
+#include "tchecker/utils/cache.hh"
 #include "tchecker/utils/index.hh"
 #include "tchecker/variables/variables.hh"
 
@@ -137,14 +138,24 @@ using flat_integer_variables_t =
 // Integer variables valuation
 
 /*!
+ \class intval_base_t
+ \brief Base class for integer variables valuations which can be stored in cache
+*/
+class intval_base_t : public tchecker::array_capacity_t<unsigned short>, public tchecker::cached_object_t {
+public:
+  using tchecker::array_capacity_t<unsigned short>::array_capacity_t;
+};
+
+/*!
  \brief Type of integer variables array
  */
-using intvars_array_t =
-    tchecker::make_array_t<tchecker::integer_t, sizeof(tchecker::integer_t), tchecker::array_capacity_t<unsigned short>>;
+using intvars_array_t = tchecker::make_array_t<tchecker::integer_t, sizeof(tchecker::integer_t), intval_base_t>;
 
 /*!
  \class intvars_valuation_t
  \brief Valuation of integer variables
+ \note NO FIELD SHOULD BE ADDED TO THIS CLASS (either by definition or
+ inheritance). See tchecker::make_array_t for details
  */
 class intvars_valuation_t : public tchecker::intvars_array_t {
 public:

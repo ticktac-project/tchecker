@@ -15,6 +15,7 @@
 #include "tchecker/clockbounds/clockbounds.hh"
 #include "tchecker/dbm/refdbm.hh"
 #include "tchecker/utils/allocation_size.hh"
+#include "tchecker/utils/cache.hh"
 #include "tchecker/variables/clocks.hh"
 
 /*!
@@ -30,7 +31,7 @@ namespace refzg {
  \class zone_t
  \brief Zones implemented as DBMs with reference clocks
  */
-class zone_t {
+class zone_t : public tchecker::cached_object_t {
 public:
   /*!
    \brief Assignment operator

@@ -34,6 +34,11 @@ namespace zg {
 using shared_zone_t = tchecker::make_shared_t<tchecker::zg::zone_t>;
 
 /*!
+\brief Type of shared pointer to zone, DBM implementation
+*/
+using zone_sptr_t = tchecker::intrusive_shared_ptr_t<tchecker::zg::shared_zone_t>;
+
+/*!
  \class state_t
  \brief state of a zone graph
  */

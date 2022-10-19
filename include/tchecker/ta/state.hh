@@ -25,6 +25,11 @@ namespace tchecker {
  */
 using shared_intval_t = tchecker::make_shared_t<tchecker::intvars_valuation_t>;
 
+/*!
+ \brief Type of shared pointer to integer variables valuation
+*/
+using intval_sptr_t = tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t>;
+
 namespace ta {
 
 /*!

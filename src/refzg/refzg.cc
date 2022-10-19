@@ -101,11 +101,12 @@ void attributes(tchecker::ta::system_t const & system, tchecker::refzg::transiti
 
 refzg_t::refzg_t(std::shared_ptr<tchecker::ta::system_t const> const & system,
                  std::shared_ptr<tchecker::reference_clock_variables_t const> const & r,
-                 std::unique_ptr<tchecker::refzg::semantics_t> && semantics, tchecker::integer_t spread, std::size_t block_size)
+                 std::unique_ptr<tchecker::refzg::semantics_t> && semantics, tchecker::integer_t spread, std::size_t block_size,
+                 std::size_t table_size)
     : _system(system), _r(r), _semantics(std::move(semantics)), _spread(spread),
       _state_allocator(block_size, block_size, _system->processes_count(), block_size,
-                       _system->intvars_count(tchecker::VK_FLATTENED), block_size, _r),
-      _transition_allocator(block_size, block_size, _system->processes_count())
+                       _system->intvars_count(tchecker::VK_FLATTENED), block_size, _r, table_size),
+      _transition_allocator(block_size, block_size, _system->processes_count(), table_size)
 {
 }
 
@@ -178,12 +179,12 @@ reference_clocks_factory(enum tchecker::refzg::reference_clock_variables_type_t 
 tchecker::refzg::refzg_t * factory(std::shared_ptr<tchecker::ta::system_t const> const & system,
                                    enum tchecker::refzg::reference_clock_variables_type_t refclocks_type,
                                    enum tchecker::refzg::semantics_type_t semantics_type, tchecker::integer_t spread,
-                                   std::size_t block_size)
+                                   std::size_t block_size, std::size_t table_size)
 {
   std::shared_ptr<tchecker::reference_clock_variables_t const> r(
       tchecker::refzg::reference_clocks_factory(refclocks_type, *system));
   std::unique_ptr<tchecker::refzg::semantics_t> semantics{tchecker::refzg::semantics_factory(semantics_type)};
-  return new tchecker::refzg::refzg_t(system, r, std::move(semantics), spread, block_size);
+  return new tchecker::refzg::refzg_t(system, r, std::move(semantics), spread, block_size, table_size);
 }
 
 } // end of namespace refzg
