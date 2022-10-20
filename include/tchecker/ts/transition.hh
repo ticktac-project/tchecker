@@ -23,8 +23,7 @@ namespace ts {
  \class transition_t
  \brief Empty transition for transition systems
  */
-class transition_t {
-};
+class transition_t {};
 
 /*!
  \brief Equality check
@@ -43,11 +42,28 @@ inline bool operator==(tchecker::ts::transition_t const & t1, tchecker::ts::tran
 inline bool operator!=(tchecker::ts::transition_t const & t1, tchecker::ts::transition_t const & t2) { return !(t1 == t2); }
 
 /*!
+ \brief Equality check for shared transitions
+ \param t1 : transition
+ \param t2 : transition
+ \return true
+ \note note this should only be used on transitions that have shared internal components
+*/
+inline bool shared_equal_to(tchecker::ts::transition_t const & t1, tchecker::ts::transition_t const & t2) { return true; }
+
+/*!
  \brief Hash
  \param t : transition
- \return hash value for transtion t
+ \return hash value for transition t
  */
 inline std::size_t hash_value(tchecker::ts::transition_t const & t) { return 0; }
+
+/*!
+ \brief Hash for shared transitions
+ \param t : transition
+ \return hash value for transition t
+ \note note this should only be used on transitions that have shared internal components
+*/
+inline std::size_t shared_hash_value(tchecker::ts::transition_t const & t) { return 0; }
 
 /*!
  \brief Lexical ordering on transitions of a transition system

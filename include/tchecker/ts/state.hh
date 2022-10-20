@@ -23,8 +23,7 @@ namespace ts {
  \class state_t
  \brief Empty state for transition systems
  */
-class state_t {
-};
+class state_t {};
 
 /*!
  \brief Equality check
@@ -43,11 +42,28 @@ inline bool operator==(tchecker::ts::state_t const & s1, tchecker::ts::state_t c
 inline bool operator!=(tchecker::ts::state_t const & s1, tchecker::ts::state_t const & s2) { return !(s1 == s2); }
 
 /*!
+ \brief Equality check for shared states
+ \param s1 : state
+ \param s2 : state
+ \return true
+ \note this should only be used on states that have shared internal components
+*/
+inline bool shared_equal_to(tchecker::ts::state_t const & s1, tchecker::ts::state_t const & s2) { return true; }
+
+/*!
  \brief Hash
  \param s : state
  \return hash value for state s
  */
 inline std::size_t hash_value(tchecker::ts::state_t const & s) { return 0; }
+
+/*!
+ \brief Hash for shared states
+ \param s : state
+ \return hash value for state s
+ \note this should only be used on states that have shared internal components
+*/
+inline std::size_t shared_hash_value(tchecker::ts::state_t const & s) { return 0; }
 
 /*!
  \brief Lexical ordering on transition system states

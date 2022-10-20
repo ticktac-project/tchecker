@@ -40,16 +40,19 @@ bool operator==(tchecker::refzg::state_t const & s1, tchecker::refzg::state_t co
 
 bool operator!=(tchecker::refzg::state_t const & s1, tchecker::refzg::state_t const & s2) { return !(s1 == s2); }
 
-std::size_t hash_value(tchecker::refzg::state_t const & s)
+bool shared_equal_to(tchecker::refzg::state_t const & s1, tchecker::refzg::state_t const & s2)
 {
-  std::size_t h = tchecker::ta::hash_value(s);
-  boost::hash_combine(h, s.zone());
-  return h;
+  return tchecker::ta::shared_equal_to(s1, s2) && (s1.zone_ptr() == s2.zone_ptr());
 }
 
 bool operator<=(tchecker::refzg::state_t const & s1, tchecker::refzg::state_t const & s2)
 {
   return tchecker::ta::operator==(s1, s2) && (s1.zone() <= s2.zone());
+}
+
+bool shared_is_le(tchecker::refzg::state_t const & s1, tchecker::refzg::state_t const & s2)
+{
+  return tchecker::ta::shared_equal_to(s1, s2) && (s1.zone_ptr() == s2.zone_ptr() || s1.zone() <= s2.zone());
 }
 
 bool is_alu_star_le(tchecker::refzg::state_t const & s1, tchecker::refzg::state_t const & s2,
@@ -58,10 +61,23 @@ bool is_alu_star_le(tchecker::refzg::state_t const & s1, tchecker::refzg::state_
   return tchecker::ta::operator==(s1, s2) && s1.zone().is_alu_star_le(s2.zone(), l, u);
 }
 
+bool shared_is_alu_star_le(tchecker::refzg::state_t const & s1, tchecker::refzg::state_t const & s2,
+                           tchecker::clockbounds::map_t const & l, tchecker::clockbounds::map_t const & u)
+{
+  return tchecker::ta::shared_equal_to(s1, s2) && (s1.zone_ptr() == s2.zone_ptr() || s1.zone().is_alu_star_le(s2.zone(), l, u));
+}
+
 bool is_time_elapse_alu_star_le(tchecker::refzg::state_t const & s1, tchecker::refzg::state_t const & s2,
                                 tchecker::clockbounds::map_t const & l, tchecker::clockbounds::map_t const & u)
 {
   return tchecker::ta::operator==(s1, s2) && s1.zone().is_time_elapse_alu_star_le(s2.zone(), l, u);
+}
+
+bool shared_is_time_elapse_alu_star_le(tchecker::refzg::state_t const & s1, tchecker::refzg::state_t const & s2,
+                                       tchecker::clockbounds::map_t const & l, tchecker::clockbounds::map_t const & u)
+{
+  return tchecker::ta::shared_equal_to(s1, s2) &&
+         (s1.zone_ptr() == s2.zone_ptr() || s1.zone().is_time_elapse_alu_star_le(s2.zone(), l, u));
 }
 
 bool is_sync_alu_le(tchecker::refzg::state_t const & s1, tchecker::refzg::state_t const & s2,
@@ -70,12 +86,32 @@ bool is_sync_alu_le(tchecker::refzg::state_t const & s1, tchecker::refzg::state_
   return tchecker::ta::operator==(s1, s2) && s1.zone().is_sync_alu_le(s2.zone(), l, u);
 }
 
+bool shared_is_sync_alu_le(tchecker::refzg::state_t const & s1, tchecker::refzg::state_t const & s2,
+                           tchecker::clockbounds::map_t const & l, tchecker::clockbounds::map_t const & u)
+{
+  return tchecker::ta::shared_equal_to(s1, s2) && (s1.zone_ptr() == s2.zone_ptr() || s1.zone().is_sync_alu_le(s2.zone(), l, u));
+}
+
 int lexical_cmp(tchecker::refzg::state_t const & s1, tchecker::refzg::state_t const & s2)
 {
   int ta_cmp = tchecker::ta::lexical_cmp(s1, s2);
   if (ta_cmp != 0)
     return ta_cmp;
   return s1.zone().lexical_cmp(s2.zone());
+}
+
+std::size_t hash_value(tchecker::refzg::state_t const & s)
+{
+  std::size_t h = tchecker::ta::hash_value(s);
+  boost::hash_combine(h, s.zone());
+  return h;
+}
+
+std::size_t shared_hash_value(tchecker::refzg::state_t const & s)
+{
+  std::size_t h = tchecker::ta::shared_hash_value(s);
+  boost::hash_combine(h, s.zone_ptr());
+  return h;
 }
 
 } // end of namespace refzg

@@ -46,11 +46,28 @@ bool operator==(tchecker::zg::transition_t const & t1, tchecker::zg::transition_
 inline bool operator!=(tchecker::zg::transition_t const & t1, tchecker::zg::transition_t const & t2) { return !(t1 == t2); }
 
 /*!
+ \brief Equality check for shared transitions
+ \param t1 : transition
+ \param t2 : transition
+ \return see tchecker::ta::operator== on transitions
+ \note note this should only be used on transitions that have shared internal components
+ */
+bool shared_equal_to(tchecker::zg::transition_t const & t1, tchecker::zg::transition_t const & t2);
+
+/*!
  \brief Hash
  \param t : transition
  \return Hash value for transition t
  */
 std::size_t hash_value(tchecker::zg::transition_t const & t);
+
+/*!
+ \brief Hash for shared transitions
+ \param t : transition
+ \return Hash value for transition t
+ \note note this should only be used on transitions that have shared internal components
+ */
+std::size_t shared_hash_value(tchecker::zg::transition_t const & t);
 
 /*!
  \brief Lexical ordering on transitions of the zone graph
