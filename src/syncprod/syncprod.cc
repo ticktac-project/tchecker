@@ -262,6 +262,10 @@ void syncprod_t::attributes(tchecker::syncprod::const_transition_sptr_t const & 
 
 tchecker::syncprod::system_t const & syncprod_t::system() const { return *_system; }
 
+void syncprod_t::share(tchecker::syncprod::state_sptr_t & s) { _state_allocator.share(s); }
+
+void syncprod_t::share(tchecker::syncprod::transition_sptr_t & t) { _transition_allocator.share(t); }
+
 } // end of namespace syncprod
 
 } // end of namespace tchecker

@@ -156,6 +156,10 @@ void refzg_t::attributes(tchecker::refzg::const_transition_sptr_t const & t, std
 
 tchecker::ta::system_t const & refzg_t::system() const { return *_system; }
 
+void refzg_t::share(tchecker::refzg::state_sptr_t & s) { _state_allocator.share(s); }
+
+void refzg_t::share(tchecker::refzg::transition_sptr_t & t) { _transition_allocator.share(t); }
+
 /* factory */
 
 // Factory of reference clock variables

@@ -413,6 +413,25 @@ public:
   tchecker::ta::system_t const & system() const;
 
 private:
+  /* IMPLEMENTATION NOTE: the following methods should not be public as we don't
+  want to publicly share a state/transition which is not const as this could
+  lead to modification of shared internal components
+  */
+
+  /*!
+   \brief Share state components
+   \param s : a state
+   \post internal components in s have been shared
+  */
+  virtual void share(tchecker::zg::state_sptr_t & s);
+
+  /*!
+   \brief Share transition components
+   \param t : a transition
+   \post internal components in t have been shared
+  */
+  virtual void share(tchecker::zg::transition_sptr_t & t);
+
   std::shared_ptr<tchecker::ta::system_t const> _system;           /*!< System of timed processes */
   std::unique_ptr<tchecker::zg::semantics_t> _semantics;           /*!< Zone semantics */
   std::unique_ptr<tchecker::zg::extrapolation_t> _extrapolation;   /*!< Zone extrapolation */

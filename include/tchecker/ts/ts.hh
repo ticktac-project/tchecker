@@ -65,6 +65,11 @@ public:
   using sst_t = std::tuple<tchecker::state_status_t, STATE, TRANSITION>;
 
   /*!
+  \brief Type of tuples (status, state, transition) with const state and transition
+  */
+  using const_sst_t = std::tuple<tchecker::state_status_t, CONST_STATE, CONST_TRANSITION>;
+
+  /*!
    \brief Destructor
    */
   virtual ~ts_t() = default;
@@ -78,6 +83,13 @@ public:
 
   /*!
    \brief Accessor
+   \param csst : a tuple (status, state, transition)
+   \return the status in const sst
+  */
+  inline tchecker::state_status_t status(const_sst_t const & csst) const { return std::get<0>(csst); }
+
+  /*!
+   \brief Accessor
    \param sst : a tuple (status, state, transition)
    \return the state in sst
   */
@@ -86,9 +98,23 @@ public:
   /*!
    \brief Accessor
    \param sst : a tuple (status, state, transition)
+   \return the state in const sst
+  */
+  inline CONST_STATE state(const_sst_t const & csst) const { return std::get<1>(csst); }
+
+  /*!
+   \brief Accessor
+   \param sst : a tuple (status, state, transition)
    \return the transition in sst
   */
   inline TRANSITION transition(sst_t const & sst) const { return std::get<2>(sst); }
+
+  /*!
+   \brief Accessor
+   \param csst : a tuple (status, state, transition)
+   \return the transition in const sst
+  */
+  inline CONST_TRANSITION transition(const_sst_t const & csst) const { return std::get<2>(csst); }
 
   /*!
   \brief Initial states and transitions
@@ -99,6 +125,16 @@ public:
   virtual void initial(std::vector<sst_t> & v) = 0;
 
   /*!
+  \brief Initial states and transitions, with sharing
+  \param v : container
+  \post all tuples (status, s, t) of status, initial states and transitions have
+  been pushed back into v
+  \note the states and transitions in v may share internal components with other
+  states and transitions
+   */
+  virtual void initial(std::vector<const_sst_t> & v) = 0;
+
+  /*!
   \brief Next states and transitions
   \param s : state
   \param v : container
@@ -106,6 +142,17 @@ public:
   pushed to v
   */
   virtual void next(CONST_STATE const & s, std::vector<sst_t> & v) = 0;
+
+  /*!
+  \brief Next states and transitions, with sharing
+  \param s : state
+  \param v : container
+  \post all tuples (status, s', t) such that s -t-> s' is a transition have been
+  pushed to v
+  \post the states and transitions in v may share internal components with
+  other states and transitions
+  */
+  virtual void next(CONST_STATE const & s, std::vector<const_sst_t> & v) = 0;
 
   /*!
    \brief Computes the set of labels of a state
@@ -203,6 +250,11 @@ public:
   using sst_t = typename tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::sst_t;
 
   /*!
+  \brief Type of tuples (status, state, transition) with const state and transition
+  */
+  using const_sst_t = typename tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::const_sst_t;
+
+  /*!
    \brief Destructor
    */
   virtual ~full_ts_t() = default;
@@ -261,6 +313,24 @@ public:
   }
 
   /*!
+  \brief Initial states and transitions with selected status, with state and
+  transition sharing
+  \param v : container
+  \param mask : mask on initial states
+  \post all tuples (status, s, t) of status, initial states and transitions such
+  that status matches mask (i.e. status & mask != 0) have been pushed back into
+  v
+  \note returned states and transitions may share internal components with other
+  states and transitions
+   */
+  void initial(std::vector<const_sst_t> & v, tchecker::state_status_t mask)
+  {
+    std::vector<sst_t> sst;
+    initial(sst, mask);
+    share(sst, v);
+  }
+
+  /*!
   \brief Next states and transitions with selected status
   \param s : state
   \param v : container
@@ -283,12 +353,40 @@ public:
   }
 
   /*!
+  \brief Next states and transitions with selected status, with state and
+  transition sharing
+  \param s : state
+  \param v : container
+  \param mask : mask on next states
+  \post all tuples (status, s', t) such that s -t-> s' is a transition and the
+  status of s' matches mask (i.e. status & mask != 0) have been pushed to v
+  \note returned states and transitions may share internal components with other
+  states and transitions
+  */
+  void next(CONST_STATE const & s, std::vector<const_sst_t> & v, tchecker::state_status_t mask)
+  {
+    std::vector<sst_t> sst;
+    next(s, sst, mask);
+    share(sst, v);
+  }
+
+  /*!
   \brief Initial states and transitions
   \param v : container
   \post all tuples (status, s, t) of status, initial states and transitions such
   that s has status tchecker::STATE_OK have been pushed back into v
    */
   virtual void initial(std::vector<sst_t> & v) { initial(v, tchecker::STATE_OK); }
+
+  /*!
+  \brief Initial states and transitions, with sharing
+  \param v : container
+  \post all tuples (status, s, t) of status, initial states and transitions such
+  that s has status tchecker::STATE_OK have been pushed back into v
+  \note returned states and transitions may share internal components with other
+  states and transitions
+   */
+  virtual void initial(std::vector<const_sst_t> & v) { initial(v, tchecker::STATE_OK); }
 
   /*!
   \brief Next states and transitions
@@ -299,12 +397,59 @@ public:
   */
   virtual void next(CONST_STATE const & s, std::vector<sst_t> & v) { next(s, v, tchecker::STATE_OK); }
 
+  /*!
+  \brief Next states and transitions, with sharing
+  \param s : state
+  \param v : container
+  \post all tuples (status, s', t) such that s -t-> s' is a transition and s'
+  has status tchecker::STATE_OK have been pushed to v
+  \note returned states and transitions may share internal components with other
+  states and transitions
+  */
+  virtual void next(CONST_STATE const & s, std::vector<const_sst_t> & v) { next(s, v, tchecker::STATE_OK); }
+
   using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::status;
   using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::state;
   using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::transition;
   using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::labels;
   using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::is_valid_final;
   using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::attributes;
+
+private:
+  /* IMPLEMENTATION NOTE: the following methods should not be public as we don't
+  want to publicly share a state/transition which is not const as this could
+  lead to modification of shared internal components
+  */
+
+  /*!
+   \brief Share state components
+   \param s : a state
+   \post internal components in s have been shared
+  */
+  virtual void share(STATE & s) = 0;
+
+  /*!
+   \brief Share transition components
+   \param t : a transition
+   \post internal components in t have been shared
+  */
+  virtual void share(TRANSITION & t) = 0;
+
+  /*!
+  \brief Share state and transition components
+  \param v : container of sst
+  \param cv : a container of const stt
+  \post states and transitions in v may share internal components with other
+  states and transitions
+  */
+  void share(std::vector<sst_t> & v, std::vector<const_sst_t> & cv)
+  {
+    for (auto && [status, s, t] : v) {
+      share(s);
+      share(t);
+      cv.push_back(std::make_tuple(status, static_cast<CONST_STATE>(s), static_cast<CONST_TRANSITION>(ct));
+    }
+  }
 };
 
 } // end of namespace ts

@@ -216,6 +216,10 @@ void ta_t::attributes(tchecker::ta::const_transition_sptr_t const & t, std::map<
 
 tchecker::ta::system_t const & ta_t::system() const { return *_system; }
 
+void ta_t::share(tchecker::ta::state_sptr_t & s) { _state_allocator.share(s); }
+
+void ta_t::share(tchecker::ta::transition_sptr_t & t) { _transition_allocator.share(t); }
+
 } // end of namespace ta
 
 } // end of namespace tchecker

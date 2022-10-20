@@ -154,6 +154,10 @@ void zg_t::attributes(tchecker::zg::const_transition_sptr_t const & t, std::map<
 
 tchecker::ta::system_t const & zg_t::system() const { return *_system; }
 
+void zg_t::share(tchecker::zg::state_sptr_t & s) { _state_allocator.share(s); }
+
+void zg_t::share(tchecker::zg::transition_sptr_t & t) { _transition_allocator.share(t); }
+
 /* factory */
 
 tchecker::zg::zg_t * factory(std::shared_ptr<tchecker::ta::system_t const> const & system,
