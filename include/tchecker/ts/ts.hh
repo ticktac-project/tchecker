@@ -447,7 +447,7 @@ private:
     for (auto && [status, s, t] : v) {
       share(s);
       share(t);
-      cv.push_back(std::make_tuple(status, static_cast<CONST_STATE>(s), static_cast<CONST_TRANSITION>(ct));
+      cv.push_back(std::make_tuple(status, static_cast<CONST_STATE>(s), static_cast<CONST_TRANSITION>(t)));
     }
   }
 };
