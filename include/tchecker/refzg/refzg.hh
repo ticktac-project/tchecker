@@ -454,17 +454,40 @@ private:
 
 /*!
  \class refzg_t
- \brief Zone graph with reference clocks of a timed automaton with allocated
+ \brief Zone graph with reference clocks of a timed automaton with allocation of
  states and transitions, as well as states and transitions sharing
+ \note all returned states and transitions deallocated automatically
  */
-class refzg_t : public tchecker::ts::make_sharing_ts_from_impl_t<tchecker::refzg::refzg_impl_t> {
+class refzg_t : public tchecker::ts::make_ts_from_impl_t<tchecker::refzg::refzg_impl_t> {
+public:
+  using tchecker::ts::make_ts_from_impl_t<tchecker::refzg::refzg_impl_t>::make_ts_from_impl_t;
+
+  /*!
+   \brief Destructor
+  */
+  virtual ~refzg_t() = default;
+
+  /*!
+   \brief Accessor
+   \return Underlying system of timed processes
+   */
+  tchecker::ta::system_t const & system() const;
+};
+
+/*!
+ \class sharing_refzg_t
+ \brief Zone graph with reference clocks of a timed automaton with allocation of
+ states and transitions, as well as states and transitions sharing
+ \note all returned states and transitions deallocated automatically
+ */
+class sharing_refzg_t : public tchecker::ts::make_sharing_ts_from_impl_t<tchecker::refzg::refzg_impl_t> {
 public:
   using tchecker::ts::make_sharing_ts_from_impl_t<tchecker::refzg::refzg_impl_t>::make_sharing_ts_from_impl_t;
 
   /*!
    \brief Destructor
   */
-  virtual ~refzg_t() = default;
+  virtual ~sharing_refzg_t() = default;
 
   /*!
    \brief Accessor
@@ -499,7 +522,27 @@ enum reference_clock_variables_type_t {
 tchecker::refzg::refzg_t * factory(std::shared_ptr<tchecker::ta::system_t const> const & system,
                                    enum tchecker::refzg::reference_clock_variables_type_t refclocks_type,
                                    enum tchecker::refzg::semantics_type_t semantics_type, tchecker::integer_t spread,
-                                   std::size_t block_size, std::size_t hash_table);
+                                   std::size_t block_size, std::size_t table_size);
+
+/*!
+ \brief Factory of zone graphs with reference clocks and states/transitions sharing
+ \param system : system of timed processes
+ \param refclocks_type : type of reference clocks
+ \param semantics_type : type of semantics over zones with reference clocks
+ \param spread : spread bound over reference clocks
+ \param block_size : number of objects allocated in a block
+ \param table_size : size of hash tables
+ \return a zone graph over system with zone semantics and spread bound
+ defined from semantics_type and spread, reference clocks defined from
+ refclocks_type, and allocation of block_size objects at a time
+ \note set spread to tchecker::refdbm::UNBOUNDED_SPREAD for unbounded spread
+ \note the states and transitions computed by the returned zone graph share
+ internal components
+ */
+tchecker::refzg::sharing_refzg_t * factory_sharing(std::shared_ptr<tchecker::ta::system_t const> const & system,
+                                                   enum tchecker::refzg::reference_clock_variables_type_t refclocks_type,
+                                                   enum tchecker::refzg::semantics_type_t semantics_type,
+                                                   tchecker::integer_t spread, std::size_t block_size, std::size_t hash_table);
 
 } // end of namespace refzg
 

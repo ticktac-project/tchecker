@@ -434,17 +434,39 @@ private:
 
 /*!
  \class zg_t
- \brief Zone graph of a timed automaton with allocated states and transitions,
- as well as states and transitions sharing
+ \brief Zone graph of a timed automaton with states and transitions allocation
+ \note all returned states and transitions deallocated automatically
  */
-class zg_t : public tchecker::ts::make_sharing_ts_from_impl_t<tchecker::zg::zg_impl_t> {
+class zg_t : public tchecker::ts::make_ts_from_impl_t<tchecker::zg::zg_impl_t> {
+public:
+  using tchecker::ts::make_ts_from_impl_t<tchecker::zg::zg_impl_t>::make_ts_from_impl_t;
+
+  /*!
+   \brief Destructor
+  */
+  virtual ~zg_t() = default;
+
+  /*!
+   \brief Accessor
+   \return Underlying system of timed processes
+   */
+  tchecker::ta::system_t const & system() const;
+};
+
+/*!
+ \class sharing_zg_t
+ \brief Zone graph of a timed automaton with states and transitions allocation,
+ as well as states and transitions sharing
+ \note all returned states and transitions deallocated automatically
+ */
+class sharing_zg_t : public tchecker::ts::make_sharing_ts_from_impl_t<tchecker::zg::zg_impl_t> {
 public:
   using tchecker::ts::make_sharing_ts_from_impl_t<tchecker::zg::zg_impl_t>::make_sharing_ts_from_impl_t;
 
   /*!
    \brief Destructor
   */
-  virtual ~zg_t() = default;
+  virtual ~sharing_zg_t() = default;
 
   /*!
    \brief Accessor
@@ -487,6 +509,45 @@ tchecker::zg::zg_t * factory(std::shared_ptr<tchecker::ta::system_t const> const
                              enum tchecker::zg::extrapolation_type_t extrapolation_type,
                              tchecker::clockbounds::clockbounds_t const & clock_bounds, std::size_t block_size,
                              std::size_t table_size);
+
+/*!
+ \brief Factory of zone graphs with states/transitions sharing
+ \param system : system of timed processes
+ \param semantics_type : type of zone semantics
+ \param extrapolation_type : type of zone extrapolation
+ \param block_size : number of objects allocated in a block
+ \param table_size : size of hash tables
+ \return a zone graph over system with zone semantics and zone extrapolation
+ defined from semantics_type and extrapolation_type, and allocation of
+ block_size objects at a time, nullptr if clock bounds cannot be inferred from
+ system
+ \note the states and transitions computed by the returned zone graph share
+ internal components
+ */
+tchecker::zg::sharing_zg_t * factory_sharing(std::shared_ptr<tchecker::ta::system_t const> const & system,
+                                             enum tchecker::zg::semantics_type_t semantics_type,
+                                             enum tchecker::zg::extrapolation_type_t extrapolation_type, std::size_t block_size,
+                                             std::size_t table_size);
+
+/*!
+ \brief Factory of zone graphs with states/transitions sharing
+ \param system : system of timed processes
+ \param semantics_type : type of zone semantics
+ \param extrapolation_type : type of zone extrapolation
+ \param clock_bounds : clock bounds
+ \param block_size : number of objects allocated in a block
+ \param table_size : size of hash tables
+ \return a zone graph over system with zone semantics and zone extrapolation
+ defined from semantics_type, extrapolation_type and clock_bounds, and
+ allocation of block_size objects at a time
+ \note the states and transitions computed by the returned zone graph share
+ internal components
+ */
+tchecker::zg::sharing_zg_t * factory_sharing(std::shared_ptr<tchecker::ta::system_t const> const & system,
+                                             enum tchecker::zg::semantics_type_t semantics_type,
+                                             enum tchecker::zg::extrapolation_type_t extrapolation_type,
+                                             tchecker::clockbounds::clockbounds_t const & clock_bounds, std::size_t block_size,
+                                             std::size_t table_size);
 
 } // end of namespace zg
 

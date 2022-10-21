@@ -348,7 +348,7 @@ private:
 
     tchecker::process_id_t pid = _product.process_id(_process_name);
 
-    std::stack<tchecker::syncprod::const_state_sptr_t> waiting;
+    std::stack<tchecker::syncprod::state_sptr_t> waiting;
     tchecker::syncprod::syncprod_t sp(_system, block_size, table_size);
     std::vector<tchecker::syncprod::syncprod_t::sst_t> v;
 
@@ -363,7 +363,7 @@ private:
     v.clear();
 
     while (!waiting.empty()) {
-      tchecker::syncprod::const_state_sptr_t src = waiting.top();
+      tchecker::syncprod::const_state_sptr_t src = static_cast<tchecker::syncprod::const_state_sptr_t>(waiting.top());
       waiting.pop();
 
       tchecker::loc_id_t src_id = _product.location(pid, namify(*src))->id();

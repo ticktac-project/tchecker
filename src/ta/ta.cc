@@ -225,6 +225,10 @@ tchecker::ta::system_t const & ta_impl_t::system() const { return *_system; }
 
 tchecker::ta::system_t const & ta_t::system() const { return ts_impl().system(); }
 
+/* sharing_ta_t */
+
+tchecker::ta::system_t const & sharing_ta_t::system() const { return ts_impl().system(); }
+
 } // end of namespace ta
 
 } // end of namespace tchecker

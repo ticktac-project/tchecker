@@ -410,17 +410,40 @@ private:
 /*!
  \class ta_t
  \brief Transition system of timed automaton over a system of synchronized timed
- processes, with allocated states and transitions, as well as states and
- transitions sharing
+ processes, with states and transitions allocation
+ \note all returned states and transitions deallocated automatically
  */
-class ta_t final : public tchecker::ts::make_sharing_ts_from_impl_t<tchecker::ta::ta_impl_t> {
+class ta_t final : public tchecker::ts::make_ts_from_impl_t<tchecker::ta::ta_impl_t> {
+public:
+  using tchecker::ts::make_ts_from_impl_t<tchecker::ta::ta_impl_t>::make_ts_from_impl_t;
+
+  /*!
+    \brief Destructor
+  */
+  virtual ~ta_t() = default;
+
+  /*!
+   \brief Accessor
+   \return Underlying system of timed processes
+  */
+  tchecker::ta::system_t const & system() const;
+};
+
+/*!
+ \class sharing_ta_t
+ \brief Transition system of timed automaton over a system of synchronized timed
+ processes, states and transitions allocation, as well as states and
+ transitions sharing
+ \note all returned states and transitions deallocated automatically
+ */
+class sharing_ta_t final : public tchecker::ts::make_sharing_ts_from_impl_t<tchecker::ta::ta_impl_t> {
 public:
   using tchecker::ts::make_sharing_ts_from_impl_t<tchecker::ta::ta_impl_t>::make_sharing_ts_from_impl_t;
 
   /*!
     \brief Destructor
   */
-  virtual ~ta_t() = default;
+  virtual ~sharing_ta_t() = default;
 
   /*!
    \brief Accessor

@@ -163,19 +163,53 @@ tchecker::ta::system_t const & zg_impl_t::system() const { return *_system; }
 
 tchecker::ta::system_t const & zg_t::system() const { return ts_impl().system(); }
 
+/* sharing_zg_t */
+
+tchecker::ta::system_t const & sharing_zg_t::system() const { return ts_impl().system(); }
+
 /* factory */
 
-tchecker::zg::zg_t * factory(std::shared_ptr<tchecker::ta::system_t const> const & system,
-                             enum tchecker::zg::semantics_type_t semantics_type,
-                             enum tchecker::zg::extrapolation_type_t extrapolation_type, std::size_t block_size,
-                             std::size_t table_size)
+/*!
+ \brief Generic implementation of the factory (no clock bounds)
+ \tparam ZG : type of zone graph
+*/
+template <class ZG>
+ZG * factory_generic(std::shared_ptr<tchecker::ta::system_t const> const & system,
+                     enum tchecker::zg::semantics_type_t semantics_type,
+                     enum tchecker::zg::extrapolation_type_t extrapolation_type, std::size_t block_size, std::size_t table_size)
 {
   std::shared_ptr<tchecker::zg::extrapolation_t> extrapolation{
       tchecker::zg::extrapolation_factory(extrapolation_type, *system)};
   if (extrapolation.get() == nullptr)
     return nullptr;
   std::shared_ptr<tchecker::zg::semantics_t> semantics{tchecker::zg::semantics_factory(semantics_type)};
-  return new tchecker::zg::zg_t(system, semantics, extrapolation, block_size, table_size);
+  return new ZG(system, semantics, extrapolation, block_size, table_size);
+}
+
+/*!
+ \brief Generic implementation of the factory (with clock bounds)
+ \tparam ZG : type of zone graph
+*/
+template <class ZG>
+ZG * factory_generic(std::shared_ptr<tchecker::ta::system_t const> const & system,
+                     enum tchecker::zg::semantics_type_t semantics_type,
+                     enum tchecker::zg::extrapolation_type_t extrapolation_type,
+                     tchecker::clockbounds::clockbounds_t const & clock_bounds, std::size_t block_size, std::size_t table_size)
+{
+  std::shared_ptr<tchecker::zg::extrapolation_t> extrapolation{
+      tchecker::zg::extrapolation_factory(extrapolation_type, clock_bounds)};
+  if (extrapolation.get() == nullptr)
+    return nullptr;
+  std::shared_ptr<tchecker::zg::semantics_t> semantics{tchecker::zg::semantics_factory(semantics_type)};
+  return new ZG(system, semantics, extrapolation, block_size, table_size);
+}
+
+tchecker::zg::zg_t * factory(std::shared_ptr<tchecker::ta::system_t const> const & system,
+                             enum tchecker::zg::semantics_type_t semantics_type,
+                             enum tchecker::zg::extrapolation_type_t extrapolation_type, std::size_t block_size,
+                             std::size_t table_size)
+{
+  return tchecker::zg::factory_generic<tchecker::zg::zg_t>(system, semantics_type, extrapolation_type, block_size, table_size);
 }
 
 tchecker::zg::zg_t * factory(std::shared_ptr<tchecker::ta::system_t const> const & system,
@@ -184,12 +218,27 @@ tchecker::zg::zg_t * factory(std::shared_ptr<tchecker::ta::system_t const> const
                              tchecker::clockbounds::clockbounds_t const & clock_bounds, std::size_t block_size,
                              std::size_t table_size)
 {
-  std::shared_ptr<tchecker::zg::extrapolation_t> extrapolation{
-      tchecker::zg::extrapolation_factory(extrapolation_type, clock_bounds)};
-  if (extrapolation.get() == nullptr)
-    return nullptr;
-  std::shared_ptr<tchecker::zg::semantics_t> semantics{tchecker::zg::semantics_factory(semantics_type)};
-  return new tchecker::zg::zg_t(system, semantics, extrapolation, block_size, table_size);
+  return tchecker::zg::factory_generic<tchecker::zg::zg_t>(system, semantics_type, extrapolation_type, clock_bounds, block_size,
+                                                           table_size);
+}
+
+tchecker::zg::sharing_zg_t * factory_sharing(std::shared_ptr<tchecker::ta::system_t const> const & system,
+                                             enum tchecker::zg::semantics_type_t semantics_type,
+                                             enum tchecker::zg::extrapolation_type_t extrapolation_type, std::size_t block_size,
+                                             std::size_t table_size)
+{
+  return tchecker::zg::factory_generic<tchecker::zg::sharing_zg_t>(system, semantics_type, extrapolation_type, block_size,
+                                                                   table_size);
+}
+
+tchecker::zg::sharing_zg_t * factory_sharing(std::shared_ptr<tchecker::ta::system_t const> const & system,
+                                             enum tchecker::zg::semantics_type_t semantics_type,
+                                             enum tchecker::zg::extrapolation_type_t extrapolation_type,
+                                             tchecker::clockbounds::clockbounds_t const & clock_bounds, std::size_t block_size,
+                                             std::size_t table_size)
+{
+  return tchecker::zg::factory_generic<tchecker::zg::sharing_zg_t>(system, semantics_type, extrapolation_type, clock_bounds,
+                                                                   block_size, table_size);
 }
 
 } // end of namespace zg

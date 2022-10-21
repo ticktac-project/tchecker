@@ -164,6 +164,10 @@ tchecker::ta::system_t const & refzg_impl_t::system() const { return *_system; }
 
 tchecker::ta::system_t const & refzg_t::system() const { return ts_impl().system(); }
 
+/* sharing_refzg_t */
+
+tchecker::ta::system_t const & sharing_refzg_t::system() const { return ts_impl().system(); }
+
 /* factory */
 
 // Factory of reference clock variables
@@ -184,15 +188,38 @@ reference_clocks_factory(enum tchecker::refzg::reference_clock_variables_type_t 
   }
 }
 
+/*!
+ \brief Generic implementation of the factory
+ \tparam REFZG : type of reference zone graph
+*/
+template <class REFZG>
+REFZG * factory_generic(std::shared_ptr<tchecker::ta::system_t const> const & system,
+                        enum tchecker::refzg::reference_clock_variables_type_t refclocks_type,
+                        enum tchecker::refzg::semantics_type_t semantics_type, tchecker::integer_t spread,
+                        std::size_t block_size, std::size_t table_size)
+{
+  std::shared_ptr<tchecker::reference_clock_variables_t const> r(
+      tchecker::refzg::reference_clocks_factory(refclocks_type, *system));
+  std::shared_ptr<tchecker::refzg::semantics_t> semantics{tchecker::refzg::semantics_factory(semantics_type)};
+  return new REFZG(system, r, semantics, spread, block_size, table_size);
+}
+
 tchecker::refzg::refzg_t * factory(std::shared_ptr<tchecker::ta::system_t const> const & system,
                                    enum tchecker::refzg::reference_clock_variables_type_t refclocks_type,
                                    enum tchecker::refzg::semantics_type_t semantics_type, tchecker::integer_t spread,
                                    std::size_t block_size, std::size_t table_size)
 {
-  std::shared_ptr<tchecker::reference_clock_variables_t const> r(
-      tchecker::refzg::reference_clocks_factory(refclocks_type, *system));
-  std::shared_ptr<tchecker::refzg::semantics_t> semantics{tchecker::refzg::semantics_factory(semantics_type)};
-  return new tchecker::refzg::refzg_t(system, r, semantics, spread, block_size, table_size);
+  return tchecker::refzg::factory_generic<tchecker::refzg::refzg_t>(system, refclocks_type, semantics_type, spread, block_size,
+                                                                    table_size);
+}
+
+tchecker::refzg::sharing_refzg_t * factory_sharing(std::shared_ptr<tchecker::ta::system_t const> const & system,
+                                                   enum tchecker::refzg::reference_clock_variables_type_t refclocks_type,
+                                                   enum tchecker::refzg::semantics_type_t semantics_type,
+                                                   tchecker::integer_t spread, std::size_t block_size, std::size_t table_size)
+{
+  return tchecker::refzg::factory_generic<tchecker::refzg::sharing_refzg_t>(system, refclocks_type, semantics_type, spread,
+                                                                            block_size, table_size);
 }
 
 } // end of namespace refzg

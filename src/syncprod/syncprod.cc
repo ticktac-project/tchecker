@@ -271,6 +271,10 @@ tchecker::syncprod::system_t const & syncprod_impl_t::system() const { return *_
 
 tchecker::syncprod::system_t const & syncprod_t::system() const { return ts_impl().system(); }
 
+/* sharing_syncprod_t */
+
+tchecker::syncprod::system_t const & sharing_syncprod_t::system() const { return ts_impl().system(); }
+
 } // end of namespace syncprod
 
 } // end of namespace tchecker

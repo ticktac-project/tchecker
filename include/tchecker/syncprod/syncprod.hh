@@ -501,17 +501,39 @@ private:
 /*!
  \class syncprod_t
  \brief Transition system of synchronized product of timed processes with
+ state and transition allocation
+ \note all returned states and transitions deallocated automatically
+ */
+class syncprod_t final : public tchecker::ts::make_ts_from_impl_t<tchecker::syncprod::syncprod_impl_t> {
+public:
+  using tchecker::ts::make_ts_from_impl_t<tchecker::syncprod::syncprod_impl_t>::make_ts_from_impl_t;
+
+  /*!
+   \brief Destructor
+  */
+  virtual ~syncprod_t() = default;
+
+  /*!
+   \brief Accessor
+   \return Underlying system of timed processes
+   */
+  tchecker::syncprod::system_t const & system() const;
+};
+
+/*!
+ \class sharing_syncprod_t
+ \brief Transition system of synchronized product of timed processes with
  state and transition allocation, as well as state and transition sharing
  \note all returned states and transitions deallocated automatically
  */
-class syncprod_t final : public tchecker::ts::make_sharing_ts_from_impl_t<tchecker::syncprod::syncprod_impl_t> {
+class sharing_syncprod_t final : public tchecker::ts::make_sharing_ts_from_impl_t<tchecker::syncprod::syncprod_impl_t> {
 public:
   using tchecker::ts::make_sharing_ts_from_impl_t<tchecker::syncprod::syncprod_impl_t>::make_sharing_ts_from_impl_t;
 
   /*!
    \brief Destructor
   */
-  virtual ~syncprod_t() = default;
+  virtual ~sharing_syncprod_t() = default;
 
   /*!
    \brief Accessor
