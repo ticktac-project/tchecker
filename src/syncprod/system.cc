@@ -350,7 +350,7 @@ private:
 
     std::stack<tchecker::syncprod::const_state_sptr_t> waiting;
     tchecker::syncprod::syncprod_t sp(_system, block_size, table_size);
-    std::vector<tchecker::syncprod::syncprod_t::const_sst_t> v;
+    std::vector<tchecker::syncprod::syncprod_t::sst_t> v;
 
     sp.initial(v);
     for (auto && [status, state, transition] : v) {

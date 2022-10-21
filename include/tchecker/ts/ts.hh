@@ -22,7 +22,7 @@
 
 /*!
  \file ts.hh
- \brief Interface to transition system
+ \brief Transition systems: interfaces and functors
  */
 
 namespace tchecker {
@@ -30,12 +30,232 @@ namespace tchecker {
 namespace ts {
 
 /*!
-\class ts_t
-\brief Transition system
-\tparam STATE : type of state
-\tparam CONST_STATE : type of const state
-\tparam TRANSITION : type of transition
-\tparam CONST_TRANSITION : type of const transition
+ \class ts_impl_t
+ \brief Interface of low-level implementation of a transition system
+ \tparam STATE : type of state
+ \tparam CONST_STATE : type of const state
+ \tparam TRANSITION : type of transition
+ \tparam CONST_TRANSITION : type of const transition
+ \tparam INITIAL_RANGE : type of range of initial states, should be tchecker::make_range_t<...>
+ \tparam OUTGOING_EDGES_RANGE : type of range of outgoing edges, should be tchecker::make_range_t<...>
+ \tparam INITIAL_VALUE : type of value in INITIAL_RANGE
+ \tparam OUTGOING_EDGES_VALUE : type of value in OUTGOING_EDGES_RANGE
+*/
+
+template <class STATE, class CONST_STATE, class TRANSITION, class CONST_TRANSITION, class INITIAL_RANGE,
+          class OUTGOING_EDGES_RANGE,
+          class INITIAL_VALUE = typename std::iterator_traits<typename INITIAL_RANGE::begin_iterator_t>::reference_type const,
+          class OUTGOING_EDGES_VALUE =
+              typename std::iterator_traits<typename OUTGOING_EDGES_RANGE::begin_iterator_t>::reference_type const>
+class ts_impl_t {
+public:
+  /*!
+   \brief Type of state
+   */
+  using state_t = STATE;
+
+  /*!
+  \brief Type of const state
+  */
+  using const_state_t = CONST_STATE;
+
+  /*!
+   \brief Type of transition
+   */
+  using transition_t = TRANSITION;
+
+  /*!
+   \brief Type of const transition
+  */
+  using const_transition_t = CONST_TRANSITION;
+
+  /*!
+   \brief Type of range of initial states
+   */
+  using initial_range_t = INITIAL_RANGE;
+
+  /*!
+   \brief Value type for range over initial states
+   */
+  using initial_value_t = INITIAL_VALUE;
+
+  /*!
+   \brief Type of range over outgoing edges
+   */
+  using outgoing_edges_range_t = OUTGOING_EDGES_RANGE;
+
+  /*!
+   \brief Value type for range of outgoing edges
+   */
+  using outgoing_edges_value_t = OUTGOING_EDGES_VALUE;
+
+  /*!
+  \brief Type of tuples (status, state, transition)
+  */
+  using sst_t = std::tuple<tchecker::state_status_t, state_t, transition_t>;
+
+  /*!
+   \brief Destructor
+   */
+  virtual ~ts_impl_t() = default;
+
+  /*!
+   \brief Accessor
+   \return Initial edges
+   */
+  virtual initial_range_t initial_edges() = 0;
+
+  /*!
+   \brief Initial state and transition
+   \param init_edge : initial state valuation
+   \param v : container
+   \post triples (status, s, t) have been added to v, for each initial state s
+   and initial transition t that are initialized from init_edge.
+   */
+  virtual void initial(initial_value_t const & init_edge, std::vector<sst_t> & v) = 0;
+
+  /*!
+   \brief Accessor
+   \param s : state
+   \return outgoing edges from state s
+   */
+  virtual outgoing_edges_range_t outgoing_edges(const_state_t const & s) = 0;
+
+  /*!
+   \brief Next state and transition
+   \param s : state
+   \param out_edge : outgoing edge value
+   \param v : container
+   \post triples (status, s', t') have been added to v, for each successor state
+   s' and transition t from s to s' along outgoing edge out_edge
+   */
+  virtual void next(const_state_t const & s, outgoing_edges_value_t const & out_edge, std::vector<sst_t> & v) = 0;
+
+  /*!
+   \brief Accessor
+   \param sst : a tuple (status, state, transition)
+   \return the status in sst
+  */
+  inline tchecker::state_status_t status(sst_t const & sst) const { return std::get<0>(sst); }
+
+  /*!
+   \brief Accessor
+   \param sst : a tuple (status, state, transition)
+   \return the state in sst
+  */
+  inline state_t state(sst_t const & sst) const { return std::get<1>(sst); }
+
+  /*!
+   \brief Accessor
+   \param sst : a tuple (status, state, transition)
+   \return the transition in sst
+  */
+  inline transition_t transition(sst_t const & sst) const { return std::get<2>(sst); }
+
+  /*!
+   \brief Computes the set of labels of a state
+   \param s : a state
+   \return the set of labels on state s
+   */
+  virtual boost::dynamic_bitset<> labels(const_state_t const & s) const = 0;
+
+  /*!
+   \brief Checks if a state is a valid final state
+   \param s : a state
+   \return true if a run ending in s is a valid run, false otherwise
+  */
+  virtual bool is_valid_final(const_state_t const & s) const = 0;
+
+  /*!
+   \brief Accessor to state attributes as strings
+   \param s : a state
+   \param m : a map of string pairs (key, value)
+   \post attributes of state s have been added to map m
+   */
+  virtual void attributes(const_state_t const & s, std::map<std::string, std::string> & m) const = 0;
+
+  /*!
+   \brief Accessor to transition attributes as strings
+   \param t : a transition
+   \param m : a map of string pairs (key, value)
+   \post attributes of transition t have been added to map m
+   */
+  virtual void attributes(const_transition_t const & t, std::map<std::string, std::string> & m) const = 0;
+
+  /*!
+   \brief Share state components
+   \param s : a state
+   \post internal components in s have been shared
+  */
+  virtual void share(state_t & s) = 0;
+
+  /*!
+   \brief Share transition components
+   \param t : a transition
+   \post internal components in t have been shared
+  */
+  virtual void share(transition_t & t) = 0;
+};
+
+/*!
+  \brief Initial states and transitions with selected status
+  \tparam TS_IMPL : type of transition system implementation, should implement
+  tchecker::ts::ts_impl_t
+  \param ts_impl : a transition system implementation
+  \param v : container
+  \param mask : mask on initial states
+  \post all tuples (status, s, t) of status, initial states and transitions such
+  that status matches mask (i.e. status & mask != 0) have been pushed back into v
+  */
+template <class TS_IMPL>
+void initial(TS_IMPL & ts_impl, std::vector<typename TS_IMPL::sst_t> & v, tchecker::state_status_t mask)
+{
+  std::vector<typename TS_IMPL::sst_t> sst;
+  typename TS_IMPL::initial_range_t init_edges = ts_impl.initial_edges();
+  for (typename TS_IMPL::initial_value_t && init_edge : init_edges) {
+    ts_impl.initial(init_edge, sst);
+    for (auto && [status, s, t] : sst) {
+      if (status & mask)
+        v.push_back(std::make_tuple(status, s, t));
+    }
+    sst.clear();
+  }
+}
+
+/*!
+  \brief Next states and transitions with selected status
+  \tparam TS_IMPL : type of  transition system implementation, should implement
+  tchecker::ts::ts_impl_t
+  \param ts_impl : a transition system implementation
+  \param s : state
+  \param v : container
+  \param mask : mask on next states
+  \post all tuples (status, s', t) such that s -t-> s' is a transition and the
+  status of s' matches mask (i.e. status & mask != 0) have been pushed to v
+  */
+template <class TS_IMPL>
+void next(TS_IMPL & ts_impl, typename TS_IMPL::const_state_t const & s, std::vector<typename TS_IMPL::sst_t> & v,
+          tchecker::state_status_t mask)
+{
+  std::vector<typename TS_IMPL::sst_t> sst;
+  typename TS_IMPL::outgoing_edges_range_t out_edges = ts_impl.outgoing_edges(s);
+  for (typename TS_IMPL::outgoing_edges_value_t && out_edge : out_edges) {
+    ts_impl.next(s, out_edge, sst);
+    for (auto && [status, next_s, next_t] : sst) {
+      if (status & mask)
+        v.push_back(std::make_tuple(status, next_s, next_t));
+    }
+    sst.clear();
+  }
+}
+
+/*!
+ \class ts_t
+ \brief Transition system interface
+ \tparam STATE : type of state
+ \tparam CONST_STATE : type of const state
+ \tparam TRANSITION : type of transition
+ \tparam CONST_TRANSITION : type of const transition
 */
 template <class STATE, class CONST_STATE, class TRANSITION, class CONST_TRANSITION> class ts_t {
 public:
@@ -62,12 +282,7 @@ public:
   /*!
   \brief Type of tuples (status, state, transition)
   */
-  using sst_t = std::tuple<tchecker::state_status_t, STATE, TRANSITION>;
-
-  /*!
-  \brief Type of tuples (status, state, transition) with const state and transition
-  */
-  using const_sst_t = std::tuple<tchecker::state_status_t, CONST_STATE, CONST_TRANSITION>;
+  using sst_t = std::tuple<tchecker::state_status_t, state_t, transition_t>;
 
   /*!
    \brief Destructor
@@ -83,213 +298,17 @@ public:
 
   /*!
    \brief Accessor
-   \param csst : a tuple (status, state, transition)
-   \return the status in const sst
-  */
-  inline tchecker::state_status_t status(const_sst_t const & csst) const { return std::get<0>(csst); }
-
-  /*!
-   \brief Accessor
    \param sst : a tuple (status, state, transition)
    \return the state in sst
   */
-  inline STATE state(sst_t const & sst) const { return std::get<1>(sst); }
-
-  /*!
-   \brief Accessor
-   \param sst : a tuple (status, state, transition)
-   \return the state in const sst
-  */
-  inline CONST_STATE state(const_sst_t const & csst) const { return std::get<1>(csst); }
+  inline state_t state(sst_t const & sst) const { return std::get<1>(sst); }
 
   /*!
    \brief Accessor
    \param sst : a tuple (status, state, transition)
    \return the transition in sst
   */
-  inline TRANSITION transition(sst_t const & sst) const { return std::get<2>(sst); }
-
-  /*!
-   \brief Accessor
-   \param csst : a tuple (status, state, transition)
-   \return the transition in const sst
-  */
-  inline CONST_TRANSITION transition(const_sst_t const & csst) const { return std::get<2>(csst); }
-
-  /*!
-  \brief Initial states and transitions
-  \param v : container
-  \post all tuples (status, s, t) of status, initial states and transitions have
-  been pushed back into v
-   */
-  virtual void initial(std::vector<sst_t> & v) = 0;
-
-  /*!
-  \brief Initial states and transitions, with sharing
-  \param v : container
-  \post all tuples (status, s, t) of status, initial states and transitions have
-  been pushed back into v
-  \note the states and transitions in v may share internal components with other
-  states and transitions
-   */
-  virtual void initial(std::vector<const_sst_t> & v) = 0;
-
-  /*!
-  \brief Next states and transitions
-  \param s : state
-  \param v : container
-  \post all tuples (status, s', t) such that s -t-> s' is a transition have been
-  pushed to v
-  */
-  virtual void next(CONST_STATE const & s, std::vector<sst_t> & v) = 0;
-
-  /*!
-  \brief Next states and transitions, with sharing
-  \param s : state
-  \param v : container
-  \post all tuples (status, s', t) such that s -t-> s' is a transition have been
-  pushed to v
-  \post the states and transitions in v may share internal components with
-  other states and transitions
-  */
-  virtual void next(CONST_STATE const & s, std::vector<const_sst_t> & v) = 0;
-
-  /*!
-   \brief Computes the set of labels of a state
-   \param s : a state
-   \return the set of labels on state s
-   */
-  virtual boost::dynamic_bitset<> labels(CONST_STATE const & s) const = 0;
-
-  /*!
-   \brief Checks if a state is a valid final state
-   \param s : a state
-   \return true if a run ending in s is a valid run, false otherwise
-  */
-  virtual bool is_valid_final(CONST_STATE const & s) const = 0;
-
-  /*!
-   \brief Accessor to state attributes as strings
-   \param s : a state
-   \param m : a map of string pairs (key, value)
-   \post attributes of state s have been added to map m
-   */
-  virtual void attributes(CONST_STATE const & s, std::map<std::string, std::string> & m) const = 0;
-
-  /*!
-   \brief Accessor to transition attributes as strings
-   \param t : a transition
-   \param m : a map of string pairs (key, value)
-   \post attributes of transition t have been added to map m
-   */
-  virtual void attributes(CONST_TRANSITION const & t, std::map<std::string, std::string> & m) const = 0;
-};
-
-/*!
- \class full_ts_t
- \brief Transition system with full access to initial/outgoing edges
- \tparam STATE : type of state
- \tparam CONST_STATE : type of const state
- \tparam TRANSITION : type of transition
- \tparam CONST_TRANSITION : type of const transition
- \tparam INITIAL_RANGE : type of range of initial states, should be tchecker::make_range_t<...>
- \tparam OUTGOING_EDGES_RANGE : type of range of outgoing edges, should be tchecker::make_range_t<...>
- \tparam INITIAL_VALUE : type of value in INITIAL_RANGE
- \tparam OUTGOING_EDGES_VALUE : type of value in OUTGOING_EDGES_RANGE
- */
-template <class STATE, class CONST_STATE, class TRANSITION, class CONST_TRANSITION, class INITIAL_RANGE,
-          class OUTGOING_EDGES_RANGE,
-          class INITIAL_VALUE = typename std::iterator_traits<typename INITIAL_RANGE::begin_iterator_t>::reference_type const,
-          class OUTGOING_EDGES_VALUE =
-              typename std::iterator_traits<typename OUTGOING_EDGES_RANGE::begin_iterator_t>::reference_type const>
-class full_ts_t : public tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION> {
-public:
-  /*!
-   \brief Type of state
-   */
-  using state_t = typename tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::state_t;
-
-  /*!
-  \brief Type of const state
-  */
-  using const_state_t = typename tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::const_state_t;
-
-  /*!
-   \brief Type of transition
-   */
-  using transition_t = typename tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::transition_t;
-
-  /*!
-   \brief Type of const transition
-  */
-  using const_transition_t = typename tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::const_transition_t;
-
-  /*!
-   \brief Type of range of initial states
-   */
-  using initial_range_t = INITIAL_RANGE;
-
-  /*!
-   \brief Value type for range over initial states
-   */
-  using initial_value_t = INITIAL_VALUE;
-
-  /*!
-   \brief Type of range over outgoing edges
-   */
-  using outgoing_edges_range_t = OUTGOING_EDGES_RANGE;
-
-  /*!
-   \brief Value type for range of outgoing edges
-   */
-  using outgoing_edges_value_t = OUTGOING_EDGES_VALUE;
-
-  /*!
-  \brief Type of tuples (status, state, transition)
-  */
-  using sst_t = typename tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::sst_t;
-
-  /*!
-  \brief Type of tuples (status, state, transition) with const state and transition
-  */
-  using const_sst_t = typename tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::const_sst_t;
-
-  /*!
-   \brief Destructor
-   */
-  virtual ~full_ts_t() = default;
-
-  /*!
-   \brief Accessor
-   \return Initial edges
-   */
-  virtual INITIAL_RANGE initial_edges() = 0;
-
-  /*!
-   \brief Initial state and transition
-   \param init_edge : initial state valuation
-   \param v : container
-   \post triples (status, s, t) have been added to v, for each initial state s
-   and initial transition t that are initialized from init_edge.
-   */
-  virtual void initial(INITIAL_VALUE const & init_edge, std::vector<sst_t> & v) = 0;
-
-  /*!
-   \brief Accessor
-   \param s : state
-   \return outgoing edges from state s
-   */
-  virtual OUTGOING_EDGES_RANGE outgoing_edges(CONST_STATE const & s) = 0;
-
-  /*!
-   \brief Next state and transition
-   \param s : state
-   \param out_edge : outgoing edge value
-   \param v : container
-   \post triples (status, s', t') have been added to v, for each successor state
-   s' and transition t from s to s' along outgoing edge out_edge
-   */
-  virtual void next(CONST_STATE const & s, OUTGOING_EDGES_VALUE const & out_edge, std::vector<sst_t> & v) = 0;
+  inline transition_t transition(sst_t const & sst) const { return std::get<2>(sst); }
 
   /*!
   \brief Initial states and transitions with selected status
@@ -298,36 +317,108 @@ public:
   \post all tuples (status, s, t) of status, initial states and transitions such
   that status matches mask (i.e. status & mask != 0) have been pushed back into v
    */
-  void initial(std::vector<sst_t> & v, tchecker::state_status_t mask)
-  {
-    std::vector<sst_t> sst;
-    INITIAL_RANGE init_edges = initial_edges();
-    for (INITIAL_VALUE && init_edge : init_edges) {
-      initial(init_edge, sst);
-      for (auto && [status, s, t] : sst) {
-        if (status & mask)
-          v.push_back(std::make_tuple(status, s, t));
-      }
-      sst.clear();
-    }
-  }
+  virtual void initial(std::vector<sst_t> & v, tchecker::state_status_t mask) = 0;
 
   /*!
-  \brief Initial states and transitions with selected status, with state and
-  transition sharing
+  \brief Next states and transitions with selected status
+  \param s : state
+  \param v : container
+  \param mask : mask on next states
+  \post all tuples (status, s', t) such that s -t-> s' is a transition and the
+  status of s' matches mask (i.e. status & mask != 0) have been pushed to v
+  */
+  virtual void next(const_state_t const & s, std::vector<sst_t> & v, tchecker::state_status_t mask) = 0;
+
+  /*!
+   \brief Computes the set of labels of a state
+   \param s : a state
+   \return the set of labels on state s
+   */
+  virtual boost::dynamic_bitset<> labels(const_state_t const & s) const = 0;
+
+  /*!
+   \brief Checks if a state is a valid final state
+   \param s : a state
+   \return true if a run ending in s is a valid run, false otherwise
+  */
+  virtual bool is_valid_final(const_state_t const & s) const = 0;
+
+  /*!
+   \brief Accessor to state attributes as strings
+   \param s : a state
+   \param m : a map of string pairs (key, value)
+   \post attributes of state s have been added to map m
+   */
+  virtual void attributes(const_state_t const & s, std::map<std::string, std::string> & m) const = 0;
+
+  /*!
+   \brief Accessor to transition attributes as strings
+   \param t : a transition
+   \param m : a map of string pairs (key, value)
+   \post attributes of transition t have been added to map m
+   */
+  virtual void attributes(const_transition_t const & t, std::map<std::string, std::string> & m) const = 0;
+};
+
+/*!
+ \class make_ts_from_impl_t
+ \brief Functor that make a transition system from an implementation
+ \tparam TS_IMPL : transition system implementation, should implement tchecker::ts::ts_impl_t
+*/
+template <class TS_IMPL>
+class make_ts_from_impl_t : public ts_t<typename TS_IMPL::state_t, typename TS_IMPL::const_state_t,
+                                        typename TS_IMPL::transition_t, typename TS_IMPL::const_transition_t> {
+public:
+  // Inherited tyoes
+  using ts_t = ts_t<typename TS_IMPL::state_t, typename TS_IMPL::const_state_t, typename TS_IMPL::transition_t,
+                    typename TS_IMPL::const_transition_t>;
+  using const_state_t = typename ts_t::const_state_t;
+  using const_transition_t = typename ts_t::const_transition_t;
+  using sst_t = typename ts_t::sst_t;
+  using state_t = typename ts_t::state_t;
+  using transition_t = typename ts_t::transition_t;
+
+  /*!
+   \brief Constructor
+   \param args : arguments to a constructor of TS_IMPL
+  */
+  template <class... ARGS> make_ts_from_impl_t(ARGS &&... args) : _ts_impl(args...) {}
+
+  /*!
+   \brief Copy constructor (deleted)
+  */
+  make_ts_from_impl_t(tchecker::ts::make_ts_from_impl_t<TS_IMPL> const &) = delete;
+
+  /*!
+   \brief Move constructor (deleted)
+  */
+  make_ts_from_impl_t(tchecker::ts::make_ts_from_impl_t<TS_IMPL> &&) = delete;
+
+  /*!
+   \brief Destructor
+   */
+  virtual ~make_ts_from_impl_t() = default;
+
+  /*!
+   \brief Assignment operator (deleted)
+  */
+  tchecker::ts::make_ts_from_impl_t<TS_IMPL> & operator=(tchecker::ts::make_ts_from_impl_t<TS_IMPL> const &) = delete;
+
+  /*!
+   \brief Move-assignment operator (deleted)
+  */
+  tchecker::ts::make_ts_from_impl_t<TS_IMPL> & operator=(tchecker::ts::make_ts_from_impl_t<TS_IMPL> &&) = delete;
+
+  /*!
+  \brief Initial states and transitions with selected status
   \param v : container
   \param mask : mask on initial states
   \post all tuples (status, s, t) of status, initial states and transitions such
-  that status matches mask (i.e. status & mask != 0) have been pushed back into
-  v
-  \note returned states and transitions may share internal components with other
-  states and transitions
+  that status matches mask (i.e. status & mask != 0) have been pushed back into v
    */
-  void initial(std::vector<const_sst_t> & v, tchecker::state_status_t mask)
+  inline virtual void initial(std::vector<sst_t> & v, tchecker::state_status_t mask = tchecker::STATE_OK)
   {
-    std::vector<sst_t> sst;
-    initial(sst, mask);
-    share(sst, v);
+    tchecker::ts::initial(_ts_impl, v, mask);
   }
 
   /*!
@@ -338,118 +429,201 @@ public:
   \post all tuples (status, s', t) such that s -t-> s' is a transition and the
   status of s' matches mask (i.e. status & mask != 0) have been pushed to v
   */
-  void next(CONST_STATE const & s, std::vector<sst_t> & v, tchecker::state_status_t mask)
+  inline virtual void next(const_state_t const & s, std::vector<sst_t> & v, tchecker::state_status_t mask = tchecker::STATE_OK)
   {
-    std::vector<sst_t> sst;
-    OUTGOING_EDGES_RANGE out_edges = outgoing_edges(s);
-    for (OUTGOING_EDGES_VALUE && out_edge : out_edges) {
-      next(s, out_edge, sst);
-      for (auto && [status, next_s, next_t] : sst) {
-        if (status & mask)
-          v.push_back(std::make_tuple(status, next_s, next_t));
-      }
-      sst.clear();
-    }
+    tchecker::ts::next(_ts_impl, s, v, mask);
   }
 
   /*!
-  \brief Next states and transitions with selected status, with state and
-  transition sharing
+   \brief Computes the set of labels of a state
+   \param s : a state
+   \return the set of labels on state s
+   */
+  inline virtual boost::dynamic_bitset<> labels(const_state_t const & s) const { return _ts_impl.labels(s); }
+
+  /*!
+   \brief Checks if a state is a valid final state
+   \param s : a state
+   \return true if a run ending in s is a valid run, false otherwise
+  */
+  inline virtual bool is_valid_final(const_state_t const & s) const { return _ts_impl.is_valid_final(s); }
+
+  /*!
+   \brief Accessor to state attributes as strings
+   \param s : a state
+   \param m : a map of string pairs (key, value)
+   \post attributes of state s have been added to map m
+   */
+  inline virtual void attributes(const_state_t const & s, std::map<std::string, std::string> & m) const
+  {
+    _ts_impl.attributes(s, m);
+  }
+
+  /*!
+   \brief Accessor to transition attributes as strings
+   \param t : a transition
+   \param m : a map of string pairs (key, value)
+   \post attributes of transition t have been added to map m
+   */
+  inline virtual void attributes(const_transition_t const & t, std::map<std::string, std::string> & m) const
+  {
+    _ts_impl.attributes(t, m);
+  }
+
+protected:
+  /*!
+   \brief Accessor
+   \return Underlying transition system implementation
+  */
+  TS_IMPL const & ts_impl() const { return _ts_impl; }
+
+private:
+  TS_IMPL _ts_impl; /*!< Transition system implementation */
+};
+
+/*!
+ \class make_sharing_ts_from_impl_t
+ \brief Functor that make a sharing transition system from an implementation
+ \tparam TS_IMPL : transition system implementation, should implement tchecker::ts::ts_impl_t
+*/
+template <class TS_IMPL>
+class make_sharing_ts_from_impl_t : public ts_t<typename TS_IMPL::const_state_t, typename TS_IMPL::const_state_t,
+                                                typename TS_IMPL::const_transition_t, typename TS_IMPL::const_transition_t> {
+public:
+  // Inherited types
+  using ts_t = ts_t<typename TS_IMPL::const_state_t, typename TS_IMPL::const_state_t, typename TS_IMPL::const_transition_t,
+                    typename TS_IMPL::const_transition_t>;
+  using const_state_t = typename ts_t::const_state_t;
+  using const_transition_t = typename ts_t::const_transition_t;
+  using sst_t = typename ts_t::sst_t;
+  using state_t = typename ts_t::state_t;
+  using transition_t = typename ts_t::transition_t;
+
+  /*!
+   \brief Constructor
+   \param args : arguments to a constructor of TS_IMPL
+  */
+  template <class... ARGS> make_sharing_ts_from_impl_t(ARGS &&... args) : _ts_impl(args...) {}
+
+  /*!
+   \brief Copy constructor (deleted)
+  */
+  make_sharing_ts_from_impl_t(tchecker::ts::make_sharing_ts_from_impl_t<TS_IMPL> const &) = delete;
+
+  /*!
+   \brief Move constructor (deleted)
+  */
+  make_sharing_ts_from_impl_t(tchecker::ts::make_sharing_ts_from_impl_t<TS_IMPL> &&) = delete;
+
+  /*!
+   \brief Destructor
+   */
+  virtual ~make_sharing_ts_from_impl_t() = default;
+
+  /*!
+   \brief Assignment operator (deleted)
+  */
+  tchecker::ts::make_sharing_ts_from_impl_t<TS_IMPL> &
+  operator=(tchecker::ts::make_sharing_ts_from_impl_t<TS_IMPL> const &) = delete;
+
+  /*!
+   \brief Move-assignment operator (deleted)
+  */
+  tchecker::ts::make_sharing_ts_from_impl_t<TS_IMPL> &
+  operator=(tchecker::ts::make_sharing_ts_from_impl_t<TS_IMPL> &&) = delete;
+
+  /*!
+  \brief Initial states and transitions with selected status
+  \param v : container
+  \param mask : mask on initial states
+  \post all tuples (status, s, t) of status, initial states and transitions such
+  that status matches mask (i.e. status & mask != 0) have been pushed back into v
+   */
+  inline virtual void initial(std::vector<sst_t> & v, tchecker::state_status_t mask = tchecker::STATE_OK)
+  {
+    std::vector<typename TS_IMPL::sst_t> vv;
+    tchecker::ts::initial(_ts_impl, vv, mask);
+    share(vv, v);
+    vv.clear();
+  }
+
+  /*!
+  \brief Next states and transitions with selected status
   \param s : state
   \param v : container
   \param mask : mask on next states
   \post all tuples (status, s', t) such that s -t-> s' is a transition and the
   status of s' matches mask (i.e. status & mask != 0) have been pushed to v
-  \note returned states and transitions may share internal components with other
-  states and transitions
   */
-  void next(CONST_STATE const & s, std::vector<const_sst_t> & v, tchecker::state_status_t mask)
+  inline virtual void next(const_state_t const & s, std::vector<sst_t> & v, tchecker::state_status_t mask = tchecker::STATE_OK)
   {
-    std::vector<sst_t> sst;
-    next(s, sst, mask);
-    share(sst, v);
+    std::vector<typename TS_IMPL::sst_t> vv;
+    tchecker::ts::next(_ts_impl, s, vv, mask);
+    share(vv, v);
+    vv.clear();
   }
 
   /*!
-  \brief Initial states and transitions
-  \param v : container
-  \post all tuples (status, s, t) of status, initial states and transitions such
-  that s has status tchecker::STATE_OK have been pushed back into v
+   \brief Computes the set of labels of a state
+   \param s : a state
+   \return the set of labels on state s
    */
-  virtual void initial(std::vector<sst_t> & v) { initial(v, tchecker::STATE_OK); }
+  inline virtual boost::dynamic_bitset<> labels(const_state_t const & s) const { return _ts_impl.labels(s); }
 
   /*!
-  \brief Initial states and transitions, with sharing
-  \param v : container
-  \post all tuples (status, s, t) of status, initial states and transitions such
-  that s has status tchecker::STATE_OK have been pushed back into v
-  \note returned states and transitions may share internal components with other
-  states and transitions
+   \brief Checks if a state is a valid final state
+   \param s : a state
+   \return true if a run ending in s is a valid run, false otherwise
+  */
+  inline virtual bool is_valid_final(const_state_t const & s) const { return _ts_impl.is_valid_final(s); }
+
+  /*!
+   \brief Accessor to state attributes as strings
+   \param s : a state
+   \param m : a map of string pairs (key, value)
+   \post attributes of state s have been added to map m
    */
-  virtual void initial(std::vector<const_sst_t> & v) { initial(v, tchecker::STATE_OK); }
+  inline virtual void attributes(const_state_t const & s, std::map<std::string, std::string> & m) const
+  {
+    _ts_impl.attributes(s, m);
+  }
 
   /*!
-  \brief Next states and transitions
-  \param s : state
-  \param v : container
-  \post all tuples (status, s', t) such that s -t-> s' is a transition and s'
-  has status tchecker::STATE_OK have been pushed to v
-  */
-  virtual void next(CONST_STATE const & s, std::vector<sst_t> & v) { next(s, v, tchecker::STATE_OK); }
+   \brief Accessor to transition attributes as strings
+   \param t : a transition
+   \param m : a map of string pairs (key, value)
+   \post attributes of transition t have been added to map m
+   */
+  inline virtual void attributes(const_transition_t const & t, std::map<std::string, std::string> & m) const
+  {
+    _ts_impl.attributes(t, m);
+  }
 
+protected:
   /*!
-  \brief Next states and transitions, with sharing
-  \param s : state
-  \param v : container
-  \post all tuples (status, s', t) such that s -t-> s' is a transition and s'
-  has status tchecker::STATE_OK have been pushed to v
-  \note returned states and transitions may share internal components with other
-  states and transitions
+   \brief Accessor
+   \return Underlying transition system implementation
   */
-  virtual void next(CONST_STATE const & s, std::vector<const_sst_t> & v) { next(s, v, tchecker::STATE_OK); }
-
-  using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::status;
-  using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::state;
-  using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::transition;
-  using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::labels;
-  using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::is_valid_final;
-  using tchecker::ts::ts_t<STATE, CONST_STATE, TRANSITION, CONST_TRANSITION>::attributes;
+  TS_IMPL const & ts_impl() const { return _ts_impl; }
 
 private:
-  /* IMPLEMENTATION NOTE: the following methods should not be public as we don't
-  want to publicly share a state/transition which is not const as this could
-  lead to modification of shared internal components
-  */
-
-  /*!
-   \brief Share state components
-   \param s : a state
-   \post internal components in s have been shared
-  */
-  virtual void share(STATE & s) = 0;
-
-  /*!
-   \brief Share transition components
-   \param t : a transition
-   \post internal components in t have been shared
-  */
-  virtual void share(TRANSITION & t) = 0;
-
   /*!
   \brief Share state and transition components
-  \param v : container of sst
-  \param cv : a container of const stt
-  \post states and transitions in v may share internal components with other
+  \param v : container of implementation sst
+  \param vv : a container of sst
+  \post states and transitions in vv may share internal components with other
   states and transitions
   */
-  void share(std::vector<sst_t> & v, std::vector<const_sst_t> & cv)
+  void share(std::vector<typename TS_IMPL::sst_t> & v, std::vector<sst_t> & vv)
   {
     for (auto && [status, s, t] : v) {
-      share(s);
-      share(t);
-      cv.push_back(std::make_tuple(status, static_cast<CONST_STATE>(s), static_cast<CONST_TRANSITION>(t)));
+      _ts_impl.share(s);
+      _ts_impl.share(t);
+      vv.push_back(std::make_tuple(status, static_cast<const_state_t>(s), static_cast<const_transition_t>(t)));
     }
   }
+
+  TS_IMPL _ts_impl; /*!< Transition system implementation */
 };
 
 } // end of namespace ts
