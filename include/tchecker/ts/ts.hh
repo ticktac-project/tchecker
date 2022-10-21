@@ -366,12 +366,12 @@ public:
  \tparam TS_IMPL : transition system implementation, should implement tchecker::ts::ts_impl_t
 */
 template <class TS_IMPL>
-class make_ts_from_impl_t : public ts_t<typename TS_IMPL::state_t, typename TS_IMPL::const_state_t,
-                                        typename TS_IMPL::transition_t, typename TS_IMPL::const_transition_t> {
+class make_ts_from_impl_t : public tchecker::ts::ts_t<typename TS_IMPL::state_t, typename TS_IMPL::const_state_t,
+                                                      typename TS_IMPL::transition_t, typename TS_IMPL::const_transition_t> {
 public:
   // Inherited tyoes
-  using ts_t = ts_t<typename TS_IMPL::state_t, typename TS_IMPL::const_state_t, typename TS_IMPL::transition_t,
-                    typename TS_IMPL::const_transition_t>;
+  using ts_t = tchecker::ts::ts_t<typename TS_IMPL::state_t, typename TS_IMPL::const_state_t, typename TS_IMPL::transition_t,
+                                  typename TS_IMPL::const_transition_t>;
   using const_state_t = typename ts_t::const_state_t;
   using const_transition_t = typename ts_t::const_transition_t;
   using sst_t = typename ts_t::sst_t;
@@ -487,12 +487,13 @@ private:
  \tparam TS_IMPL : transition system implementation, should implement tchecker::ts::ts_impl_t
 */
 template <class TS_IMPL>
-class make_sharing_ts_from_impl_t : public ts_t<typename TS_IMPL::const_state_t, typename TS_IMPL::const_state_t,
-                                                typename TS_IMPL::const_transition_t, typename TS_IMPL::const_transition_t> {
+class make_sharing_ts_from_impl_t
+    : public tchecker::ts::ts_t<typename TS_IMPL::const_state_t, typename TS_IMPL::const_state_t,
+                                typename TS_IMPL::const_transition_t, typename TS_IMPL::const_transition_t> {
 public:
   // Inherited types
-  using ts_t = ts_t<typename TS_IMPL::const_state_t, typename TS_IMPL::const_state_t, typename TS_IMPL::const_transition_t,
-                    typename TS_IMPL::const_transition_t>;
+  using ts_t = tchecker::ts::ts_t<typename TS_IMPL::const_state_t, typename TS_IMPL::const_state_t,
+                                  typename TS_IMPL::const_transition_t, typename TS_IMPL::const_transition_t>;
   using const_state_t = typename ts_t::const_state_t;
   using const_transition_t = typename ts_t::const_transition_t;
   using sst_t = typename ts_t::sst_t;
