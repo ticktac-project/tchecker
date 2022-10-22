@@ -31,7 +31,7 @@ std::size_t node_hash_t::operator()(tchecker::tck_reach::zg_covreach::node_t con
 {
   // NB: we hash on the discrete part of the state in n to check all nodes
   // with same discrete part for covering
-  return tchecker::ta::hash_value(n.state());
+  return tchecker::ta::shared_hash_value(n.state());
 }
 
 /* node_le_t */
@@ -39,7 +39,7 @@ std::size_t node_hash_t::operator()(tchecker::tck_reach::zg_covreach::node_t con
 bool node_le_t::operator()(tchecker::tck_reach::zg_covreach::node_t const & n1,
                            tchecker::tck_reach::zg_covreach::node_t const & n2) const
 {
-  return n1.state() <= n2.state();
+  return tchecker::zg::shared_is_le(n1.state(), n2.state());
 }
 
 /* edge_t */
@@ -48,7 +48,7 @@ edge_t::edge_t(tchecker::zg::transition_t const & t) : _vedge(t.vedge_ptr()) {}
 
 /* graph_t */
 
-graph_t::graph_t(std::shared_ptr<tchecker::zg::zg_t> const & zg, std::size_t block_size, std::size_t table_size)
+graph_t::graph_t(std::shared_ptr<tchecker::zg::sharing_zg_t> const & zg, std::size_t block_size, std::size_t table_size)
     : tchecker::graph::subsumption::graph_t<tchecker::tck_reach::zg_covreach::node_t, tchecker::tck_reach::zg_covreach::edge_t,
                                             tchecker::tck_reach::zg_covreach::node_hash_t,
                                             tchecker::tck_reach::zg_covreach::node_le_t>(
@@ -133,8 +133,8 @@ run(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl, st
   if (!tchecker::system::every_process_has_initial_location(system->as_system_system()))
     std::cerr << tchecker::log_warning << "system has no initial state" << std::endl;
 
-  std::shared_ptr<tchecker::zg::zg_t> zg{tchecker::zg::factory(system, tchecker::zg::ELAPSED_SEMANTICS,
-                                                               tchecker::zg::EXTRA_LU_PLUS_LOCAL, block_size, table_size)};
+  std::shared_ptr<tchecker::zg::sharing_zg_t> zg{tchecker::zg::factory_sharing(
+      system, tchecker::zg::ELAPSED_SEMANTICS, tchecker::zg::EXTRA_LU_PLUS_LOCAL, block_size, table_size)};
 
   std::shared_ptr<tchecker::tck_reach::zg_covreach::graph_t> graph{
       new tchecker::tck_reach::zg_covreach::graph_t{zg, block_size, table_size}};

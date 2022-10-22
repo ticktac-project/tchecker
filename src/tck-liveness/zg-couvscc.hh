@@ -140,7 +140,7 @@ public:
    \param table_size : size of hash table
    \note this keeps a pointer on zg
   */
-  graph_t(std::shared_ptr<tchecker::zg::zg_t> const & zg, std::size_t block_size, std::size_t table_size);
+  graph_t(std::shared_ptr<tchecker::zg::sharing_zg_t> const & zg, std::size_t block_size, std::size_t table_size);
 
   /*!
    \brief Destructor
@@ -169,7 +169,7 @@ protected:
   virtual void attributes(tchecker::tck_liveness::zg_couvscc::edge_t const & e, std::map<std::string, std::string> & m) const;
 
 private:
-  std::shared_ptr<tchecker::zg::zg_t> _zg; /*!< Zone graph */
+  std::shared_ptr<tchecker::zg::sharing_zg_t> _zg; /*!< Zone graph */
 };
 
 /*!
@@ -185,10 +185,10 @@ std::ostream & dot_output(std::ostream & os, tchecker::tck_liveness::zg_couvscc:
  \class algorithm_t
  \brief Couvreur's liveness algorithm over the zone graph
 */
-class algorithm_t
-    : public tchecker::algorithms::couvscc::algorithm_t<tchecker::zg::zg_t, tchecker::tck_liveness::zg_couvscc::graph_t> {
+class algorithm_t : public tchecker::algorithms::couvscc::algorithm_t<tchecker::zg::sharing_zg_t,
+                                                                      tchecker::tck_liveness::zg_couvscc::graph_t> {
 public:
-  using tchecker::algorithms::couvscc::algorithm_t<tchecker::zg::zg_t,
+  using tchecker::algorithms::couvscc::algorithm_t<tchecker::zg::sharing_zg_t,
                                                    tchecker::tck_liveness::zg_couvscc::graph_t>::algorithm_t;
 };
 
