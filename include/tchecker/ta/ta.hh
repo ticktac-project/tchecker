@@ -259,10 +259,10 @@ void attributes(tchecker::ta::system_t const & system, tchecker::ta::transition_
  \brief Low-level transition system implementation of a timed automaton over a
  system of synchronized timed processes
  */
-class ta_impl_t : public tchecker::ts::ts_impl_t<tchecker::ta::state_sptr_t, tchecker::ta::const_state_sptr_t,
-                                                 tchecker::ta::transition_sptr_t, tchecker::ta::const_transition_sptr_t,
-                                                 tchecker::ta::initial_range_t, tchecker::ta::outgoing_edges_range_t,
-                                                 tchecker::ta::initial_value_t, tchecker::ta::outgoing_edges_value_t> {
+class ta_impl_t final : public tchecker::ts::ts_impl_t<tchecker::ta::state_sptr_t, tchecker::ta::const_state_sptr_t,
+                                                       tchecker::ta::transition_sptr_t, tchecker::ta::const_transition_sptr_t,
+                                                       tchecker::ta::initial_range_t, tchecker::ta::outgoing_edges_range_t,
+                                                       tchecker::ta::initial_value_t, tchecker::ta::outgoing_edges_value_t> {
 public:
   // Inherited types
   using ts_t = tchecker::ts::ts_impl_t<tchecker::ta::state_sptr_t, tchecker::ta::const_state_sptr_t,

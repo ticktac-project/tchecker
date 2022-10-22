@@ -290,7 +290,7 @@ void attributes(tchecker::ta::system_t const & system, tchecker::refzg::transiti
  \brief Low-level transition system implementation of zone graph with reference
  clocks of a timed automaton
  */
-class refzg_impl_t
+class refzg_impl_t final
     : public tchecker::ts::ts_impl_t<tchecker::refzg::state_sptr_t, tchecker::refzg::const_state_sptr_t,
                                      tchecker::refzg::transition_sptr_t, tchecker::refzg::const_transition_sptr_t,
                                      tchecker::refzg::initial_range_t, tchecker::refzg::outgoing_edges_range_t,
@@ -458,7 +458,7 @@ private:
  states and transitions, as well as states and transitions sharing
  \note all returned states and transitions deallocated automatically
  */
-class refzg_t : public tchecker::ts::make_ts_from_impl_t<tchecker::refzg::refzg_impl_t> {
+class refzg_t final : public tchecker::ts::make_ts_from_impl_t<tchecker::refzg::refzg_impl_t> {
 public:
   using tchecker::ts::make_ts_from_impl_t<tchecker::refzg::refzg_impl_t>::make_ts_from_impl_t;
 
@@ -480,7 +480,7 @@ public:
  states and transitions, as well as states and transitions sharing
  \note all returned states and transitions deallocated automatically
  */
-class sharing_refzg_t : public tchecker::ts::make_sharing_ts_from_impl_t<tchecker::refzg::refzg_impl_t> {
+class sharing_refzg_t final : public tchecker::ts::make_sharing_ts_from_impl_t<tchecker::refzg::refzg_impl_t> {
 public:
   using tchecker::ts::make_sharing_ts_from_impl_t<tchecker::refzg::refzg_impl_t>::make_sharing_ts_from_impl_t;
 

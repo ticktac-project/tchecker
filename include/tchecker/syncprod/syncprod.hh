@@ -345,7 +345,7 @@ void attributes(tchecker::syncprod::system_t const & system, tchecker::syncprod:
  state and transition allocation
  \note all returned states and transitions deallocated automatically
  */
-class syncprod_impl_t
+class syncprod_impl_t final
     : public tchecker::ts::ts_impl_t<tchecker::syncprod::state_sptr_t, tchecker::syncprod::const_state_sptr_t,
                                      tchecker::syncprod::transition_sptr_t, tchecker::syncprod::const_transition_sptr_t,
                                      tchecker::syncprod::initial_range_t, tchecker::syncprod::outgoing_edges_range_t,

@@ -274,10 +274,10 @@ void attributes(tchecker::ta::system_t const & system, tchecker::zg::transition_
  \class zg_impl_t
  \brief Low-level transition system implementation of a zone graph of a timed automaton
  */
-class zg_impl_t : public tchecker::ts::ts_impl_t<tchecker::zg::state_sptr_t, tchecker::zg::const_state_sptr_t,
-                                                 tchecker::zg::transition_sptr_t, tchecker::zg::const_transition_sptr_t,
-                                                 tchecker::zg::initial_range_t, tchecker::zg::outgoing_edges_range_t,
-                                                 tchecker::zg::initial_value_t, tchecker::zg::outgoing_edges_value_t> {
+class zg_impl_t final : public tchecker::ts::ts_impl_t<tchecker::zg::state_sptr_t, tchecker::zg::const_state_sptr_t,
+                                                       tchecker::zg::transition_sptr_t, tchecker::zg::const_transition_sptr_t,
+                                                       tchecker::zg::initial_range_t, tchecker::zg::outgoing_edges_range_t,
+                                                       tchecker::zg::initial_value_t, tchecker::zg::outgoing_edges_value_t> {
 public:
   // Inherited types
   using ts_impl_t = tchecker::ts::ts_impl_t<tchecker::zg::state_sptr_t, tchecker::zg::const_state_sptr_t,
@@ -437,7 +437,7 @@ private:
  \brief Zone graph of a timed automaton with states and transitions allocation
  \note all returned states and transitions deallocated automatically
  */
-class zg_t : public tchecker::ts::make_ts_from_impl_t<tchecker::zg::zg_impl_t> {
+class zg_t final : public tchecker::ts::make_ts_from_impl_t<tchecker::zg::zg_impl_t> {
 public:
   using tchecker::ts::make_ts_from_impl_t<tchecker::zg::zg_impl_t>::make_ts_from_impl_t;
 
@@ -459,7 +459,7 @@ public:
  as well as states and transitions sharing
  \note all returned states and transitions deallocated automatically
  */
-class sharing_zg_t : public tchecker::ts::make_sharing_ts_from_impl_t<tchecker::zg::zg_impl_t> {
+class sharing_zg_t final : public tchecker::ts::make_sharing_ts_from_impl_t<tchecker::zg::zg_impl_t> {
 public:
   using tchecker::ts::make_sharing_ts_from_impl_t<tchecker::zg::zg_impl_t>::make_sharing_ts_from_impl_t;
 
