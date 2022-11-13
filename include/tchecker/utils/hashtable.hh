@@ -13,6 +13,7 @@
  \brief Hashtable of shared objects
  */
 
+#include <unordered_set>
 #include <vector>
 
 #include "tchecker/utils/iterator.hh"
@@ -583,39 +584,37 @@ protected:
  \class hashtable_object_t
  \brief Objects that can be stored in a hashtable
 */
-class hashtable_object_t : public tchecker::collision_table_object_t {
-public:
-  using tchecker::collision_table_object_t::collision_table_object_t;
-};
+class hashtable_object_t {};
 
 /*!
  \class hashtable_t
- \brief Hashtable with collision lists and fast removal
+ \brief Hashtable
  \tparam SPTR : type of pointer to stored objects. Must be a shared
   pointer, e.g. tchecker::intrusive_shared_ptr_t<...> or std::shared_ptr<...>
  \tparam HASH : hash function over shared pointers of type SPTR
  \tparam EQUAL : equality predicate over shared pointers of type SPTR
  \note stored objects should derive from tchecker::hashtable_object_t
 */
-template <class SPTR, class HASH, class EQUAL> class hashtable_t : public tchecker::collision_table_t<SPTR, HASH> {
+template <class SPTR, class HASH, class EQUAL> class hashtable_t {
 public:
   /*!
    \brief Constructor
-   \param table_size : size of the table (number of collision lists)
+   \param table_size : capacity of the table
    \param hash : hash function
    \param equal : equality predicate
    \pre table_size != tchecker::COLLISION_TABLE_NOT_STORED
    \throw std::invalid_argument : if the precondition is violated
+   \note the capacity of the table may grow when too many collisions occur
    */
   hashtable_t(std::size_t table_size, HASH const & hash, EQUAL const & equal)
-      : tchecker::collision_table_t<SPTR, HASH>(table_size, hash), _equal(equal)
+    : _table(table_size, hash, equal)
   {
   }
 
   /*!
-   \brief Copy constructor (deleted)
+   \brief Copy constructor
   */
-  hashtable_t(tchecker::hashtable_t<SPTR, HASH, EQUAL> const &) = delete;
+  hashtable_t(tchecker::hashtable_t<SPTR, HASH, EQUAL> const &) = default;
 
   /*!
    \brief Move constructor
@@ -628,9 +627,9 @@ public:
   ~hashtable_t() = default;
 
   /*!
-   \brief Assignment operator (deleted)
+   \brief Assignment operator
    */
-  tchecker::hashtable_t<SPTR, HASH, EQUAL> & operator=(tchecker::hashtable_t<SPTR, HASH, EQUAL> const &) = delete;
+  tchecker::hashtable_t<SPTR, HASH, EQUAL> & operator=(tchecker::hashtable_t<SPTR, HASH, EQUAL> const &) = default;
 
   /*!
    \brief Move-assignment operator
@@ -638,26 +637,28 @@ public:
   tchecker::hashtable_t<SPTR, HASH, EQUAL> & operator=(tchecker::hashtable_t<SPTR, HASH, EQUAL> &&) = default;
 
   /*!
+   \brief Clear
+   \post The hash table is empty
+   \note Destructor called on shared pointers
+   \note Invalidates iterators
+   */
+  void clear()
+  {
+    _table.clear();
+  }
+
+  /*!
    \brief Add object to the hashtable
    \param o : an object
-   \pre o is not stored in a hash table
    \post o has been added to this hashtable if it does not contain any element
    equal to o w.r.t. EQUAL
    \return true if o has been added to this hashtable, false otherwise
-   \throw std::invalid_argument : if o is already stored in a hashtable
-   \note Complexity : computation of the hash value of object o
    \note Invalidates iterators
    */
   bool add(SPTR const & o)
   {
-    if (o->is_stored())
-      throw std::invalid_argument("Adding an object that is already stored in a hashtable is not allowed");
-    tchecker::collision_table_position_t position_in_table = this->compute_position_in_table(o);
-    auto && [found, p] = find(o, this->_table[position_in_table]);
-    if (found)
-      return false;
-    tchecker::collision_table_t<SPTR, HASH>::add(o, position_in_table);
-    return true;
+    auto && [it, inserted] = _table.insert(o);
+    return inserted;
   }
 
   /*!
@@ -668,8 +669,10 @@ public:
   */
   std::tuple<bool, SPTR const> find(SPTR const & o) const
   {
-    tchecker::collision_table_position_t position_in_table = this->compute_position_in_table(o);
-    return find(o, this->_table[position_in_table]);
+    auto it = _table.find(o);
+    if (it == _table.end())
+      return std::make_tuple(false, o);
+    return std::make_tuple(true, *it);
   }
 
   /*!
@@ -682,32 +685,74 @@ public:
   */
   SPTR find_else_add(SPTR const & o)
   {
-    tchecker::collision_table_position_t position_in_table = this->compute_position_in_table(o);
-    auto && [found, p] = find(o, this->_table[position_in_table]);
-    if (found)
-      return p;
-    tchecker::collision_table_t<SPTR, HASH>::add(o, position_in_table);
-    return o;
+    auto && [it, inserted] = _table.insert(o);
+    if (inserted)
+      return o;
+    return *it;
+  }
+
+  /*!
+   \brief Accessor
+   \return Number of objects in this hash table
+   */
+  inline std::size_t size() const { return _table.size(); }
+
+  /*!
+   \brief Type of iterator
+  */
+  using iterator_t = typename std::unordered_set<SPTR, HASH, EQUAL>::iterator;
+
+  /*!
+   \brief Iterator on first element (if any)
+  */
+  iterator_t begin()
+  {
+    return _table.begin();
+  }
+
+  /*!
+    \brief Past-the-end iterator
+  */
+  iterator_t end()
+  {
+    return _table.end();
+  }
+
+  /*!
+    \brief Type of const iterator
+  */
+  using const_iterator_t = typename std::unordered_set<SPTR, HASH, EQUAL>::const_iterator;
+
+  /*!
+    \brief Const iterator on first element (if any)
+  */
+  const_iterator_t begin() const
+  {
+    return _table.cbegin();
+  }
+
+  /*!
+    \brief Const past-the-end iterator
+  */
+  const_iterator_t end() const
+  {
+    return _table.cend();
+  }
+
+  /*!
+    \brief Remove an element
+    \param it : iterator
+    \pre it can be dereferenced
+    \post the element pointed by it has been removed from this hash table
+    \return iterator to the next object in the table
+  */
+  iterator_t remove(iterator_t const & it)
+  {
+    return _table.erase(it);
   }
 
 protected:
-  /*!
-   \brief Check if an object belongs to a collision list
-   \param o : an object
-   \param c : a collision list
-   \return a pair (found, p) where p is true if an object p equal to o has been
-   found in this hashtable, otherwise found is false and p == o
-  */
-  std::tuple<bool, SPTR const> find(SPTR const & o,
-                                    typename tchecker::collision_table_t<SPTR, HASH>::collision_list_t const & c) const
-  {
-    for (SPTR const & p : c)
-      if (_equal(p, o))
-        return std::make_tuple(true, p);
-    return std::make_tuple(false, o);
-  }
-
-  EQUAL _equal; /*!< Equality predicate */
+  std::unordered_set<SPTR, HASH, EQUAL> _table; /*!< Container */
 };
 
 } // end of namespace tchecker
