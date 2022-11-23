@@ -38,7 +38,7 @@ set(TEST_SRC
 add_executable(unittest ${TEST_SRC})
 target_link_libraries(unittest testutils)
 target_link_libraries(unittest libtchecker_static)
-target_link_libraries(unittest Catch2::Catch2)
+target_link_libraries(unittest Catch2::Catch2WithMain)
 
 set_property(TARGET unittest PROPERTY CXX_STANDARD 17)
 set_property(TARGET unittest PROPERTY CXX_STANDARD_REQUIRED ON)

@@ -5,14 +5,16 @@
 ARG IMAGE
 
 FROM ${IMAGE}
-ARG CATCH2_REV=v2.13.1
+ARG CATCH2_REV=v3.2.0
 ARG CATCH2_REPO=https://github.com/catchorg/Catch2.git
 ARG DEBPKG=""
+ARG LIBBOOST_VERSION=1.74
 ARG CXX
 
 RUN apt-get update && \
     apt-get install -y \
-       ${DEBPKG} git cmake bison flex doxygen libboost1.67-dev python \
+        ${DEBPKG} git cmake bison flex doxygen \
+        libboost${LIBBOOST_VERSION}-dev python \
        valgrind graphviz
 
 RUN git clone --branch ${CATCH2_REV} ${CATCH2_REPO} /tmp/catch2

@@ -22,6 +22,7 @@ variables:
   artifacts:
     paths:
     - build/src/tck-reach
+    - build/src/tck-liveness
     - build/src/tck-simulate
     - build/src/tck-syntax
 
