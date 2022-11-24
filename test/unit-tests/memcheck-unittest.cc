@@ -18,7 +18,6 @@ int main(int argc, char ** argv)
     for (int i = 1; i < argc; i++)
       oss << " \"" << argv[i] << "\"";
   }
-  std::cerr << "command= '" << oss.str().c_str() << std::endl;  
   int val = system(oss.str().c_str());
   return (val ? 1 : 0);
 }
