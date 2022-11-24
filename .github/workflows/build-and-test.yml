@@ -6,7 +6,7 @@ on:
 
 env:
   CATCH2_REPO_URL : https://github.com/catchorg/Catch2.git
-  CATCH2_BRANCH : v2.13.2
+  CATCH2_BRANCH : v3.2.0
   TCHECKER_BUILD_TYPE : Debug
   BUILD_TYPE : Debug
   NB_CPUS : 2

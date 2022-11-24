@@ -9,7 +9,8 @@ fi
 
 set -euv
 
-docker build --build-arg IMAGE=gcc:9 \
+
+docker build --build-arg IMAGE=debian:stable --build-arg DEBPKG="gcc g++" \
        --build-arg CXX=g++\
        -t ${REPOSITORY}:gcc-${TAG}  .
 docker push ${REPOSITORY}:gcc-${TAG}
