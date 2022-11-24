@@ -15,11 +15,10 @@ int main(int argc, char ** argv)
 
   oss << VALGRIND_PROGRAM << " " << VALGRIND_OPTIONS << " " << TESTED_EXECUTABLE;
   if (argc > 1) {
-    oss << " \"" << argv[1];
-    for (int i = 2; i < argc; i++)
-      oss << " " << argv[i];
-    oss << "\"";
+    for (int i = 1; i < argc; i++)
+      oss << " \"" << argv[i] << "\"";
   }
+  std::cerr << "command= '" << oss.str().c_str() << std::endl;  
   int val = system(oss.str().c_str());
   return (val ? 1 : 0);
 }
