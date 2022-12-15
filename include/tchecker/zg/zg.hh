@@ -352,6 +352,8 @@ public:
    */
   virtual void initial(tchecker::zg::initial_value_t const & init_edge, std::vector<sst_t> & v);
 
+  using ts_impl_t::initial;
+
   /*!
    \brief Accessor
    \param s : state
@@ -369,6 +371,8 @@ public:
    */
   virtual void next(tchecker::zg::const_state_sptr_t const & s, tchecker::zg::outgoing_edges_value_t const & out_edge,
                     std::vector<sst_t> & v);
+
+  using ts_impl_t::next;
 
   /*!
     \brief Checks if a state satisfies a set of labels

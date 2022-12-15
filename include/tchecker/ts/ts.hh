@@ -31,7 +31,7 @@ namespace ts {
 
 /*!
  \class ts_impl_t
- \brief Interface of low-level implementation of a transition system
+ \brief Interface of an implementation of a transition system
  \tparam STATE : type of state
  \tparam CONST_STATE : type of const state
  \tparam TRANSITION : type of transition
@@ -115,6 +115,29 @@ public:
   virtual void initial(initial_value_t const & init_edge, std::vector<sst_t> & v) = 0;
 
   /*!
+   \brief Initial states and transitions with selected status
+   \param v : container
+   \param mask : mask on initial states
+   \post all tuples (status, s, t) of status, initial states and transitions such
+   that status matches mask (i.e. status & mask != 0) have been pushed back into v
+   \note default implementation is to aggregate and filter initial states/transitions
+   returned by the method `initial` above
+  */
+  virtual void initial(std::vector<sst_t> & v, tchecker::state_status_t mask)
+  {
+    std::vector<sst_t> vv;
+    initial_range_t init_edges = initial_edges();
+    for (initial_value_t && init_edge : init_edges) {
+      initial(init_edge, vv);
+      for (auto && [status, s, t] : vv) {
+        if (status & mask)
+          v.push_back(std::make_tuple(status, s, t));
+      }
+      vv.clear();
+    }
+  }
+
+  /*!
    \brief Accessor
    \param s : state
    \return outgoing edges from state s
@@ -130,6 +153,30 @@ public:
    s' and transition t from s to s' along outgoing edge out_edge
    */
   virtual void next(const_state_t const & s, outgoing_edges_value_t const & out_edge, std::vector<sst_t> & v) = 0;
+
+  /*!
+   \brief Next states and transitions with selected status
+   \param s : state
+   \param v : container
+   \param mask : mask on next states
+   \post all tuples (status, s', t) such that s -t-> s' is a transition and the
+   status of s' matches mask (i.e. status & mask != 0) have been pushed to v
+   \note default implementation is to aggregate and filter next states/transitions
+   returned by the method `next` above
+  */
+  virtual void next(const_state_t const & s, std::vector<sst_t> & v, tchecker::state_status_t mask)
+  {
+    std::vector<sst_t> vv;
+    outgoing_edges_range_t out_edges = outgoing_edges(s);
+    for (outgoing_edges_value_t && out_edge : out_edges) {
+      next(s, out_edge, vv);
+      for (auto && [status, nexts, nextt] : vv) {
+        if (status & mask)
+          v.push_back(std::make_tuple(status, nexts, nextt));
+      }
+      vv.clear();
+    }
+  }
 
   /*!
    \brief Accessor
@@ -198,60 +245,8 @@ public:
 };
 
 /*!
-  \brief Initial states and transitions with selected status
-  \tparam TS_IMPL : type of transition system implementation, should implement
-  tchecker::ts::ts_impl_t
-  \param ts_impl : a transition system implementation
-  \param v : container
-  \param mask : mask on initial states
-  \post all tuples (status, s, t) of status, initial states and transitions such
-  that status matches mask (i.e. status & mask != 0) have been pushed back into v
-  */
-template <class TS_IMPL>
-void initial(TS_IMPL & ts_impl, std::vector<typename TS_IMPL::sst_t> & v, tchecker::state_status_t mask)
-{
-  std::vector<typename TS_IMPL::sst_t> sst;
-  typename TS_IMPL::initial_range_t init_edges = ts_impl.initial_edges();
-  for (typename TS_IMPL::initial_value_t && init_edge : init_edges) {
-    ts_impl.initial(init_edge, sst);
-    for (auto && [status, s, t] : sst) {
-      if (status & mask)
-        v.push_back(std::make_tuple(status, s, t));
-    }
-    sst.clear();
-  }
-}
-
-/*!
-  \brief Next states and transitions with selected status
-  \tparam TS_IMPL : type of  transition system implementation, should implement
-  tchecker::ts::ts_impl_t
-  \param ts_impl : a transition system implementation
-  \param s : state
-  \param v : container
-  \param mask : mask on next states
-  \post all tuples (status, s', t) such that s -t-> s' is a transition and the
-  status of s' matches mask (i.e. status & mask != 0) have been pushed to v
-  */
-template <class TS_IMPL>
-void next(TS_IMPL & ts_impl, typename TS_IMPL::const_state_t const & s, std::vector<typename TS_IMPL::sst_t> & v,
-          tchecker::state_status_t mask)
-{
-  std::vector<typename TS_IMPL::sst_t> sst;
-  typename TS_IMPL::outgoing_edges_range_t out_edges = ts_impl.outgoing_edges(s);
-  for (typename TS_IMPL::outgoing_edges_value_t && out_edge : out_edges) {
-    ts_impl.next(s, out_edge, sst);
-    for (auto && [status, next_s, next_t] : sst) {
-      if (status & mask)
-        v.push_back(std::make_tuple(status, next_s, next_t));
-    }
-    sst.clear();
-  }
-}
-
-/*!
  \class ts_t
- \brief Transition system interface
+ \brief Transition system interface, abstracts implementation details from ts::ts_impl_t
  \tparam STATE : type of state
  \tparam CONST_STATE : type of const state
  \tparam TRANSITION : type of transition
@@ -415,10 +410,11 @@ public:
   \param mask : mask on initial states
   \post all tuples (status, s, t) of status, initial states and transitions such
   that status matches mask (i.e. status & mask != 0) have been pushed back into v
+  \note simply calls the same method on the underlying transition system implementation
    */
   inline virtual void initial(std::vector<sst_t> & v, tchecker::state_status_t mask = tchecker::STATE_OK)
   {
-    tchecker::ts::initial(_ts_impl, v, mask);
+    _ts_impl.initial(v, mask);
   }
 
   /*!
@@ -428,10 +424,11 @@ public:
   \param mask : mask on next states
   \post all tuples (status, s', t) such that s -t-> s' is a transition and the
   status of s' matches mask (i.e. status & mask != 0) have been pushed to v
+  \note simply calls the same method on the underlying transition system implementation
   */
   inline virtual void next(const_state_t const & s, std::vector<sst_t> & v, tchecker::state_status_t mask = tchecker::STATE_OK)
   {
-    tchecker::ts::next(_ts_impl, s, v, mask);
+    _ts_impl.next(s, v, mask);
   }
 
   /*!
@@ -539,11 +536,13 @@ public:
   \param mask : mask on initial states
   \post all tuples (status, s, t) of status, initial states and transitions such
   that status matches mask (i.e. status & mask != 0) have been pushed back into v
+  \note calls the same method on the underlying transition system, plus shares internal
+  components of initial states and transitions
    */
   inline virtual void initial(std::vector<sst_t> & v, tchecker::state_status_t mask = tchecker::STATE_OK)
   {
     std::vector<typename TS_IMPL::sst_t> vv;
-    tchecker::ts::initial(_ts_impl, vv, mask);
+    _ts_impl.initial(vv, mask);
     share(vv, v);
     vv.clear();
   }
@@ -555,11 +554,13 @@ public:
   \param mask : mask on next states
   \post all tuples (status, s', t) such that s -t-> s' is a transition and the
   status of s' matches mask (i.e. status & mask != 0) have been pushed to v
+  \note calls the same method on the underlying transition system, plus shares internal
+  components of the next states dans transitions
   */
   inline virtual void next(const_state_t const & s, std::vector<sst_t> & v, tchecker::state_status_t mask = tchecker::STATE_OK)
   {
     std::vector<typename TS_IMPL::sst_t> vv;
-    tchecker::ts::next(_ts_impl, s, vv, mask);
+    _ts_impl.next(s, vv, mask);
     share(vv, v);
     vv.clear();
   }

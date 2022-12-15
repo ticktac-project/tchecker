@@ -332,6 +332,8 @@ public:
    */
   virtual void initial(tchecker::ta::initial_value_t const & init_edge, std::vector<sst_t> & v);
 
+  using ts_impl_t::initial;
+
   /*!
    \brief Accessor
    \param s : state
@@ -349,6 +351,9 @@ public:
    */
   virtual void next(tchecker::ta::const_state_sptr_t const & s, tchecker::ta::outgoing_edges_value_t const & out_edge,
                     std::vector<sst_t> & v);
+
+  using ts_impl_t::next;
+
   /*!
    \brief Computes the set of labels of a state
    \param s : a state
