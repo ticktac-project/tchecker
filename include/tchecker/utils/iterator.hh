@@ -215,7 +215,7 @@ public:
    \note required by C++ concept ForwardIterator
    */
   join_iterator_t()
-      : _get_sub_range([](typename R::begin_iterator_t const & it) {
+      : _get_sub_range([](typename R::begin_iterator_t const & /*it*/) {
           return tchecker::make_range(typename SUBR::begin_iterator_t{}, typename SUBR::end_iterator_t{});
         })
   {
@@ -306,7 +306,7 @@ public:
   \param end : past-the-end iterator
   \return see at_end()
   */
-  inline bool operator==(tchecker::end_iterator_t const & end) const { return at_end(); }
+  inline bool operator==(tchecker::end_iterator_t const & /*end*/) const { return at_end(); }
 
   /*!
   \brief Disequality check w.r.t. past-the-end iterator
@@ -535,7 +535,7 @@ public:
   \param end : past-the-end iterator
   \return see at_end()
   */
-  inline bool operator==(tchecker::end_iterator_t const & end) const { return at_end(); }
+  inline bool operator==(tchecker::end_iterator_t const & /*end*/) const { return at_end(); }
 
   /*!
   \brief Disequality check w.r.t. past-the-end iterator

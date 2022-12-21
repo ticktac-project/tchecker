@@ -222,7 +222,7 @@ public:
    \brief Cast
    \return this as a tchecker::system::system_t instance
    */
-  constexpr inline tchecker::system::system_t const & as_system_system() const { return *this; }
+  inline tchecker::system::system_t const & as_system_system() const { return *this; }
 
 private:
   // Hidden modifiers

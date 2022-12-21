@@ -31,7 +31,7 @@ class state_t {};
  \param s2 : state
  \return true
  */
-inline bool operator==(tchecker::ts::state_t const & s1, tchecker::ts::state_t const & s2) { return true; }
+inline bool operator==(tchecker::ts::state_t const & /*s1*/, tchecker::ts::state_t const & /*s2*/) { return true; }
 
 /*!
  \brief Disequality check
@@ -48,14 +48,14 @@ inline bool operator!=(tchecker::ts::state_t const & s1, tchecker::ts::state_t c
  \return true
  \note this should only be used on states that have shared internal components
 */
-inline bool shared_equal_to(tchecker::ts::state_t const & s1, tchecker::ts::state_t const & s2) { return true; }
+inline bool shared_equal_to(tchecker::ts::state_t const & /*s1*/, tchecker::ts::state_t const & /*s2*/) { return true; }
 
 /*!
  \brief Hash
  \param s : state
  \return hash value for state s
  */
-inline std::size_t hash_value(tchecker::ts::state_t const & s) { return 0; }
+inline std::size_t hash_value(tchecker::ts::state_t const & /*s*/) { return 0; }
 
 /*!
  \brief Hash for shared states
@@ -63,7 +63,7 @@ inline std::size_t hash_value(tchecker::ts::state_t const & s) { return 0; }
  \return hash value for state s
  \note this should only be used on states that have shared internal components
 */
-inline std::size_t shared_hash_value(tchecker::ts::state_t const & s) { return 0; }
+inline std::size_t shared_hash_value(tchecker::ts::state_t const & /*s*/) { return 0; }
 
 /*!
  \brief Lexical ordering on transition system states
@@ -71,7 +71,7 @@ inline std::size_t shared_hash_value(tchecker::ts::state_t const & s) { return 0
  \param s2 : second state
  \return 0 (all states are equal)
  */
-constexpr inline int lexical_cmp(tchecker::ts::state_t const & s1, tchecker::ts::state_t const & s2) { return 0; }
+constexpr inline int lexical_cmp(tchecker::ts::state_t const & /*s1*/, tchecker::ts::state_t const & /*s2*/) { return 0; }
 
 } // end of namespace ts
 

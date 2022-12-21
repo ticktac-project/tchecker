@@ -180,7 +180,7 @@ inline tchecker::integer_t value(tchecker::dbm::db_t db) { return (db >> 1); }
  \param db : a difference bound
  \return hash value for db
  */
-inline std::size_t hash(tchecker::dbm::db_t db) { return db; }
+inline std::size_t hash(tchecker::dbm::db_t db) { return static_cast<std::size_t>(db); }
 
 /*!
  \brief Output a difference bound

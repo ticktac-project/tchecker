@@ -49,7 +49,7 @@ public:
    \return number of declared clock variables if kind = tchecker::VK_DECLARED,
    number of flattened clock variables if kind = tchecker::VK_FLATTENED
    */
-  inline tchecker::clock_id_t clocks_count(enum tchecker::variable_kind_t kind) const { return _clock_variables.size(kind); }
+  inline std::size_t clocks_count(enum tchecker::variable_kind_t kind) const { return _clock_variables.size(kind); }
 
   /*!
    \brief Accessor

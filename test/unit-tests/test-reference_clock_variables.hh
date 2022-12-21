@@ -102,8 +102,8 @@ TEST_CASE("Reference clock variables from system - no array", "[reference clock 
   tchecker::clock_id_t const x = system.clock_id("x");
   tchecker::clock_id_t const y = system.clock_id("y");
 
-  tchecker::reference_clock_variables_t const reference_clocks =
-      tchecker::process_reference_clocks(vaccess_map, system.clock_variables().flattened(), system.processes_count());
+  tchecker::reference_clock_variables_t const reference_clocks = tchecker::process_reference_clocks(
+      vaccess_map, system.clock_variables().flattened(), static_cast<tchecker::process_id_t>(system.processes_count()));
 
   SECTION("Check reference clocks")
   {
@@ -179,8 +179,8 @@ TEST_CASE("Offset clock variables from system - array", "[offset clock variables
   tchecker::clock_id_t const y1 = system.clock_variables().flattened().id("y[1]");
   tchecker::clock_id_t const z = system.clock_variables().flattened().id("z");
 
-  tchecker::reference_clock_variables_t const reference_clocks =
-      tchecker::process_reference_clocks(vaccess_map, system.clock_variables().flattened(), system.processes_count());
+  tchecker::reference_clock_variables_t const reference_clocks = tchecker::process_reference_clocks(
+      vaccess_map, system.clock_variables().flattened(), static_cast<tchecker::process_id_t>(system.processes_count()));
 
   SECTION("Check reference clocks")
   {

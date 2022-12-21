@@ -45,7 +45,7 @@ public:
    \return number of events
    \note 0..events_count() is the range of identifiers
    */
-  inline tchecker::event_id_t events_count() const { return _events_attr.size(); }
+  inline std::size_t events_count() const { return _events_attr.size(); }
 
   /*!
    \brief Accessor

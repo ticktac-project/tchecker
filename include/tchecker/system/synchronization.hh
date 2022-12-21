@@ -207,7 +207,7 @@ public:
    \brief Accessor
    \return number of synchronizations
    */
-  inline tchecker::sync_id_t synchronizations_count() const { return _syncs.size(); }
+  inline std::size_t synchronizations_count() const { return _syncs.size(); }
 
   /*!
    \brief Accessor

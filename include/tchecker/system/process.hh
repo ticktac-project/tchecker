@@ -44,7 +44,7 @@ public:
    \brief Accessor
    \return number of processes
    */
-  inline tchecker::process_id_t processes_count() const { return _procs_attr.size(); }
+  inline std::size_t processes_count() const { return _procs_attr.size(); }
 
   /*!
    \brief Accessor

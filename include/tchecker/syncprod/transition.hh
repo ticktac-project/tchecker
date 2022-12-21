@@ -172,7 +172,7 @@ public:
    \param args : arguments for a constructor of class tchecker::syncprod::transition_t
    \return allocation size for objects of class tchecker::syncprod::transition_t
    */
-  template <class... ARGS> static constexpr std::size_t alloc_size(ARGS &&... args)
+  template <class... ARGS> static constexpr std::size_t alloc_size(ARGS &&... /*args*/)
   {
     return sizeof(tchecker::syncprod::transition_t);
   }

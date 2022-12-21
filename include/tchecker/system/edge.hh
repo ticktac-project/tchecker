@@ -283,7 +283,7 @@ public:
    \brief Accessor
    \return number of edges
    */
-  inline tchecker::edge_id_t edges_count() const { return _edges.size(); }
+  inline std::size_t edges_count() const { return _edges.size(); }
 
   /*!
    \brief Accessor

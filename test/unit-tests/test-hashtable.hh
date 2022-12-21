@@ -33,7 +33,7 @@ template <> class allocation_size_t<cto_t> {
 public:
   static constexpr std::size_t alloc_size() { return sizeof(cto_t); }
 
-  template <class... ARGS> static constexpr std::size_t alloc_size(ARGS &&... args) { return sizeof(cto_t); }
+  template <class... ARGS> static constexpr std::size_t alloc_size(ARGS &&... /*args*/) { return sizeof(cto_t); }
 };
 } // namespace tchecker
 
@@ -594,7 +594,7 @@ template <> class allocation_size_t<hto_t> {
 public:
   static constexpr std::size_t alloc_size() { return sizeof(hto_t); }
 
-  template <class... ARGS> static constexpr std::size_t alloc_size(ARGS &&... args) { return sizeof(hto_t); }
+  template <class... ARGS> static constexpr std::size_t alloc_size(ARGS &&... /*args*/) { return sizeof(hto_t); }
 };
 } // namespace tchecker
 

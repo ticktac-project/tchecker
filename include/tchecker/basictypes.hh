@@ -40,19 +40,24 @@ const integer_t int_minval = INT16_MIN;
 #endif
 
 /*!
+ \brief Type of identifiers
+*/
+using id_t = uint32_t;
+
+/*!
  \brief Type of event identifiers
  */
-using event_id_t = uint32_t;
+using event_id_t = tchecker::id_t;
 
 /*!
  \brief Type of process identifiers
  */
-using process_id_t = uint32_t;
+using process_id_t = tchecker::id_t;
 
 /*!
  \brief Type of variable indentifiers
  */
-using variable_id_t = uint32_t;
+using variable_id_t = tchecker::id_t;
 
 /*!
  \brief Type of variable size
@@ -80,12 +85,19 @@ static_assert((std::numeric_limits<tchecker::clock_id_t>::min() >= std::numeric_
 /*!
 \brief Definition of reference clock ID
 */
-#if not defined(MIN)
-#define MIN(a, b) ((a) <= (b) ? (a) : (b))
+#if (INTEGER_T_SIZE == 64)
+tchecker::clock_id_t const REFCLOCK_ID(std::numeric_limits<tchecker::clock_id_t>::max());
+#elif (INTEGER_T_SIZE == 32)
+tchecker::clock_id_t const REFCLOCK_ID(std::numeric_limits<tchecker::integer_t>::max());
+#elif (INTEGER_T_SIZE == 16)
+tchecker::clock_id_t const REFCLOCK_ID(std::numeric_limits<tchecker::integer_t>::max());
+#else
+#error Only 64/32/16 int bit supported
 #endif
 
-tchecker::clock_id_t const REFCLOCK_ID(MIN(std::numeric_limits<tchecker::clock_id_t>::max(),
-                                           std::numeric_limits<tchecker::integer_t>::max())); // required by vm_t
+// required by vm_t
+static_assert(REFCLOCK_ID <= std::numeric_limits<tchecker::clock_id_t>::max());
+static_assert(REFCLOCK_ID <= std::numeric_limits<tchecker::integer_t>::max());
 
 /*!
 \brief Definition of reference clock name
@@ -95,12 +107,12 @@ std::string const REFCLOCK_NAME("0");
 /*!
  \brief Type of label identifiers
  */
-using label_id_t = uint32_t;
+using label_id_t = tchecker::id_t;
 
 /*!
  \brief Type of location identifiers
  */
-using loc_id_t = uint32_t;
+using loc_id_t = tchecker::id_t;
 
 /*!
  \brief Location identifier representing absence of location
@@ -117,7 +129,7 @@ bool valid_loc_id(tchecker::loc_id_t id);
 /*!
  \brief Type of edge identifiers
  */
-using edge_id_t = uint32_t;
+using edge_id_t = tchecker::id_t;
 
 /*!
  \brief Edge identifier representing absence of edge
@@ -134,12 +146,12 @@ bool valid_edge_id(tchecker::edge_id_t id);
 /*!
  \brief Type of synchronization identifiers
  */
-using sync_id_t = uint32_t;
+using sync_id_t = tchecker::id_t;
 
 /*!
  \brief Type of node identifiers
  */
-using node_id_t = uint32_t;
+using node_id_t = tchecker::id_t; // should be large enough
 
 /*!
  \brief Strength of synchronization constraint

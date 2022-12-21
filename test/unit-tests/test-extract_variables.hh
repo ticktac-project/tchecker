@@ -215,7 +215,7 @@ TEST_CASE("expression with array variables", "[extract_variables]")
     std::size_t y_size = clocks.info(y).size();
     REQUIRE(expr_clocks.size() == y_size);
     for (std::size_t idx = 0; idx < y_size; ++idx)
-      REQUIRE(expr_clocks.find(y + idx) != expr_clocks.end());
+      REQUIRE(expr_clocks.find(static_cast<tchecker::clock_id_t>(y + idx)) != expr_clocks.end());
 
     delete expr;
     delete typed_expr;
@@ -242,12 +242,12 @@ TEST_CASE("expression with array variables", "[extract_variables]")
     REQUIRE(expr_intvars.find(i) != expr_intvars.end());
     REQUIRE(expr_intvars.find(u + 2) != expr_intvars.end());
     for (std::size_t idx = 0; idx < t_size; ++idx)
-      REQUIRE(expr_intvars.find(t + idx) != expr_intvars.end());
+      REQUIRE(expr_intvars.find(static_cast<tchecker::intvar_id_t>(t + idx)) != expr_intvars.end());
 
     std::size_t y_size = clocks.info(y).size();
     REQUIRE(expr_clocks.size() == y_size);
     for (std::size_t idx = 0; idx < y_size; ++idx)
-      REQUIRE(expr_clocks.find(y + idx) != expr_clocks.end());
+      REQUIRE(expr_clocks.find(static_cast<tchecker::clock_id_t>(y + idx)) != expr_clocks.end());
 
     delete expr;
     delete typed_expr;
@@ -276,13 +276,13 @@ TEST_CASE("expression with array variables", "[extract_variables]")
     REQUIRE(expr_intvars.find(u + 0) != expr_intvars.end());
     REQUIRE(expr_intvars.find(u + 2) != expr_intvars.end());
     for (std::size_t idx = 0; idx < t_size; ++idx)
-      REQUIRE(expr_intvars.find(t + idx) != expr_intvars.end());
+      REQUIRE(expr_intvars.find(static_cast<tchecker::intvar_id_t>(t + idx)) != expr_intvars.end());
 
     std::size_t y_size = clocks.info(y).size();
     REQUIRE(expr_clocks.size() == y_size + 1); // y[] + x
     REQUIRE(expr_clocks.find(x) != expr_clocks.end());
     for (std::size_t idx = 0; idx < y_size; ++idx)
-      REQUIRE(expr_clocks.find(y + idx) != expr_clocks.end());
+      REQUIRE(expr_clocks.find(static_cast<tchecker::clock_id_t>(y + idx)) != expr_clocks.end());
 
     delete expr;
     delete typed_expr;
@@ -684,7 +684,7 @@ TEST_CASE("statements with array variables", "[extract_variables]")
     tchecker::extract_written_variables(*typed_stmt, written_clocks, written_intvars);
     REQUIRE(written_clocks.size() == clocks.info(y).size());
     for (std::size_t idx = 0; idx < clocks.info(y).size(); ++idx)
-      REQUIRE(written_clocks.find(y + idx) != written_clocks.end());
+      REQUIRE(written_clocks.find(static_cast<tchecker::clock_id_t>(y + idx)) != written_clocks.end());
     REQUIRE(written_intvars.empty());
 
     delete stmt;
@@ -719,7 +719,7 @@ TEST_CASE("statements with array variables", "[extract_variables]")
     tchecker::extract_written_variables(*typed_stmt, written_clocks, written_intvars);
     REQUIRE(written_clocks.size() == clocks.info(y).size());
     for (std::size_t idx = 0; idx < clocks.info(y).size(); ++idx)
-      REQUIRE(written_clocks.find(y + idx) != written_clocks.end());
+      REQUIRE(written_clocks.find(static_cast<tchecker::clock_id_t>(y + idx)) != written_clocks.end());
     REQUIRE(written_intvars.empty());
 
     delete stmt;

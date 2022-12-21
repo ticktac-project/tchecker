@@ -124,7 +124,7 @@ public:
    p is not nullptr
    \post does nothing
   */
-  inline void share(tchecker::intrusive_shared_ptr_t<STATE> const & p) {}
+  inline void share(tchecker::intrusive_shared_ptr_t<STATE> const & /*p*/) {}
 
   /*!
    \brief Collect unused states
@@ -263,7 +263,7 @@ public:
    p is not nullptr
    \post does nothing
   */
-  inline void share(tchecker::intrusive_shared_ptr_t<TRANSITION> const & p) {}
+  inline void share(tchecker::intrusive_shared_ptr_t<TRANSITION> const & /*p*/) {}
 
   /*!
    \brief Collect unused transitions

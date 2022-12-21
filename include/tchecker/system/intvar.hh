@@ -56,10 +56,7 @@ public:
    \return number of declared bounded integer variables if kind = tchecker::VK_DECLARED,
    number of flattened bounded integer variables if kind = tchecker::VK_FLATTENED
    */
-  inline tchecker::intvar_id_t intvars_count(enum tchecker::variable_kind_t kind) const
-  {
-    return _integer_variables.size(kind);
-  }
+  inline std::size_t intvars_count(enum tchecker::variable_kind_t kind) const { return _integer_variables.size(kind); }
 
   /*!
    \brief Accessor

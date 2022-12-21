@@ -45,7 +45,7 @@ template <> class allocation_size_t<A_t> {
 public:
   static constexpr std::size_t alloc_size() { return sizeof(A_t); }
 
-  template <class... ARGS> static constexpr std::size_t alloc_size(ARGS &&... args) { return sizeof(A_t); }
+  template <class... ARGS> static constexpr std::size_t alloc_size(ARGS &&... /*args*/) { return sizeof(A_t); }
 };
 } // namespace tchecker
 

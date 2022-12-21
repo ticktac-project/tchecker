@@ -491,7 +491,7 @@ public:
    \return Allocation size for objects of type
    tchecker::make_array_t<T, T_SIZE, BASE> with storage capacity
    */
-  template <class... ARGS> static constexpr std::size_t alloc_size(capacity_t capacity, ARGS &&... args)
+  template <class... ARGS> static constexpr std::size_t alloc_size(capacity_t capacity, ARGS &&... /*args*/)
   {
     return allocation_size_t<tchecker::make_array_t<T, T_ALLOCSIZE, BASE>>::alloc_size(capacity);
   }

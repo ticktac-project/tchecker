@@ -42,7 +42,7 @@ public:
    \return number of labels
    \note 0..labels_count() is the range of label identifiers
    */
-  inline tchecker::label_id_t labels_count() const { return _labels_index.size(); }
+  inline std::size_t labels_count() const { return _labels_index.size(); }
 
   /*!
    \brief Accessor

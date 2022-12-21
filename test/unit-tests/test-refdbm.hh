@@ -21,6 +21,10 @@
 #define RDBM1(i, j) rdbm1[(i)*rdim + (j)]
 #define RDBM2(i, j) rdbm2[(i)*rdim + (j)]
 
+#if not defined(MIN)
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#endif
+
 TEST_CASE("universal", "[refdbm]")
 {
   std::vector<std::string> refclocks{"$0", "$1", "$2"};
@@ -31,7 +35,7 @@ TEST_CASE("universal", "[refdbm]")
   r.declare("z1", "$2");
   r.declare("z2", "$2");
 
-  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
   tchecker::dbm::db_t rdbm[rdim * rdim];
   tchecker::refdbm::universal(rdbm, r);
   REQUIRE(tchecker::refdbm::is_universal(rdbm, r));
@@ -48,7 +52,7 @@ TEST_CASE("universal_positive", "[refdbm]")
   r.declare("z2", "$2");
   r.declare("z3", "$2");
 
-  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
   tchecker::dbm::db_t rdbm[rdim * rdim];
   tchecker::refdbm::universal_positive(rdbm, r);
 
@@ -73,7 +77,7 @@ TEST_CASE("empty", "[refdbm]")
   r.declare("z", "$2");
   r.declare("t", "$3");
 
-  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
   tchecker::dbm::db_t rdbm[rdim * rdim];
   tchecker::refdbm::empty(rdbm, r);
   REQUIRE(tchecker::refdbm::is_empty_0(rdbm, r));
@@ -93,7 +97,7 @@ TEST_CASE("zero", "[refdbm]")
   r.declare("z3", "$2");
   r.declare("z4", "$2");
 
-  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
   tchecker::dbm::db_t rdbm[rdim * rdim];
   tchecker::refdbm::zero(rdbm, r);
   for (tchecker::clock_id_t i = 0; i < rdim; ++i)
@@ -111,7 +115,7 @@ TEST_CASE("is_empty_0", "[refdbm]")
   r.declare("z1", "$2");
   r.declare("z2", "$2");
 
-  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
   tchecker::dbm::db_t rdbm[rdim * rdim];
 
   SECTION("DBM with negative value at (0,0)")
@@ -145,7 +149,7 @@ TEST_CASE("is_universal", "[refdbm]")
   r.declare("t1", "$3");
   r.declare("t2", "$3");
 
-  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
   tchecker::dbm::db_t rdbm[rdim * rdim];
 
   SECTION("Universal DBM")
@@ -176,7 +180,7 @@ TEST_CASE("is_positive", "[refdbm]")
   r.declare("y1", "$1");
   r.declare("y2", "$1");
 
-  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
   tchecker::dbm::db_t rdbm[rdim * rdim];
 
   SECTION("Universal positive DBM")
@@ -208,7 +212,7 @@ TEST_CASE("is_universal_positive", "[refdbm]")
   r.declare("y2", "$1");
   r.declare("y3", "$1");
 
-  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
   tchecker::dbm::db_t rdbm[rdim * rdim];
 
   SECTION("Universal positive DBM with reference clocks")
@@ -240,7 +244,7 @@ TEST_CASE("is_open_up", "[refdbm]")
   r.declare("y2", "$1");
   r.declare("z1", "$2");
 
-  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
   tchecker::dbm::db_t rdbm[rdim * rdim];
 
   tchecker::clock_id_t const x1 = r.id("x1");
@@ -311,7 +315,7 @@ TEST_CASE("is_tight", "[refdbm]")
   r.declare("z1", "$2");
   r.declare("z2", "$2");
 
-  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
   tchecker::dbm::db_t rdbm[rdim * rdim];
 
   SECTION("Universal DBM with reference clocks")
@@ -344,7 +348,7 @@ TEST_CASE("is_synchronized", "[refdbm]")
   r.declare("y2", "$1");
   r.declare("z", "$2");
 
-  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
   tchecker::dbm::db_t rdbm[rdim * rdim];
 
   tchecker::clock_id_t const t0 = r.id("$0");
@@ -454,7 +458,7 @@ TEST_CASE("is_synchronizable", "[refdbm]")
   r.declare("z1", "$2");
   r.declare("z2", "$2");
 
-  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
   tchecker::dbm::db_t rdbm[rdim * rdim];
 
   tchecker::clock_id_t const t0 = r.id("$0");
@@ -521,7 +525,7 @@ TEST_CASE("is_equal", "[refdbm]")
   r.declare("z1", "$2");
   r.declare("z2", "$2");
 
-  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
   tchecker::dbm::db_t rdbm1[rdim * rdim], rdbm2[rdim * rdim];
 
   SECTION("Two zero DBM with reference clocks")
@@ -556,7 +560,7 @@ TEST_CASE("is_le", "[refdbm]")
   r.declare("y3", "$1");
   r.declare("z", "$2");
 
-  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
   tchecker::dbm::db_t rdbm_zero[rdim * rdim], rdbm_universal[rdim * rdim], rdbm_universal_positive[rdim * rdim];
 
   tchecker::refdbm::zero(rdbm_zero, r);
@@ -591,7 +595,7 @@ TEST_CASE("is_alu_star_le", "[refdbm]")
   tchecker::clock_id_t const ty = r.refmap()[y];
   tchecker::clock_id_t const tz = r.refmap()[z];
 
-  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
   tchecker::clock_id_t const refcount = r.refcount();
   tchecker::clock_id_t const offset_dim = rdim - refcount;
 
@@ -770,7 +774,7 @@ TEST_CASE("is_sync_alu_le", "[refdbm]")
   tchecker::clock_id_t const tx = r.refmap()[x];
   tchecker::clock_id_t const ty = r.refmap()[y];
 
-  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
   tchecker::clock_id_t const refcount = r.refcount();
   tchecker::clock_id_t const offset_dim = rdim - refcount;
 
@@ -842,7 +846,7 @@ TEST_CASE("aLU* vs. sync-aLU vs. time-elapse-aLU*", "[refdbm]")
   tchecker::clock_id_t const t1 = r.id("$1");
   tchecker::clock_id_t const t2 = r.id("$2");
 
-  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
   tchecker::clock_id_t const refcount = r.refcount();
   tchecker::clock_id_t const offset_dim = rdim - refcount;
 
@@ -952,7 +956,7 @@ TEST_CASE("hash", "[refdbm]")
   r.declare("z1", "$2");
   r.declare("z2", "$2");
 
-  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
 
   SECTION("Zero DBMs have same hash code")
   {
@@ -987,7 +991,7 @@ TEST_CASE("constrain, for reference DBMs", "[refdbm]")
   r.declare("y1", "$1");
   r.declare("y2", "$1");
 
-  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
 
   tchecker::clock_id_t const t0 = r.id("$0");
   tchecker::clock_id_t const t1 = r.id("$1");
@@ -1133,7 +1137,7 @@ TEST_CASE("synchronize DBMs with reference clocks", "[refdbm]")
   r.declare("y3", "$1");
   r.declare("z", "$2");
 
-  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
 
   tchecker::clock_id_t const t0 = r.id("$0");
   tchecker::clock_id_t const t1 = r.id("$1");
@@ -1174,7 +1178,7 @@ TEST_CASE("synchronize DBMs with reference clocks, partial synchronization", "[r
   r.declare("y3", "$1");
   r.declare("z", "$2");
 
-  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
 
   tchecker::clock_id_t const t0 = r.id("$0");
   tchecker::clock_id_t const t1 = r.id("$1");
@@ -1253,7 +1257,7 @@ TEST_CASE("Spread bounding DBMs with reference clocks", "[refdbm]")
   r.declare("z1", "$2");
   r.declare("z2", "$2");
 
-  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
 
   tchecker::clock_id_t const t0 = r.id("$0");
   tchecker::clock_id_t const t1 = r.id("$1");
@@ -1411,7 +1415,7 @@ TEST_CASE("Reset to reference clock on DBMs with reference clocks", "[refdbm]")
   r.declare("z1", "$2");
   r.declare("z2", "$2");
 
-  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
 
   tchecker::clock_id_t const x = r.id("x");
   tchecker::clock_id_t const tx = r.refmap()[x];
@@ -1564,7 +1568,7 @@ TEST_CASE("asynchronous_open_up on DBMs with reference clocks", "[refdbm]")
   tchecker::clock_id_t const z1 = r.id("z1");
   tchecker::clock_id_t const z2 = r.id("z2");
 
-  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
   tchecker::clock_id_t const refcount = r.refcount();
 
   SECTION("asynchronous_open_up on universal positive DBM with reference clocks")
@@ -1666,7 +1670,7 @@ TEST_CASE("to_dbm on DBMs with reference clocks", "[refdbm]")
   tchecker::clock_id_t const y = r.id("y");
   tchecker::clock_id_t const z = r.id("z");
 
-  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
   tchecker::clock_id_t const refcount = r.refcount();
 
   tchecker::clock_id_t const dim = rdim - refcount + 1;

@@ -47,7 +47,9 @@ TEST_CASE("delay allowed for all reference clocks", "[delay_allowed]")
   tchecker::loc_id_t const P2_l0 = system.location(P2, "l0")->id();
   tchecker::loc_id_t const P3_l0 = system.location(P3, "l0")->id();
 
-  tchecker::vloc_t * vloc = tchecker::vloc_allocate_and_construct(system.processes_count(), system.processes_count());
+  tchecker::vloc_t * vloc =
+      tchecker::vloc_allocate_and_construct(static_cast<tchecker::process_id_t>(system.processes_count()),
+                                            static_cast<tchecker::process_id_t>(system.processes_count()));
   (*vloc)[P1] = P1_l0;
   (*vloc)[P2] = P2_l0;
   (*vloc)[P3] = P3_l0;
@@ -56,8 +58,8 @@ TEST_CASE("delay allowed for all reference clocks", "[delay_allowed]")
 
   SECTION("Asynchronous delay allowed, single reference clock")
   {
-    tchecker::reference_clock_variables_t r =
-        single_reference_clocks(system.clock_variables().flattened(), system.processes_count());
+    tchecker::reference_clock_variables_t r = single_reference_clocks(
+        system.clock_variables().flattened(), static_cast<tchecker::process_id_t>(system.processes_count()));
 
     boost::dynamic_bitset<> delay_allowed = tchecker::ta::delay_allowed(system, r, *vloc);
 
@@ -68,8 +70,8 @@ TEST_CASE("delay allowed for all reference clocks", "[delay_allowed]")
   {
     tchecker::variable_access_map_t va_map = tchecker::variable_access(system);
 
-    tchecker::reference_clock_variables_t r =
-        process_reference_clocks(va_map, system.clock_variables().flattened(), system.processes_count());
+    tchecker::reference_clock_variables_t r = process_reference_clocks(
+        va_map, system.clock_variables().flattened(), static_cast<tchecker::process_id_t>(system.processes_count()));
 
     boost::dynamic_bitset<> delay_allowed = tchecker::ta::delay_allowed(system, r, *vloc);
 
@@ -106,7 +108,9 @@ TEST_CASE("delay allowed for some reference clocks", "[delay_allowed]")
   tchecker::loc_id_t const P2_l0 = system.location(P2, "l0")->id();
   tchecker::loc_id_t const P3_l0 = system.location(P3, "l0")->id();
 
-  tchecker::vloc_t * vloc = tchecker::vloc_allocate_and_construct(system.processes_count(), system.processes_count());
+  tchecker::vloc_t * vloc =
+      tchecker::vloc_allocate_and_construct(static_cast<tchecker::process_id_t>(system.processes_count()),
+                                            static_cast<tchecker::process_id_t>(system.processes_count()));
   (*vloc)[P1] = P1_l0;
   (*vloc)[P2] = P2_l0;
   (*vloc)[P3] = P3_l0;
@@ -115,8 +119,8 @@ TEST_CASE("delay allowed for some reference clocks", "[delay_allowed]")
 
   SECTION("Asynchronous delay not allowed, single reference clock")
   {
-    tchecker::reference_clock_variables_t r =
-        single_reference_clocks(system.clock_variables().flattened(), system.processes_count());
+    tchecker::reference_clock_variables_t r = single_reference_clocks(
+        system.clock_variables().flattened(), static_cast<tchecker::process_id_t>(system.processes_count()));
 
     boost::dynamic_bitset<> delay_allowed = tchecker::ta::delay_allowed(system, r, *vloc);
 
@@ -127,8 +131,8 @@ TEST_CASE("delay allowed for some reference clocks", "[delay_allowed]")
   {
     tchecker::variable_access_map_t va_map = tchecker::variable_access(system);
 
-    tchecker::reference_clock_variables_t r =
-        process_reference_clocks(va_map, system.clock_variables().flattened(), system.processes_count());
+    tchecker::reference_clock_variables_t r = process_reference_clocks(
+        va_map, system.clock_variables().flattened(), static_cast<tchecker::process_id_t>(system.processes_count()));
 
     boost::dynamic_bitset<> delay_allowed = tchecker::ta::delay_allowed(system, r, *vloc);
 
@@ -167,7 +171,9 @@ TEST_CASE("delay allowed for no reference clock", "[delay_allowed]")
   tchecker::loc_id_t const P2_l0 = system.location(P2, "l0")->id();
   tchecker::loc_id_t const P3_l0 = system.location(P3, "l0")->id();
 
-  tchecker::vloc_t * vloc = tchecker::vloc_allocate_and_construct(system.processes_count(), system.processes_count());
+  tchecker::vloc_t * vloc =
+      tchecker::vloc_allocate_and_construct(static_cast<tchecker::process_id_t>(system.processes_count()),
+                                            static_cast<tchecker::process_id_t>(system.processes_count()));
   (*vloc)[P1] = P1_l0;
   (*vloc)[P2] = P2_l0;
   (*vloc)[P3] = P3_l0;
@@ -176,8 +182,8 @@ TEST_CASE("delay allowed for no reference clock", "[delay_allowed]")
 
   SECTION("Asynchronous delay not allowed, single reference clock")
   {
-    tchecker::reference_clock_variables_t r =
-        single_reference_clocks(system.clock_variables().flattened(), system.processes_count());
+    tchecker::reference_clock_variables_t r = single_reference_clocks(
+        system.clock_variables().flattened(), static_cast<tchecker::process_id_t>(system.processes_count()));
 
     boost::dynamic_bitset<> delay_allowed = tchecker::ta::delay_allowed(system, r, *vloc);
 
@@ -188,8 +194,8 @@ TEST_CASE("delay allowed for no reference clock", "[delay_allowed]")
   {
     tchecker::variable_access_map_t va_map = tchecker::variable_access(system);
 
-    tchecker::reference_clock_variables_t r =
-        process_reference_clocks(va_map, system.clock_variables().flattened(), system.processes_count());
+    tchecker::reference_clock_variables_t r = process_reference_clocks(
+        va_map, system.clock_variables().flattened(), static_cast<tchecker::process_id_t>(system.processes_count()));
 
     boost::dynamic_bitset<> delay_allowed = tchecker::ta::delay_allowed(system, r, *vloc);
 

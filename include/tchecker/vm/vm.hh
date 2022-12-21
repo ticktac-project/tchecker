@@ -303,7 +303,7 @@ protected:
       // stack = v1 ... [vK]   vK replaced by value at ID vK in intvars
       // valuation
     case VM_VALUEAT: {
-      auto const id = top_and_pop<tchecker::intvar_id_t>();
+      auto const id = top_and_pop<tchecker::intval_base_t::capacity_t>();
       assert(id < intval.size());
       push<tchecker::integer_t>(intval[id]);
       return top<tchecker::integer_t>();
@@ -312,7 +312,7 @@ protected:
       // [vK-1] = vK, stack = v1 ... vK-2
     case VM_ASSIGN: {
       auto const value = top_and_pop<tchecker::integer_t>();
-      auto const id = top_and_pop<tchecker::intvar_id_t>();
+      auto const id = top_and_pop<tchecker::intval_base_t::capacity_t>();
       assert(id < intval.size());
       intval[id] = value;
       return value;
@@ -485,8 +485,8 @@ protected:
       // [vK-1] is initialized with vK where vK-1 identifies a local variables.
     case VM_INIT_FRAME: {
       auto const value = top_and_pop<tchecker::intvar_id_t>();
-      auto const id = top_and_pop<tchecker::intvar_id_t>();
-      _frames.back()[id] = value;
+      auto const id = top_and_pop<tchecker::intval_base_t::capacity_t>();
+      _frames.back()[id] = static_cast<tchecker::integer_t>(value);
 
       return 0;
     }

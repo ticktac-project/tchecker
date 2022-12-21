@@ -1128,8 +1128,8 @@ TEST_CASE("DBM open_up (delay)", "[dbm]")
     tchecker::dbm::db_t dbm[dim * dim];
     tchecker::dbm::universal_positive(dbm, dim);
     for (tchecker::clock_id_t i = 1; i < dim; ++i) {
-      DBM(0, i) = tchecker::dbm::db(tchecker::dbm::LT, -i);
-      DBM(i, 0) = tchecker::dbm::db(tchecker::dbm::LE, i + 1);
+      DBM(0, i) = tchecker::dbm::db(tchecker::dbm::LT, static_cast<tchecker::integer_t>(-i));
+      DBM(i, 0) = tchecker::dbm::db(tchecker::dbm::LE, static_cast<tchecker::integer_t>(i + 1));
     }
     tchecker::dbm::tighten(dbm, dim);
 

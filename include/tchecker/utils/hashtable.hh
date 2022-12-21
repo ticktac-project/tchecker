@@ -402,7 +402,9 @@ public:
    */
   tchecker::collision_table_t<SPTR, HASH>::iterator_t end()
   {
-    return tchecker::collision_table_t<SPTR, HASH>::iterator_t(&_table, _table.size());
+    assert(_table.size() < std::numeric_limits<tchecker::collision_table_position_t>::max());
+    return tchecker::collision_table_t<SPTR, HASH>::iterator_t(
+        &_table, static_cast<tchecker::collision_table_position_t>(_table.size()));
   }
 
   /*!
@@ -477,7 +479,7 @@ protected:
   */
   inline tchecker::collision_table_position_t compute_position_in_table(SPTR const & o) const
   {
-    return _hash(o) % _table.size();
+    return static_cast<tchecker::collision_table_position_t>(_hash(o) % _table.size());
   }
 
   /*!
@@ -523,8 +525,9 @@ protected:
   tchecker::collision_table_position_t add(SPTR const & o, collision_list_t & c)
   {
     assert(!o->is_stored());
+    assert(c.size() < std::numeric_limits<tchecker::collision_table_position_t>::max());
     c.push_back(o);
-    return c.size() - 1;
+    return static_cast<tchecker::collision_table_position_t>(c.size() - 1);
   }
 
   /*!
@@ -606,10 +609,7 @@ public:
    \throw std::invalid_argument : if the precondition is violated
    \note the capacity of the table may grow when too many collisions occur
    */
-  hashtable_t(std::size_t table_size, HASH const & hash, EQUAL const & equal)
-    : _table(table_size, hash, equal)
-  {
-  }
+  hashtable_t(std::size_t table_size, HASH const & hash, EQUAL const & equal) : _table(table_size, hash, equal) {}
 
   /*!
    \brief Copy constructor
@@ -642,10 +642,7 @@ public:
    \note Destructor called on shared pointers
    \note Invalidates iterators
    */
-  void clear()
-  {
-    _table.clear();
-  }
+  void clear() { _table.clear(); }
 
   /*!
    \brief Add object to the hashtable
@@ -705,18 +702,12 @@ public:
   /*!
    \brief Iterator on first element (if any)
   */
-  iterator_t begin()
-  {
-    return _table.begin();
-  }
+  iterator_t begin() { return _table.begin(); }
 
   /*!
     \brief Past-the-end iterator
   */
-  iterator_t end()
-  {
-    return _table.end();
-  }
+  iterator_t end() { return _table.end(); }
 
   /*!
     \brief Type of const iterator
@@ -726,18 +717,12 @@ public:
   /*!
     \brief Const iterator on first element (if any)
   */
-  const_iterator_t begin() const
-  {
-    return _table.cbegin();
-  }
+  const_iterator_t begin() const { return _table.cbegin(); }
 
   /*!
     \brief Const past-the-end iterator
   */
-  const_iterator_t end() const
-  {
-    return _table.cend();
-  }
+  const_iterator_t end() const { return _table.cend(); }
 
   /*!
     \brief Remove an element
@@ -746,10 +731,7 @@ public:
     \post the element pointed by it has been removed from this hash table
     \return iterator to the next object in the table
   */
-  iterator_t remove(iterator_t const & it)
-  {
-    return _table.erase(it);
-  }
+  iterator_t remove(iterator_t const & it) { return _table.erase(it); }
 
 protected:
   std::unordered_set<SPTR, HASH, EQUAL> _table; /*!< Container */

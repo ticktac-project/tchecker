@@ -31,7 +31,7 @@ class transition_t {};
  \param t2 : transition
  \return true
  */
-inline bool operator==(tchecker::ts::transition_t const & t1, tchecker::ts::transition_t const & t2) { return true; }
+inline bool operator==(tchecker::ts::transition_t const & /*t1*/, tchecker::ts::transition_t const & /*t2*/) { return true; }
 
 /*!
  \brief Disequality check
@@ -48,14 +48,17 @@ inline bool operator!=(tchecker::ts::transition_t const & t1, tchecker::ts::tran
  \return true
  \note note this should only be used on transitions that have shared internal components
 */
-inline bool shared_equal_to(tchecker::ts::transition_t const & t1, tchecker::ts::transition_t const & t2) { return true; }
+inline bool shared_equal_to(tchecker::ts::transition_t const & /*t1*/, tchecker::ts::transition_t const & /*t2*/)
+{
+  return true;
+}
 
 /*!
  \brief Hash
  \param t : transition
  \return hash value for transition t
  */
-inline std::size_t hash_value(tchecker::ts::transition_t const & t) { return 0; }
+inline std::size_t hash_value(tchecker::ts::transition_t const & /*t*/) { return 0; }
 
 /*!
  \brief Hash for shared transitions
@@ -63,7 +66,7 @@ inline std::size_t hash_value(tchecker::ts::transition_t const & t) { return 0; 
  \return hash value for transition t
  \note note this should only be used on transitions that have shared internal components
 */
-inline std::size_t shared_hash_value(tchecker::ts::transition_t const & t) { return 0; }
+inline std::size_t shared_hash_value(tchecker::ts::transition_t const & /*t*/) { return 0; }
 
 /*!
  \brief Lexical ordering on transitions of a transition system
@@ -71,7 +74,10 @@ inline std::size_t shared_hash_value(tchecker::ts::transition_t const & t) { ret
  \param t2 : second transition
  \return 0 (all transitions are equal)
  */
-constexpr inline int lexical_cmp(tchecker::ts::transition_t const & t1, tchecker::ts::transition_t const & t2) { return 0; }
+constexpr inline int lexical_cmp(tchecker::ts::transition_t const & /*t1*/, tchecker::ts::transition_t const & /*t2*/)
+{
+  return 0;
+}
 
 } // end of namespace ts
 

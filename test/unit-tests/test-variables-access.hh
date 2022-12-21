@@ -747,22 +747,22 @@ TEST_CASE("variable access map computation - 3 processes, array, shared variable
   {
     auto range = map.accessed_variables(P2, tchecker::VTYPE_INTVAR, tchecker::VACCESS_ANY);
 
-    std::size_t t_size = system.integer_variables().info(t).size();
+    long t_size = system.integer_variables().info(t).size();
 
     REQUIRE(std::distance(range.begin(), range.end()) == 1 + t_size); // i + t[]
 
     bool access_x = false, access_t[t_size];
-    for (std::size_t i = 0; i < t_size; ++i)
+    for (long i = 0; i < t_size; ++i)
       access_t[i] = false;
 
     for (tchecker::intvar_id_t id : range) {
       access_x |= (id == x);
-      for (std::size_t i = 0; i < t_size; ++i)
+      for (long i = 0; i < t_size; ++i)
         access_t[i] |= (id == t + i);
     }
 
     REQUIRE(access_x);
-    for (std::size_t i = 0; i < t_size; ++i)
+    for (long i = 0; i < t_size; ++i)
       REQUIRE(access_t[i]);
   }
 
@@ -777,20 +777,20 @@ TEST_CASE("variable access map computation - 3 processes, array, shared variable
   {
     auto range = map.accessed_variables(P2, tchecker::VTYPE_INTVAR, tchecker::VACCESS_WRITE);
 
-    std::size_t t_size = system.integer_variables().info(t).size();
+    long t_size = system.integer_variables().info(t).size();
 
     REQUIRE(std::distance(range.begin(), range.end()) == t_size); // t[]
 
     bool access_t[t_size];
-    for (std::size_t i = 0; i < t_size; ++i)
+    for (long i = 0; i < t_size; ++i)
       access_t[i] = false;
 
     for (tchecker::intvar_id_t id : range) {
-      for (std::size_t i = 0; i < t_size; ++i)
+      for (long i = 0; i < t_size; ++i)
         access_t[i] |= (id == t + i);
     }
 
-    for (std::size_t i = 0; i < t_size; ++i)
+    for (long i = 0; i < t_size; ++i)
       REQUIRE(access_t[i]);
   }
 
@@ -856,20 +856,20 @@ TEST_CASE("variable access map computation - 3 processes, array, shared variable
   {
     auto range = map.accessed_variables(P3, tchecker::VTYPE_CLOCK, tchecker::VACCESS_ANY);
 
-    std::size_t y_size = system.clock_variables().info(y).size();
+    long y_size = system.clock_variables().info(y).size();
 
     REQUIRE(std::distance(range.begin(), range.end()) == y_size); // y[]
 
     bool access_y[y_size];
-    for (std::size_t i = 0; i < y_size; ++i)
+    for (long i = 0; i < y_size; ++i)
       access_y[i] = false;
 
     for (tchecker::intvar_id_t id : range) {
-      for (std::size_t i = 0; i < y_size; ++i)
+      for (long i = 0; i < y_size; ++i)
         access_y[i] |= (id == y + i);
     }
 
-    for (std::size_t i = 0; i < y_size; ++i)
+    for (long i = 0; i < y_size; ++i)
       REQUIRE(access_y[i]);
   }
 
@@ -877,20 +877,20 @@ TEST_CASE("variable access map computation - 3 processes, array, shared variable
   {
     auto range = map.accessed_variables(P3, tchecker::VTYPE_CLOCK, tchecker::VACCESS_READ);
 
-    std::size_t y_size = system.clock_variables().info(y).size();
+    long y_size = system.clock_variables().info(y).size();
 
     REQUIRE(std::distance(range.begin(), range.end()) == y_size); // y[]
 
     bool access_y[y_size];
-    for (std::size_t i = 0; i < y_size; ++i)
+    for (long i = 0; i < y_size; ++i)
       access_y[i] = false;
 
     for (tchecker::intvar_id_t id : range) {
-      for (std::size_t i = 0; i < y_size; ++i)
+      for (long i = 0; i < y_size; ++i)
         access_y[i] |= (id == y + i);
     }
 
-    for (std::size_t i = 0; i < y_size; ++i)
+    for (long i = 0; i < y_size; ++i)
       REQUIRE(access_y[i]);
   }
 
@@ -898,20 +898,20 @@ TEST_CASE("variable access map computation - 3 processes, array, shared variable
   {
     auto range = map.accessed_variables(P3, tchecker::VTYPE_CLOCK, tchecker::VACCESS_WRITE);
 
-    std::size_t y_size = system.clock_variables().info(y).size();
+    long y_size = system.clock_variables().info(y).size();
 
     REQUIRE(std::distance(range.begin(), range.end()) == y_size); // y[]
 
     bool access_y[y_size];
-    for (std::size_t i = 0; i < y_size; ++i)
+    for (long i = 0; i < y_size; ++i)
       access_y[i] = false;
 
     for (tchecker::intvar_id_t id : range) {
-      for (std::size_t i = 0; i < y_size; ++i)
+      for (long i = 0; i < y_size; ++i)
         access_y[i] |= (id == y + i);
     }
 
-    for (std::size_t i = 0; i < y_size; ++i)
+    for (long i = 0; i < y_size; ++i)
       REQUIRE(access_y[i]);
   }
 

@@ -170,7 +170,7 @@ public:
    \brief Accessor
    \return number of locations
    */
-  inline tchecker::loc_id_t locations_count() const { return _locs.size(); }
+  inline std::size_t locations_count() const { return _locs.size(); }
 
   /*!
    \brief Accessor
