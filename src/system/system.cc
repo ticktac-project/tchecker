@@ -6,6 +6,7 @@
  */
 
 #include <limits>
+#include <string>
 #include <vector>
 
 #include "tchecker/system/system.hh"
@@ -139,7 +140,7 @@ tchecker::system::attribute_keys_map_t const & system_t::known_attributes()
 void system_t::add_clock(std::string const & name, tchecker::clock_id_t size, tchecker::system::attributes_t const & attr)
 {
   if (has_variable(name))
-    throw std::invalid_argument("Variable is already declared");
+    throw std::invalid_argument("Variable " + name + " is already declared");
   tchecker::system::clocks_t::add_clock(name, size, attr);
 }
 
@@ -147,13 +148,13 @@ void system_t::add_edge(tchecker::process_id_t pid, tchecker::loc_id_t src, tche
                         tchecker::event_id_t event_id, tchecker::system::attributes_t const & attr)
 {
   if (!tchecker::system::processes_t::is_process(pid))
-    throw std::invalid_argument("Process is not declared");
+    throw std::invalid_argument("Process " + std::to_string(pid) + " is not declared");
   if (!tchecker::system::locs_t::is_location(src))
-    throw std::invalid_argument("Source location is not declared");
+    throw std::invalid_argument("Source location " + std::to_string(src) + " is not declared");
   if (!tchecker::system::locs_t::is_location(tgt))
-    throw std::invalid_argument("Traget location is not declared");
+    throw std::invalid_argument("Traget location " + std::to_string(tgt) + " is not declared");
   if (!tchecker::system::events_t::is_event(event_id))
-    throw std::invalid_argument("Event is not declared");
+    throw std::invalid_argument("Event " + std::to_string(event_id) + " is not declared");
   tchecker::system::edges_t::add_edge(pid, src, tgt, event_id, attr);
 }
 
@@ -161,14 +162,14 @@ void system_t::add_intvar(std::string const & name, tchecker::intvar_id_t size, 
                           tchecker::integer_t max, tchecker::integer_t initial, tchecker::system::attributes_t const & attr)
 {
   if (has_variable(name))
-    throw std::invalid_argument("Variable is already declared");
+    throw std::invalid_argument("Variable " + name + " is already declared");
   tchecker::system::intvars_t::add_intvar(name, size, min, max, initial, attr);
 }
 
 void system_t::add_location(tchecker::process_id_t pid, std::string const & name, tchecker::system::attributes_t const & attr)
 {
   if (!tchecker::system::processes_t::is_process(pid))
-    throw std::invalid_argument("Process is not declared");
+    throw std::invalid_argument("Process " + std::to_string(pid) + " is not declared");
   tchecker::system::locs_t::add_location(pid, name, attr);
 }
 
@@ -177,9 +178,9 @@ void system_t::add_synchronization(std::vector<tchecker::system::sync_constraint
 {
   for (tchecker::system::sync_constraint_t const & c : v) {
     if (!tchecker::system::processes_t::is_process(c.pid()))
-      throw std::invalid_argument("Process id not declared");
+      throw std::invalid_argument("Process " + std::to_string(c.pid()) + " is not declared");
     if (!tchecker::system::events_t::is_event(c.event_id()))
-      throw std::invalid_argument("Event is not declared");
+      throw std::invalid_argument("Event " + std::to_string(c.event_id()) + " is not declared");
   }
   tchecker::system::synchronizations_t::add_synchronization(v, attr);
 }

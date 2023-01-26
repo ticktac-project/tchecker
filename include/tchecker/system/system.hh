@@ -48,7 +48,7 @@ public:
    \param name : system name
    \param attr : system attributes
    */
-  system_t(std::string const & name, tchecker::system::attributes_t const & attr);
+  system_t(std::string const & name, tchecker::system::attributes_t const & attr = tchecker::system::attributes_t());
 
   /*!
    \brief Constructor
@@ -124,7 +124,7 @@ public:
    \throw std::invalid_argument : if pid, src, tgt or event_id do not correspond to a declared process/location/event
    */
   void add_edge(tchecker::process_id_t pid, tchecker::loc_id_t src, tchecker::loc_id_t tgt, tchecker::event_id_t event_id,
-                tchecker::system::attributes_t const & attr);
+                tchecker::system::attributes_t const & attr = tchecker::system::attributes_t());
 
   using tchecker::system::edges_t::edge;
   using tchecker::system::edges_t::edges;
@@ -171,7 +171,8 @@ public:
    \throw std::invalid_argument : if pid is not a declared process, of if name is already a declared location of process pid
    \note if attribute `initial` is in attr, then the location is added as an initial location of process pid
    */
-  void add_location(tchecker::process_id_t pid, std::string const & name, tchecker::system::attributes_t const & attr);
+  void add_location(tchecker::process_id_t pid, std::string const & name,
+                    tchecker::system::attributes_t const & attr = tchecker::system::attributes_t());
 
   using tchecker::system::locs_t::initial_locations;
   using tchecker::system::locs_t::is_initial_location;
