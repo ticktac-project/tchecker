@@ -203,7 +203,7 @@ public:
    \brief Accessor
    \param loc : location identifier
    \param event : event identifier
-   \return true if loc is mapped to event, false otherwise
+   \return true if loc is mapped to event (i.e. loc has an edge labelled by event), false otherwise
    */
   bool event(tchecker::loc_id_t loc, tchecker::event_id_t event) const;
 
