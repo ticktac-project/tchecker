@@ -107,7 +107,7 @@ std::ostream & dot_output(std::ostream & os, GRAPH const & g, std::string const 
     }
   };
 
-  // Sort nodes and given them an ID
+  // Sort nodes THEN given them an ID (nodes must all be added first)
   std::map<typename GRAPH::node_sptr_t, node_id_t, NODE_LE> nodes_map;
   for (typename GRAPH::node_sptr_t const & n : g.nodes())
     nodes_map.insert(std::make_pair(n, 0));
