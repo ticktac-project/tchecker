@@ -109,9 +109,22 @@ std::ostream & dot_output(std::ostream & os, GRAPH const & g, std::string const 
 
   // Sort nodes and given them an ID
   std::map<typename GRAPH::node_sptr_t, node_id_t, NODE_LE> nodes_map;
-  tchecker::node_id_t count = 0;
+  for (typename GRAPH::node_sptr_t const & n : g.nodes())
+    nodes_map.insert(std::make_pair(n, 0));
+
   for (typename GRAPH::node_sptr_t const & n : g.nodes()) {
-    nodes_map.insert(std::make_pair(n, count));
+    for (typename GRAPH::edge_sptr_t const & e : g.outgoing_edges(n)) {
+      typename GRAPH::node_sptr_t src = g.edge_src(e), tgt = g.edge_tgt(e);
+      if (nodes_map.find(src) == nodes_map.end())
+        nodes_map.insert(std::make_pair(src, 0));
+      if (nodes_map.find(tgt) == nodes_map.end())
+        nodes_map.insert(std::make_pair(tgt, 0));
+    }
+  }
+
+  tchecker::node_id_t count = 0;
+  for (auto && [n, id] : nodes_map) {
+    id = count;
     ++count;
   }
 
