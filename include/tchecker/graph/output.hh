@@ -112,28 +112,24 @@ std::ostream & dot_output(std::ostream & os, GRAPH const & g, std::string const 
   for (typename GRAPH::node_sptr_t const & n : g.nodes())
     nodes_map.insert(std::make_pair(n, 0));
 
-  for (typename GRAPH::node_sptr_t const & n : g.nodes()) {
-    for (typename GRAPH::edge_sptr_t const & e : g.outgoing_edges(n)) {
-      typename GRAPH::node_sptr_t src = g.edge_src(e), tgt = g.edge_tgt(e);
-      if (nodes_map.find(src) == nodes_map.end())
-        nodes_map.insert(std::make_pair(src, 0));
-      if (nodes_map.find(tgt) == nodes_map.end())
-        nodes_map.insert(std::make_pair(tgt, 0));
-    }
-  }
-
-  tchecker::node_id_t count = 0;
+  tchecker::node_id_t nodes_count = 0;
   for (auto && [n, id] : nodes_map) {
-    id = count;
-    ++count;
+    id = nodes_count;
+    ++nodes_count;
   }
 
   // Sort (extended) edges
   std::multiset<extended_edge_t, extended_edge_le_t> edges_set;
   for (typename GRAPH::node_sptr_t const & n : g.nodes()) {
     for (typename GRAPH::edge_sptr_t const & e : g.outgoing_edges(n)) {
-      node_id_t src = nodes_map[g.edge_src(e)];
-      node_id_t tgt = nodes_map[g.edge_tgt(e)];
+      auto it_src = nodes_map.find(g.edge_src(e));
+      if (it_src == nodes_map.end())
+        throw std::runtime_error("tchecker::graph::dot_output: source node not found");
+      auto it_tgt = nodes_map.find(g.edge_tgt(e));
+      if (it_tgt == nodes_map.end())
+        throw std::runtime_error("tchecker::graph::dot_output: target node not found");
+      node_id_t src = it_src->second;
+      node_id_t tgt = it_tgt->second;
       edges_set.insert(std::make_tuple(src, tgt, e));
     }
   }
