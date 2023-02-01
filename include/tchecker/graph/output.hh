@@ -109,23 +109,21 @@ std::ostream & dot_output(std::ostream & os, GRAPH const & g, std::string const 
 
   // Sort nodes and given them an ID
   std::map<typename GRAPH::node_sptr_t, node_id_t, NODE_LE> nodes_map;
-  for (typename GRAPH::node_sptr_t const & n : g.nodes())
-    nodes_map.insert(std::make_pair(n, 0));
-
-  node_id_t count = 0;
-  for (auto & [node, id] : nodes_map) {
-    id = count;
+  tchecker::node_id_t count = 0;
+  for (typename GRAPH::node_sptr_t const & n : g.nodes()) {
+    nodes_map.insert(std::make_pair(n, count));
     ++count;
   }
 
   // Sort (extended) edges
   std::multiset<extended_edge_t, extended_edge_le_t> edges_set;
-  for (typename GRAPH::node_sptr_t const & n : g.nodes())
+  for (typename GRAPH::node_sptr_t const & n : g.nodes()) {
     for (typename GRAPH::edge_sptr_t const & e : g.outgoing_edges(n)) {
       node_id_t src = nodes_map[g.edge_src(e)];
       node_id_t tgt = nodes_map[g.edge_tgt(e)];
       edges_set.insert(std::make_tuple(src, tgt, e));
     }
+  }
 
   // output graph
   std::map<std::string, std::string> attr;
