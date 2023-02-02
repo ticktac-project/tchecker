@@ -84,7 +84,7 @@ public:
    \param sync : synchronization constraint
    \return true if this and sync have same pid, same event_id, and same strength, false otherwise
   */
-  constexpr bool operator!=(tchecker::system::sync_constraint_t const & sync) const { return !(*this == sync); }
+  inline bool operator!=(tchecker::system::sync_constraint_t const & sync) const { return !(*this == sync); }
 
   /*!
    \brief Accessor
