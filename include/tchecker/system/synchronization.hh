@@ -73,6 +73,20 @@ public:
   tchecker::system::sync_constraint_t & operator=(tchecker::system::sync_constraint_t && sync) = default;
 
   /*!
+   \brief Equality predicate
+   \param sync : synchronization constraint
+   \return true if this and sync have same pid, same event_id, and same strength, false otherwise
+  */
+  bool operator==(tchecker::system::sync_constraint_t const & sync) const;
+
+  /*!
+   \brief Disequality predicate
+   \param sync : synchronization constraint
+   \return true if this and sync have same pid, same event_id, and same strength, false otherwise
+  */
+  constexpr bool operator!=(tchecker::system::sync_constraint_t const & sync) const { return !(*this == sync); }
+
+  /*!
    \brief Accessor
    \return process identifier
    */
@@ -198,7 +212,8 @@ public:
    \brief Add a synchronization
    \param v : synchronization constraints
    \param attr : synchronization attributes
-   \post a synchronization built from v  has been added with attributes attr
+   \post a synchronization built from v has been added with attributes attr
+   \throw std::invalid_argument : if v already exists
    */
   void add_synchronization(std::vector<tchecker::system::sync_constraint_t> const & v,
                            tchecker::system::attributes_t const & attr = tchecker::system::attributes_t());
@@ -227,6 +242,14 @@ public:
    \return range of synchronizations
    */
   tchecker::range_t<tchecker::system::synchronizations_t::const_iterator_t> synchronizations() const;
+
+  /*!
+   \brief Membership predicate
+   \param v : vector of synchronization constraints
+   \return true if this set of synchronizations already contains (a permutation of) v,
+   false otherwise
+  */
+  bool contains(std::vector<tchecker::system::sync_constraint_t> const & v) const;
 
 private:
   std::vector<tchecker::system::synchronization_t> _syncs; /*!< Synchronization vectors */
