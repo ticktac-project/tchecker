@@ -3,6 +3,7 @@
 // RUNNING_TIME_SECONDS  xxxx
 // STORED_STATES 4
 // VISITED_STATES 3
+// VISITED_TRANSITIONS 3
 digraph ad94_fig10_longVersion {
   0 [intval="", vloc="<l0>", zone="($0-$x<=0 & $0-$y<=0 & $x=$y)"]
   1 [intval="", vloc="<l1>", zone="($0-$x<=0 & $0-$y<=0 & 0<=$x-$y)"]
