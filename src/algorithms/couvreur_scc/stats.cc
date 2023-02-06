@@ -15,11 +15,15 @@ namespace algorithms {
 
 namespace couvscc {
 
-stats_t::stats_t() : _visited_states(0), _stored_states(0), _cycle(false) {}
+stats_t::stats_t() : _visited_states(0), _visited_transitions(0), _stored_states(0), _cycle(false) {}
 
 unsigned long & stats_t::visited_states() { return _visited_states; }
 
 unsigned long stats_t::visited_states() const { return _visited_states; }
+
+unsigned long & stats_t::visited_transitions() { return _visited_transitions; }
+
+unsigned long stats_t::visited_transitions() const { return _visited_transitions; }
 
 unsigned long & stats_t::stored_states() { return _stored_states; }
 
@@ -38,6 +42,10 @@ void stats_t::attributes(std::map<std::string, std::string> & m) const
   sstream.str("");
   sstream << _visited_states;
   m["VISITED_STATES"] = sstream.str();
+
+  sstream.str("");
+  sstream << _visited_transitions;
+  m["VISITED_TRANSITIONS"] = sstream.str();
 
   sstream.str("");
   sstream << _stored_states;

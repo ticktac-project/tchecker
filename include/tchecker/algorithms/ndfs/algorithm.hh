@@ -210,6 +210,7 @@ private:
       }
       else {
         node_sptr_t t = stack.top().pick_successor();
+        ++stats.visited_transitions_blue();
         if (t->color() == tchecker::algorithms::ndfs::CYAN && (accepting(s, ts, labels) || accepting(t, ts, labels))) {
           stats.cycle() = true;
           break;
@@ -301,6 +302,7 @@ private:
         stack.pop();
       else {
         node_sptr_t t = top.pick_successor(graph);
+        ++stats.visited_transitions_red();
         if (t->color() == tchecker::algorithms::ndfs::CYAN) {
           stats.cycle() = true;
           break;

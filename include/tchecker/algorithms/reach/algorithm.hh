@@ -147,6 +147,8 @@ private:
         if (is_new_node)
           waiting.insert(next_node);
         graph.add_edge(node, next_node, *t);
+
+        ++stats.visited_transitions();
       }
       sst.clear();
     }

@@ -48,6 +48,18 @@ public:
   unsigned long visited_states() const;
 
   /*!
+   \brief Accessor
+   \return A reference to the number of visited transitions
+  */
+  unsigned long & visited_transitions();
+
+  /*!
+  \brief Accessor
+  \return Number of visited transitions
+  */
+  unsigned long visited_transitions() const;
+
+  /*!
   \brief Accessor
   \return Reference to the reachable state flag
   */
@@ -67,8 +79,9 @@ public:
   void attributes(std::map<std::string, std::string> & m) const;
 
 private:
-  unsigned long _visited_states; /*!< Number of visited states */
-  bool _reachable;               /*!< Reachability of satisfying state */
+  unsigned long _visited_states;      /*!< Number of visited states */
+  unsigned long _visited_transitions; /*!< Number of visited transitions */
+  bool _reachable;                    /*!< Reachability of satisfying state */
 };
 
 } // end of namespace reach

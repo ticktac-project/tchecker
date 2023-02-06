@@ -49,6 +49,18 @@ public:
 
   /*!
    \brief Accessor
+   \return A reference to the number of visited transitions
+   */
+  unsigned long & visited_transitions();
+
+  /*!
+   \brief Accessor
+   \return the number of visited transitions
+   */
+  unsigned long visited_transitions() const;
+
+  /*!
+   \brief Accessor
    \return A reference to the number of stored states
    */
   unsigned long & stored_states();
@@ -79,9 +91,10 @@ public:
   void attributes(std::map<std::string, std::string> & m) const;
 
 private:
-  unsigned long _visited_states; /*!< Number of visited states */
-  unsigned long _stored_states;  /*!< Number of stored states */
-  bool _cycle;                   /*!< Reachability of satisfying cycle */
+  unsigned long _visited_states;      /*!< Number of visited states */
+  unsigned long _visited_transitions; /*!< Number of visited transitions */
+  unsigned long _stored_states;       /*!< Number of stored states */
+  bool _cycle;                        /*!< Reachability of satisfying cycle */
 };
 
 } // namespace couvscc

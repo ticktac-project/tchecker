@@ -159,6 +159,7 @@ public:
 
     ts.next(node->state_ptr(), sst);
     for (auto && [status, s, t] : sst) {
+      ++stats.visited_transitions();
       typename GRAPH::node_sptr_t next_node = graph.add_node(s);
       if (graph.is_covered(next_node, covering_node)) {
         graph.add_edge(node, covering_node, tchecker::graph::subsumption::EDGE_SUBSUMPTION, *t);
