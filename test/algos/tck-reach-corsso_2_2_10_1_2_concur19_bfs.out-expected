@@ -3,6 +3,7 @@
 // RUNNING_TIME_SECONDS  xxxx
 // STORED_STATES 112
 // VISITED_STATES 86
+// VISITED_TRANSITIONS 224
 digraph CorSSO_2_2_10_1_2 {
   0 [intval="a1=0,p1=0,a2=0,p2=0", vloc="<auth,auth>", zone="($0-$x1<=0 & $0-$y1<=0 & $0-$x2<=0 & $0-$y2<=0 & $1-$x1<=0 & $1-$y1<=0 & $1-$x2<=0 & $1-$y2<=0 & $x1=$y1 & $x1=$x2 & $x1=$y2 & $y1=$x2 & $y1=$y2 & $x2=$y2)"]
   1 [intval="a1=0,p1=0,a2=0,p2=1", vloc="<auth,auth>", zone="($0-$x1<=0 & $0-$y1<=0 & $1-$x1<=0 & $1-$y1<=0 & $1-$x2<=0 & $1-$y2<=0 & $x1=$y1 & 0<=$x1-$x2 & 0<=$x1-$y2 & 0<=$y1-$x2 & 0<=$y1-$y2 & $x2=$y2)"]

@@ -1,6 +1,7 @@
 // REACHABLE false
 // RUNNING_TIME_SECONDS  xxxx
 // VISITED_STATES 1
+// VISITED_TRANSITIONS 0
 digraph small {
   0 [intval="", vloc="<l0>", zone="()"]
 }

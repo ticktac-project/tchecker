@@ -1,6 +1,7 @@
 // REACHABLE false
 // RUNNING_TIME_SECONDS  xxxx
 // VISITED_STATES 765
+// VISITED_TRANSITIONS 1503
 digraph train_gate_3 {
   0 [intval="buffer[0]=1,buffer[1]=1,buffer[2]=1,head=0,length=0", vloc="<Free,Safe,Safe,Safe>", zone="(0<=x1 & 0<=x2 & 0<=x3)"]
   1 [intval="buffer[0]=1,buffer[1]=1,buffer[2]=1,head=1,length=0", vloc="<Free,Safe,Safe,Safe>", zone="(0<=x1 & 0<=x2 & 0<=x3)"]

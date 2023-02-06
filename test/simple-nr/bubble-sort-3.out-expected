@@ -1,6 +1,7 @@
 // REACHABLE false
 // RUNNING_TIME_SECONDS  xxxx
 // VISITED_STATES 22
+// VISITED_TRANSITIONS 21
 digraph S {
   0 [intval="n=20,A[0]=0,A[1]=0,A[2]=0,A[3]=0,A[4]=0,A[5]=0,A[6]=0,A[7]=0,A[8]=0,A[9]=0,A[10]=0,A[11]=0,A[12]=0,A[13]=0,A[14]=0,A[15]=0,A[16]=0,A[17]=0,A[18]=0,A[19]=0,i=0,j=0,tmp=0,error=0", vloc="<init>", zone="()"]
   1 [intval="n=20,A[0]=68,A[1]=88,A[2]=17,A[3]=98,A[4]=27,A[5]=45,A[6]=41,A[7]=22,A[8]=10,A[9]=61,A[10]=52,A[11]=59,A[12]=58,A[13]=87,A[14]=75,A[15]=68,A[16]=33,A[17]=12,A[18]=61,A[19]=96,i=0,j=0,tmp=0,error=0", vloc="<A>", zone="()"]

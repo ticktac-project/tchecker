@@ -3,6 +3,7 @@
 // RUNNING_TIME_SECONDS  xxxx
 // STORED_STATES 56
 // VISITED_STATES 56
+// VISITED_TRANSITIONS 84
 digraph train_gate_2 {
   0 [intval="buffer[0]=1,buffer[1]=1,head=0,length=0", vloc="<Free,Safe,Safe>", zone="(0<=x1 & 0<=x2)"]
   1 [intval="buffer[0]=1,buffer[1]=1,head=1,length=0", vloc="<Free,Safe,Safe>", zone="(0<=x1 & 0<=x2)"]

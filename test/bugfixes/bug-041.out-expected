@@ -4,6 +4,7 @@ COVREAH output
 // RUNNING_TIME_SECONDS  xxxx
 // STORED_STATES 4
 // VISITED_STATES 4
+// VISITED_TRANSITIONS 4
 digraph fischer_async_2_10 {
   0 [intval="id1=0,id2=0", vloc="<A,A,l,l>", zone="(0<=x1 & 0<=x2)"]
   1 [intval="id1=0,id2=0", vloc="<A,req,l,l>", zone="(0<=x1 & 0<=x2)"]
@@ -18,6 +19,7 @@ EXPLORE output
 // REACHABLE false
 // RUNNING_TIME_SECONDS  xxxx
 // VISITED_STATES 4
+// VISITED_TRANSITIONS 4
 digraph fischer_async_2_10 {
   0 [intval="id1=0,id2=0", vloc="<A,A,l,l>", zone="(0<=x1 & 0<=x2)"]
   1 [intval="id1=0,id2=0", vloc="<A,req,l,l>", zone="(0<=x1 & 0<=x2)"]

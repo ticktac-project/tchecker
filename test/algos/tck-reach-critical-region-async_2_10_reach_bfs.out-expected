@@ -1,6 +1,7 @@
 // REACHABLE true
 // RUNNING_TIME_SECONDS  xxxx
 // VISITED_STATES 370
+// VISITED_TRANSITIONS 1161
 digraph critical_region_async_2_10 {
   0 [intval="id=0", vloc="<l,I,req,req,not_ready,not_ready>", zone="(20<x1 & 0<=x2)"]
   1 [intval="id=0", vloc="<l,I,req,req,not_ready,not_ready>", zone="(20<=x1 & 0<=x2)"]

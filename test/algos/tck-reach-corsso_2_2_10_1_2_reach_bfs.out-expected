@@ -1,6 +1,7 @@
 // REACHABLE true
 // RUNNING_TIME_SECONDS  xxxx
 // VISITED_STATES 266
+// VISITED_TRANSITIONS 661
 digraph CorSSO_2_2_10_1_2 {
   0 [intval="a1=0,p1=0,a2=0,p2=0", vloc="<auth,auth>", zone="(0<=x1 & 0<=y1 & 0<=x2 & 0<=y2 & x1-y1<=0 & x1-y2<=0 & 0<=y1-x2 & x2-y2<=0)"]
   1 [intval="a1=0,p1=0,a2=0,p2=1", vloc="<auth,auth>", zone="(0<=x1 & 4<y1 & 0<=x2 & 0<=y2 & x1-y1<=0 & 4<y1-x2 & x2-y2<=0)"]

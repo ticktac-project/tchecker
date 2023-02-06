@@ -3,6 +3,7 @@
 // RUNNING_TIME_SECONDS  xxxx
 // STORED_STATES 65
 // VISITED_STATES 65
+// VISITED_TRANSITIONS 120
 digraph fischer_async_3_10 {
   0 [intval="id=0", vloc="<A,A,A,l>", zone="(0<=x1 & 0<=x2 & 0<=x3)"]
   1 [intval="id=0", vloc="<A,A,req,l>", zone="(0<=x1 & 0<=x2 & 0<=x3)"]

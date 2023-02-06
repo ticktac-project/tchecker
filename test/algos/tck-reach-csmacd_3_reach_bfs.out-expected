@@ -1,6 +1,7 @@
 // REACHABLE false
 // RUNNING_TIME_SECONDS  xxxx
 // VISITED_STATES 391
+// VISITED_TRANSITIONS 757
 digraph csmacd_3_808_26 {
   0 [intval="j=1", vloc="<Idle,Wait,Wait,Wait>", zone="(0<=y & 0<=x1 & 0<=x2 & 0<=x3)"]
   1 [intval="j=1", vloc="<Idle,Wait,Wait,Retry>", zone="(0<=y & 0<=x1 & 0<=x2 & 28<x3)"]

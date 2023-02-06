@@ -3,6 +3,7 @@
 // RUNNING_TIME_SECONDS  xxxx
 // STORED_STATES 23
 // VISITED_STATES 12
+// VISITED_TRANSITIONS 25
 digraph critical_region_async_2_10 {
   0 [intval="id=0", vloc="<l,I,req,req,not_ready,not_ready>", zone="(0<=x1 & 0<=x2)"]
   1 [intval="id=0", vloc="<l,I,req,req,not_ready,testing>", zone="(0<=x1 & 0<=x2<=10 & 0<=x1-x2)"]

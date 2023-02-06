@@ -3,6 +3,7 @@
 // RUNNING_TIME_SECONDS  xxxx
 // STORED_STATES 765
 // VISITED_STATES 765
+// VISITED_TRANSITIONS 1503
 digraph train_gate_3 {
   0 [intval="buffer[0]=1,buffer[1]=1,buffer[2]=1,head=0,length=0", vloc="<Free,Safe,Safe,Safe>", zone="($0-$x1<=0 & $0-$x2<=0 & $0-$x3<=0 & $1-$x1<=0 & $1-$x2<=0 & $1-$x3<=0 & $2-$x1<=0 & $2-$x2<=0 & $2-$x3<=0 & $3-$x1<=0 & $3-$x2<=0 & $3-$x3<=0 & $x1=$x2 & $x1=$x3 & $x2=$x3)"]
   1 [intval="buffer[0]=1,buffer[1]=1,buffer[2]=1,head=1,length=0", vloc="<Free,Safe,Safe,Safe>", zone="($0-$x1<=-3 & $0-$x2<=-13 & $0-$x3<=-13 & $1-$x1<=-3 & $1-$x2<=-13 & $1-$x3<=-13 & $2-$x2<=0 & $2-$x3<=0 & $3-$x2<=0 & $3-$x3<=0 & $x1-$x2<=-10 & $x1-$x3<=-10 & $x2=$x3)"]

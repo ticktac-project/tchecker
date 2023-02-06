@@ -1,6 +1,7 @@
 // REACHABLE false
 // RUNNING_TIME_SECONDS  xxxx
 // VISITED_STATES 34
+// VISITED_TRANSITIONS 34
 digraph S {
   0 [intval="Un=1", vloc="<A>", zone="()"]
   1 [intval="Un=2", vloc="<A>", zone="()"]

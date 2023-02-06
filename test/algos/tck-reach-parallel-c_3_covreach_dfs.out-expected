@@ -3,6 +3,7 @@
 // RUNNING_TIME_SECONDS  xxxx
 // STORED_STATES 64
 // VISITED_STATES 83
+// VISITED_TRANSITIONS 290
 digraph parallel_bis3 {
   0 [intval="", vloc="<A,A,A,U>", zone="(0<=x1 & 0<=x2 & 0<=x3 & 0<=y)"]
   1 [intval="", vloc="<A,A,B,U>", zone="(0<=x1 & 0<=x2 & 0<=x3 & 0<=y)"]

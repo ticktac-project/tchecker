@@ -1,6 +1,7 @@
 // REACHABLE false
 // RUNNING_TIME_SECONDS  xxxx
 // VISITED_STATES 10
+// VISITED_TRANSITIONS 10
 digraph bug045 {
   0 [intval="count=0", vloc="<l0>", zone="()"]
   1 [intval="count=1", vloc="<l0>", zone="()"]
