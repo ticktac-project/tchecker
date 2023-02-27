@@ -20,7 +20,8 @@ set(BUGFIX_TESTS
     bug-041.sh
     bug-045.tck
     bug-046.tck
-
+    bug-052.tck
+    
     memleak-01.tck
     )
 
