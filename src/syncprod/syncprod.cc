@@ -5,6 +5,8 @@
  *
  */
 
+#include <sstream>
+
 #include "tchecker/syncprod/syncprod.hh"
 
 namespace tchecker {
@@ -174,6 +176,19 @@ boost::dynamic_bitset<> labels(tchecker::syncprod::system_t const & system, tche
   return tchecker::syncprod::labels(system, s.vloc());
 }
 
+std::string labels_str(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t const & s)
+{
+  std::stringstream ss;
+  boost::dynamic_bitset<> slabels = tchecker::syncprod::labels(system, s);
+  std::size_t const first = slabels.find_first();
+  for (std::size_t i = first; i != slabels.npos; i = slabels.find_next(i)) {
+    if (i != first)
+      ss << ",";
+    ss << system.label_name(i);
+  }
+  return ss.str();
+}
+
 /* is_valid_final */
 
 bool is_valid_final(tchecker::syncprod::system_t const & system, tchecker::vloc_t const & vloc) { return true; }
@@ -199,6 +214,7 @@ void attributes(tchecker::syncprod::system_t const & system, tchecker::syncprod:
                 std::map<std::string, std::string> & m)
 {
   m["vloc"] = tchecker::to_string(s.vloc(), system.as_system_system());
+  m["labels"] = tchecker::syncprod::labels_str(system, s);
 }
 
 void attributes(tchecker::syncprod::system_t const & system, tchecker::syncprod::transition_t const & t,

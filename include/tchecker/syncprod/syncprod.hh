@@ -296,6 +296,14 @@ boost::dynamic_bitset<> labels(tchecker::syncprod::system_t const & system, tche
 boost::dynamic_bitset<> labels(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t const & s);
 
 /*!
+ \brief Compute string representation of the labels of in state
+ \param system : a system
+ \param s : a state
+ \return a comma-separated list of the labels in state s
+*/
+std::string labels_str(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t const & s);
+
+/*!
  \brief Checks is a state is a valid final state
  \param system : a system
  \param s : a state

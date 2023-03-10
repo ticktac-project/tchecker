@@ -262,6 +262,11 @@ using shared_vedge_t = tchecker::make_shared_t<tchecker::vedge_t>;
 */
 using vedge_sptr_t = tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t>;
 
+/*!
+ \brief Type of shared pointer to a const tuple of edges
+*/
+using const_vedge_sptr_t = tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t const>;
+
 } // end of namespace tchecker
 
 #endif // TCHECKER_VEDGE_HH

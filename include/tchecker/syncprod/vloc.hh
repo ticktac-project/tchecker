@@ -184,6 +184,11 @@ using shared_vloc_t = tchecker::make_shared_t<tchecker::vloc_t>;
 */
 using vloc_sptr_t = tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t>;
 
+/*!
+ \brief Type of shared pointer to a const tuple of locations
+*/
+using const_vloc_sptr_t = tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const>;
+
 } // end of namespace tchecker
 
 #endif // TCHECKER_VLOC_HH

@@ -5,6 +5,6 @@
 // VISITED_STATES 1
 // VISITED_TRANSITIONS 1
 digraph S {
-  0 [intval="", vloc="<A>", zone="()"]
+  0 [initial="true", intval="", labels="", vloc="<A>", zone="()"]
   0 -> 0 [edge_type="subsumption", vedge="<P@tau>"]
 }

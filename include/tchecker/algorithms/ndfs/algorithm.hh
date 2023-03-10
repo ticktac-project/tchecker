@@ -116,6 +116,7 @@ public:
     ts.initial(sst);
     for (auto && [status, s, t] : sst) {
       auto && [is_new_node, initial_node] = graph.add_node(s);
+      initial_node->initial(true);
       if (initial_node->color() == tchecker::algorithms::ndfs::WHITE)
         dfs_blue(ts, graph, labels, stats, initial_node);
       if (stats.cycle())

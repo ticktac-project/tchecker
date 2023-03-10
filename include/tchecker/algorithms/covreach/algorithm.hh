@@ -83,6 +83,7 @@ public:
       ++stats.visited_states();
 
       if (accepting(node, ts, labels)) {
+        node->final(true);
         stats.reachable() = true;
         break;
       }
@@ -128,6 +129,7 @@ public:
     ts.initial(sst);
     for (auto && [status, s, t] : sst) {
       typename GRAPH::node_sptr_t n = graph.add_node(s);
+      n->initial(true);
       if (graph.is_covered(n, covering_node)) {
         graph.remove_node(n);
         ++stats.covered_states();

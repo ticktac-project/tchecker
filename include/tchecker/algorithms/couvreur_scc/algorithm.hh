@@ -122,6 +122,7 @@ public:
     ts.initial(sst);
     for (auto && [status, s, t] : sst) {
       auto && [is_new_node, initial_node] = graph.add_node(s);
+      initial_node->initial(true);
       couv_dfs(initial_node, ts, graph, labels, stats);
       if (stats.cycle())
         break;

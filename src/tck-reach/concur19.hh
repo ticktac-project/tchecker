@@ -15,6 +15,8 @@
 #include "tchecker/algorithms/covreach/stats.hh"
 #include "tchecker/clockbounds/clockbounds.hh"
 #include "tchecker/clockbounds/solver.hh"
+#include "tchecker/graph/edge.hh"
+#include "tchecker/graph/node.hh"
 #include "tchecker/graph/output.hh"
 #include "tchecker/graph/subsumption_graph.hh"
 #include "tchecker/refzg/refzg.hh"
@@ -42,37 +44,27 @@ namespace concur19 {
  \class node_t
  \brief Node of the subsumption graph over the local-time zone graph
  */
-class node_t : public tchecker::waiting::element_t {
+class node_t : public tchecker::waiting::element_t,
+               public tchecker::graph::node_flags_t,
+               public tchecker::graph::node_refzg_state_t {
 public:
   /*!
    \brief Constructor
    \param s : a state of the local-time zone graph
-   \post this node keeps a shared pointer to s
+   \param initial : initial node flag
+   \param final : final node flag
+   \post this node keeps a shared pointer to s, and has initial/final node flags as specified
    */
-  node_t(tchecker::refzg::state_sptr_t const & s);
+  node_t(tchecker::refzg::state_sptr_t const & s, bool initial = false, bool final = false);
 
   /*!
    \brief Constructor
    \param s : a state of the local-time zone graph
-   \post this node keeps a shared pointer to s
+   \param initial : initial node flag
+   \param final : final node flag
+   \post this node keeps a shared pointer to s, and has initial/final node flags as specified
    */
-  node_t(tchecker::refzg::const_state_sptr_t const & s);
-
-  /*!
-  \brief Accessor
-  \return shared pointer to the state of the lcoal-time zone graph  in
-  this node
-  */
-  inline tchecker::refzg::const_state_sptr_t state_ptr() const { return _state; }
-
-  /*!
-  \brief Accessor
-  \return state of the local-time zone graph in this node
-  */
-  inline tchecker::refzg::state_t const & state() const { return *_state; }
-
-private:
-  tchecker::refzg::const_state_sptr_t _state; /*!< State of the local-time zone graph */
+  node_t(tchecker::refzg::const_state_sptr_t const & s, bool initial = false, bool final = false);
 };
 
 /*!
@@ -155,7 +147,7 @@ private:
  \class edge_t
  \brief Edge of the subsumption graph of a local-time zone graph
 */
-class edge_t {
+class edge_t : public tchecker::graph::edge_vedge_t {
 public:
   /*!
    \brief Constructor
@@ -163,21 +155,6 @@ public:
    \post this node keeps a shared pointer on the vedge in t
   */
   edge_t(tchecker::refzg::transition_t const & t);
-
-  /*!
-   \brief Accessor
-   \return zone graph vedge in this edge
-  */
-  inline tchecker::vedge_t const & vedge() const { return *_vedge; }
-
-  /*!
-   \brief Accessor
-   \return shared pointer to the zone graph vedge in this edge
-  */
-  inline tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t const> vedge_ptr() const { return _vedge; }
-
-private:
-  tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t const> _vedge; /*!< Tuple of edges */
 };
 
 /*!

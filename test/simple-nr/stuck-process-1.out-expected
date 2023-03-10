@@ -3,5 +3,5 @@
 // VISITED_STATES 1
 // VISITED_TRANSITIONS 0
 digraph S {
-  0 [intval="", vloc="<A,sink>", zone="()"]
+  0 [initial="true", intval="", labels="", vloc="<A,sink>", zone="()"]
 }

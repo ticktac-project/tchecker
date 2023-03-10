@@ -68,6 +68,7 @@ public:
     ts.initial(sst);
     for (auto && [status, s, t] : sst) {
       auto && [is_new_node, initial_node] = graph.add_node(s);
+      initial_node->initial(true);
       if (is_new_node)
         waiting->insert(initial_node);
     }
@@ -137,6 +138,7 @@ private:
       ++stats.visited_states();
 
       if (accepting(node, ts, labels)) {
+        node->final(true);
         stats.reachable() = true;
         break;
       }

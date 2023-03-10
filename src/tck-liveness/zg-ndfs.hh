@@ -16,6 +16,8 @@
 #include "tchecker/algorithms/ndfs/algorithm.hh"
 #include "tchecker/algorithms/ndfs/graph.hh"
 #include "tchecker/algorithms/ndfs/stats.hh"
+#include "tchecker/graph/edge.hh"
+#include "tchecker/graph/node.hh"
 #include "tchecker/graph/reachability_graph.hh"
 #include "tchecker/parsing/declaration.hh"
 #include "tchecker/syncprod/vedge.hh"
@@ -34,36 +36,27 @@ namespace zg_ndfs {
  \class node_t
  \brief Node of the liveness graph of a zone graph
  */
-class node_t : public tchecker::algorithms::ndfs::node_t {
+class node_t : public tchecker::algorithms::ndfs::node_t,
+               public tchecker::graph::node_flags_t,
+               public tchecker::graph::node_zg_state_t {
 public:
   /*!
    \brief Constructor
    \param s : a zone graph state
-   \post this node keeps a shared pointer to s
+   \param initial : initial node flag
+   \param final : final node flag
+   \post this node keeps a shared pointer to s, and has initial/final node flags as specified
    */
-  node_t(tchecker::zg::state_sptr_t const & s);
+  node_t(tchecker::zg::state_sptr_t const & s, bool initial = false, bool final = false);
 
   /*!
    \brief Constructor
    \param s : a zone graph state
-   \post this node keeps a shared pointer to s
+   \param initial : initial node flag
+   \param final : final node flag
+   \post this node keeps a shared pointer to s, and has initial/final node flags as specified
    */
-  node_t(tchecker::zg::const_state_sptr_t const & s);
-
-  /*!
-  \brief Accessor
-  \return shared pointer to zone graph state in this node
-  */
-  inline tchecker::zg::const_state_sptr_t state_ptr() const { return _state; }
-
-  /*!
-  \brief Accessor
-  \return zone graph state in this node
-  */
-  inline tchecker::zg::state_t const & state() const { return *_state; }
-
-private:
-  tchecker::zg::const_state_sptr_t _state; /*!< State of the zone graph */
+  node_t(tchecker::zg::const_state_sptr_t const & s, bool initial = false, bool final = false);
 };
 
 /*!
@@ -99,7 +92,7 @@ public:
  \class edge_t
  \brief Edge of the liveness graph of a zone graph
 */
-class edge_t {
+class edge_t : public tchecker::graph::edge_vedge_t {
 public:
   /*!
    \brief Constructor
@@ -107,21 +100,6 @@ public:
    \post this node keeps a shared pointer on the vedge in t
   */
   edge_t(tchecker::zg::transition_t const & t);
-
-  /*!
-   \brief Accessor
-   \return zone graph vedge in this edge
-  */
-  inline tchecker::vedge_t const & vedge() const { return *_vedge; }
-
-  /*!
-   \brief Accessor
-   \return shared pointer to the zone graph vedge in this edge
-  */
-  inline tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t const> vedge_ptr() const { return _vedge; }
-
-private:
-  tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t const> _vedge; /*!< Tuple of edges */
 };
 
 /*!

@@ -3,5 +3,5 @@
 // VISITED_STATES 1
 // VISITED_TRANSITIONS 0
 digraph bug {
-  0 [intval="", vloc="<l0>", zone="(0<=x & 0<=y)"]
+  0 [initial="true", intval="", labels="", vloc="<l0>", zone="(0<=x & 0<=y)"]
 }
