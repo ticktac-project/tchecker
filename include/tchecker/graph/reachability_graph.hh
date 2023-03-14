@@ -539,9 +539,9 @@ public:
   operator=(tchecker::graph::reachability::multigraph_t<NODE, EDGE> &&) = delete;
 
   /*!
-  \brief Clear the tree
-  \post this tree is empty
-  \note all nodes and edges allocated by this tree have been destructed
+  \brief Clear the graph
+  \post this graph is empty
+  \note all nodes and edges allocated by this graph have been destructed
   */
   void clear()
   {
@@ -554,8 +554,8 @@ public:
   /*!
   \brief Add a node
   \param args : arguments to a constructor of type NODE
-  \post an instance of NODE(args) has been added to the tree
-  \return the node that has been added to the tree
+  \post an instance of NODE(args) has been added to this graph
+  \return the node that has been added to this graph
   */
   template <class... ARGS> node_sptr_t add_node(ARGS &&... args)
   {
@@ -569,9 +569,9 @@ public:
    \param n1 : source node
    \param n2 : target node
    \param args : arguments to a constructor of EDGE
-   \pre n1 and n2 should be nodes of this tree
-   \post an instance of EDGE(args) from node n1 to node n2 has been added to the
-   tree
+   \pre n1 and n2 should be nodes of this graph
+   \post an instance of EDGE(args) from node n1 to node n2 has been added to this
+   graph
    */
   template <class... ARGS> void add_edge(node_sptr_t const & n1, node_sptr_t const & n2, ARGS &&... args)
   {
@@ -586,7 +586,7 @@ public:
 
   /*!
   \brief Accessor
-  \return range of nodes in the tree
+  \return range of nodes in this graph
   */
   inline tchecker::range_t<tchecker::graph::reachability::multigraph_t<NODE, EDGE>::const_node_iterator_t> nodes() const
   {
