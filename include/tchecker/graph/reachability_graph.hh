@@ -120,11 +120,10 @@ public:
 template <class NODE, class EDGE> class allocation_size_t<tchecker::graph::reachability::node_t<NODE, EDGE>> {
 public:
   /*!
-     \brief Allocation size for objects of type tchecker::graph::reachability::node_t
-     \param args : parameters needed to determine the allocation size of
-     tchecker::graph::reachability::node_t
-     */
-  template <class... ARGS> static std::size_t alloc_size(ARGS &&... args)
+   \brief Allocation size for objects of type tchecker::graph::reachability::node_t
+   \note unsused parameters
+   */
+  template <class... ARGS> static std::size_t alloc_size(ARGS &&...)
   {
     return sizeof(tchecker::graph::reachability::node_t<NODE, EDGE>);
   }
@@ -137,11 +136,10 @@ public:
 template <class NODE, class EDGE> class allocation_size_t<tchecker::graph::reachability::edge_t<NODE, EDGE>> {
 public:
   /*!
-     \brief Allocation size for objects of type tchecker::graph::reachability::edge_t
-     \param args : parameters needed to determine the allocation size of
-     tchecker::graph::reachability::edge_t
-     */
-  template <class... ARGS> static std::size_t alloc_size(ARGS &&... args)
+   \brief Allocation size for objects of type tchecker::graph::reachability::edge_t
+   \note unused parameters
+   */
+  template <class... ARGS> static std::size_t alloc_size(ARGS &&...)
   {
     return sizeof(tchecker::graph::reachability::edge_t<NODE, EDGE>);
   }
