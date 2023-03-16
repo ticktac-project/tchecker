@@ -13,6 +13,7 @@
 #include "test-dbm.hh"
 #include "test-delay_allowed.hh"
 #include "test-extract_variables.hh"
+#include "test-finite-path.hh"
 #include "test-guard_weak_sync.hh"
 #include "test-hashtable.hh"
 #include "test-labels.hh"

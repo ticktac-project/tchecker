@@ -13,6 +13,7 @@ set(GRAPH_SRC
     ${TCHECKER_INCLUDE_DIR}/tchecker/graph/find_graph.hh
     ${TCHECKER_INCLUDE_DIR}/tchecker/graph/node.hh
     ${TCHECKER_INCLUDE_DIR}/tchecker/graph/output.hh
+    ${TCHECKER_INCLUDE_DIR}/tchecker/graph/path.hh
     ${TCHECKER_INCLUDE_DIR}/tchecker/graph/reachability_graph.hh
     ${TCHECKER_INCLUDE_DIR}/tchecker/graph/subsumption_graph.hh
     PARENT_SCOPE)
