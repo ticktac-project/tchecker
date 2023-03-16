@@ -159,6 +159,10 @@ void attributes(tchecker::ta::system_t const & system, tchecker::ta::transition_
                 std::map<std::string, std::string> & m)
 {
   tchecker::syncprod::attributes(system.as_syncprod_system(), t, m);
+  m["src_invariant"] = tchecker::to_string(t.src_invariant_container(), system.clock_variables().index());
+  m["guard"] = tchecker::to_string(t.guard_container(), system.clock_variables().index());
+  m["reset"] = tchecker::to_string(t.reset_container(), system.clock_variables().index());
+  m["tgt_invariant"] = tchecker::to_string(t.tgt_invariant_container(), system.clock_variables().index());
 }
 
 /* ta_impl_t */

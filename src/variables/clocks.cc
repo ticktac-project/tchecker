@@ -7,6 +7,7 @@
 
 #include <functional>
 #include <limits>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -86,6 +87,13 @@ std::ostream & output(std::ostream & os, tchecker::clock_constraint_t const & c,
   return os;
 }
 
+std::string to_string(tchecker::clock_constraint_t const & c, tchecker::clock_index_t const & index)
+{
+  std::stringstream ss;
+  tchecker::output(ss, c, index);
+  return ss.str();
+}
+
 int lexical_cmp(tchecker::clock_constraint_t const & c1, tchecker::clock_constraint_t const & c2)
 {
   if (c1.id1() != c2.id1())
@@ -103,6 +111,13 @@ int lexical_cmp(tchecker::clock_constraint_container_t const & c1, tchecker::clo
                                tchecker::clock_constraint_container_const_iterator_t,
                                int (*)(tchecker::clock_constraint_t const &, tchecker::clock_constraint_t const &)>(
       c1.begin(), c1.end(), c2.begin(), c2.end(), tchecker::lexical_cmp);
+}
+
+std::string to_string(tchecker::clock_constraint_container_t const & c, tchecker::clock_index_t const & index)
+{
+  std::stringstream ss;
+  tchecker::output_clock_constraints(ss, tchecker::make_range(c.begin(), c.end()), index);
+  return ss.str();
 }
 
 /* clock_reset_t */
@@ -155,6 +170,13 @@ std::ostream & output(std::ostream & os, tchecker::clock_reset_t const & r, tche
   return os;
 }
 
+std::string to_string(tchecker::clock_reset_t const & r, tchecker::clock_index_t const & index)
+{
+  std::stringstream ss;
+  tchecker::output(ss, r, index);
+  return ss.str();
+}
+
 int lexical_cmp(tchecker::clock_reset_t const & r1, tchecker::clock_reset_t const & r2)
 {
   if (r1.left_id() != r2.left_id())
@@ -170,6 +192,13 @@ int lexical_cmp(tchecker::clock_reset_container_t const & c1, tchecker::clock_re
                                tchecker::clock_reset_container_const_iterator_t,
                                int (*)(tchecker::clock_reset_t const &, tchecker::clock_reset_t const &)>(
       c1.begin(), c1.end(), c2.begin(), c2.end(), tchecker::lexical_cmp);
+}
+
+std::string to_string(tchecker::clock_reset_container_t const & c, tchecker::clock_index_t const & index)
+{
+  std::stringstream ss;
+  tchecker::output_clock_resets(ss, tchecker::make_range(c.begin(), c.end()), index);
+  return ss.str();
 }
 
 /* reference_clock_variables_t */

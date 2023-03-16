@@ -246,6 +246,14 @@ std::ostream & operator<<(std::ostream & os, tchecker::clock_constraint_t const 
 std::ostream & output(std::ostream & os, tchecker::clock_constraint_t const & c, tchecker::clock_index_t const & index);
 
 /*!
+ \brief String conversion
+ \param c : clock constraint
+ \param index : clock index
+ \return a string representation of c using index
+*/
+std::string to_string(tchecker::clock_constraint_t const & c, tchecker::clock_index_t const & index);
+
+/*!
  \brief Output a range of clock constraints
  \param os : output stream
  \param range : range of clock constraints
@@ -294,6 +302,14 @@ using clock_constraint_container_const_iterator_t = tchecker::clock_constraint_c
  w.r.t. lexical ordering, a positive value otherwise
  */
 int lexical_cmp(tchecker::clock_constraint_container_t const & c1, tchecker::clock_constraint_container_t const & c2);
+
+/*!
+ \brief String conversion
+ \param c : clock constraint container
+ \param index : clock index
+ \return a string representation of c using index
+*/
+std::string to_string(tchecker::clock_constraint_container_t const & c, tchecker::clock_index_t const & index);
 
 /*!
  \class clock_reset_t
@@ -454,6 +470,14 @@ std::ostream & operator<<(std::ostream & os, tchecker::clock_reset_t const & r);
 std::ostream & output(std::ostream & os, tchecker::clock_reset_t const & r, tchecker::clock_index_t const & index);
 
 /*!
+ \brief String conversion
+ \param r : clock reset
+ \param index : clock index
+ \return a string representation of r using index
+*/
+std::string to_string(tchecker::clock_reset_t const & r, tchecker::clock_index_t const & index);
+
+/*!
  \brief Output a range of clock resets
  \param os : output stream
  \param range : range of clock resets
@@ -502,6 +526,14 @@ using clock_reset_container_const_iterator_t = tchecker::clock_reset_container_t
  w.r.t. lexical ordering, a positive value otherwise
  */
 int lexical_cmp(tchecker::clock_reset_container_t const & c1, tchecker::clock_reset_container_t const & c2);
+
+/*!
+ \brief String conversion
+ \param c : clock reset container
+ \param index : clock index
+ \return a string representation of c using index
+*/
+std::string to_string(tchecker::clock_reset_container_t const & c, tchecker::clock_index_t const & index);
 
 /*!
  \class reference_clock_variables_t
