@@ -325,12 +325,11 @@ public:
    \brief Constructor
    \param y : shared pointer to copy from
    \tparam Y : type of object pointed to by y
-   \pre dynamic cast of Y* into T* should be allowed
    \post this object holds a reference to the object pointed by y
    */
   template <class Y> explicit intrusive_shared_ptr_t(tchecker::intrusive_shared_ptr_t<Y> const & y) : _t(nullptr)
   {
-    reset(dynamic_cast<T *>(y._t));
+    reset(y._t); // DO NOT dynamic_cast<T *>(y._t) AS IT BREAKS REFERENCE COUNTER
   }
 
   /*!
@@ -349,13 +348,12 @@ public:
    \brief Move constructor
    \param y : shared pointer to move from
    \tparam Y : type of object pointed to by y
-   \pre dynamic cast of Y* into T* should be allowed
    \post this object holds a reference to the object pointed by y, and y
    has been reset to nullptr
    */
   template <class Y> explicit intrusive_shared_ptr_t(tchecker::intrusive_shared_ptr_t<Y> && y) : _t(nullptr)
   {
-    reset(dynamic_cast<T *>(y._t));
+    reset(y._t); // DO NOT dynamic_cast<T *>(y._t) AS IT BREAKS REFERENCE COUNTER
     y.reset(nullptr);
   }
 
@@ -381,13 +379,12 @@ public:
    \brief Assignment operator
    \param y : shared pointer to assign from
    \tparam Y : type of object pointed to by y
-   \pre dynamic cast of Y* into T* should be allowed
    \post this object holds a reference to the object pointed by y
    */
   template <class Y> tchecker::intrusive_shared_ptr_t<T> & operator=(tchecker::intrusive_shared_ptr_t<Y> const & y)
   {
     if (this != &y)
-      reset(dynamic_cast<T *>(y._t));
+      reset(y._t); // DO NOT dynamic_cast<T *>(y._t) AS IT BREAKS REFERENCE COUNTER
     return *this;
   }
 
@@ -410,15 +407,14 @@ public:
    \brief Move assignment operator
    \param y : shared pointer to assign from
    \tparam Y : type of object pointed to by y
-   \pre dynamic cast of Y* into T* should be allowed
    \post this object holds a reference to the object pointed by y, and y
    has been reset to nullptr
    */
   template <class Y> tchecker::intrusive_shared_ptr_t<T> & operator=(tchecker::intrusive_shared_ptr_t<Y> && y)
   {
     if (this != &y) {
-      reset(dynamic_cast<T *>(y._t));
-      y.reset(nullptr);
+      reset(y._t);
+      y.reset(nullptr); // DO NOT dynamic_cast<T *>(y._t) AS IT BREAKS REFERENCE COUNTER
     }
     return *this;
   }
