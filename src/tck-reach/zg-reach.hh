@@ -22,6 +22,7 @@
 #include "tchecker/syncprod/vedge.hh"
 #include "tchecker/utils/shared_objects.hh"
 #include "tchecker/waiting/waiting.hh"
+#include "tchecker/zg/path.hh"
 #include "tchecker/zg/state.hh"
 #include "tchecker/zg/transition.hh"
 #include "tchecker/zg/zg.hh"
@@ -124,6 +125,18 @@ public:
   */
   virtual ~graph_t();
 
+  /*!
+   \brief Accessor
+   \return pointer to internal zone graph
+  */
+  std::shared_ptr<tchecker::zg::sharing_zg_t> zg_ptr() { return _zg; }
+
+  /*!
+   \brief Accessor
+   \return internal zone graph
+  */
+  tchecker::zg::sharing_zg_t const & zg() const { return *_zg; }
+
   using tchecker::graph::reachability::graph_t<tchecker::tck_reach::zg_reach::node_t, tchecker::tck_reach::zg_reach::edge_t,
                                                tchecker::tck_reach::zg_reach::node_hash_t,
                                                tchecker::tck_reach::zg_reach::node_equal_to_t>::attributes;
@@ -157,6 +170,38 @@ private:
  \post graph g with name has been output to os
 */
 std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::zg_reach::graph_t const & g, std::string const & name);
+
+namespace cex {
+
+namespace symbolic {
+
+/*!
+ \brief Type of symbolic reachability counter-example
+*/
+using cex_t = tchecker::zg::finite_path_t<tchecker::zg::zg_t>;
+
+/*!
+ \brief Compute a counter-example from a reachability graph of a zone graph
+ \param g : reachability graph on a zone graph
+ \return a finite path from an initial node to a final node in g if any, nullptr otherwise
+ \note the returned poiinter shall be deleted
+*/
+tchecker::tck_reach::zg_reach::cex::symbolic::cex_t * counter_example(tchecker::tck_reach::zg_reach::graph_t const & g);
+
+/*!
+ \brief Counter-example output
+ \param os : output stream
+ \param cex : counter example
+ \param name : counter example name
+ \post cex has been output to os
+ \return os after output
+ */
+std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::zg_reach::cex::symbolic::cex_t const & cex,
+                          std::string const & name);
+
+} // namespace symbolic
+
+} // namespace cex
 
 /*!
  \class algorithm_t

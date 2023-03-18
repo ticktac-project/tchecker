@@ -157,13 +157,19 @@ void zg_impl_t::share(tchecker::zg::state_sptr_t & s) { _state_allocator.share(s
 
 void zg_impl_t::share(tchecker::zg::transition_sptr_t & t) { _transition_allocator.share(t); }
 
+std::shared_ptr<tchecker::ta::system_t const> zg_impl_t::system_ptr() const { return _system; }
+
 tchecker::ta::system_t const & zg_impl_t::system() const { return *_system; }
 
 /* zg_t */
 
+std::shared_ptr<tchecker::ta::system_t const> zg_t::system_ptr() const { return ts_impl().system_ptr(); }
+
 tchecker::ta::system_t const & zg_t::system() const { return ts_impl().system(); }
 
 /* sharing_zg_t */
+
+std::shared_ptr<tchecker::ta::system_t const> sharing_zg_t::system_ptr() const { return ts_impl().system_ptr(); }
 
 tchecker::ta::system_t const & sharing_zg_t::system() const { return ts_impl().system(); }
 

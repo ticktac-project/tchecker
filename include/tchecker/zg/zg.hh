@@ -424,6 +424,12 @@ public:
 
   /*!
    \brief Accessor
+   \return Pointer to underlying system of timed processes
+  */
+  std::shared_ptr<tchecker::ta::system_t const> system_ptr() const;
+
+  /*!
+   \brief Accessor
    \return Underlying system of timed processes
    */
   tchecker::ta::system_t const & system() const;
@@ -452,6 +458,12 @@ public:
 
   /*!
    \brief Accessor
+   \return Pointer to underlying system of timed processes
+  */
+  std::shared_ptr<tchecker::ta::system_t const> system_ptr() const;
+
+  /*!
+   \brief Accessor
    \return Underlying system of timed processes
    */
   tchecker::ta::system_t const & system() const;
@@ -474,10 +486,58 @@ public:
 
   /*!
    \brief Accessor
+   \return Pointer to underlying system of timed processes
+  */
+  std::shared_ptr<tchecker::ta::system_t const> system_ptr() const;
+
+  /*!
+   \brief Accessor
    \return Underlying system of timed processes
    */
   tchecker::ta::system_t const & system() const;
 };
+
+/*!
+ \brief Compute initial state of a zone graph from a tuple of locations
+ \param zg : zone graph
+ \param vloc : tuple of locations
+ \param mask : state status mask
+ \return the initial state of zg with tuple of locations vloc and status
+ compatible with mask if any, nullptr otherwise
+ */
+template <class ZG>
+tchecker::zg::state_sptr_t initial(ZG & zg, tchecker::vloc_t const & vloc, tchecker::state_status_t mask = tchecker::STATE_OK)
+{
+  std::vector<typename ZG::sst_t> v;
+  zg.initial(v, mask);
+  for (auto && [status, s, t] : v) {
+    if (s->vloc() == vloc)
+      return s;
+  }
+  return nullptr;
+}
+
+/*!
+ \brief Compute next state and transition from a tuple of edges
+ \param zg : zone graph
+ \param s : state
+ \param vedge : tuple of edges
+ \param mask : next state status mask
+ \return the pair (nexts, nextt) of successor state and transition of s
+ along tuple of edges vedge if any, (nullptr, nullptr) otherwise
+ */
+template <class ZG>
+std::tuple<tchecker::zg::state_sptr_t, tchecker::zg::transition_sptr_t>
+next(ZG & zg, tchecker::zg::const_state_sptr_t const & s, tchecker::vedge_t const & vedge,
+     tchecker::state_status_t mask = tchecker::STATE_OK)
+{
+  std::vector<typename ZG::sst_t> v;
+  zg.next(s, v, mask);
+  for (auto && [status, nexts, nextt] : v)
+    if (nextt->vedge() == vedge)
+      return std::make_tuple(nexts, nextt);
+  return std::make_tuple(nullptr, nullptr);
+}
 
 /*!
  \brief Factory of zone graphs

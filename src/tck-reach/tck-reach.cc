@@ -26,6 +26,7 @@
 
 static struct option long_options[] = {{"algorithm", required_argument, 0, 'a'},
                                        {"certificate", no_argument, 0, 'C'},
+                                       {"cex", required_argument, 0, 0},
                                        {"help", no_argument, 0, 'h'},
                                        {"labels", required_argument, 0, 'l'},
                                        {"search-order", no_argument, 0, 's'},
@@ -43,10 +44,13 @@ void usage(char * progname)
 {
   std::cerr << "Usage: " << progname << " [options] [file]" << std::endl;
   std::cerr << "   -a algorithm  reachability algorithm" << std::endl;
-  std::cerr << "          reach:     standard reachability algorithm over the zone graph" << std::endl;
-  std::cerr << "          concur19:  reachability algorithm with covering over the local-time zone graph" << std::endl;
-  std::cerr << "          covreach:  reachability algorithm with covering over the zone graph" << std::endl;
-  std::cerr << "   -C out_file   output a certificate (as a graph) in out_file" << std::endl;
+  std::cerr << "          reach      standard reachability algorithm over the zone graph" << std::endl;
+  std::cerr << "          concur19   reachability algorithm with covering over the local-time zone graph" << std::endl;
+  std::cerr << "          covreach   reachability algorithm with covering over the zone graph" << std::endl;
+  std::cerr << "   --cex type    type of counter-example" << std::endl;
+  std::cerr << "          graph      graph of explored state-space (default)" << std::endl;
+  std::cerr << "          symbolic   symbolic run to a state with searched labels (only for algorithm reach)" << std::endl;
+  std::cerr << "   -C out_file   output a certificate (state-space or counter-example) in out_file" << std::endl;
   std::cerr << "   -h            help" << std::endl;
   std::cerr << "   -l l1,l2,...  comma-separated list of searched labels" << std::endl;
   std::cerr << "   -s bfs|dfs    search order" << std::endl;
@@ -62,9 +66,15 @@ enum algorithm_t {
   ALGO_NONE,     /*!< No algorithm */
 };
 
+enum cex_t {
+  CEX_GRAPH,    /*!< Graph of state-space */
+  CEX_SYMBOLIC, /*!< Symbolic run */
+};
+
 static enum algorithm_t algorithm = ALGO_NONE; /*!< Selected algorithm */
 static bool help = false;                      /*!< Help flag */
 static std::string output_file = "";           /*!< Output file name */
+static enum cex_t cex = CEX_GRAPH;             /*!< Type of counter-example */
 static std::string search_order = "bfs";       /*!< Search order */
 static std::string labels = "";                /*!< Searched labels */
 static std::size_t block_size = 10000;         /*!< Size of allocated blocks */
@@ -121,7 +131,15 @@ int parse_command_line(int argc, char * argv[])
       }
     }
     else {
-      if (strcmp(long_options[long_option_index].name, "block-size") == 0)
+      if (strcmp(long_options[long_option_index].name, "cex") == 0) {
+        if (strcmp(optarg, "graph") == 0)
+          cex = CEX_GRAPH;
+        else if (strcmp(optarg, "symbolic") == 0)
+          cex = CEX_SYMBOLIC;
+        else
+          throw std::runtime_error("Unknown type of counter example");
+      }
+      else if (strcmp(long_options[long_option_index].name, "block-size") == 0)
         block_size = std::strtoull(optarg, nullptr, 10);
       else if (strcmp(long_options[long_option_index].name, "table-size") == 0)
         table_size = std::strtoull(optarg, nullptr, 10);
@@ -174,7 +192,15 @@ void reach(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysd
   // graph
   if (output_file != "") {
     std::ofstream ofs{output_file};
-    tchecker::tck_reach::zg_reach::dot_output(ofs, *graph, sysdecl->name());
+    if (cex == CEX_GRAPH)
+      tchecker::tck_reach::zg_reach::dot_output(ofs, *graph, sysdecl->name());
+    else { // CEX_SYMBOLIC
+      std::unique_ptr<tchecker::tck_reach::zg_reach::cex::symbolic::cex_t> cex{
+          tchecker::tck_reach::zg_reach::cex::symbolic::counter_example(*graph)};
+      if (cex->empty())
+        throw std::runtime_error("Unable to compute a symbolic counter example");
+      tchecker::zg::dot_output(ofs, *cex, sysdecl->name());
+    }
     ofs.close();
   }
 }
@@ -263,9 +289,13 @@ int main(int argc, char * argv[])
       reach(sysdecl);
       break;
     case ALGO_CONCUR19:
+      if (cex == CEX_SYMBOLIC)
+        throw std::runtime_error("Symbolic counter-example is not implemented yet for algorithm concur19");
       concur19(sysdecl);
       break;
     case ALGO_COVREACH:
+      if (cex == CEX_SYMBOLIC)
+        throw std::runtime_error("Symbolic counter-example is not implemented yet for algorithm covreach");
       covreach(sysdecl);
       break;
     default:
