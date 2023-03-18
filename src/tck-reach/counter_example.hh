@@ -12,6 +12,8 @@
 #include <vector>
 
 #include "tchecker/algorithms/path/algorithm.hh"
+#include "tchecker/refzg/path.hh"
+#include "tchecker/refzg/refzg.hh"
 #include "tchecker/syncprod/vedge.hh"
 #include "tchecker/syncprod/vloc.hh"
 #include "tchecker/zg/path.hh"
@@ -53,7 +55,7 @@ template <class GRAPH> bool true_edge(typename GRAPH::edge_sptr_t const & e) { r
 /*!
  \brief Compute a counter example over the zone graph
  \tparam GRAPH : type of graph, see tchecker::algorithms::path::finite::algorithm_t for requirements
- \tparam CEX : type of counter example, should inherit from tchecker::zg::finite_ath_t
+ \tparam CEX : type of counter example, should inherit from tchecker::zg::path::finite_path_t
  \param g : a graph over the zone graph (reachability graph, subsumption graph, etc)
  \return a finite path from an initial node of g to a final node of g
  */
@@ -79,7 +81,46 @@ template <class GRAPH, class CEX> CEX * counter_example_zg(GRAPH const & g)
 
   // Get the corresponding run in a zone graph with standard semantics and no extrapolation
   tchecker::vloc_t const & initial_vloc = g.edge_src(seq[0])->state().vloc();
-  CEX * cex = tchecker::zg::compute_run(zg, initial_vloc, tchecker::make_range(vedge_seq));
+  CEX * cex = tchecker::zg::path::compute_run(zg, initial_vloc, tchecker::make_range(vedge_seq));
+  if (!cex->empty()) {
+    cex->first()->initial(true);
+    cex->last()->final(true);
+  }
+
+  return cex;
+}
+
+/*!
+ \brief Compute a counter example over the zone graph with reference clocks
+ \tparam GRAPH : type of graph, see tchecker::algorithms::path::finite::algorithm_t for requirements
+ \tparam CEX : type of counter example, should inherit from tchecker::refzg::path::finite_path_t
+ \param g : a graph over the zone graph (reachability graph, subsumption graph, etc)
+ \return a finite path from an initial node of g to a final node of g
+ */
+template <class GRAPH, class CEX> CEX * counter_example_refzg(GRAPH const & g)
+{
+  std::shared_ptr<tchecker::refzg::refzg_t> refzg{
+      tchecker::refzg::factory(g.refzg().system_ptr(), tchecker::refzg::PROCESS_REFERENCE_CLOCKS,
+                               tchecker::refzg::STANDARD_SEMANTICS, g.refzg().spread(), 128, 128)};
+
+  // compute sequence of edges from initial to final node in g
+  tchecker::algorithms::path::finite::algorithm_t<GRAPH> algorithm;
+
+  std::vector<typename GRAPH::edge_sptr_t> seq =
+      algorithm.run(g, &tchecker::tck_reach::initial_node<GRAPH>, &tchecker::tck_reach::final_node<GRAPH>,
+                    &tchecker::tck_reach::true_edge<GRAPH>);
+
+  if (seq.empty())
+    return new CEX{refzg};
+
+  // Extract sequence of vedges
+  std::vector<tchecker::const_vedge_sptr_t> vedge_seq;
+  for (typename GRAPH::edge_sptr_t const & e : seq)
+    vedge_seq.push_back(e->vedge_ptr());
+
+  // Get the corresponding run in a zone graph with standard semantics and no extrapolation
+  tchecker::vloc_t const & initial_vloc = g.edge_src(seq[0])->state().vloc();
+  CEX * cex = tchecker::refzg::path::compute_run(refzg, initial_vloc, tchecker::make_range(vedge_seq));
   if (!cex->empty()) {
     cex->first()->initial(true);
     cex->last()->final(true);

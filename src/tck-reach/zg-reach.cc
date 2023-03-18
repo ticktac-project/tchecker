@@ -138,70 +138,18 @@ std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::zg_reach::grap
 /* counter example */
 namespace cex {
 
-#ifdef OLD
-/*!
- \brief Check if a node is initial
- \param n : a node
- \return true if n is an initial node, false otherwise
-*/
-bool initial_node(tchecker::tck_reach::zg_reach::graph_t::node_sptr_t const & n) { return n->initial(); }
-
-/*!
- \brief Check is a node is final
- \param n : a node
- \return true if n is a final node, false otherwise
-*/
-bool final_node(tchecker::tck_reach::zg_reach::graph_t::node_sptr_t const & n) { return n->final(); }
-
-/*!
- \brief True predicate over edges
- \param e : an edge
- \return true
-*/
-bool true_edge(tchecker::tck_reach::zg_reach::graph_t::edge_sptr_t const & e) { return true; }
-#endif // OLD
 namespace symbolic {
 
 tchecker::tck_reach::zg_reach::cex::symbolic::cex_t * counter_example(tchecker::tck_reach::zg_reach::graph_t const & g)
 {
   return tchecker::tck_reach::counter_example_zg<tchecker::tck_reach::zg_reach::graph_t,
                                                  tchecker::tck_reach::zg_reach::cex::symbolic::cex_t>(g);
-#ifdef OLD
-  std::shared_ptr<tchecker::zg::zg_t> zg{
-      tchecker::zg::factory(g.zg().system_ptr(), tchecker::zg::STANDARD_SEMANTICS, tchecker::zg::NO_EXTRAPOLATION, 128, 128)};
-
-  // compute sequence of edges from initial to final node in g
-  tchecker::algorithms::path::finite::algorithm_t<tchecker::tck_reach::zg_reach::graph_t> algorithm;
-
-  std::vector<tchecker::tck_reach::zg_reach::graph_t::edge_sptr_t> seq =
-      algorithm.run(g, &tchecker::tck_reach::zg_reach::cex::initial_node, &tchecker::tck_reach::zg_reach::cex::final_node,
-                    &tchecker::tck_reach::zg_reach::cex::true_edge);
-
-  if (seq.empty())
-    return new tchecker::tck_reach::zg_reach::cex::symbolic::cex_t{zg};
-
-  // Extract sequence of vedges
-  std::vector<tchecker::const_vedge_sptr_t> vedge_seq;
-  for (tchecker::tck_reach::zg_reach::graph_t::edge_sptr_t const & e : seq)
-    vedge_seq.push_back(e->vedge_ptr());
-
-  // Get the corresponding run in a zone graph with standard semantics and no extrapolation
-  tchecker::vloc_t const & initial_vloc = g.edge_src(seq[0])->state().vloc();
-  tchecker::tck_reach::zg_reach::cex::symbolic::cex_t * cex =
-      tchecker::zg::compute_run(zg, initial_vloc, tchecker::make_range(vedge_seq));
-  if (!cex->empty()) {
-    cex->first()->initial(true);
-    cex->last()->final(true);
-  }
-
-  return cex;
-#endif // OLD
 }
 
 std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::zg_reach::cex::symbolic::cex_t const & cex,
                           std::string const & name)
 {
-  return tchecker::zg::dot_output(os, cex, name);
+  return tchecker::zg::path::dot_output(os, cex, name);
 }
 
 } // namespace symbolic

@@ -13,7 +13,7 @@
 #include <string>
 
 #include "tchecker/graph/node.hh"
-#include "tchecker/graph/path.hh"
+#include "tchecker/ts/path.hh"
 #include "tchecker/zg/state.hh"
 #include "tchecker/zg/transition.hh"
 #include "tchecker/zg/zg.hh"
@@ -27,11 +27,13 @@ namespace tchecker {
 
 namespace zg {
 
+namespace path {
+
 /*!
- \class path_node_t
+ \class node_t
  \brief Type of node on a path in a zone graph
 */
-class path_node_t : public tchecker::graph::node_flags_t, public tchecker::graph::node_zg_state_t {
+class node_t : public tchecker::graph::node_flags_t, public tchecker::graph::node_zg_state_t {
 public:
   /*!
   \brief Constructor
@@ -40,7 +42,7 @@ public:
   \param final : final node flag
   \post this node keeps a shared pointer to s, and has initial/final node flags as specified
   */
-  path_node_t(tchecker::zg::state_sptr_t const & s, bool initial = false, bool final = false);
+  node_t(tchecker::zg::state_sptr_t const & s, bool initial = false, bool final = false);
 
   /*!
    \brief Constructor
@@ -49,7 +51,7 @@ public:
    \param final : final node flag
    \post this node keeps a shared pointer to s, and has initial/final node flags as specified
    */
-  path_node_t(tchecker::zg::const_state_sptr_t const & s, bool initial = false, bool final = false);
+  node_t(tchecker::zg::const_state_sptr_t const & s, bool initial = false, bool final = false);
 };
 
 /*!
@@ -58,51 +60,51 @@ public:
  \param n2 : node
  \return < 0 if n1 is less than n2, 0 if n1 is equal to n2, > 0 otherwise
 */
-int lexical_cmp(tchecker::zg::path_node_t const & n1, tchecker::zg::path_node_t const & n2);
+int lexical_cmp(tchecker::zg::path::node_t const & n1, tchecker::zg::path::node_t const & n2);
 
 /*!
  \class path_edge_t
  \brief Type of edge on a path in a zone graph
 */
-class path_edge_t {
+class edge_t {
 public:
   /*!
    \brief Constructor
    \post this keeps a pointer on t
   */
-  path_edge_t(tchecker::zg::const_transition_sptr_t const & t);
+  edge_t(tchecker::zg::const_transition_sptr_t const & t);
 
   /*!
    \brief Constructor
    \post this keeps a pointer on t
   */
-  path_edge_t(tchecker::zg::transition_sptr_t const & t);
+  edge_t(tchecker::zg::transition_sptr_t const & t);
 
   /*!
    \brief Copy constructor
   */
-  path_edge_t(tchecker::zg::path_edge_t const & e);
+  edge_t(tchecker::zg::path::edge_t const & e);
 
   /*!
    \brief Move constructor
   */
-  path_edge_t(tchecker::zg::path_edge_t && e);
+  edge_t(tchecker::zg::path::edge_t && e);
 
   /*!
    \brief Destructor
   */
-  ~path_edge_t() = default;
+  ~edge_t() = default;
 
   /*!
    \brief Assignment operator
    \post this point to the same transition as e
   */
-  tchecker::zg::path_edge_t & operator=(tchecker::zg::path_edge_t const & e);
+  tchecker::zg::path::edge_t & operator=(tchecker::zg::path::edge_t const & e);
 
   /*!
    \brief Move assignment operator
   */
-  tchecker::zg::path_edge_t & operator=(tchecker::zg::path_edge_t && e);
+  tchecker::zg::path::edge_t & operator=(tchecker::zg::path::edge_t && e);
 
   /*!
    \brief Accessor
@@ -126,15 +128,15 @@ private:
  \param e2 : edge
  \return < 0 if e1 is less than e2, 0 if e1 is equal to e2, > 0 otherwise
 */
-int lexical_cmp(tchecker::zg::path_edge_t const & e1, tchecker::zg::path_edge_t const & e2);
+int lexical_cmp(tchecker::zg::path::edge_t const & e1, tchecker::zg::path::edge_t const & e2);
 
 /*!
  \class finite_path_t
- \tparams ZG : type of zone graph
+ \tparam ZG : type of zone graph
  \brief Finite path in a zone graph
 */
 template <class ZG>
-class finite_path_t : public tchecker::graph::finite_path_t<tchecker::zg::path_node_t, tchecker::zg::path_edge_t> {
+class finite_path_t : public tchecker::ts::finite_path_t<ZG, tchecker::zg::path::node_t, tchecker::zg::path::edge_t> {
 public:
   /*!
    \brief Constructor
@@ -143,34 +145,9 @@ public:
    \note this keeps a pointer to zg
    \note all nodes and edges added to this path shall be built from states and transitions in zg
   */
-  finite_path_t(std::shared_ptr<ZG> const & zg) : _zg(zg) {}
+  using tchecker::ts::finite_path_t<ZG, tchecker::zg::path::node_t, tchecker::zg::path::edge_t>::finite_path_t;
 
-  /*!
-   \brief Copy constructor
-  */
-  finite_path_t(tchecker::zg::finite_path_t<ZG> const &) = delete;
-
-  /*!
-   \brief Move constructor
-  */
-  finite_path_t(tchecker::zg::finite_path_t<ZG> &&) = delete;
-
-  /*!
-   \brief Destructor
-  */
-  ~finite_path_t() { tchecker::graph::finite_path_t<tchecker::zg::path_node_t, tchecker::zg::path_edge_t>::clear(); }
-
-  /*!
-   \brief Assignment operator
-  */
-  tchecker::zg::finite_path_t<ZG> & operator=(tchecker::zg::finite_path_t<ZG> const &) = delete;
-
-  /*!
-    \brief Move-assignment operator
-   */
-  tchecker::zg::finite_path_t<ZG> & operator=(tchecker::zg::finite_path_t<ZG> &&) = delete;
-
-  using tchecker::graph::finite_path_t<tchecker::zg::path_node_t, tchecker::zg::path_edge_t>::attributes;
+  using tchecker::graph::finite_path_t<tchecker::zg::path::node_t, tchecker::zg::path::edge_t>::attributes;
 
 protected:
   /*!
@@ -178,9 +155,9 @@ protected:
    \param n : a node
    \param m : a map (key, value) of attributes
   */
-  virtual void attributes(tchecker::zg::path_node_t const & n, std::map<std::string, std::string> & m) const
+  virtual void attributes(tchecker::zg::path::node_t const & n, std::map<std::string, std::string> & m) const
   {
-    _zg->attributes(n.state_ptr(), m);
+    tchecker::ts::finite_path_t<ZG, tchecker::zg::path::node_t, tchecker::zg::path::edge_t>::attributes(n.state_ptr(), m);
     if (n.initial())
       m["initial"] = "true";
     if (n.final())
@@ -192,13 +169,10 @@ protected:
    \param e : an edge
    \param m : a map (key, value) of attributes
   */
-  virtual void attributes(tchecker::zg::path_edge_t const & e, std::map<std::string, std::string> & m) const
+  virtual void attributes(tchecker::zg::path::edge_t const & e, std::map<std::string, std::string> & m) const
   {
-    _zg->attributes(e.transition_ptr(), m);
+    tchecker::ts::finite_path_t<ZG, tchecker::zg::path::node_t, tchecker::zg::path::edge_t>::attributes(e.transition_ptr(), m);
   }
-
-private:
-  std::shared_ptr<ZG> _zg; /*!< Zone graph */
 };
 
 /* output */
@@ -206,7 +180,7 @@ private:
 /*!
  \brief Lexicographic ordering on path nodes
 */
-template <class ZG> class path_node_le_t {
+template <class ZG> class node_le_t {
 public:
   /*!
    \brief Lexicographic ordering
@@ -214,11 +188,11 @@ public:
    \param n2 : a path node
    \return true if n1 is lexicographically smaller than n2, false otherwise
   */
-  bool operator()(typename tchecker::zg::finite_path_t<ZG>::node_sptr_t const & n1,
-                  typename tchecker::zg::finite_path_t<ZG>::node_sptr_t const & n2) const
+  bool operator()(typename tchecker::zg::path::finite_path_t<ZG>::node_sptr_t const & n1,
+                  typename tchecker::zg::path::finite_path_t<ZG>::node_sptr_t const & n2) const
   {
-    return tchecker::zg::lexical_cmp(static_cast<tchecker::zg::path_node_t const &>(*n1),
-                                     static_cast<tchecker::zg::path_node_t const &>(*n2)) < 0;
+    return tchecker::zg::path::lexical_cmp(static_cast<tchecker::zg::path::node_t const &>(*n1),
+                                           static_cast<tchecker::zg::path::node_t const &>(*n2)) < 0;
   }
 };
 
@@ -226,7 +200,7 @@ public:
  \brief Lexicograohic ordering on edges
  \class path_edge_le_t
 */
-template <class ZG> class path_edge_le_t {
+template <class ZG> class edge_le_t {
 public:
   /*!
    \brief Lexicographic ordering on path edges
@@ -234,11 +208,11 @@ public:
    \param e2 : a path edge
    \return true if e1 is lexicographically smaller than e2, false otherwise
   */
-  bool operator()(typename tchecker::zg::finite_path_t<ZG>::edge_sptr_t const & e1,
-                  typename tchecker::zg::finite_path_t<ZG>::edge_sptr_t const & e2) const
+  bool operator()(typename tchecker::zg::path::finite_path_t<ZG>::edge_sptr_t const & e1,
+                  typename tchecker::zg::path::finite_path_t<ZG>::edge_sptr_t const & e2) const
   {
-    return tchecker::zg::lexical_cmp(static_cast<tchecker::zg::path_edge_t const &>(*e1),
-                                     static_cast<tchecker::zg::path_edge_t const &>(*e2)) < 0;
+    return tchecker::zg::path::lexical_cmp(static_cast<tchecker::zg::path::edge_t const &>(*e1),
+                                           static_cast<tchecker::zg::path::edge_t const &>(*e2)) < 0;
   }
 };
 
@@ -252,10 +226,10 @@ public:
  \return os after output
 */
 template <class ZG>
-std::ostream & dot_output(std::ostream & os, tchecker::zg::finite_path_t<ZG> const & path, std::string const & name)
+std::ostream & dot_output(std::ostream & os, tchecker::zg::path::finite_path_t<ZG> const & path, std::string const & name)
 {
-  return tchecker::graph::dot_output<tchecker::zg::finite_path_t<ZG>, tchecker::zg::path_node_le_t<ZG>,
-                                     tchecker::zg::path_edge_le_t<ZG>>(os, path, name);
+  return tchecker::graph::dot_output<tchecker::zg::path::finite_path_t<ZG>, tchecker::zg::path::node_le_t<ZG>,
+                                     tchecker::zg::path::edge_le_t<ZG>>(os, path, name);
 }
 
 /*!
@@ -273,10 +247,10 @@ std::ostream & dot_output(std::ostream & os, tchecker::zg::finite_path_t<ZG> con
  \note the returned path keeps a shared pointer on zg
  */
 template <class ZG, typename VEDGE_RANGE>
-tchecker::zg::finite_path_t<ZG> * compute_run(std::shared_ptr<ZG> const & zg, tchecker::vloc_t const & initial_vloc,
-                                              VEDGE_RANGE const & seq)
+tchecker::zg::path::finite_path_t<ZG> * compute_run(std::shared_ptr<ZG> const & zg, tchecker::vloc_t const & initial_vloc,
+                                                    VEDGE_RANGE const & seq)
 {
-  tchecker::zg::finite_path_t<ZG> * path = new tchecker::zg::finite_path_t<ZG>{zg};
+  tchecker::zg::path::finite_path_t<ZG> * path = new tchecker::zg::path::finite_path_t<ZG>{zg};
 
   tchecker::zg::const_state_sptr_t s{tchecker::zg::initial(*zg, initial_vloc)};
   if (s.ptr() == nullptr)
@@ -295,6 +269,8 @@ tchecker::zg::finite_path_t<ZG> * compute_run(std::shared_ptr<ZG> const & zg, tc
 
   return path;
 }
+
+} // namespace path
 
 } // namespace zg
 

@@ -158,15 +158,27 @@ void refzg_impl_t::share(tchecker::refzg::state_sptr_t & s) { _state_allocator.s
 
 void refzg_impl_t::share(tchecker::refzg::transition_sptr_t & t) { _transition_allocator.share(t); }
 
+std::shared_ptr<tchecker::ta::system_t const> const & refzg_impl_t::system_ptr() const { return _system; }
+
 tchecker::ta::system_t const & refzg_impl_t::system() const { return *_system; }
+
+tchecker::integer_t refzg_impl_t::spread() const { return _spread; }
 
 /* refzg_t */
 
+std::shared_ptr<tchecker::ta::system_t const> const & refzg_t::system_ptr() const { return ts_impl().system_ptr(); }
+
 tchecker::ta::system_t const & refzg_t::system() const { return ts_impl().system(); }
+
+tchecker::integer_t refzg_t::spread() const { return ts_impl().spread(); }
 
 /* sharing_refzg_t */
 
+std::shared_ptr<tchecker::ta::system_t const> const & sharing_refzg_t::system_ptr() const { return ts_impl().system_ptr(); }
+
 tchecker::ta::system_t const & sharing_refzg_t::system() const { return ts_impl().system(); }
+
+tchecker::integer_t sharing_refzg_t::spread() const { return ts_impl().spread(); }
 
 /* factory */
 

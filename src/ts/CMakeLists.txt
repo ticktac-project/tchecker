@@ -4,6 +4,7 @@
 
 set(TS_SRC
 ${TCHECKER_INCLUDE_DIR}/tchecker/ts/allocators.hh
+${TCHECKER_INCLUDE_DIR}/tchecker/ts/path.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/ts/state.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/ts/transition.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/ts/ts.hh

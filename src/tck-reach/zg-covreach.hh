@@ -180,7 +180,7 @@ namespace symbolic {
 /*!
  \brief Type of symbolic reachability counter-example
 */
-using cex_t = tchecker::zg::finite_path_t<tchecker::zg::zg_t>;
+using cex_t = tchecker::zg::path::finite_path_t<tchecker::zg::zg_t>;
 
 /*!
  \brief Compute a counter-example from a covering reachability graph of a zone graph

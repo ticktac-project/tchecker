@@ -8,6 +8,7 @@
 #include <boost/dynamic_bitset.hpp>
 
 #include "concur19.hh"
+#include "counter_example.hh"
 #include "tchecker/algorithms/search_order.hh"
 #include "tchecker/system/static_analysis.hh"
 #include "tchecker/ta/state.hh"
@@ -189,6 +190,27 @@ std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::concur19::grap
                                                   tchecker::tck_reach::concur19::node_lexical_less_t,
                                                   tchecker::tck_reach::concur19::edge_lexical_less_t>(os, g, name);
 }
+
+/* counter example */
+namespace cex {
+
+namespace symbolic {
+
+tchecker::tck_reach::concur19::cex::symbolic::cex_t * counter_example(tchecker::tck_reach::concur19::graph_t const & g)
+{
+  return tchecker::tck_reach::counter_example_refzg<tchecker::tck_reach::concur19::graph_t,
+                                                    tchecker::tck_reach::concur19::cex::symbolic::cex_t>(g);
+}
+
+std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::concur19::cex::symbolic::cex_t const & cex,
+                          std::string const & name)
+{
+  return tchecker::refzg::path::dot_output(os, cex, name);
+}
+
+} // namespace symbolic
+
+} // namespace cex
 
 /* run */
 

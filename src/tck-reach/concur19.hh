@@ -19,6 +19,7 @@
 #include "tchecker/graph/node.hh"
 #include "tchecker/graph/output.hh"
 #include "tchecker/graph/subsumption_graph.hh"
+#include "tchecker/refzg/path.hh"
 #include "tchecker/refzg/refzg.hh"
 #include "tchecker/refzg/state.hh"
 #include "tchecker/refzg/transition.hh"
@@ -180,6 +181,18 @@ public:
   */
   virtual ~graph_t();
 
+  /*!
+   \brief Accessor
+   \return Shared pointer to underlying zone graph with reference clocks
+  */
+  inline std::shared_ptr<tchecker::refzg::sharing_refzg_t> const & refzg_ptr() const { return _refzg; }
+
+  /*!
+   \brief Accessor
+   \return Underlying zone graph with reference clocks
+  */
+  inline tchecker::refzg::sharing_refzg_t const & refzg() const { return *_refzg; }
+
   using tchecker::graph::subsumption::graph_t<tchecker::tck_reach::concur19::node_t, tchecker::tck_reach::concur19::edge_t,
                                               tchecker::tck_reach::concur19::node_hash_t,
                                               tchecker::tck_reach::concur19::node_le_t>::attributes;
@@ -213,6 +226,39 @@ private:
  \post graph g with name has been output to os
 */
 std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::concur19::graph_t const & g, std::string const & name);
+
+namespace cex {
+
+namespace symbolic {
+
+/*!
+ \brief Type of symbolic reachability counter-example
+*/
+using cex_t = tchecker::refzg::path::finite_path_t<tchecker::refzg::refzg_t>;
+
+/*!
+ \brief Compute a counter-example from a covering reachability graph of a zone graph with
+ reference clocks
+ \param g : subsumption graph on a zone graph with reference clocks
+ \return a finite path from an initial node to a final node in g if any, nullptr otherwise
+ \note the returned pointer shall be deleted
+*/
+tchecker::tck_reach::concur19::cex::symbolic::cex_t * counter_example(tchecker::tck_reach::concur19::graph_t const & g);
+
+/*!
+ \brief Counter-example output
+ \param os : output stream
+ \param cex : counter example
+ \param name : counter example name
+ \post cex has been output to os
+ \return os after output
+ */
+std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::concur19::cex::symbolic::cex_t const & cex,
+                          std::string const & name);
+
+} // namespace symbolic
+
+} // namespace cex
 
 /*!
  \class algorithm_t

@@ -192,15 +192,20 @@ void reach(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysd
   // graph
   if (output_file != "") {
     std::ofstream ofs{output_file};
-    if (cex == CEX_GRAPH)
-      tchecker::tck_reach::zg_reach::dot_output(ofs, *graph, sysdecl->name());
-    else if (cex == CEX_SYMBOLIC) {
-      std::unique_ptr<tchecker::tck_reach::zg_reach::cex::symbolic::cex_t> cex{
-          tchecker::tck_reach::zg_reach::cex::symbolic::counter_example(*graph)};
-      if (cex->empty())
-        throw std::runtime_error("Unable to compute a symbolic counter example");
-      tchecker::tck_reach::zg_reach::cex::symbolic::dot_output(ofs, *cex, sysdecl->name());
+    if (stats.reachable()) {
+      if (cex == CEX_GRAPH)
+        tchecker::tck_reach::zg_reach::dot_output(ofs, *graph, sysdecl->name());
+      else if (cex == CEX_SYMBOLIC) {
+        std::unique_ptr<tchecker::tck_reach::zg_reach::cex::symbolic::cex_t> cex{
+            tchecker::tck_reach::zg_reach::cex::symbolic::counter_example(*graph)};
+        if (cex->empty())
+          throw std::runtime_error("Unable to compute a symbolic counter example");
+        tchecker::tck_reach::zg_reach::cex::symbolic::dot_output(ofs, *cex, sysdecl->name());
+      }
     }
+    else
+      // unreachable: output certificate
+      tchecker::tck_reach::zg_reach::dot_output(ofs, *graph, sysdecl->name());
     ofs.close();
   }
 }
@@ -228,7 +233,20 @@ void concur19(std::shared_ptr<tchecker::parsing::system_declaration_t> const & s
   // graph
   if (output_file != "") {
     std::ofstream ofs{output_file};
-    tchecker::tck_reach::concur19::dot_output(ofs, *graph, sysdecl->name());
+    if (stats.reachable()) {
+      if (cex == CEX_GRAPH)
+        tchecker::tck_reach::concur19::dot_output(ofs, *graph, sysdecl->name());
+      else if (cex == CEX_SYMBOLIC) {
+        std::unique_ptr<tchecker::tck_reach::concur19::cex::symbolic::cex_t> cex{
+            tchecker::tck_reach::concur19::cex::symbolic::counter_example(*graph)};
+        if (cex->empty())
+          throw std::runtime_error("Unable to compute a symbolic counter example");
+        tchecker::tck_reach::concur19::cex::symbolic::dot_output(ofs, *cex, sysdecl->name());
+      }
+    }
+    else
+      // unreachable: output certificate
+      tchecker::tck_reach::concur19::dot_output(ofs, *graph, sysdecl->name());
     ofs.close();
   }
 }
@@ -261,15 +279,20 @@ void covreach(std::shared_ptr<tchecker::parsing::system_declaration_t> const & s
   // graph
   if (output_file != "") {
     std::ofstream ofs{output_file};
-    if (cex == CEX_GRAPH)
-      tchecker::tck_reach::zg_covreach::dot_output(ofs, *graph, sysdecl->name());
-    else if (cex == CEX_SYMBOLIC) {
-      std::unique_ptr<tchecker::tck_reach::zg_covreach::cex::symbolic::cex_t> cex{
-          tchecker::tck_reach::zg_covreach::cex::symbolic::counter_example(*graph)};
-      if (cex->empty())
-        throw std::runtime_error("Unable to compute a symbolic counter example");
-      tchecker::tck_reach::zg_covreach::cex::symbolic::dot_output(ofs, *cex, sysdecl->name());
+    if (stats.reachable()) {
+      if (cex == CEX_GRAPH)
+        tchecker::tck_reach::zg_covreach::dot_output(ofs, *graph, sysdecl->name());
+      else if (cex == CEX_SYMBOLIC) {
+        std::unique_ptr<tchecker::tck_reach::zg_covreach::cex::symbolic::cex_t> cex{
+            tchecker::tck_reach::zg_covreach::cex::symbolic::counter_example(*graph)};
+        if (cex->empty())
+          throw std::runtime_error("Unable to compute a symbolic counter example");
+        tchecker::tck_reach::zg_covreach::cex::symbolic::dot_output(ofs, *cex, sysdecl->name());
+      }
     }
+    else
+      // unreachable: output certificate
+      tchecker::tck_reach::zg_covreach::dot_output(ofs, *graph, sysdecl->name());
     ofs.close();
   }
 }
@@ -305,8 +328,6 @@ int main(int argc, char * argv[])
       reach(sysdecl);
       break;
     case ALGO_CONCUR19:
-      if (cex == CEX_SYMBOLIC)
-        throw std::runtime_error("Symbolic counter-example is not implemented yet for algorithm concur19");
       concur19(sysdecl);
       break;
     case ALGO_COVREACH:

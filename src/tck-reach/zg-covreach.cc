@@ -150,7 +150,7 @@ tchecker::tck_reach::zg_covreach::cex::symbolic::cex_t * counter_example(tchecke
 std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::zg_covreach::cex::symbolic::cex_t const & cex,
                           std::string const & name)
 {
-  return tchecker::zg::dot_output(os, cex, name);
+  return tchecker::zg::path::dot_output(os, cex, name);
 }
 
 } // namespace symbolic
