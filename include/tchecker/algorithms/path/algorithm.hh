@@ -171,6 +171,9 @@ private:
       seq.push_back(e);
       node_sptr_t nextn = g.edge_tgt(e);
 
+      if (visited.find(nextn) != visited.end())
+        continue;
+
       if (filter_last(nextn))
         return seq;
 
