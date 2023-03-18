@@ -29,6 +29,14 @@ namespace algorithms {
 namespace covreach {
 
 /*!
+ \brief Type of covering for covreach algorithm
+ */
+enum covering_t {
+  COVERING_FULL,       /*!< Cover all non-maximal nodes */
+  COVERING_LEAF_NODES, /*!< Only cover non-maximal leaf nodes */
+};
+
+/*!
  \class algorithm_t
  \brief Covering reachability algorithm
  \tparam TS : type of transition system, should derive from tchecker::ts::ts_t
@@ -36,11 +44,15 @@ namespace covreach {
  tchecker::graph::subsumption::graph_t, and nodes of type GRAPH::shared_node_t
  should have a method state_ptr() that yields a pointer to the corresponding
  state in TS.
- For correctness of the algorithm, the covering relation over nodes in GRAPH
+ \tparam COVERING : type of covering. Set to COVERING_LEAF_NODES to cover only
+ non-maximal leaf nodes. Set to COVERING_FULL to cover all non-maximal nodes.
+ \note For correctness of the algorithm, the covering relation over nodes in GRAPH
  should be a trace inclusion, and it should be irreflexive: a node should not
  cover itself
 */
-template <class TS, class GRAPH> class algorithm_t {
+template <class TS, class GRAPH,
+          enum tchecker::algorithms::covreach::covering_t COVERING = tchecker::algorithms::covreach::COVERING_FULL>
+class algorithm_t {
 public:
   using node_sptr_t = typename GRAPH::node_sptr_t;
 
@@ -92,10 +104,12 @@ public:
 
       for (node_sptr_t const & next_node : nodes) {
         waiting->insert(next_node);
-        remove_covered_nodes(graph, next_node, covered_nodes, stats);
-        for (node_sptr_t const & covered_node : covered_nodes)
-          waiting->remove(covered_node);
-        covered_nodes.clear();
+        if constexpr (COVERING == tchecker::algorithms::covreach::COVERING_FULL) {
+          remove_covered_nodes(graph, next_node, covered_nodes, stats);
+          for (node_sptr_t const & covered_node : covered_nodes)
+            waiting->remove(covered_node);
+          covered_nodes.clear();
+        }
       }
       nodes.clear();
     }

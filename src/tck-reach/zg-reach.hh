@@ -129,13 +129,13 @@ public:
    \brief Accessor
    \return pointer to internal zone graph
   */
-  std::shared_ptr<tchecker::zg::sharing_zg_t> zg_ptr() { return _zg; }
+  inline std::shared_ptr<tchecker::zg::sharing_zg_t> zg_ptr() { return _zg; }
 
   /*!
    \brief Accessor
    \return internal zone graph
   */
-  tchecker::zg::sharing_zg_t const & zg() const { return *_zg; }
+  inline tchecker::zg::sharing_zg_t const & zg() const { return *_zg; }
 
   using tchecker::graph::reachability::graph_t<tchecker::tck_reach::zg_reach::node_t, tchecker::tck_reach::zg_reach::edge_t,
                                                tchecker::tck_reach::zg_reach::node_hash_t,
@@ -184,7 +184,7 @@ using cex_t = tchecker::zg::finite_path_t<tchecker::zg::zg_t>;
  \brief Compute a counter-example from a reachability graph of a zone graph
  \param g : reachability graph on a zone graph
  \return a finite path from an initial node to a final node in g if any, nullptr otherwise
- \note the returned poiinter shall be deleted
+ \note the returned pointer shall be deleted
 */
 tchecker::tck_reach::zg_reach::cex::symbolic::cex_t * counter_example(tchecker::tck_reach::zg_reach::graph_t const & g);
 

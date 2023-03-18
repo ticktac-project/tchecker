@@ -194,12 +194,12 @@ void reach(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysd
     std::ofstream ofs{output_file};
     if (cex == CEX_GRAPH)
       tchecker::tck_reach::zg_reach::dot_output(ofs, *graph, sysdecl->name());
-    else { // CEX_SYMBOLIC
+    else if (cex == CEX_SYMBOLIC) {
       std::unique_ptr<tchecker::tck_reach::zg_reach::cex::symbolic::cex_t> cex{
           tchecker::tck_reach::zg_reach::cex::symbolic::counter_example(*graph)};
       if (cex->empty())
         throw std::runtime_error("Unable to compute a symbolic counter example");
-      tchecker::zg::dot_output(ofs, *cex, sysdecl->name());
+      tchecker::tck_reach::zg_reach::cex::symbolic::dot_output(ofs, *cex, sysdecl->name());
     }
     ofs.close();
   }
@@ -242,7 +242,15 @@ void concur19(std::shared_ptr<tchecker::parsing::system_declaration_t> const & s
 */
 void covreach(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl)
 {
-  auto && [stats, graph] = tchecker::tck_reach::zg_covreach::run(sysdecl, labels, search_order, block_size, table_size);
+  tchecker::algorithms::covreach::stats_t stats;
+  std::shared_ptr<tchecker::tck_reach::zg_covreach::graph_t> graph;
+
+  if (cex == CEX_GRAPH)
+    std::tie(stats, graph) = tchecker::tck_reach::zg_covreach::run(
+        sysdecl, labels, search_order, tchecker::algorithms::covreach::COVERING_FULL, block_size, table_size);
+  else
+    std::tie(stats, graph) = tchecker::tck_reach::zg_covreach::run(
+        sysdecl, labels, search_order, tchecker::algorithms::covreach::COVERING_LEAF_NODES, block_size, table_size);
 
   // stats
   std::map<std::string, std::string> m;
@@ -253,7 +261,15 @@ void covreach(std::shared_ptr<tchecker::parsing::system_declaration_t> const & s
   // graph
   if (output_file != "") {
     std::ofstream ofs{output_file};
-    tchecker::tck_reach::zg_covreach::dot_output(ofs, *graph, sysdecl->name());
+    if (cex == CEX_GRAPH)
+      tchecker::tck_reach::zg_covreach::dot_output(ofs, *graph, sysdecl->name());
+    else if (cex == CEX_SYMBOLIC) {
+      std::unique_ptr<tchecker::tck_reach::zg_covreach::cex::symbolic::cex_t> cex{
+          tchecker::tck_reach::zg_covreach::cex::symbolic::counter_example(*graph)};
+      if (cex->empty())
+        throw std::runtime_error("Unable to compute a symbolic counter example");
+      tchecker::tck_reach::zg_covreach::cex::symbolic::dot_output(ofs, *cex, sysdecl->name());
+    }
     ofs.close();
   }
 }
@@ -294,8 +310,6 @@ int main(int argc, char * argv[])
       concur19(sysdecl);
       break;
     case ALGO_COVREACH:
-      if (cex == CEX_SYMBOLIC)
-        throw std::runtime_error("Symbolic counter-example is not implemented yet for algorithm covreach");
       covreach(sysdecl);
       break;
     default:

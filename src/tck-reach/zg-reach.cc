@@ -9,7 +9,7 @@
 
 #include <boost/dynamic_bitset.hpp>
 
-#include "tchecker/algorithms/path/algorithm.hh"
+#include "counter_example.hh"
 #include "tchecker/algorithms/search_order.hh"
 #include "tchecker/system/static_analysis.hh"
 #include "tchecker/ta/system.hh"
@@ -138,6 +138,7 @@ std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::zg_reach::grap
 /* counter example */
 namespace cex {
 
+#ifdef OLD
 /*!
  \brief Check if a node is initial
  \param n : a node
@@ -158,11 +159,14 @@ bool final_node(tchecker::tck_reach::zg_reach::graph_t::node_sptr_t const & n) {
  \return true
 */
 bool true_edge(tchecker::tck_reach::zg_reach::graph_t::edge_sptr_t const & e) { return true; }
-
+#endif // OLD
 namespace symbolic {
 
 tchecker::tck_reach::zg_reach::cex::symbolic::cex_t * counter_example(tchecker::tck_reach::zg_reach::graph_t const & g)
 {
+  return tchecker::tck_reach::counter_example_zg<tchecker::tck_reach::zg_reach::graph_t,
+                                                 tchecker::tck_reach::zg_reach::cex::symbolic::cex_t>(g);
+#ifdef OLD
   std::shared_ptr<tchecker::zg::zg_t> zg{
       tchecker::zg::factory(g.zg().system_ptr(), tchecker::zg::STANDARD_SEMANTICS, tchecker::zg::NO_EXTRAPOLATION, 128, 128)};
 
@@ -191,6 +195,7 @@ tchecker::tck_reach::zg_reach::cex::symbolic::cex_t * counter_example(tchecker::
   }
 
   return cex;
+#endif // OLD
 }
 
 std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::zg_reach::cex::symbolic::cex_t const & cex,
