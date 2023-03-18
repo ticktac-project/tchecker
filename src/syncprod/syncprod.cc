@@ -181,7 +181,7 @@ std::string labels_str(tchecker::syncprod::system_t const & system, tchecker::sy
   std::stringstream ss;
   boost::dynamic_bitset<> slabels = tchecker::syncprod::labels(system, s);
   std::size_t const first = slabels.find_first();
-  for (std::size_t i = first; i != slabels.npos; i = slabels.find_next(i)) {
+  for (std::size_t i = first; i != boost::dynamic_bitset<>::npos; i = slabels.find_next(i)) {
     if (i != first)
       ss << ",";
     ss << system.label_name(i);

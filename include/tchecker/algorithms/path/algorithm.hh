@@ -168,11 +168,12 @@ private:
       if (!filter_edge(e))
         continue;
 
-      seq.push_back(e);
       node_sptr_t nextn = g.edge_tgt(e);
 
       if (visited.find(nextn) != visited.end())
         continue;
+
+      seq.push_back(e);
 
       if (filter_last(nextn))
         return seq;

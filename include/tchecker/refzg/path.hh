@@ -243,8 +243,9 @@ std::ostream & dot_output(std::ostream & os, tchecker::refzg::path::finite_path_
  \pre initial_vloc is a tuple of initial locations in refzg
  \pre seq is a feasible sequence in refzg from initial_vloc
  \return a finite path in refzg, starting from the initial state with tuple of locations initial_vloc,
- and that follows the sequence seq as far as possible, an empty path if no initial state in refzg has
- tuple of locations initial_vloc. If the path is not empty, its first node has flag initial set to true
+ and that follows the sequence seq if possible. If the path is not empty, its first node has flag initial set to true
+ \throw std::invalid_argument : if there is not initial state in refzg with tuple of locations initial_vloc
+ or if seq is not feasible from the initial state
  \note the returned path keeps a shared pointer on refzg
  */
 template <class REFZG, typename VEDGE_RANGE>
@@ -254,8 +255,10 @@ tchecker::refzg::path::finite_path_t<REFZG> * compute_run(std::shared_ptr<REFZG>
   tchecker::refzg::path::finite_path_t<REFZG> * path = new tchecker::refzg::path::finite_path_t<REFZG>{refzg};
 
   tchecker::refzg::const_state_sptr_t s{tchecker::refzg::initial(*refzg, initial_vloc)};
-  if (s.ptr() == nullptr)
-    return path;
+  if (s.ptr() == nullptr) {
+    delete path;
+    throw std::invalid_argument("No initial state with given tuple of locations");
+  }
 
   path->add_first_node(s);
   path->first()->initial(true);
@@ -263,8 +266,10 @@ tchecker::refzg::path::finite_path_t<REFZG> * compute_run(std::shared_ptr<REFZG>
   for (tchecker::const_vedge_sptr_t const & vedge_ptr : seq) {
     s = path->last()->state_ptr();
     auto && [nexts, nextt] = tchecker::refzg::next(*refzg, s, *vedge_ptr);
-    if (nexts.ptr() == nullptr)
-      break;
+    if (nexts.ptr() == nullptr || nextt.ptr() == nullptr) {
+      delete path;
+      throw std::invalid_argument("Sequence is not feasible from given initial locations");
+    }
     path->extend_back(nextt, nexts);
   }
 

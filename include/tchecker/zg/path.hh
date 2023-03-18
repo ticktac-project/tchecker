@@ -241,9 +241,10 @@ std::ostream & dot_output(std::ostream & os, tchecker::zg::path::finite_path_t<Z
  \param seq : sequence of tuple of edges as a range
  \pre initial_vloc is a tuple of initial locations in zg
  \pre seq is a feasible sequence in zg from initial_vloc
- \return a finite path in zg, starting from the initial state with tuple of locations initial_vloc,
- and that follows the sequence seq as far as possible, an empty path if no initial state in zg has tuple of
- locations initial_vloc. If the path is not empty, its first node has flag initial set to true
+ \return a finite path in refzg, starting from the initial state with tuple of locations initial_vloc,
+ and that follows the sequence seq if possible. If the path is not empty, its first node has flag initial set to true
+ \throw std::invalid_argument : if there is not initial state in refzg with tuple of locations initial_vloc
+ or if seq is not feasible from the initial state
  \note the returned path keeps a shared pointer on zg
  */
 template <class ZG, typename VEDGE_RANGE>
@@ -253,8 +254,10 @@ tchecker::zg::path::finite_path_t<ZG> * compute_run(std::shared_ptr<ZG> const & 
   tchecker::zg::path::finite_path_t<ZG> * path = new tchecker::zg::path::finite_path_t<ZG>{zg};
 
   tchecker::zg::const_state_sptr_t s{tchecker::zg::initial(*zg, initial_vloc)};
-  if (s.ptr() == nullptr)
-    return path;
+  if (s.ptr() == nullptr) {
+    delete path;
+    throw std::invalid_argument("No initial state with given tuple of locations");
+  }
 
   path->add_first_node(s);
   path->first()->initial(true);
@@ -262,8 +265,10 @@ tchecker::zg::path::finite_path_t<ZG> * compute_run(std::shared_ptr<ZG> const & 
   for (tchecker::const_vedge_sptr_t const & vedge_ptr : seq) {
     s = path->last()->state_ptr();
     auto && [nexts, nextt] = tchecker::zg::next(*zg, s, *vedge_ptr);
-    if (nexts.ptr() == nullptr)
-      break;
+    if (nexts.ptr() == nullptr || nextt.ptr() == nullptr) {
+      delete path;
+      throw std::invalid_argument("Sequence is not feasible from given initial locations");
+    }
     path->extend_back(nextt, nexts);
   }
 
