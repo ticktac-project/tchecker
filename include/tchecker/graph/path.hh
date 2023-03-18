@@ -29,8 +29,10 @@ namespace graph {
  \brief Finite path
  \tparam NODE : type of nodes
  \tparam EDGE : type of edges
- \note this graph allocates nodes of type tchecker::graph::reachability::node_t<NODE, EDGE> and
+ \note this path allocates nodes of type tchecker::graph::reachability::node_t<NODE, EDGE> and
  edges of type tchecker::graph::reachability::edge_t<NODE, EDGE>
+ \note the path is created empty. A first node can then added to the path. Then, the path can
+ be extended from the front or from the back adding an edge and a node
 */
 template <class NODE, class EDGE> class finite_path_t : private tchecker::graph::reachability::multigraph_t<NODE, EDGE> {
 public:
@@ -66,14 +68,9 @@ public:
 
   /*!
    \brief Constructor
-   \param args : arguments to a constructor of NODE
-   \post this path consists in a single node built from args
+   \post this path is empty
   */
-  template <class... ARGS>
-  finite_path_t(ARGS &&... args) : tchecker::graph::reachability::multigraph_t<NODE, EDGE>(128), _first(nullptr), _last(nullptr)
-  {
-    _first = _last = tchecker::graph::reachability::multigraph_t<NODE, EDGE>::add_node(args...);
-  }
+  finite_path_t() : tchecker::graph::reachability::multigraph_t<NODE, EDGE>(128), _first(nullptr), _last(nullptr) {}
 
   /*!
    \brief Copy constructor
@@ -88,7 +85,7 @@ public:
   /*!
    \brief Destructor
   */
-  ~finite_path_t() = default;
+  ~finite_path_t() { clear(); }
 
   /*!
    \brief Assignment operator
@@ -101,14 +98,44 @@ public:
   tchecker::graph::finite_path_t<NODE, EDGE> & operator=(tchecker::graph::finite_path_t<NODE, EDGE> &&) = delete;
 
   /*!
+   \brief Makes the path empty
+   \post this path is empty
+  */
+  void clear()
+  {
+    _first = nullptr;
+    _last = nullptr;
+    tchecker::graph::reachability::multigraph_t<NODE, EDGE>::clear();
+  }
+
+  /*!
+   \brief Add first node to the path
+   \param node_arg : argument to a constructor of NODE
+   \pre the path is empty
+   \post this path contains a single node constructed from node_arg
+   \throw std::runtime_error : if this path is not empty
+  */
+  template <typename NODE_ARG> void add_first_node(NODE_ARG const & node_arg)
+  {
+    if (!empty())
+      throw std::invalid_argument("Cannot add first node to non-empty path");
+    node_sptr_t n = tchecker::graph::reachability::multigraph_t<NODE, EDGE>::add_node(node_arg);
+    _first = _last = n;
+  }
+
+  /*!
    \brief Extend path at end
    \param edge_arg : argument to a constructor of EDGE
    \param node_arg : argument to a constructor of NODE
+   \pre this path is not empty
    \post this path has been extended into first -> ... -> last -e-> n where e has been built from edge_arg and
    n has been built from node_arg
+   \throw std::runtime_error : if this path is empty
    */
   template <typename EDGE_ARG, typename NODE_ARG> void extend_back(EDGE_ARG const & edge_arg, NODE_ARG const & node_arg)
   {
+    if (empty())
+      throw std::runtime_error("Cannot back extend an empty path");
     node_sptr_t n = tchecker::graph::reachability::multigraph_t<NODE, EDGE>::add_node(node_arg);
     tchecker::graph::reachability::multigraph_t<NODE, EDGE>::add_edge(_last, n, edge_arg);
     _last = n;
@@ -118,15 +145,25 @@ public:
    \brief Extend path at front
    \param edge_arg : argument to a constructor of EDGE
    \param node_arg : argument to a constructor of NODE
+   \pre this path is not empty
    \post this path has been extended into n -e-> first -> ... -> last where e has been built from edge_arg and
    n has been built from node_arg
+   \throw std::runtime_error : if this path is empty
    */
   template <typename EDGE_ARG, typename NODE_ARG> void extend_front(EDGE_ARG const & edge_arg, NODE_ARG const & node_arg)
   {
+    if (empty())
+      throw std::runtime_error("Cannot front extend an empty path");
     node_sptr_t n = tchecker::graph::reachability::multigraph_t<NODE, EDGE>::add_node(node_arg);
     tchecker::graph::reachability::multigraph_t<NODE, EDGE>::add_edge(n, _first, edge_arg);
     _first = n;
   }
+
+  /*!
+   \brief Check if a path is empty
+   \return true if this path is empty, false otherwise
+  */
+  bool empty() const { return (_first.ptr() == nullptr); }
 
   /*!
    \brief Accessor
@@ -539,7 +576,6 @@ public:
   }
 
 private:
-  // tchecker::graph::reachability::multigraph_t<NODE, EDGE> _graph; /*!< Graph representation of path */
   node_sptr_t _first; /*!< First node */
   node_sptr_t _last;  /*!< Last node */
 };

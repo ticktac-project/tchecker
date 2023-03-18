@@ -64,10 +64,35 @@ void dot_output(std::ostream & os, finite_path_t const & p)
   tchecker::graph::dot_output<finite_path_t, path_node_le_t, path_edge_le_t>(os, p, "foo");
 }
 
+TEST_CASE("Empty path", "[finite_path]")
+{
+  finite_path_t path;
+
+  SECTION("Number of nodes") { REQUIRE(path.nodes_count() == 0); }
+
+  SECTION("Last and first accessors")
+  {
+    REQUIRE(path.first().ptr() == nullptr);
+    REQUIRE(path.last().ptr() == nullptr);
+  }
+
+  SECTION("Iterator") { REQUIRE(path.begin() == path.end()); }
+
+  SECTION("Reverse iterator") { REQUIRE(path.rbegin() == path.rend()); }
+
+  SECTION("Extending throws")
+  {
+    REQUIRE_THROWS_AS(path.extend_back(1, 6), std::runtime_error);
+    REQUIRE_THROWS_AS(path.extend_front(7, 4), std::runtime_error);
+  }
+}
+
 TEST_CASE("Path with a single node", "[finite_path]")
 {
+  finite_path_t path;
+
   int const id = 0;
-  finite_path_t path(id);
+  path.add_first_node(id);
 
   SECTION("Number of nodes") { REQUIRE(path.nodes_count() == 1); }
 
@@ -97,8 +122,10 @@ TEST_CASE("Path with a single node", "[finite_path]")
 
 TEST_CASE("Path with a single edge", "[finite_path]")
 {
+  finite_path_t path;
+
   int const init_id = 0;
-  finite_path_t path(init_id);
+  path.add_first_node(init_id);
   path.extend_back(1, 1);
 
   SECTION("Right number of nodes") { REQUIRE(path.nodes_count() == 2); }
@@ -168,8 +195,10 @@ TEST_CASE("Path with a single edge", "[finite_path]")
 
 TEST_CASE("Path with more than one edge", "[finite_path]")
 {
+  finite_path_t path;
+
   int const init_id = 0;
-  finite_path_t path(init_id);
+  path.add_first_node(init_id);
 
   int const max_id = 9;
 
