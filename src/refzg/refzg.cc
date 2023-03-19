@@ -108,6 +108,9 @@ refzg_impl_t::refzg_impl_t(std::shared_ptr<tchecker::ta::system_t const> const &
                        _system->intvars_count(tchecker::VK_FLATTENED), block_size, _r, table_size),
       _transition_allocator(block_size, block_size, _system->processes_count(), table_size)
 {
+  tchecker::variable_access_map_t va_map = tchecker::variable_access(*system);
+  if (va_map.has_shared_variable() && (_r->refcount() > 1))
+    throw std::invalid_argument("Zone graph with reference clocks is not sound for systems with shared variables");
 }
 
 tchecker::refzg::initial_range_t refzg_impl_t::initial_edges() { return tchecker::refzg::initial_edges(*_system); }
