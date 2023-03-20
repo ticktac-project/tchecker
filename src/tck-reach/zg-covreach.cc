@@ -179,15 +179,12 @@ run(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl, st
   enum tchecker::waiting::policy_t policy = tchecker::algorithms::fast_remove_waiting_policy(search_order);
 
   tchecker::algorithms::covreach::stats_t stats;
+  tchecker::tck_reach::zg_covreach::algorithm_t algorithm;
 
-  if (covering == tchecker::algorithms::covreach::COVERING_FULL) {
-    tchecker::tck_reach::zg_covreach::algorithm_t<tchecker::algorithms::covreach::COVERING_FULL> algorithm;
-    stats = algorithm.run(*zg, *graph, accepting_labels, policy);
-  }
-  else if (covering == tchecker::algorithms::covreach::COVERING_LEAF_NODES) {
-    tchecker::tck_reach::zg_covreach::algorithm_t<tchecker::algorithms::covreach::COVERING_LEAF_NODES> algorithm;
-    stats = algorithm.run(*zg, *graph, accepting_labels, policy);
-  }
+  if (covering == tchecker::algorithms::covreach::COVERING_FULL)
+    stats = algorithm.run<tchecker::algorithms::covreach::COVERING_FULL>(*zg, *graph, accepting_labels, policy);
+  else if (covering == tchecker::algorithms::covreach::COVERING_LEAF_NODES)
+    stats = algorithm.run<tchecker::algorithms::covreach::COVERING_LEAF_NODES>(*zg, *graph, accepting_labels, policy);
   else
     throw std::invalid_argument("Unknown covering policy for covreach algorithm");
 

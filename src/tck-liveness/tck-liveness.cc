@@ -26,11 +26,12 @@ static struct option long_options[] = {{"algorithm", required_argument, 0, 'a'},
                                        {"certificate", no_argument, 0, 'C'},
                                        {"help", no_argument, 0, 'h'},
                                        {"labels", required_argument, 0, 'l'},
+                                       {"output", required_argument, 0, 'o'},
                                        {"block-size", required_argument, 0, 0},
                                        {"table-size", required_argument, 0, 0},
                                        {0, 0, 0, 0}};
 
-static char const * const options = (char *)"a:C:hl:";
+static char const * const options = (char *)"a:Chl:o:";
 
 /*!
   \brief Display usage
@@ -44,9 +45,10 @@ void usage(char * progname)
   std::cerr << "                     search an accepting cycle that visits all labels" << std::endl;
   std::cerr << "          ndfs       nested depth-first search algorithm over the zone graph" << std::endl;
   std::cerr << "                     search an accepting cycle with a state with all labels" << std::endl;
-  std::cerr << "   -C out_file   output a certificate (as a graph) in out_file" << std::endl;
+  std::cerr << "   -C            output a certificate (explored state-space) as a graph" << std::endl;
   std::cerr << "   -h            help" << std::endl;
   std::cerr << "   -l l1,l2,...  comma-separated list of accepting labels" << std::endl;
+  std::cerr << "   -o out_file   output file for certificate (default is standard output)" << std::endl;
   std::cerr << "   --block-size  size of allocation blocks" << std::endl;
   std::cerr << "   --table-size  size of hash tables" << std::endl;
   std::cerr << "reads from standard input if file is not provided" << std::endl;
@@ -58,12 +60,19 @@ enum algorithm_t {
   ALGO_NONE,    /*!< No algorithm */
 };
 
-static enum algorithm_t algorithm = ALGO_NONE; /*!< Selected algorithm */
-static bool help = false;                      /*!< Help flag */
-static std::string output_file = "";           /*!< Output file name */
-static std::string labels = "";                /*!< Searched labels */
-static std::size_t block_size = 10000;         /*!< Size of allocated blocks */
-static std::size_t table_size = 65536;         /*!< Size of hash tables */
+enum certificate_t {
+  CERTIFICATE_GRAPH, /*!< Graph of state-space */
+  CERTIFICATE_NONE,  /*!< No certificate */
+};
+
+static enum algorithm_t algorithm = ALGO_NONE;            /*!< Selected algorithm */
+static enum certificate_t certificate = CERTIFICATE_NONE; /*!< Type of certificate */
+static bool help = false;                                 /*!< Help flag */
+static std::string labels = "";                           /*!< Searched labels */
+static std::string output_file = "";                      /*!< Output file name (empty means standard output) */
+static std::ostream * os = &std::cout;                    /*!< Default output stream */
+static std::size_t block_size = 10000;                    /*!< Size of allocated blocks */
+static std::size_t table_size = 65536;                    /*!< Size of hash tables */
 
 /*!
  \brief Parse command-line arguments
@@ -97,13 +106,16 @@ int parse_command_line(int argc, char * argv[])
           throw std::runtime_error("Unknown algorithm: " + std::string(optarg));
         break;
       case 'C':
-        output_file = optarg;
+        certificate = CERTIFICATE_GRAPH;
         break;
       case 'h':
         help = true;
         break;
       case 'l':
         labels = optarg;
+        break;
+      case 'o':
+        output_file = optarg;
         break;
       default:
         throw std::runtime_error("This should never be executed");
@@ -161,12 +173,9 @@ void ndfs(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysde
   for (auto && [key, value] : m)
     std::cout << key << " " << value << std::endl;
 
-  // graph
-  if (output_file != "") {
-    std::ofstream ofs{output_file};
-    tchecker::tck_liveness::zg_ndfs::dot_output(ofs, *graph, sysdecl->name());
-    ofs.close();
-  }
+  // certificate
+  if (certificate == CERTIFICATE_GRAPH)
+    tchecker::tck_liveness::zg_ndfs::dot_output(*os, *graph, sysdecl->name());
 }
 
 /*!
@@ -186,12 +195,9 @@ void couvscc(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sy
   for (auto && [key, value] : m)
     std::cout << key << " " << value << std::endl;
 
-  // graph
-  if (output_file != "") {
-    std::ofstream ofs{output_file};
-    tchecker::tck_liveness::zg_couvscc::dot_output(ofs, *graph, sysdecl->name());
-    ofs.close();
-  }
+  // certificate
+  if (certificate == CERTIFICATE_GRAPH)
+    tchecker::tck_liveness::zg_couvscc::dot_output(*os, *graph, sysdecl->name());
 }
 
 /*!
@@ -219,6 +225,19 @@ int main(int argc, char * argv[])
 
     if (tchecker::log_error_count() > 0)
       return EXIT_FAILURE;
+
+    std::shared_ptr<std::ofstream> os_ptr{nullptr};
+
+    if (certificate != CERTIFICATE_NONE && output_file != "") {
+      try {
+        os_ptr = std::make_shared<std::ofstream>(output_file);
+        os = os_ptr.get();
+      }
+      catch (std::exception & e) {
+        std::cerr << tchecker::log_error << e.what() << std::endl;
+        return EXIT_FAILURE;
+      }
+    }
 
     switch (algorithm) {
     case ALGO_NDFS:

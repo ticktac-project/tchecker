@@ -207,15 +207,13 @@ std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::zg_covreach::c
 
 /*!
  \class algorithm_t
- \tparam COVERING : type of covering (see tchecker::algorithms::covreach::algorithm_t)
  \brief Covering reachability algorithm over the zone graph
 */
-template <enum tchecker::algorithms::covreach::covering_t COVERING = tchecker::algorithms::covreach::COVERING_FULL>
 class algorithm_t : public tchecker::algorithms::covreach::algorithm_t<tchecker::zg::sharing_zg_t,
-                                                                       tchecker::tck_reach::zg_covreach::graph_t, COVERING> {
+                                                                       tchecker::tck_reach::zg_covreach::graph_t> {
 public:
-  using tchecker::algorithms::covreach::algorithm_t<tchecker::zg::sharing_zg_t, tchecker::tck_reach::zg_covreach::graph_t,
-                                                    COVERING>::algorithm_t;
+  using tchecker::algorithms::covreach::algorithm_t<tchecker::zg::sharing_zg_t,
+                                                    tchecker::tck_reach::zg_covreach::graph_t>::algorithm_t;
 };
 
 /*!

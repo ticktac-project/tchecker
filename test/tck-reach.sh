@@ -34,7 +34,7 @@ then
     then
         COMMAND="${COMMAND} -l \"${LABELS}\""
     fi
-    COMMAND="${COMMAND} -C \"${TMPDOTFILE}\" \"${INPUTFILE}\""
+    COMMAND="${COMMAND} -C graph -o \"${TMPDOTFILE}\" \"${INPUTFILE}\""
 else
     echo 1>&2 "missing input file '${INPUTFILE}'"
     exit 1

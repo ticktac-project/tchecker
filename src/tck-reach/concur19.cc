@@ -216,7 +216,8 @@ std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::concur19::cex:
 
 std::tuple<tchecker::algorithms::covreach::stats_t, std::shared_ptr<tchecker::tck_reach::concur19::graph_t>>
 run(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl, std::string const & labels,
-    std::string const & search_order, std::size_t block_size, std::size_t table_size)
+    std::string const & search_order, tchecker::algorithms::covreach::covering_t covering, std::size_t block_size,
+    std::size_t table_size)
 {
   std::shared_ptr<tchecker::ta::system_t const> system{new tchecker::ta::system_t{*sysdecl}};
   if (!tchecker::system::every_process_has_initial_location(system->as_system_system()))
@@ -231,11 +232,17 @@ run(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl, st
 
   boost::dynamic_bitset<> accepting_labels = system->as_syncprod_system().labels(labels);
 
-  tchecker::tck_reach::concur19::algorithm_t algorithm;
-
   enum tchecker::waiting::policy_t policy = tchecker::algorithms::fast_remove_waiting_policy(search_order);
 
-  tchecker::algorithms::covreach::stats_t stats = algorithm.run(*refzg, *graph, accepting_labels, policy);
+  tchecker::algorithms::covreach::stats_t stats;
+  tchecker::tck_reach::concur19::algorithm_t algorithm;
+
+  if (covering == tchecker::algorithms::covreach::COVERING_FULL)
+    stats = algorithm.run<tchecker::algorithms::covreach::COVERING_FULL>(*refzg, *graph, accepting_labels, policy);
+  else if (covering == tchecker::algorithms::covreach::COVERING_LEAF_NODES)
+    stats = algorithm.run<tchecker::algorithms::covreach::COVERING_LEAF_NODES>(*refzg, *graph, accepting_labels, policy);
+  else
+    throw std::invalid_argument("Unknown covering policy for covreach algorithm");
 
   return std::make_tuple(stats, graph);
 }

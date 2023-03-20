@@ -277,6 +277,7 @@ public:
  \param sysdecl : system declaration
  \param labels : comma-separated string of labels
  \param search_order : search order
+ \param covering : covering policy
  \param block_size : number of elements allocated in one block
  \param table_size : size of hash tables
  \pre labels must appear as node attributes in sysdecl
@@ -285,7 +286,9 @@ public:
  */
 std::tuple<tchecker::algorithms::covreach::stats_t, std::shared_ptr<tchecker::tck_reach::concur19::graph_t>>
 run(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl, std::string const & labels = "",
-    std::string const & search_order = "bfs", std::size_t block_size = 10000, std::size_t table_size = 65536);
+    std::string const & search_order = "bfs",
+    tchecker::algorithms::covreach::covering_t covering = tchecker::algorithms::covreach::COVERING_FULL,
+    std::size_t block_size = 10000, std::size_t table_size = 65536);
 
 } // end of namespace concur19
 

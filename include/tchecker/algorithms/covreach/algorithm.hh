@@ -44,21 +44,19 @@ enum covering_t {
  tchecker::graph::subsumption::graph_t, and nodes of type GRAPH::shared_node_t
  should have a method state_ptr() that yields a pointer to the corresponding
  state in TS.
- \tparam COVERING : type of covering. Set to COVERING_LEAF_NODES to cover only
- non-maximal leaf nodes. Set to COVERING_FULL to cover all non-maximal nodes.
  \note For correctness of the algorithm, the covering relation over nodes in GRAPH
  should be a trace inclusion, and it should be irreflexive: a node should not
  cover itself
 */
-template <class TS, class GRAPH,
-          enum tchecker::algorithms::covreach::covering_t COVERING = tchecker::algorithms::covreach::COVERING_FULL>
-class algorithm_t {
+template <class TS, class GRAPH> class algorithm_t {
 public:
   using node_sptr_t = typename GRAPH::node_sptr_t;
 
   /*!
    \brief Build a covering reachability graph of a transition system from its
    initial states
+   \tparam COVERING : type of covering. Set to COVERING_LEAF_NODES to cover only
+   non-maximal leaf nodes. Set to COVERING_FULL to cover all non-maximal nodes.
    \param ts : a transition system
    \param graph : a graph
    \param labels : accepting labels
@@ -74,6 +72,7 @@ public:
    \return Statistics on the run
    \note if labels is empty, the algorithm explores the entire state-space
   */
+  template <enum tchecker::algorithms::covreach::covering_t COVERING = tchecker::algorithms::covreach::COVERING_FULL>
   tchecker::algorithms::covreach::stats_t run(TS & ts, GRAPH & graph, boost::dynamic_bitset<> const & labels,
                                               enum tchecker::waiting::policy_t policy)
   {
