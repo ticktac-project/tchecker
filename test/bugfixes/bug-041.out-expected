@@ -1,5 +1,6 @@
 COVREAH output
 // COVERED_STATES 1
+// MEMORY_MAX_RSS  xxxx
 // REACHABLE false
 // RUNNING_TIME_SECONDS  xxxx
 // STORED_STATES 4
@@ -16,6 +17,7 @@ digraph fischer_async_2_10 {
   2 -> 3 [edge_type="actual", vedge="<P2@id_is_0,ID2@id_is_0>"]
 }
 EXPLORE output
+// MEMORY_MAX_RSS  xxxx
 // REACHABLE false
 // RUNNING_TIME_SECONDS  xxxx
 // VISITED_STATES 4

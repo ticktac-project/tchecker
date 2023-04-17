@@ -40,7 +40,7 @@ else
     exit 1
 fi
 
-eval ${COMMAND} | sed -e 's/\(^RUNNING_TIME_SECONDS \).*$/\1 xxxx/g' -e 's@^@// @g'
+eval ${COMMAND} | sed -e 's/\(^MEMORY_MAX_RSS \).*$/\1 xxxx/g' -e 's/\(^RUNNING_TIME_SECONDS \).*$/\1 xxxx/g' -e 's@^@// @g'
 
 if test -f ${TMPDOTFILE};
 then
