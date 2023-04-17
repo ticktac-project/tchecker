@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "tchecker/basictypes.hh"
+#include "tchecker/dbm/db.hh"
 #include "tchecker/utils/index.hh"
 #include "tchecker/utils/iterator.hh"
 #include "tchecker/variables/access.hh"
@@ -91,6 +92,9 @@ public:
     LT = 0, /*!< less-than < */
     LE = 1, /*!< less-than-or-equal-to <= */
   };
+
+  static_assert(static_cast<int>(tchecker::clock_constraint_t::LE) == static_cast<int>(tchecker::dbm::LE), "");
+  static_assert(static_cast<int>(tchecker::clock_constraint_t::LT) == static_cast<int>(tchecker::dbm::LT), "");
 
   /*!
    \brief Constructor

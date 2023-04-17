@@ -6,6 +6,12 @@ find_package(Boost REQUIRED)
 
 option(LIBTCHECKER_ENABLE_SHARED "Build TChecker shared library" OFF)
 
+option(TCHECKER_DBM_UNSAFE "Use slightly faster but unsafe DBM library" OFF)
+if (TCHECKER_DBM_UNSAFE)
+  message(WARNING "Building TChecker with unsafe DBM library")
+  add_definitions(-DTCHECKER_DBM_UNSAFE)
+endif()
+
 message(STATUS "Build type for tchecker: ${CMAKE_BUILD_TYPE}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 

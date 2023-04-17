@@ -5,9 +5,7 @@
  *
  */
 
-#include <cassert>
-#include <limits>
-#include <stdexcept>
+#include <ostream>
 
 #include "tchecker/dbm/db.hh"
 
@@ -15,7 +13,7 @@ namespace tchecker {
 
 namespace dbm {
 
-std::ostream & output(std::ostream & os, tchecker::dbm::db_t db)
+std::ostream & output(std::ostream & os, tchecker::dbm::db_t const & db)
 {
   if (db == tchecker::dbm::LT_INFINITY)
     os << "<inf";
@@ -24,7 +22,10 @@ std::ostream & output(std::ostream & os, tchecker::dbm::db_t db)
   return os;
 }
 
-std::string comparator_str(tchecker::dbm::db_t db) { return (tchecker::dbm::comparator(db) == tchecker::dbm::LE ? "<=" : "<"); }
+std::string comparator_str(tchecker::dbm::db_t const & db)
+{
+  return (tchecker::dbm::comparator(db) == tchecker::dbm::LE ? "<=" : "<");
+}
 
 } // namespace dbm
 
