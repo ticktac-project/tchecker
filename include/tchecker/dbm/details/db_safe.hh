@@ -57,8 +57,6 @@ struct db_t {
 #endif
 };
 
-static_assert(sizeof(struct db_t) == INTEGER_T_SIZE / 8, "struct db_t is not defined properly");
-
 /*!
  \brief Equality operator
  \param db1 : difference bound
@@ -156,7 +154,7 @@ inline tchecker::dbm::db_t add(tchecker::dbm::db_t const & db, tchecker::integer
 inline int db_cmp(tchecker::dbm::db_t const & db1, tchecker::dbm::db_t const & db2)
 {
   if (db1.value != db2.value)
-    return db1.value - db2.value;
+    return (db1.value < db2.value) ? -1 : 1;
   return db1.cmp - db2.cmp;
 }
 
