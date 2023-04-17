@@ -671,7 +671,6 @@ void to_dbm(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variable
             tchecker::clock_id_t dim)
 {
   tchecker::clock_id_t const rdim = r.size();
-  tchecker::clock_id_t const refcount = r.refcount();
 
   assert(rdbm != nullptr);
   assert(tchecker::refdbm::is_consistent(rdbm, r));
