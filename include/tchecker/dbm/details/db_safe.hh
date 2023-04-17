@@ -166,7 +166,7 @@ inline int db_cmp(tchecker::dbm::db_t const & db1, tchecker::dbm::db_t const & d
  \param db2 : a difference bound
  \return true if db1 is stronger than db2, false otherwise
 */
-constexpr bool operator<(tchecker::dbm::db_t const & db1, tchecker::dbm::db_t const & db2)
+inline bool operator<(tchecker::dbm::db_t const & db1, tchecker::dbm::db_t const & db2)
 {
   return tchecker::dbm::db_cmp(db1, db2) < 0;
 }
@@ -177,7 +177,7 @@ constexpr bool operator<(tchecker::dbm::db_t const & db1, tchecker::dbm::db_t co
  \param db2 : a difference bound
  \return true if db1 is stronger or equal to db2, false otherwise
 */
-constexpr bool operator<=(tchecker::dbm::db_t const & db1, tchecker::dbm::db_t const & db2)
+inline bool operator<=(tchecker::dbm::db_t const & db1, tchecker::dbm::db_t const & db2)
 {
   return tchecker::dbm::db_cmp(db1, db2) <= 0;
 }
@@ -188,7 +188,7 @@ constexpr bool operator<=(tchecker::dbm::db_t const & db1, tchecker::dbm::db_t c
  \param db2 : a difference bound
  \return true if db1 is weaker or equal to db2, false otherwise
 */
-constexpr bool operator>=(tchecker::dbm::db_t const & db1, tchecker::dbm::db_t const & db2)
+inline bool operator>=(tchecker::dbm::db_t const & db1, tchecker::dbm::db_t const & db2)
 {
   return tchecker::dbm::db_cmp(db1, db2) >= 0;
 }
@@ -199,7 +199,7 @@ constexpr bool operator>=(tchecker::dbm::db_t const & db1, tchecker::dbm::db_t c
  \param db2 : a difference bound
  \return true if db1 is weaker than db2, false otherwise
 */
-constexpr bool operator>(tchecker::dbm::db_t const & db1, tchecker::dbm::db_t const & db2)
+inline bool operator>(tchecker::dbm::db_t const & db1, tchecker::dbm::db_t const & db2)
 {
   return tchecker::dbm::db_cmp(db1, db2) > 0;
 }
