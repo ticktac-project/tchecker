@@ -45,9 +45,10 @@ namespace tchecker {
  to represent other states of this object. The default value, 1, is the number
  of states needed by tchecker::pool_t
  */
-template <class T, class REFCOUNT = unsigned int, std::size_t RESERVED = 1> class make_shared_t final : public T {
+template <class T, class REFCOUNT = std::size_t, std::size_t RESERVED = 1> class make_shared_t final : public T {
 
   static_assert(std::is_unsigned<REFCOUNT>::value, "REFCOUNT must be an unsigned type");
+  static_assert(sizeof(REFCOUNT) % alignof(T *) == 0, "REFCOUNT size must be a multiple of pointer alignment");
 
 public:
   /*!
