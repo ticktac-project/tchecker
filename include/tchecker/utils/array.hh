@@ -31,11 +31,11 @@ namespace tchecker {
 
 /*!
  \class array_capacity_t
- \tparam CAPACITY : storage type for array capacity, must be unsigned
+ \tparam CAPACITY : storage type for array capacity, must be unsigned type
  \brief Default base class for single allocation array, provides array
  capacity
  */
-template <class CAPACITY> class array_capacity_t {
+template <typename CAPACITY> class array_capacity_t {
 
   static_assert(std::is_unsigned<CAPACITY>::value, "CAPACITY must be unsigned");
 
@@ -128,6 +128,56 @@ bool operator!=(tchecker::array_capacity_t<CAPACITY> const & a1, tchecker::array
 template <class CAPACITY> std::size_t hash_value(tchecker::array_capacity_t<CAPACITY> const & a) { return a.capacity(); }
 
 /*!
+ \class no_storage_array_t
+ \brief Class that simulates the behavior of an array (pointer to first element, box operator, etc)
+ but without any storage associated to it
+ \note DO NOT INSTANTIATE AS IS, memory is not allocated automatically. See class tcehcker::make_array_t
+ for usage as a flexible array member (single allocation of compound objects)
+ \note inspired from
+ https://stackoverflow.com/questions/17424731/implementing-flexible-array-members-with-templates-and-base-class
+*/
+template <typename T> class alignas(T) no_storage_array_t {
+public:
+  /*!
+   \brief Accessor
+   \return pointer to first element in this array
+  */
+  constexpr T * ptr() { return reinterpret_cast<T *>(this); }
+
+  /*!
+   \brief Accessor
+   \return pointer to first element in this array
+  */
+  constexpr T const * ptr() const { return reinterpret_cast<T const *>(this); }
+
+  /*!
+   \brief Type conversion
+   \return pointer to first element in this array
+  */
+  constexpr explicit operator T *() { return ptr(); }
+
+  /*!
+   \brief Type conversion
+   \return pointer to first element in this array
+  */
+  constexpr explicit operator T const *() const { return ptr(); }
+
+  /*!
+   \brief Accessor
+   \pre ptr() + i is a valid address
+   \return value at index i
+  */
+  constexpr T & operator[](std::size_t i) { return ptr()[i]; }
+
+  /*!
+   \brief Accessor
+   \pre ptr() + i is a valid address
+   \return value at index i
+  */
+  constexpr T const & operator[](std::size_t i) const { return ptr()[i]; }
+};
+
+/*!
  \class make_array_t
  \brief Fixed-capacity array with single allocation
  \tparam T : type of value
@@ -139,8 +189,9 @@ template <class CAPACITY> std::size_t hash_value(tchecker::array_capacity_t<CAPA
 
  In order to achieve good performances, a single allocation is used for both
  the make_array_t instance AND the array of T. In details, we
- allocate: sizeof(BASE) + capacity * T_ALLOCSIZE bytes of memory. The array
- starts after the first sizeof(BASE) bytes.
+ allocate: sizeof(BASE) + capacity * T_ALLOCSIZE bytes of memory. In more
+ details, this is implemented using a flexible array member of type
+ tchecker::no_storage_array_t<T> as the last member of the class.
 
  This has several consequences:
  - single allocation arrays cannot be allocated automatically (on the stack).
@@ -149,17 +200,22 @@ template <class CAPACITY> std::size_t hash_value(tchecker::array_capacity_t<CAPA
  - inheriting from make_array_t is in general not safe as it may overwrite the
    memory allocated for the array since the compiler is not aware of it.
    Extending make_array_t can be done in two ways. First, specify a BASE class
-   that provides extra variables and methods. Second, inherit from
-   make_array_t which is safe when adding new, non-virtual, methods only (i.e.
-   no variables)
+   that provides extra variables and methods. Second, inheriting from
+   make_array_t is safe when adding non-virtual methods and static variables
+   only. Adding instance variables and/or virtual methods will result in memory
+   corruption.
+  Please, notice that the compiler is not aware of our dirty tricks. So don't
+  rely on the compiler to save you from doing bad things. Just don't do it!
  */
-template <class T, std::size_t T_ALLOCSIZE = sizeof(T), class BASE = tchecker::array_capacity_t<std::size_t>>
+template <class T, std::size_t T_ALLOCSIZE = sizeof(T), class BASE = tchecker::array_capacity_t<unsigned short>>
 class make_array_t : public BASE {
 
   static_assert(T_ALLOCSIZE >= sizeof(T), "T_ALLOCSIZE should be at least sizeof(T)");
 
   static_assert(std::is_base_of<tchecker::array_capacity_t<typename BASE::capacity_t>, BASE>::value,
                 "BASE should derive from tchecker::array_capacity_t");
+
+  tchecker::no_storage_array_t<T> _fam; /*!< Flexible array member */
 
 public:
   /*!
@@ -177,25 +233,25 @@ public:
   /*!
    \brief Accessor
    \param i : index
-   \pre i < size (chcked by assertion)
+   \pre i < capacity (checked by assertion)
    \return reference to the value at index i in this array
    */
-  inline T & operator[](typename BASE::capacity_t i)
+  constexpr inline T & operator[](typename BASE::capacity_t i)
   {
     assert(i < BASE::_capacity);
-    return *(array_begin() + i);
+    return _fam[i];
   }
 
   /*!
    \brief Accessor
    \param i : index
-   \pre i < size (checked by assertion)
+   \pre i < capacity (checked by assertion)
    \return const reference to the value at index i in this array
    */
   inline T const & operator[](typename BASE::capacity_t i) const
   {
     assert(i < BASE::_capacity);
-    return *(array_begin() + i);
+    return _fam[i];
   }
 
   /*!
@@ -211,12 +267,8 @@ public:
       throw std::invalid_argument("invalid array capacity");
 
     BASE::operator=(a);
-
-    auto it = array_begin(), end = array_end();
-    auto a_it = a.array_begin(), a_end = a.array_end();
-    for (; (it != end) && (a_it != a_end); ++it, ++a_it)
-      *it = *a_it;
-
+    for (std::size_t i = 0; i < BASE::_capacity; ++i)
+      _fam[i] = a._fam[i];
     return *this;
   }
 
@@ -233,12 +285,8 @@ public:
       throw std::invalid_argument("invalid array capacity");
 
     BASE::operator=(std::move(a));
-
-    auto it = array_begin(), end = array_end();
-    auto a_it = a.array_begin(), a_end = a.array_end();
-    for (; (it != end) && (a_it != a_end); ++it, ++a_it)
-      *it = std::move(*a_it);
-
+    for (std::size_t i = 0; i < BASE::_capacity; ++i)
+      _fam[i] = std::move(a._fam[i]);
     return *this;
   }
 
@@ -248,13 +296,27 @@ public:
    \brief Accessor
    \return pointer to first element
    */
-  T * ptr() { return array_begin(); }
+  T * ptr() { return _fam.ptr(); }
 
   /*!
    \brief Accessor
    \return pointer to first element
    */
-  T const * ptr() const { return array_begin(); }
+  T const * ptr() const { return _fam.ptr(); }
+
+  // Type conversion
+
+  /*!
+   \brief Type conversion
+   \return pointer to first element
+  */
+  operator T *() { return static_cast<T *>(_fam); }
+
+  /*!
+   \brief Type conversion
+   \return pointer to first element
+  */
+  operator T const *() { return static_cast<T const *>(_fam); }
 
   // Iterators
 
@@ -264,33 +326,33 @@ public:
   using iterator_t = T *;
 
   /*!
+   \brief Accessor
+   \return iterator to first value
+   */
+  constexpr iterator_t begin() { return ptr(); }
+
+  /*!
+   \brief Accessor
+   \return past-the-end iterator
+   */
+  constexpr iterator_t end() { return end_ptr(); }
+
+  /*!
    \brief Const iterator
    */
   using const_iterator_t = T const *;
 
   /*!
    \brief Accessor
-   \return iterator to first value
-   */
-  iterator_t begin() { return array_begin(); }
-
-  /*!
-   \brief Accessor
    \return const iterator to first value
    */
-  const_iterator_t begin() const { return array_begin(); }
-
-  /*!
-   \brief Accessor
-   \return past-the-end iterator
-   */
-  iterator_t end() { return array_end(); }
+  constexpr const_iterator_t begin() const { return ptr(); }
 
   /*!
    \brief Accessor
    \return past-the-end const iterator
    */
-  const_iterator_t end() const { return array_end(); }
+  constexpr const_iterator_t end() const { return end_ptr(); }
 
   // Allocation/destruction
 
@@ -316,6 +378,7 @@ public:
    \brief Destruction
    \param ptr : single allocation array
    \post the destructor of ptr has been called
+   \note ptr has not been deleted
    */
   static inline void destruct(tchecker::make_array_t<T, T_ALLOCSIZE, BASE> * ptr)
   {
@@ -337,10 +400,9 @@ protected:
   make_array_t(std::tuple<BASE_ARGS...> base_args, std::tuple<T_ARGS...> t_args)
       : BASE(std::make_from_tuple<BASE_ARGS...>(base_args))
   {
-    T * const begin = array_begin();
-    T * const end = array_end();
-    for (T * t = begin; t != end; ++t)
-      new (t) T(std::make_from_tuple<T_ARGS...>(t_args));
+    T const * end = end_ptr();
+    for (T * p = ptr(); p != end; ++p)
+      new (p) T(std::make_from_tuple<T_ARGS...>(t_args));
   }
 
   /*!
@@ -350,11 +412,10 @@ protected:
    */
   make_array_t(tchecker::make_array_t<T, T_ALLOCSIZE, BASE> const & array) : BASE(array)
   {
-    T * it = array.array_begin();
-    T * const end = array.array_end();
-    T * t = array_begin();
-    for (; it != end; ++it, ++t)
-      new (t) T(*it);
+    T const * end = end_ptr();
+    T const * array_p = array.ptr();
+    for (T * p = ptr(); p != end; ++p, ++array_p)
+      new (p) T(*array_p);
   }
 
   /*!
@@ -364,11 +425,9 @@ protected:
    */
   make_array_t(tchecker::make_array_t<T, T_ALLOCSIZE, BASE> && array) : BASE(array)
   {
-    T * it = array.array_begin();
-    T * const end = array.array_end();
-    T * t = array_begin();
-    for (; it != end; ++it, ++t)
-      new (t) T(std::move(*it));
+    T const * end = end_ptr();
+    for (T *p = ptr(), *array_p = array.ptr(); p != end; ++p, ++array_p)
+      new (p) T(std::move(*array_p));
   }
 
   /*!
@@ -377,27 +436,22 @@ protected:
    */
   ~make_array_t()
   {
-    T * const begin = array_begin();
-    T * const end = array_end();
-    for (T * t = begin; t != end; ++t)
-      t->~T();
+    T const * end = end_ptr();
+    for (T * p = ptr(); p != end; ++p)
+      p->~T();
   }
 
   /*!
    \brief Accessor
-   \return first address in array
+   \return past-the-end pointer
    */
-  constexpr T * array_begin() const
-  {
-    return reinterpret_cast<T *>(reinterpret_cast<char *>(const_cast<tchecker::make_array_t<T, T_ALLOCSIZE, BASE> *>(this)) +
-                                 sizeof(tchecker::make_array_t<T, T_ALLOCSIZE, BASE>));
-  }
+  constexpr T * end_ptr() { return ptr() + BASE::_capacity; }
 
   /*!
    \brief Accessor
-   \return past-the-end address
+   \return past-the-end pointer
    */
-  constexpr T * array_end() const { return (array_begin() + BASE::_capacity); }
+  constexpr T const * end_ptr() const { return ptr() + BASE::_capacity; }
 };
 
 /*!
@@ -412,9 +466,10 @@ bool operator==(tchecker::make_array_t<T, T_ALLOCSIZE, BASE> const & a1,
 {
   if (static_cast<BASE const &>(a1) != static_cast<BASE const &>(a2))
     return false;
-  std::size_t capacity = a1.capacity();
-  for (std::size_t i = 0; i < capacity; ++i)
-    if (a1[i] != a2[i])
+  auto it1 = a1.begin(), end1 = a1.end();
+  auto it2 = a2.begin(), end2 = a2.end();
+  for (; it1 != end1 && it2 != end2; ++it1, ++it2)
+    if (*it1 != *it2)
       return false;
   return true;
 }
@@ -517,11 +572,8 @@ tchecker::make_array_t<T, T_ALLOCSIZE, BASE> * make_array_allocate_and_construct
                                                                                  std::tuple<T_ARGS...> t_args)
 {
   using array_t = tchecker::make_array_t<T, T_ALLOCSIZE, BASE>;
-
   void * ptr = new char[tchecker::allocation_size_t<array_t>::alloc_size(capacity)];
-
   array_t::construct(ptr, base_args, t_args);
-
   return reinterpret_cast<array_t *>(ptr);
 }
 
@@ -535,7 +587,6 @@ template <class T, std::size_t T_ALLOCSIZE, class BASE>
 void make_array_destruct_and_deallocate(tchecker::make_array_t<T, T_ALLOCSIZE, BASE> * a)
 {
   tchecker::make_array_t<T, T_ALLOCSIZE, BASE>::destruct(a);
-
   delete[] reinterpret_cast<char *>(a);
 }
 
