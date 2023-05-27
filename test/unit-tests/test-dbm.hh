@@ -1086,6 +1086,87 @@ TEST_CASE("reset DBM", "[dbm]")
   }
 }
 
+TEST_CASE("DBM free_clock (reverse reset)", "[dbm]")
+{
+  SECTION("free_clock on the universal positive DBM does nothing")
+  {
+    tchecker::clock_id_t const dim = 7;
+    tchecker::dbm::db_t dbm[dim * dim];
+
+    tchecker::dbm::universal_positive(dbm, dim);
+
+    tchecker::dbm::db_t dbm2[dim * dim];
+    memcpy(dbm2, dbm, dim * dim * sizeof(tchecker::dbm::db_t));
+
+    tchecker::dbm::free_clock(dbm, dim, 2);
+
+    REQUIRE(tchecker::dbm::is_tight(dbm, dim));
+    REQUIRE(tchecker::dbm::is_equal(dbm, dbm2, dim));
+  }
+
+  SECTION("free_clock x on single valuation DBM (x=3, y=4)")
+  {
+    tchecker::clock_id_t const dim = 3;
+    tchecker::clock_id_t const x = 1;
+    tchecker::clock_id_t const y = 2;
+
+    tchecker::dbm::db_t dbm[dim * dim];
+    tchecker::dbm::universal_positive(dbm, dim);
+    DBM(0, x) = tchecker::dbm::db(tchecker::dbm::LE, -3);
+    DBM(x, 0) = tchecker::dbm::db(tchecker::dbm::LE, 3);
+    DBM(0, y) = tchecker::dbm::db(tchecker::dbm::LE, -4);
+    DBM(y, 0) = tchecker::dbm::db(tchecker::dbm::LE, 4);
+    tchecker::dbm::tighten(dbm, dim);
+
+    tchecker::dbm::db_t dbm2[dim * dim];
+    memcpy(dbm2, dbm, dim * dim * sizeof(tchecker::dbm::db_t));
+    for (tchecker::clock_id_t i = 0; i < dim; ++i) {
+      if (i == x)
+        continue;
+      DBM2(i, x) = tchecker::dbm::LT_INFINITY;
+      DBM2(x, i) = tchecker::dbm::LT_INFINITY;
+    }
+    DBM2(0, x) = tchecker::dbm::LE_ZERO;
+    tchecker::dbm::tighten(dbm2, dim);
+
+    tchecker::dbm::free_clock(dbm, dim, x);
+
+    REQUIRE(tchecker::dbm::is_tight(dbm, dim));
+    REQUIRE(tchecker::dbm::is_equal(dbm, dbm2, dim));
+  }
+
+  SECTION("free_clock y on DBM (3 < x <= 5 && 1 <= y <= 2)")
+  {
+    tchecker::clock_id_t const dim = 3;
+    tchecker::clock_id_t const x = 1;
+    tchecker::clock_id_t const y = 2;
+
+    tchecker::dbm::db_t dbm[dim * dim];
+    tchecker::dbm::universal_positive(dbm, dim);
+    DBM(0, x) = tchecker::dbm::db(tchecker::dbm::LT, -3);
+    DBM(x, 0) = tchecker::dbm::db(tchecker::dbm::LE, 5);
+    DBM(0, y) = tchecker::dbm::db(tchecker::dbm::LE, -1);
+    DBM(y, 0) = tchecker::dbm::db(tchecker::dbm::LT, 2);
+    tchecker::dbm::tighten(dbm, dim);
+
+    tchecker::dbm::db_t dbm2[dim * dim];
+    memcpy(dbm2, dbm, dim * dim * sizeof(tchecker::dbm::db_t));
+    for (tchecker::clock_id_t i = 0; i < dim; ++i) {
+      if (y == i)
+        continue;
+      DBM2(y, i) = tchecker::dbm::LT_INFINITY;
+      DBM2(i, y) = tchecker::dbm::LT_INFINITY;
+    }
+    DBM2(0, y) = tchecker::dbm::LE_ZERO;
+    tchecker::dbm::tighten(dbm2, dim);
+
+    tchecker::dbm::free_clock(dbm, dim, y);
+
+    REQUIRE(tchecker::dbm::is_tight(dbm, dim));
+    REQUIRE(tchecker::dbm::is_equal(dbm, dbm2, dim));
+  }
+}
+
 TEST_CASE("DBM open_up (delay)", "[dbm]")
 {
 
@@ -1139,6 +1220,87 @@ TEST_CASE("DBM open_up (delay)", "[dbm]")
       DBM2(i, 0) = tchecker::dbm::LT_INFINITY;
 
     tchecker::dbm::open_up(dbm, dim);
+
+    REQUIRE(tchecker::dbm::is_tight(dbm, dim));
+    REQUIRE(tchecker::dbm::is_equal(dbm, dbm2, dim));
+  }
+}
+
+TEST_CASE("DBM open_down (reverse delay)", "[dbm]")
+{
+
+  SECTION("open_down on positive zone has no effect")
+  {
+    tchecker::clock_id_t const dim = 5;
+    tchecker::dbm::db_t dbm[dim * dim];
+
+    tchecker::dbm::universal_positive(dbm, dim);
+
+    tchecker::dbm::db_t dbm2[dim * dim];
+    memcpy(dbm2, dbm, dim * dim * sizeof(tchecker::dbm::db_t));
+
+    tchecker::dbm::open_down(dbm, dim);
+
+    REQUIRE(tchecker::dbm::is_tight(dbm, dim));
+    REQUIRE(tchecker::dbm::is_equal(dbm, dbm2, dim));
+  }
+
+  SECTION("open_down on zero zone has no effect")
+  {
+    tchecker::clock_id_t const dim = 4;
+    tchecker::dbm::db_t dbm[dim * dim];
+    tchecker::dbm::zero(dbm, dim);
+
+    tchecker::dbm::db_t dbm2[dim * dim];
+    memcpy(dbm2, dbm, dim * dim * sizeof(tchecker::dbm::db_t));
+
+    tchecker::dbm::open_down(dbm, dim);
+
+    REQUIRE(tchecker::dbm::is_tight(dbm, dim));
+    REQUIRE(tchecker::dbm::is_equal(dbm, dbm2, dim));
+  }
+
+  SECTION("open_down on a single valuation DBM (x=1,y=2)")
+  {
+    tchecker::clock_id_t const dim = 3;
+    tchecker::dbm::db_t dbm[dim * dim];
+    tchecker::dbm::universal_positive(dbm, dim);
+    DBM(0, 1) = tchecker::dbm::db(tchecker::dbm::LE, -1);
+    DBM(1, 0) = tchecker::dbm::db(tchecker::dbm::LE, 1);
+    DBM(0, 2) = tchecker::dbm::db(tchecker::dbm::LE, -2);
+    DBM(2, 0) = tchecker::dbm::db(tchecker::dbm::LE, 2);
+    tchecker::dbm::tighten(dbm, dim);
+
+    tchecker::dbm::db_t dbm2[dim * dim];
+    memcpy(dbm2, dbm, dim * dim * sizeof(tchecker::dbm::db_t));
+    for (tchecker::clock_id_t i = 1; i < dim; ++i)
+      DBM2(0, i) = tchecker::dbm::LE_ZERO;
+    tchecker::dbm::tighten(dbm2, dim);
+
+    tchecker::dbm::open_down(dbm, dim);
+
+    REQUIRE(tchecker::dbm::is_tight(dbm, dim));
+    REQUIRE(tchecker::dbm::is_equal(dbm, dbm2, dim));
+  }
+
+  SECTION("open_down on some DBM (3 < x <= 5 && 1 <= y <= 2)")
+  {
+    tchecker::clock_id_t const dim = 3;
+    tchecker::dbm::db_t dbm[dim * dim];
+    tchecker::dbm::universal_positive(dbm, dim);
+    DBM(0, 1) = tchecker::dbm::db(tchecker::dbm::LT, -3);
+    DBM(1, 0) = tchecker::dbm::db(tchecker::dbm::LE, 5);
+    DBM(0, 2) = tchecker::dbm::db(tchecker::dbm::LE, -1);
+    DBM(2, 0) = tchecker::dbm::db(tchecker::dbm::LT, 2);
+    tchecker::dbm::tighten(dbm, dim);
+
+    tchecker::dbm::db_t dbm2[dim * dim];
+    memcpy(dbm2, dbm, dim * dim * sizeof(tchecker::dbm::db_t));
+    for (tchecker::clock_id_t i = 1; i < dim; ++i)
+      DBM2(0, i) = tchecker::dbm::LE_ZERO;
+    tchecker::dbm::tighten(dbm2, dim);
+
+    tchecker::dbm::open_down(dbm, dim);
 
     REQUIRE(tchecker::dbm::is_tight(dbm, dim));
     REQUIRE(tchecker::dbm::is_equal(dbm, dbm2, dim));

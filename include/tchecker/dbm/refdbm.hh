@@ -635,8 +635,64 @@ void reset(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t con
            tchecker::clock_reset_container_t const & rc);
 
 /*!
- \brief Asynchronous open-up (delay)
+ \brief Free a clock (reverse reset to reference clock)
  \param rdbm : a DBM
+ \param r : reference clocks for rdbm
+ \param x : clock identifier
+ \pre rdbm is not nullptr (checked by assertion)
+ rdbm is a r.size()*r.size() array of difference bounds
+ rdbm is consistent (checked by assertion)
+ rdbm is tight (checked by assertion)
+ x < r.size() (checked by assertion)
+ x is equal to r(x) is rdbm (checked by assertion)
+ \post rdbm represents the set of valuations v such that v[x := r(x)]
+ belongs to the original rdbm
+ rdbm is tight
+ */
+void free_clock(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r, tchecker::clock_id_t x);
+
+/*!
+ \brief Reverse resets (free clocks) in a DBM with reference
+ \param rdbm : a DBM
+ \param r : reference clocks for rdbm
+ \param reset : clock reset
+ \pre rdbm is not nullptr (checked by assertion)
+ rdbm is a r.size()*r.size() array of difference bounds
+ rdbm is consistent (checked by assertion)
+ rdbm is tight (checked by assertion)
+ all clock IDs in reset are system clock IDs
+ reset should be a reset to reference clock: the right id of reset is
+ tchecker::REFCLOCK_ID, and the value in reset is 0 (checked by assertion)
+ rdbm should have x=r(x) for every x:=r(x) in reset (checked by assertion)
+ \post rdbm represents the set of valuations v such that v[reset]
+ belongs to the original rdbm
+ rdbm is tight
+ */
+void free_clock(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
+                tchecker::clock_reset_t const & reset);
+
+/*!
+ \brief Reverse resets (free clock) in a DBM with reference clocks
+ \param rdbm : a DBM
+ \param r : reference clocks for rdbm
+ \param rc : clock reset collection
+ \pre rdbm is not nullptr (checked by assertion)
+ rdbm is a r.size()*r.size() array of difference bounds
+ rdbm is consistent (checked by assertion)
+ rdbm is tight (checked by assertion)
+ all clock IDs in rc are system clock IDs
+ all resets in rc must be resets to reference clock: the right id is
+ tchecker::REFCLOCK_ID, and the value  is 0 (checked by assertion)
+ rdbm should have x=r(x) for every x:=r(x) in reset (checked by assertion)
+ \post rdbm represents the set of valuations v such that v[c] belongs to the original rdbm
+ rdbm is tight
+ */
+void free_clock(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
+                tchecker::clock_reset_container_t const & rc);
+
+/*!
+ \brief Asynchronous open-up (delay)
+ \param rdbm : a DBM with reference clocks
  \param r : reference clocks for rdbm
  \pre rdbm is not nullptr (checked by assertion)
  rdbm is a r.size()*r.size() array of difference bounds
@@ -651,7 +707,7 @@ void asynchronous_open_up(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_
 
 /*!
  \brief Asynchronous open-up (delay) with clock stopping
- \param rdbm : a DBM
+ \param rdbm : a DBM with reference clocks
  \param r : reference clocks for rdbm
  \param delay_allowed : reference clocks allowed to delay
  \pre rdbm is not nullptr (checked by assertion)
@@ -670,7 +726,41 @@ void asynchronous_open_up(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_
                           boost::dynamic_bitset<> const & delay_allowed);
 
 /*!
- \brief Extract a standard DBM from a DBM with reference clocks
+ \brief Asynchronous open-down (reverse delay)
+ \param rdbm : a DBM with reference clocks
+ \param r : reference clocks for rdbm
+ \pre rdbm is not nullptr (checked by assertion)
+ rdbm is a r.size()*r.size() array of difference bounds
+ rdbm is consistent (checked by assertion)
+ rdbm is tight (checked by assertion)
+ rdbm is a DBM over reference clocks r
+ \post rdbm represents the set of valuations v such that v + d belongs to the
+ original DBM rdbm for some asynchronous delay d
+ rdbm is tight and consistent.
+ */
+void asynchronous_open_down(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r);
+
+/*!
+ \brief Asynchronous open-down (delay) with clock stopping
+ \param rdbm : a DBM with reference clocks
+ \param r : reference clocks for rdbm
+ \param delay_allowed : reference clocks allowed to delay
+ \pre rdbm is not nullptr (checked by assertion)
+ rdbm is a r.size()*r.size() array of difference bounds
+ rdbm is consistent (checked by assertion)
+ rdbm is tight (checked by assertion)
+ rdbm is a DBM over reference clocks r
+ delay_allowed has size r.refcount() (checked by assertion)
+ \post rdbm represents the set of valuations v such that v + d belongs to the
+ original DBM rdbm for some asynchronous delay d such that d(r)=0 for every
+ reference clock r not in delay_allowed
+ rdbm is tight and consistent.
+ */
+void asynchronous_open_down(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
+                            boost::dynamic_bitset<> const & delay_allowed);
+
+/*!
+ \brief Extract a standard DBM from a synchronized DBM with reference clocks
  \param rdbm : a DBM with reference clocks
  \param r : reference clocks for rdbm
  \param dbm : a DBM

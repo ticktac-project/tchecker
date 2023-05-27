@@ -370,6 +370,27 @@ void reset_to_sum(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker:
   assert(tchecker::dbm::is_tight(dbm, dim));
 }
 
+void free_clock(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x)
+{
+  assert(dbm != nullptr);
+  assert(dim >= 1);
+  assert(tchecker::dbm::is_consistent(dbm, dim));
+  assert(tchecker::dbm::is_tight(dbm, dim));
+  assert(x < dim);
+
+  // The naive algorithm consists in setting all constraint involving x to <=inf, then tighten
+  // Observe that the new bound for y-x can be obtained as the sum of bounds for y-0 and 0-x.
+  // But 0-x is <=0 (due to unreset), so the bound for y-x is simply the same as for y-0
+  for (tchecker::clock_id_t y = 0; y < dim; ++y) {
+    DBM(x, y) = tchecker::dbm::LT_INFINITY;
+    DBM(y, x) = DBM(y, 0);
+  }
+  DBM(x, x) = tchecker::dbm::LE_ZERO;
+
+  assert(tchecker::dbm::is_consistent(dbm, dim));
+  assert(tchecker::dbm::is_tight(dbm, dim));
+}
+
 void open_up(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim)
 {
   assert(dbm != nullptr);
@@ -379,6 +400,26 @@ void open_up(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim)
 
   for (tchecker::clock_id_t i = 1; i < dim; ++i)
     DBM(i, 0) = tchecker::dbm::LT_INFINITY;
+
+  assert(tchecker::dbm::is_consistent(dbm, dim));
+  assert(tchecker::dbm::is_tight(dbm, dim));
+}
+
+void open_down(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim)
+{
+  assert(dbm != nullptr);
+  assert(dim >= 1);
+  assert(tchecker::dbm::is_consistent(dbm, dim));
+  assert(tchecker::dbm::is_tight(dbm, dim));
+
+  // The new dbm is obtained by setting all DBM(0, i) to <=0, then tightening
+  // This is equivalent to setting DBM(0,i) to the min of all DBM(j,i)
+  for (tchecker::clock_id_t i = 1; i < dim; ++i) {
+    tchecker::dbm::db_t min = tchecker::dbm::LT_INFINITY;
+    for (tchecker::clock_id_t j = 1; j < dim; ++j)
+      min = tchecker::dbm::min(min, DBM(j, i));
+    DBM(0, i) = min;
+  }
 
   assert(tchecker::dbm::is_consistent(dbm, dim));
   assert(tchecker::dbm::is_tight(dbm, dim));

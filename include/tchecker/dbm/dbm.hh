@@ -385,6 +385,24 @@ void reset_to_sum(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker:
                   tchecker::integer_t value);
 
 /*!
+ \brief Free clock value (reverse reset)
+ \param dbm : a dbm
+ \param dim : dimension of dbm
+ \param x : clock
+ \pre dbm is not nullptr (checked by assertion)
+ dbm is a dim*dim array of difference bounds
+ dbm is consistent (checked by assertion)
+ dbm is tight (checked by assertion)
+ dim >= 1 (checked by assertion).
+ 0 <= x < dim (checked by assertion)
+ \post dbm represents the set of clock valuations v such that v[x:=d] belongs to
+ the original dbm for some real value d
+ dbm is consistent (checked by assertion)
+ dbm is tight (checked by assertion)
+*/
+void free_clock(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x);
+
+/*!
  \brief Open up (delay)
  \param dbm : a dbm
  \param dim : dimension of dbm
@@ -397,6 +415,21 @@ void reset_to_sum(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker:
  dbm is tight.
  */
 void open_up(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim);
+
+/*!
+ \brief Open down (reverse delay)
+ \param dbm : a dbm
+ \param dim : dimension of dbm
+ \pre dbm is not nullptr (checked by assertion)
+ dbm is a dim*dim array of difference bounds
+ dbm is consistent (checked by assertion)
+ dbm is tight (checked by assertion)
+ dim >= 1 (checked by assertion).
+ \post dbm represents the set of clock valuations v s.t.
+ v+d belongs to the original dbm for some delay d
+ dbm is tight.
+*/
+void open_down(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim);
 
 /*!
  \brief Intersection

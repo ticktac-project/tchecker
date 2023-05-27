@@ -620,6 +620,53 @@ void reset(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t con
     tchecker::refdbm::reset(rdbm, r, reset);
 }
 
+void free_clock(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r, tchecker::clock_id_t x)
+{
+  tchecker::clock_id_t const rdim = r.size();
+  assert(rdbm != nullptr);
+  assert(tchecker::refdbm::is_consistent(rdbm, r));
+  assert(tchecker::refdbm::is_tight(rdbm, r));
+  assert(x < rdim);
+
+  tchecker::clock_id_t const tx = r.refmap()[x];
+  assert(RDBM(x, tx) == tchecker::dbm::LE_ZERO);
+  assert(RDBM(tx, x) == tchecker::dbm::LE_ZERO);
+
+  if (tx == x)
+    return;
+
+  // free x w.r.t all other variables
+  // since RDBM(tx, x) = (<=, 0), we get that:
+  // - the x column should be the tx column, i.e. RDBM(z, x) = RDBM(z, tx) for all z
+  // - the x line should be (<,inf)
+  for (tchecker::clock_id_t z = 0; z < rdim; ++z) {
+    RDBM(x, z) = tchecker::dbm::LT_INFINITY;
+    RDBM(z, x) = RDBM(z, tx);
+  }
+  RDBM(x, x) = tchecker::dbm::LE_ZERO;
+
+  assert(tchecker::refdbm::is_consistent(rdbm, r));
+  assert(tchecker::refdbm::is_tight(rdbm, r));
+}
+
+void free_clock(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
+                tchecker::clock_reset_t const & reset)
+{
+  assert(reset.left_id() < r.size() - r.refcount());
+  assert(reset.right_id() == tchecker::REFCLOCK_ID);
+  assert(reset.value() == 0);
+
+  tchecker::clock_reset_t translated = r.translate(reset);
+  return tchecker::refdbm::free_clock(rdbm, r, translated.left_id());
+}
+
+void free_clock(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
+                tchecker::clock_reset_container_t const & rc)
+{
+  for (tchecker::clock_reset_t const & reset : rc)
+    tchecker::refdbm::free_clock(rdbm, r, reset);
+}
+
 void asynchronous_open_up(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r)
 {
   assert(rdbm != nullptr);
@@ -662,6 +709,66 @@ void asynchronous_open_up(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_
       RDBM(x, t) = tchecker::dbm::LT_INFINITY;
     RDBM(t, t) = tchecker::dbm::LE_ZERO;
   }
+
+  assert(tchecker::refdbm::is_consistent(rdbm, r));
+  assert(tchecker::refdbm::is_tight(rdbm, r));
+}
+
+void asynchronous_open_down(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r)
+{
+  assert(rdbm != nullptr);
+  assert(tchecker::refdbm::is_consistent(rdbm, r));
+  assert(tchecker::refdbm::is_tight(rdbm, r));
+
+  // The new rdbm is obtained by setting:
+  // all DBM(t, x) to <=0 for any reference clock t and offset variable x such that
+  // t is the reference clock of x
+  // all DBM(t, y) to <inf for any other reference clock or offset variable y
+  // then tightening
+  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const refcount = r.refcount();
+  std::vector<tchecker::clock_id_t> const & refmap = r.refmap();
+
+  for (tchecker::clock_id_t t = 0; t < refcount; ++t) {
+    for (tchecker::clock_id_t x = 0; x < rdim; ++x)
+      RDBM(t, x) = (t == refmap[x] ? tchecker::dbm::LE_ZERO : tchecker::dbm::LT_INFINITY);
+    RDBM(t, t) = tchecker::dbm::LE_ZERO;
+  }
+  tchecker::refdbm::tighten(rdbm, r);
+
+  assert(tchecker::refdbm::is_consistent(rdbm, r));
+  assert(tchecker::refdbm::is_tight(rdbm, r));
+}
+
+void asynchronous_open_down(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
+                            boost::dynamic_bitset<> const & delay_allowed)
+{
+  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const refcount = r.refcount();
+
+  assert(rdbm != nullptr);
+  assert(tchecker::refdbm::is_consistent(rdbm, r));
+  assert(tchecker::refdbm::is_tight(rdbm, r));
+  assert(refcount == delay_allowed.size());
+
+  // The new rdbm is obtained by setting:
+  // all DBM(t, x) to <=0 for any reference clock t and offset variable x such that
+  // t is the reference clock of x, and delay is allowed for t
+  // all DBM(t, y) to <inf for any other reference clock or offset variable y, and delay
+  // is allowed for t
+  // DBM(t, x) is left unchanged if t is a reference clock s.t. delay is not allowed for t
+  // then tightening
+  std::vector<tchecker::clock_id_t> const & refmap = r.refmap();
+
+  for (tchecker::clock_id_t t = 0; t < refcount; ++t) {
+    if (!delay_allowed[t])
+      continue;
+
+    for (tchecker::clock_id_t x = 0; x < rdim; ++x)
+      RDBM(t, x) = (t == refmap[x] ? tchecker::dbm::LE_ZERO : tchecker::dbm::LT_INFINITY);
+    RDBM(t, t) = tchecker::dbm::LE_ZERO;
+  }
+  tchecker::refdbm::tighten(rdbm, r);
 
   assert(tchecker::refdbm::is_consistent(rdbm, r));
   assert(tchecker::refdbm::is_tight(rdbm, r));
