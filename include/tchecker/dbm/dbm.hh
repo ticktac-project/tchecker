@@ -403,6 +403,42 @@ void reset_to_sum(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker:
 void free_clock(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x);
 
 /*!
+ \brief Free clock value (reverse reset)
+ \param dbm : a dbm
+ \param dim : dimension of dbm
+ \param reset : a clock reset
+ \pre dbm is not nullptr (checked by assertion)
+ dbm is a dim*dim array of difference bounds
+ dbm is consistent (checked by assertion)
+ dbm is tight (checked by assertion)
+ dim >= 1 (checked by assertion)
+ reset.left_id() is not tchecker::REFCLOCK_ID (checked by assertion)
+ \post dbm represents the set of clock valuations v such that v[reset] belongs to
+ the original dbm for some real value d
+ dbm is consistent (checked by assertion)
+ dbm is tight (checked by assertion)
+*/
+void free_clock(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_reset_t const & reset);
+
+/*!
+ \brief Free clock value (reverse reset)
+ \param dbm : a dbm
+ \param dim : dimension of dbm
+ \param resets : a sequence of clock resets
+ \pre dbm is not nullptr (checked by assertion)
+ dbm is a dim*dim array of difference bounds
+ dbm is consistent (checked by assertion)
+ dbm is tight (checked by assertion)
+ dim >= 1 (checked by assertion)
+ for every reset in resets, reset.left_id() is not tchecker::REFCLOCK_ID (checked by assertion)
+ \post dbm represents the set of clock valuations v such that v[resets] belongs to
+ the original dbm for some real value d
+ dbm is consistent (checked by assertion)
+ dbm is tight (checked by assertion)
+*/
+void free_clock(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_reset_container_t const & resets);
+
+/*!
  \brief Open up (delay)
  \param dbm : a dbm
  \param dim : dimension of dbm

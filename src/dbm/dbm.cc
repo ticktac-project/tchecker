@@ -391,6 +391,19 @@ void free_clock(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::c
   assert(tchecker::dbm::is_tight(dbm, dim));
 }
 
+void free_clock(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_reset_t const & reset)
+{
+  assert(reset.left_id() != tchecker::REFCLOCK_ID);
+  tchecker::clock_id_t const x = reset.left_id() + 1; // translation of clock id from system to dbm
+  tchecker::dbm::free_clock(dbm, dim, x);
+}
+
+void free_clock(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_reset_container_t const & resets)
+{
+  for (tchecker::clock_reset_t const & reset : resets)
+    free_clock(dbm, dim, reset);
+}
+
 void open_up(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim)
 {
   assert(dbm != nullptr);

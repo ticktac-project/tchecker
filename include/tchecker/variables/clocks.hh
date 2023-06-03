@@ -540,6 +540,24 @@ int lexical_cmp(tchecker::clock_reset_container_t const & c1, tchecker::clock_re
 std::string to_string(tchecker::clock_reset_container_t const & c, tchecker::clock_index_t const & index);
 
 /*!
+ \brief Convert clock reset into corresponding clock constraints
+ \param r : clock reset
+ \param cc : clock constraint container
+ \post the constraints (x - y <= c) && (y - x <= -c) corresponding to reset r
+ as x := y + c have been added to cc
+*/
+void clock_reset_to_constraints(tchecker::clock_reset_t const & r, tchecker::clock_constraint_container_t & cc);
+
+/*!
+ \brief Convert a set of clock resets into corresonding clock constraints
+ \param rc : clock reset container
+ \param cc : clock constraint container
+ \post constraints corresponding to all resets in rc have been added to cc. See
+ clock_reset_to_constraints for details
+*/
+void clock_resets_to_constraints(tchecker::clock_reset_container_t const & rc, tchecker::clock_constraint_container_t & cc);
+
+/*!
  \class reference_clock_variables_t
  \brief Declaration of clock variables w.r.t. reference clock variables.
  \note Reference clocks allow to model polychronous time. Each reference clock

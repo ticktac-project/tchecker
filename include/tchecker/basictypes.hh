@@ -187,10 +187,11 @@ state_status_t const STATE_CLOCKS_SRC_INVARIANT_VIOLATED =
     128; /*!< state computation failed due to clocks source invariant violation */
 state_status_t const STATE_CLOCKS_TGT_INVARIANT_VIOLATED =
     256;                                               /*!< state computation failed due to clocks target invariant violation */
-state_status_t const STATE_CLOCKS_EMPTY_SYNC = 512;    /*!< state computation failed due to empty sync zone */
-state_status_t const STATE_CLOCKS_EMPTY_SPREAD = 1024; /*!< state computation failed due to empty bounded-spread zone */
-state_status_t const STATE_ZONE_EMPTY = 2048;          /*!< state computation result in an empty zone (no details provided) */
-state_status_t const STATE_ZONE_EMPTY_SYNC = 4096;     /*!< state computation result in a ref zone that has no sync valuation */
+state_status_t const STATE_CLOCKS_RESET_FAILED = 512;  /*!< state computation failed due to clock reset */
+state_status_t const STATE_CLOCKS_EMPTY_SYNC = 1024;   /*!< state computation failed due to empty sync zone */
+state_status_t const STATE_CLOCKS_EMPTY_SPREAD = 2048; /*!< state computation failed due to empty bounded-spread zone */
+state_status_t const STATE_ZONE_EMPTY = 4096;          /*!< state computation result in an empty zone (no details provided) */
+state_status_t const STATE_ZONE_EMPTY_SYNC = 8192;     /*!< state computation result in a ref zone that has no sync valuation */
 
 } // end of namespace tchecker
 

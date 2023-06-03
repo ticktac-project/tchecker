@@ -22,3 +22,4 @@
 #include "test-reference_clock_variables.hh"
 #include "test-variables-access.hh"
 #include "test-waiting.hh"
+#include "test-zg-semantics.hh"
