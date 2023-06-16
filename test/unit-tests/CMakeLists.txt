@@ -31,8 +31,9 @@ set(TEST_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/test-ordering.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-refdbm.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-reference_clock_variables.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/test-zg-semantics.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/test-refzg-semantics.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-variables-access.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/test-zg-semantics.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-waiting.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/unittest.cc
 )
