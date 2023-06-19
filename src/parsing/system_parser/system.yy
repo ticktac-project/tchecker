@@ -108,7 +108,9 @@
 
 system:
 eol_sequence TOK_SYSTEM ":" TOK_ID attr_list end_declaration {
-  system_declaration = new system_declaration_t($4, std::move($5));
+  std::stringstream loc;
+  loc << @$;
+  system_declaration = new system_declaration_t($4, std::move($5), loc.str());
 }
 declaration_list
 {
@@ -153,7 +155,9 @@ TOK_CLOCK ":" uinteger ":" TOK_ID attr_list end_declaration
       std::cerr << tchecker::log_error << @5 << " variable " << $5 << " already declared as an int" << std::endl;
     else {
       try {
-        d = new tchecker::parsing::clock_declaration_t($5, $3, std::move($6));
+        std::stringstream loc;
+        loc << @$;
+        d = new tchecker::parsing::clock_declaration_t($5, $3, std::move($6), loc.str());
         if ( ! system_declaration->insert_clock_declaration(d) ) {
           std::cerr << tchecker::log_error << @$ << " insertion of clock declaration failed" << std::endl;
           delete d;
@@ -185,7 +189,9 @@ TOK_CLOCK ":" uinteger ":" TOK_ID attr_list end_declaration
           std::cerr << tchecker::log_error << @9 << " event " << $9 << " is not declared" << std::endl;
         else {
           try {
-            auto * d = new tchecker::parsing::edge_declaration_t(*proc, *src, *tgt, *event, std::move($10));
+            std::stringstream loc;
+            loc << @$;
+            auto * d = new tchecker::parsing::edge_declaration_t(*proc, *src, *tgt, *event, std::move($10), loc.str());
             if ( ! system_declaration->insert_edge_declaration(d) ) {
               std::cerr << tchecker::log_error << @$ << " insertion of edge declaration failed" << std::endl;
               delete d;
@@ -207,7 +213,9 @@ TOK_CLOCK ":" uinteger ":" TOK_ID attr_list end_declaration
     std::cerr << tchecker::log_error << @3 << " multiple declarations of event " << $3 << std::endl;
   else {
     try {
-      d = new tchecker::parsing::event_declaration_t($3, std::move($4));
+      std::stringstream loc;
+      loc << @$;
+      d = new tchecker::parsing::event_declaration_t($3, std::move($4), loc.str());
       if ( ! system_declaration->insert_event_declaration(d) ) {
         std::cerr << tchecker::log_error << @$ << " insertion of event declaration failed" << std::endl;
         delete d;
@@ -230,7 +238,9 @@ TOK_CLOCK ":" uinteger ":" TOK_ID attr_list end_declaration
       std::cerr << tchecker::log_error << @11 << " variable " << $11 << " already declared as a clock" << std::endl;
     else {
       try {
-        d = new tchecker::parsing::int_declaration_t($11, $3, $5, $7, $9, std::move($12));
+        std::stringstream loc;
+        loc << @$;
+        d = new tchecker::parsing::int_declaration_t($11, $3, $5, $7, $9, std::move($12), loc.str());
         if ( ! system_declaration->insert_int_declaration(d) ) {
           std::cerr << tchecker::log_error << @$ << " insertion of int declaration failed" << std::endl;
           delete d;
@@ -254,7 +264,9 @@ TOK_CLOCK ":" uinteger ":" TOK_ID attr_list end_declaration
       std::cerr << tchecker::log_error << @3 << " process " << $3 << " is not declared" << std::endl;
     else {
       try {
-        d = new location_declaration_t($5, *proc, std::move($6));
+        std::stringstream loc;
+        loc << @$;
+        d = new location_declaration_t($5, *proc, std::move($6), loc.str());
         if ( ! system_declaration->insert_location_declaration(d) ) {
           std::cerr << tchecker::log_error << @$ << " insertion of location declaration failed" << std::endl;
           delete d;
@@ -274,7 +286,9 @@ TOK_CLOCK ":" uinteger ":" TOK_ID attr_list end_declaration
     std::cerr << tchecker::log_error << @3 << " multiple declarations of process " << $3 << std::endl;
   else {
     try {
-      d = new tchecker::parsing::process_declaration_t($3, std::move($4));
+      std::stringstream loc;
+      loc << @$;
+      d = new tchecker::parsing::process_declaration_t($3, std::move($4), loc.str());
       if ( ! system_declaration->insert_process_declaration(d) ) {
         std::cerr << tchecker::log_error << @5 << " insertion of process declaration failed" << std::endl;
         delete d;
@@ -289,7 +303,9 @@ TOK_CLOCK ":" uinteger ":" TOK_ID attr_list end_declaration
 | TOK_SYNC ":" sync_constraint_list attr_list end_declaration
 {
   try {
-    auto const * d = new tchecker::parsing::sync_declaration_t(std::move($3), std::move($4));
+    std::stringstream loc;
+    loc << @$;
+    auto const * d = new tchecker::parsing::sync_declaration_t(std::move($3), std::move($4), loc.str());
     if ( ! system_declaration->insert_sync_declaration(d) ) {
       std::cerr << tchecker::log_error << @$ << " insertion of sync declaration failed" << std::endl;
       delete d;
