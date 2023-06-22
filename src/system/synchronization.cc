@@ -29,8 +29,8 @@ bool sync_constraint_t::operator==(tchecker::system::sync_constraint_t const & s
 /* synchronization_t */
 
 synchronization_t::synchronization_t(tchecker::sync_id_t id, std::vector<tchecker::system::sync_constraint_t> const & v,
-                                     tchecker::system::attributes_t const & attr)
-    : _id(id), _attr(attr)
+                                     tchecker::system::attributes_t const & attributes)
+    : _id(id), _attributes(attributes)
 {
   for (tchecker::system::sync_constraint_t const & c : v)
     add_synchronization_constraint(c);

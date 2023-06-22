@@ -35,6 +35,67 @@ class declaration_visitor_t;
 /* Attributes */
 
 /*!
+ \class attr_parsing_position_t
+ \brief Parsing postion for attributes
+*/
+class attr_parsing_position_t {
+public:
+  /*!
+   \brief Default constructor
+   \post Has empty key and value position
+  */
+  attr_parsing_position_t() = default;
+
+  /*!
+   \brief Constructor
+   \param key_position : parsing position of the attribute key
+   \param value_position : parsing position of the attribute value
+  */
+  attr_parsing_position_t(std::string const & key_position, std::string const & value_position);
+
+  /*!
+   \brief Copy constructor
+  */
+  attr_parsing_position_t(tchecker::parsing::attr_parsing_position_t const &) = default;
+
+  /*!
+   \brief Move constructor
+  */
+  attr_parsing_position_t(tchecker::parsing::attr_parsing_position_t &&) = default;
+
+  /*!
+   \brief Destructor
+  */
+  ~attr_parsing_position_t() = default;
+
+  /*!
+   \brief Assignment operator
+  */
+  tchecker::parsing::attr_parsing_position_t & operator=(tchecker::parsing::attr_parsing_position_t const &) = default;
+
+  /*!
+   \brief Move assignment operator
+  */
+  tchecker::parsing::attr_parsing_position_t & operator=(tchecker::parsing::attr_parsing_position_t &&) = default;
+
+  /*!
+   \brief Accessor
+   \return Parsing position of the attribute key
+  */
+  inline std::string const & key_position() const { return _key_position; }
+
+  /*!
+   \brief Accessor
+   \return Parsing position of the attribute value
+  */
+  inline std::string const & value_position() const { return _value_position; }
+
+private:
+  std::string _key_position;   /*!< Parsing position of the attribute key */
+  std::string _value_position; /*!< Parsing position of the attribute value */
+};
+
+/*!
  \class attr_t
  \brief Attribute for declarations
  */
@@ -44,11 +105,18 @@ public:
    \brief Constructor
    \param key : attribute key
    \param value : attribute value
-   \param key_context : contextual information for key (position in input file, etc)
-   \param value_context : contextual information for value (position in input file, etc)
+   \param parsing_position : parsing position of the attribute
    */
-  attr_t(std::string const & key, std::string const & value, std::string const & key_context,
-         std::string const & value_context);
+  attr_t(std::string const & key, std::string const & value,
+         tchecker::parsing::attr_parsing_position_t const & parsing_position);
+
+  /*!
+  \brief Constructor
+  \param key : attribute key
+  \param value : attribute value
+  \param parsing_position : parsing position of the attribute
+  */
+  attr_t(std::string const & key, std::string const & value, tchecker::parsing::attr_parsing_position_t && parsing_position);
 
   /*!
    \brief Copy constructor
@@ -97,21 +165,14 @@ public:
 
   /*!
    \brief Accessor
-   \return Contextual information for key
-   */
-  inline std::string const & key_context() const { return _key_context; }
-
-  /*!
-   \brief Accessor
-   \return Contextual information for value
-   */
-  inline std::string const & value_context() const { return _value_context; }
+   \return Parsing position of the attribute
+  */
+  inline tchecker::parsing::attr_parsing_position_t const & parsing_position() const { return _parsing_position; }
 
 private:
-  std::string _key;           /*!< Key */
-  std::string _value;         /*!< Value */
-  std::string _key_context;   /*!< Contextual information for key */
-  std::string _value_context; /*!< Contextual information for value */
+  std::string _key;                                             /*!< Key */
+  std::string _value;                                           /*!< Value */
+  tchecker::parsing::attr_parsing_position_t _parsing_position; /*!< Parsing position */
 };
 
 /*!
@@ -275,9 +336,10 @@ public:
   /*!
    \brief Constructor
    \param attr : attributes
+   \param context : contextual information for declaration (position in input file, etc)
    \post attr has been moved to this
    */
-  explicit declaration_t(tchecker::parsing::attributes_t && attr);
+  explicit declaration_t(tchecker::parsing::attributes_t && attr, std::string const & context);
 
   /*!
    \brief Destructor
@@ -313,6 +375,12 @@ public:
    */
   inline tchecker::parsing::attributes_t const & attributes() const { return _attr; }
 
+  /*!
+   \brief Accessor
+   \return Contextual information
+  */
+  inline std::string const & context() const { return _context; }
+
 private:
   /*!
    \brief Clone
@@ -334,6 +402,7 @@ private:
 
 protected:
   tchecker::parsing::attributes_t const _attr; /*!< Attributes */
+  std::string _context;                        /*!< Contextual information */
 };
 
 /*!
@@ -372,10 +441,12 @@ public:
    \param name : clock name
    \param size : size of array
    \param attr : attributes
+   \param context : contextual information for declaration (position in input file, etc)
    \pre name is not empty and size >= 1
    \throw std::invalid_argument : if name is empty or size < 1
    */
-  clock_declaration_t(std::string const & name, unsigned int size, tchecker::parsing::attributes_t && attr);
+  clock_declaration_t(std::string const & name, unsigned int size, tchecker::parsing::attributes_t && attr,
+                      std::string const & context);
 
   /*!
    \brief Destructor
@@ -433,12 +504,13 @@ public:
    \param max : maximal value
    \param init : initial value
    \param attr : attributes
+   \param context : contextual information for declaration (position in input file, etc)
    \pre name is not empty, size >= 1, min <= init <= max
    \throws std::invalid_argument : name is empty, or if size < 1, or
    not (min <= init <= max)
    */
   int_declaration_t(std::string const & name, unsigned int size, tchecker::integer_t min, tchecker::integer_t max,
-                    tchecker::integer_t init, tchecker::parsing::attributes_t && attr);
+                    tchecker::integer_t init, tchecker::parsing::attributes_t && attr, std::string const & context);
 
   /*!
    \brief Destructor
@@ -513,10 +585,11 @@ public:
    \brief Constructor
    \param name : process name
    \param attr : attributes
+   \param context : contextual information for declaration (position in input file, etc)
    \pre name is not empty
-   \throws std::invalid_argument : if name is empty
+   \throws std::invalid_argument : if name is empty
    */
-  process_declaration_t(std::string const & name, tchecker::parsing::attributes_t && attr);
+  process_declaration_t(std::string const & name, tchecker::parsing::attributes_t && attr, std::string const & context);
 
   /*!
    \brief Destructor
@@ -563,10 +636,11 @@ public:
    \brief Constructor
    \param name : event name
    \param attr : attributes
+   \param context : contextual information for declaration (position in input file, etc)
    \pre name is not empty
    \throws std::invalid_argument : if name is empty
    */
-  event_declaration_t(std::string const & name, tchecker::parsing::attributes_t && attr);
+  event_declaration_t(std::string const & name, tchecker::parsing::attributes_t && attr, std::string const & context);
 
   /*!
    \brief Destructor
@@ -614,12 +688,13 @@ public:
    \param name : location name
    \param process : location process
    \param attr : attributes
+   \param context : contextual information for declaration (position in input file, etc)
    \pre name is not empty
    \throws std::invalid_argument : if name is empty
    \note attr is moved to this.
    */
   location_declaration_t(std::string const & name, tchecker::parsing::process_declaration_t const & process,
-                         tchecker::parsing::attributes_t && attr);
+                         tchecker::parsing::attributes_t && attr, std::string const & context);
 
   /*!
    \brief Destructor
@@ -677,6 +752,7 @@ public:
    \param tgt : target location
    \param event : edge event
    \param attr : attributes
+   \param context : contextual information for declaration (position in input file, etc)
    \pre src and tgt belong to process
    \throws std::invalid_argument : if src and tgt do not belong to process
    \note attr is moved to this
@@ -684,7 +760,8 @@ public:
   edge_declaration_t(tchecker::parsing::process_declaration_t const & process,
                      tchecker::parsing::location_declaration_t const & src,
                      tchecker::parsing::location_declaration_t const & tgt,
-                     tchecker::parsing::event_declaration_t const & event, tchecker::parsing::attributes_t && attr);
+                     tchecker::parsing::event_declaration_t const & event, tchecker::parsing::attributes_t && attr,
+                     std::string const & context);
 
   /*!
    \brief Destructor
@@ -837,6 +914,7 @@ public:
    \brief Constructor
    \param syncs : synchronization constraints
    \param attr : attributes
+   \param context : contextual information for declaration (position in input file, etc)
    \pre syncs has size > 0, syncs does not contain nullptr, and there
    is no two events with the same process in syncs
    \throws std::invalid_argument : if syncs size == 0, or if syncs
@@ -844,7 +922,7 @@ public:
    \note syncs has been moved to this
    */
   sync_declaration_t(std::vector<tchecker::parsing::sync_constraint_t const *> && syncs,
-                     tchecker::parsing::attributes_t && attr);
+                     tchecker::parsing::attributes_t && attr, std::string const & context);
 
   /*!
    \brief Destructor
@@ -900,10 +978,11 @@ public:
    \brief Constructor
    \param name : system name
    \param attr : attributes
+   \param context : contextual information for declaration (position in input file, etc)
    \pre name is not empty
    \throw std::invalid_argument : if name is empty
    */
-  system_declaration_t(std::string const & name, tchecker::parsing::attributes_t && attr);
+  system_declaration_t(std::string const & name, tchecker::parsing::attributes_t && attr, std::string const & context);
 
   /*!
    \brief Destructor

@@ -40,12 +40,12 @@ public:
    \param src : source location
    \param tgt : target location
    \param event_id :  event identifier
-   \param attr : edge attributes
+   \param attributes : edge attributes
    \pre src!=nullptr, tgt!=nullptr, and src and tgt belong to process pid
    \throw std::invalid_argument : if the precondition is violated
    */
   edge_t(tchecker::process_id_t pid, tchecker::edge_id_t id, tchecker::loc_id_t src, tchecker::loc_id_t tgt,
-         tchecker::event_id_t event_id, tchecker::system::attributes_t const & attr);
+         tchecker::event_id_t event_id, tchecker::system::attributes_t const & attributes);
 
   /*!
    \brief Copy constructor
@@ -114,15 +114,15 @@ public:
    \brief Accessor
    \return Attributes
    */
-  inline tchecker::system::attributes_t const & attributes() const { return _attr; }
+  inline tchecker::system::attributes_t const & attributes() const { return _attributes; }
 
 private:
-  tchecker::process_id_t _pid;          /*!< Process ID */
-  tchecker::edge_id_t _id;              /*!< Identifier */
-  tchecker::loc_id_t _src;              /*!< Source location */
-  tchecker::loc_id_t _tgt;              /*!< Target location */
-  tchecker::event_id_t _event_id;       /*!< Event */
-  tchecker::system::attributes_t _attr; /*!< Attributes */
+  tchecker::process_id_t _pid;                /*!< Process ID */
+  tchecker::edge_id_t _id;                    /*!< Identifier */
+  tchecker::loc_id_t _src;                    /*!< Source location */
+  tchecker::loc_id_t _tgt;                    /*!< Target location */
+  tchecker::event_id_t _event_id;             /*!< Event */
+  tchecker::system::attributes_t _attributes; /*!< Attributes */
 };
 
 /*!
@@ -271,13 +271,13 @@ public:
    \param src : source location
    \param tgt : target location
    \param event_id : event identifier
-   \param attr : edge attributes
+   \param attributes : edge attributes
    \pre src and tgt belong to process pid
    \post edge src -> tgt with event event_id in process pid has been added
    \throw std::runtime_error : if edge identifiers have been exhausted
    */
   void add_edge(tchecker::process_id_t pid, tchecker::loc_id_t src, tchecker::loc_id_t tgt, tchecker::event_id_t event_id,
-                tchecker::system::attributes_t const & attr);
+                tchecker::system::attributes_t const & attributes);
 
   /*!
    \brief Accessor

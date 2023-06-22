@@ -33,19 +33,20 @@ public:
   /*!
    \brief Add an event
    \param name : event name
-   \param attr : event attributes
+   \param attributes : event attributes
    \pre event name is not declared yet
    \post event name has been added with attributes attr
    \throw std::invalid_argument : if event name is already declared
    */
-  void add_event(std::string const & name, tchecker::system::attributes_t const & attr = tchecker::system::attributes_t());
+  void add_event(std::string const & name,
+                 tchecker::system::attributes_t const & attributes = tchecker::system::attributes_t());
 
   /*!
    \brief Accessor
    \return number of events
    \note 0..events_count() is the range of identifiers
    */
-  inline std::size_t events_count() const { return _events_attr.size(); }
+  inline std::size_t events_count() const { return _events_attributes.size(); }
 
   /*!
    \brief Accessor
@@ -86,7 +87,7 @@ public:
   bool is_event(std::string const & event) const;
 
 private:
-  std::vector<tchecker::system::attributes_t> _events_attr;           /*!< Events attributes */
+  std::vector<tchecker::system::attributes_t> _events_attributes;     /*!< Events attributes */
   tchecker::index_t<std::string, tchecker::event_id_t> _events_index; /*!< Map event name <-> event identifier */
 };
 

@@ -14,11 +14,24 @@ namespace tchecker {
 
 namespace parsing {
 
+/* attr_parsing_position_t */
+
+attr_parsing_position_t::attr_parsing_position_t(std::string const & key_position, std::string const & value_position)
+    : _key_position(key_position), _value_position(value_position)
+{
+}
+
 /* attr_t */
 
-attr_t::attr_t(std::string const & key, std::string const & value, std::string const & key_context,
-               std::string const & value_context)
-    : _key(key), _value(value), _key_context(key_context), _value_context(value_context)
+attr_t::attr_t(std::string const & key, std::string const & value,
+               tchecker::parsing::attr_parsing_position_t const & parsing_position)
+    : _key(key), _value(value), _parsing_position(parsing_position)
+{
+}
+
+attr_t::attr_t(std::string const & key, std::string const & value,
+               tchecker::parsing::attr_parsing_position_t && parsing_position)
+    : _key(key), _value(value), _parsing_position(std::move(parsing_position))
 {
 }
 
@@ -116,16 +129,25 @@ std::ostream & operator<<(std::ostream & os, tchecker::parsing::attributes_t con
 
 /* declaration_t */
 
-declaration_t::declaration_t(tchecker::parsing::attributes_t && attr) : _attr(std::move(attr)) {}
+declaration_t::declaration_t(tchecker::parsing::attributes_t && attr, std::string const & context)
+    : _attr(std::move(attr)), _context(context)
+{
+}
 
-tchecker::parsing::declaration_t * declaration_t::clone() const { return this->do_clone(); }
+tchecker::parsing::declaration_t * declaration_t::clone() const
+{
+  tchecker::parsing::declaration_t * d = this->do_clone();
+  d->_context = _context;
+  return d;
+}
 
 void declaration_t::visit(tchecker::parsing::declaration_visitor_t & v) const { this->do_visit(v); }
 
 /* clock_declaration_t */
 
-clock_declaration_t::clock_declaration_t(std::string const & name, unsigned int size, tchecker::parsing::attributes_t && attr)
-    : tchecker::parsing::inner_declaration_t(std::move(attr)), _name(name), _size(size)
+clock_declaration_t::clock_declaration_t(std::string const & name, unsigned int size, tchecker::parsing::attributes_t && attr,
+                                         std::string const & context)
+    : tchecker::parsing::inner_declaration_t(std::move(attr), context), _name(name), _size(size)
 {
   if (_name.empty())
     throw std::invalid_argument("clock declaration has empty name");
@@ -137,7 +159,7 @@ clock_declaration_t::clock_declaration_t(std::string const & name, unsigned int 
 tchecker::parsing::declaration_t * clock_declaration_t::do_clone() const
 {
   tchecker::parsing::attributes_t attr(_attr);
-  return new tchecker::parsing::clock_declaration_t(_name, _size, std::move(attr));
+  return new tchecker::parsing::clock_declaration_t(_name, _size, std::move(attr), _context);
 }
 
 void clock_declaration_t::do_visit(tchecker::parsing::declaration_visitor_t & v) const { v.visit(*this); }
@@ -151,8 +173,10 @@ std::ostream & clock_declaration_t::do_output(std::ostream & os) const
 /* int_declaration_t */
 
 int_declaration_t::int_declaration_t(std::string const & name, unsigned int size, tchecker::integer_t min,
-                                     tchecker::integer_t max, tchecker::integer_t init, tchecker::parsing::attributes_t && attr)
-    : tchecker::parsing::inner_declaration_t(std::move(attr)), _name(name), _size(size), _min(min), _max(max), _init(init)
+                                     tchecker::integer_t max, tchecker::integer_t init, tchecker::parsing::attributes_t && attr,
+                                     std::string const & context)
+    : tchecker::parsing::inner_declaration_t(std::move(attr), context), _name(name), _size(size), _min(min), _max(max),
+      _init(init)
 {
   if (_name.empty())
     throw std::invalid_argument("int declaration has empty name");
@@ -169,7 +193,7 @@ int_declaration_t::int_declaration_t(std::string const & name, unsigned int size
 tchecker::parsing::declaration_t * int_declaration_t::do_clone() const
 {
   tchecker::parsing::attributes_t attr(_attr);
-  return new tchecker::parsing::int_declaration_t(_name, _size, _min, _max, _init, std::move(attr));
+  return new tchecker::parsing::int_declaration_t(_name, _size, _min, _max, _init, std::move(attr), _context);
 }
 
 void int_declaration_t::do_visit(tchecker::parsing::declaration_visitor_t & v) const { v.visit(*this); }
@@ -183,8 +207,9 @@ std::ostream & int_declaration_t::do_output(std::ostream & os) const
 
 /* process_declaration_t */
 
-process_declaration_t::process_declaration_t(std::string const & name, tchecker::parsing::attributes_t && attr)
-    : tchecker::parsing::inner_declaration_t(std::move(attr)), _name(name)
+process_declaration_t::process_declaration_t(std::string const & name, tchecker::parsing::attributes_t && attr,
+                                             std::string const & context)
+    : tchecker::parsing::inner_declaration_t(std::move(attr), context), _name(name)
 {
   if (_name.empty())
     throw std::invalid_argument("process declaration has empty name");
@@ -193,7 +218,7 @@ process_declaration_t::process_declaration_t(std::string const & name, tchecker:
 tchecker::parsing::declaration_t * process_declaration_t::do_clone() const
 {
   tchecker::parsing::attributes_t attr(_attr);
-  return new tchecker::parsing::process_declaration_t(_name, std::move(attr));
+  return new tchecker::parsing::process_declaration_t(_name, std::move(attr), _context);
 }
 
 void process_declaration_t::do_visit(tchecker::parsing::declaration_visitor_t & v) const { v.visit(*this); }
@@ -206,8 +231,9 @@ std::ostream & process_declaration_t::do_output(std::ostream & os) const
 
 /* event_declaration_t */
 
-event_declaration_t::event_declaration_t(std::string const & name, tchecker::parsing::attributes_t && attr)
-    : tchecker::parsing::inner_declaration_t(std::move(attr)), _name(name)
+event_declaration_t::event_declaration_t(std::string const & name, tchecker::parsing::attributes_t && attr,
+                                         std::string const & context)
+    : tchecker::parsing::inner_declaration_t(std::move(attr), context), _name(name)
 {
   if (_name.empty())
     throw std::invalid_argument("event declaration has empty name");
@@ -216,7 +242,7 @@ event_declaration_t::event_declaration_t(std::string const & name, tchecker::par
 tchecker::parsing::declaration_t * event_declaration_t::do_clone() const
 {
   tchecker::parsing::attributes_t attr(_attr);
-  return new tchecker::parsing::event_declaration_t(_name, std::move(attr));
+  return new tchecker::parsing::event_declaration_t(_name, std::move(attr), _context);
 }
 
 void event_declaration_t::do_visit(tchecker::parsing::declaration_visitor_t & v) const { v.visit(*this); }
@@ -231,8 +257,8 @@ std::ostream & event_declaration_t::do_output(std::ostream & os) const
 
 location_declaration_t::location_declaration_t(std::string const & name,
                                                tchecker::parsing::process_declaration_t const & process,
-                                               tchecker::parsing::attributes_t && attr)
-    : tchecker::parsing::inner_declaration_t(std::move(attr)), _name(name), _process(process)
+                                               tchecker::parsing::attributes_t && attr, std::string const & context)
+    : tchecker::parsing::inner_declaration_t(std::move(attr), context), _name(name), _process(process)
 {
   if (_name.empty())
     throw std::invalid_argument("location declaration has empty name");
@@ -241,7 +267,7 @@ location_declaration_t::location_declaration_t(std::string const & name,
 tchecker::parsing::declaration_t * location_declaration_t::do_clone() const
 {
   tchecker::parsing::attributes_t attr(_attr);
-  return new tchecker::parsing::location_declaration_t(_name, _process, std::move(attr));
+  return new tchecker::parsing::location_declaration_t(_name, _process, std::move(attr), _context);
 }
 
 void location_declaration_t::do_visit(tchecker::parsing::declaration_visitor_t & v) const { v.visit(*this); }
@@ -258,8 +284,8 @@ edge_declaration_t::edge_declaration_t(tchecker::parsing::process_declaration_t 
                                        tchecker::parsing::location_declaration_t const & src,
                                        tchecker::parsing::location_declaration_t const & tgt,
                                        tchecker::parsing::event_declaration_t const & event,
-                                       tchecker::parsing::attributes_t && attr)
-    : tchecker::parsing::inner_declaration_t(std::move(attr)), _process(process), _src(src), _tgt(tgt), _event(event)
+                                       tchecker::parsing::attributes_t && attr, std::string const & context)
+    : tchecker::parsing::inner_declaration_t(std::move(attr), context), _process(process), _src(src), _tgt(tgt), _event(event)
 {
   if (&_src.process() != &_process)
     throw std::invalid_argument("error, edge declaration has source location that does not belong to process");
@@ -271,7 +297,7 @@ edge_declaration_t::edge_declaration_t(tchecker::parsing::process_declaration_t 
 tchecker::parsing::declaration_t * edge_declaration_t::do_clone() const
 {
   tchecker::parsing::attributes_t attr(_attr);
-  return new tchecker::parsing::edge_declaration_t(_process, _src, _tgt, _event, std::move(attr));
+  return new tchecker::parsing::edge_declaration_t(_process, _src, _tgt, _event, std::move(attr), _context);
 }
 
 void edge_declaration_t::do_visit(tchecker::parsing::declaration_visitor_t & v) const { v.visit(*this); }
@@ -305,8 +331,8 @@ std::ostream & operator<<(std::ostream & os, tchecker::parsing::sync_constraint_
 /* sync_declaration_t */
 
 sync_declaration_t::sync_declaration_t(std::vector<tchecker::parsing::sync_constraint_t const *> && syncs,
-                                       tchecker::parsing::attributes_t && attr)
-    : tchecker::parsing::inner_declaration_t(std::move(attr)), _syncs(std::move(syncs))
+                                       tchecker::parsing::attributes_t && attr, std::string const & context)
+    : tchecker::parsing::inner_declaration_t(std::move(attr), context), _syncs(std::move(syncs))
 {
   if (_syncs.size() == 0)
     throw std::invalid_argument("synchronization declaration is empty");
@@ -338,7 +364,7 @@ tchecker::parsing::declaration_t * sync_declaration_t::do_clone() const
   for (tchecker::parsing::sync_constraint_t const * c : _syncs)
     syncs.push_back(c->clone());
   tchecker::parsing::attributes_t attr(_attr);
-  return new tchecker::parsing::sync_declaration_t(std::move(syncs), std::move(attr));
+  return new tchecker::parsing::sync_declaration_t(std::move(syncs), std::move(attr), _context);
 }
 
 void sync_declaration_t::do_visit(tchecker::parsing::declaration_visitor_t & v) const { v.visit(*this); }
@@ -358,8 +384,9 @@ std::ostream & sync_declaration_t::do_output(std::ostream & os) const
 
 /* system_declaration_t */
 
-system_declaration_t::system_declaration_t(std::string const & name, tchecker::parsing::attributes_t && attr)
-    : tchecker::parsing::declaration_t(std::move(attr)), _name(name)
+system_declaration_t::system_declaration_t(std::string const & name, tchecker::parsing::attributes_t && attr,
+                                           std::string const & context)
+    : tchecker::parsing::declaration_t(std::move(attr), context), _name(name)
 {
   if (name.empty())
     throw std::invalid_argument("system declaration has empty name");
@@ -377,7 +404,7 @@ system_declaration_t::~system_declaration_t()
 }
 
 /*!
- \class system_dusplicator_t
+ \class system_duplicator_t
  \brief Duplicates declarations in a system declaration
  */
 class system_duplicator_t : public tchecker::parsing::declaration_visitor_t {
@@ -476,7 +503,7 @@ private:
 tchecker::parsing::declaration_t * system_declaration_t::do_clone() const
 {
   tchecker::parsing::attributes_t attr(_attr);
-  tchecker::parsing::system_declaration_t * sysdecl = new system_declaration_t(_name, std::move(attr));
+  tchecker::parsing::system_declaration_t * sysdecl = new system_declaration_t(_name, std::move(attr), _context);
   tchecker::parsing::system_duplicator_t duplicator(*sysdecl);
   this->visit(duplicator);
   return sysdecl;

@@ -19,15 +19,15 @@ void clocks_t::add_clock(std::string const & name, tchecker::clock_id_t size, tc
 {
   _clock_variables.declare(name, size);
   for (tchecker::clock_id_t i = 0; i < size; ++i)
-    _clock_variables_attr.emplace_back(attr);
-  assert(_clock_variables.size(tchecker::VK_FLATTENED) == _clock_variables_attr.size());
+    _clock_variables_attributes.emplace_back(attr);
+  assert(_clock_variables.size(tchecker::VK_FLATTENED) == _clock_variables_attributes.size());
 }
 
 tchecker::system::attributes_t const & clocks_t::clock_attributes(tchecker::clock_id_t id) const
 {
-  if (id >= _clock_variables_attr.size())
+  if (id >= _clock_variables_attributes.size())
     throw std::invalid_argument("Unknown clock variable identifier");
-  return _clock_variables_attr[id];
+  return _clock_variables_attributes[id];
 }
 
 bool clocks_t::is_clock(std::string const & name) const { return _clock_variables.is_variable(name); }

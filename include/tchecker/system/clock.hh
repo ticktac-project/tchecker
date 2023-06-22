@@ -35,13 +35,13 @@ public:
    \brief Add a clock
    \param name : clock name
    \param size : clock size (array of clocks)
-   \param attr : clock attributes
+   \param attributes : clock attributes
    \pre name is not a declared clock
    \post clock name has been added with size and attr
    \throw std::invalid_argument : if name is a declared clock
    */
   void add_clock(std::string const & name, tchecker::clock_id_t size = 1,
-                 tchecker::system::attributes_t const & attr = tchecker::system::attributes_t());
+                 tchecker::system::attributes_t const & attributes = tchecker::system::attributes_t());
 
   /*!
    \brief Accessor
@@ -89,8 +89,8 @@ public:
   inline tchecker::clock_variables_t const & clock_variables() const { return _clock_variables; }
 
 private:
-  tchecker::clock_variables_t _clock_variables;                      /*!< Clock variables */
-  std::vector<tchecker::system::attributes_t> _clock_variables_attr; /*!< Clocks attributes */
+  tchecker::clock_variables_t _clock_variables;                            /*!< Clock variables */
+  std::vector<tchecker::system::attributes_t> _clock_variables_attributes; /*!< Clocks attributes */
 };
 
 } // end of namespace system

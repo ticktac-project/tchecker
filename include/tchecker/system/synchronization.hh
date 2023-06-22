@@ -120,10 +120,10 @@ public:
    \brief Constructor
    \param id : synchronization identifier
    \param v : synchronization constraints
-   \param attr : synchronization attributes
+   \param attributes : synchronization attributes
    */
   synchronization_t(tchecker::sync_id_t id, std::vector<tchecker::system::sync_constraint_t> const & v,
-                    tchecker::system::attributes_t const & attr = tchecker::system::attributes_t());
+                    tchecker::system::attributes_t const & attributes = tchecker::system::attributes_t());
 
   /*!
    \brief Copy constructor
@@ -194,12 +194,12 @@ public:
    \brief Accessor
    \return attributes
    */
-  inline tchecker::system::attributes_t const & attributes() const { return _attr; }
+  inline tchecker::system::attributes_t const & attributes() const { return _attributes; }
 
 private:
   tchecker::sync_id_t _id;                                       /*!< Identifier */
   std::vector<tchecker::system::sync_constraint_t> _constraints; /*!< Sync constraints */
-  tchecker::system::attributes_t _attr;                          /*!< Attributes */
+  tchecker::system::attributes_t _attributes;                    /*!< Attributes */
 };
 
 /*!

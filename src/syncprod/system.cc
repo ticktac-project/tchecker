@@ -133,7 +133,7 @@ void system_t::compute_committed_locations()
 
   for (tchecker::loc_id_t id = 0; id < locations_count; ++id) {
     auto const & attr = tchecker::syncprod::system_t::location(id)->attributes();
-    set_committed(id, attr.values("committed"));
+    set_committed(id, attr.range("committed"));
   }
 }
 
@@ -141,8 +141,8 @@ static void labels_from_attrs(tchecker::range_t<tchecker::system::attributes_t::
                               std::vector<std::string> & labels)
 {
   std::vector<std::string> splitted_labels;
-  for (auto && [key, value] : attrs) {
-    boost::split(splitted_labels, value, boost::is_any_of(","));
+  for (auto && attr : attrs) {
+    boost::split(splitted_labels, attr.value(), boost::is_any_of(","));
     labels.insert(labels.end(), splitted_labels.begin(), splitted_labels.end());
   }
 }
@@ -155,7 +155,7 @@ void system_t::compute_labels()
   std::vector<std::string> labels;
   for (tchecker::loc_id_t loc_id = 0; loc_id < locations_count; ++loc_id) {
     auto const & attr = tchecker::syncprod::system_t::location(loc_id)->attributes();
-    labels_from_attrs(attr.values("labels"), labels);
+    labels_from_attrs(attr.range("labels"), labels);
   }
 
   for (std::string const & l : labels) {
@@ -174,7 +174,7 @@ void system_t::compute_labels()
     _labels[loc_id].reset();
     auto const & attr = tchecker::syncprod::system_t::location(loc_id)->attributes();
     labels.clear();
-    labels_from_attrs(attr.values("labels"), labels);
+    labels_from_attrs(attr.range("labels"), labels);
     for (std::string const & l : labels)
       _labels[loc_id].set(this->label_id(l));
   }
@@ -267,17 +267,17 @@ private:
   tchecker::system::attributes_t attributes(tchecker::syncprod::state_t const & state)
   {
     tchecker::process_id_t count_initial = 0;
-    tchecker::system::attributes_t attr;
+    tchecker::system::attributes_t attributes;
     for (tchecker::loc_id_t id : state.vloc())
-      for (auto && [key, value] : _system->location(id)->attributes().attributes()) {
-        if (key == "initial")
+      for (auto && attr : _system->location(id)->attributes().range()) {
+        if (attr.key() == "initial")
           ++count_initial;
         else
-          attr.add_attribute(key, value);
+          attributes.add_attribute(attr.key(), attr.value(), attr.parsing_position());
       }
     if (count_initial == state.vloc().size()) // all processes initial
-      attr.add_attribute("initial", "");
-    return attr;
+      attributes.add_attribute("initial", "", tchecker::system::attr_parsing_position_t{});
+    return attributes;
   }
 
   /*!

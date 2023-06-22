@@ -13,18 +13,18 @@ namespace system {
 
 /* events_t */
 
-void events_t::add_event(std::string const & name, tchecker::system::attributes_t const & attr)
+void events_t::add_event(std::string const & name, tchecker::system::attributes_t const & attributes)
 {
-  tchecker::event_id_t id = _events_attr.size();
+  tchecker::event_id_t id = _events_attributes.size();
   _events_index.add(name, id);
-  _events_attr.emplace_back(attr);
+  _events_attributes.emplace_back(attributes);
 }
 
 tchecker::system::attributes_t const & events_t::event_attributes(tchecker::event_id_t id) const
 {
   if (id >= events_count())
     throw std::invalid_argument("Unknown event");
-  return _events_attr[id];
+  return _events_attributes[id];
 }
 
 bool events_t::is_event(tchecker::event_id_t id) const { return (id < events_count()); }

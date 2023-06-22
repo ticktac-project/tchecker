@@ -39,7 +39,7 @@ public:
    \param min : minimal value
    \param max : maximal value
    \param initial : initial calue
-   \param attr :  attributes
+   \param attributes :  attributes
    \pre name is not a declared integer variable
    \post variable name with minimal value min, maximal value max, initial value init and attributes attr has been added
    \throw std::invalid_argument : if name is a declared integer variable
@@ -48,7 +48,7 @@ public:
                   tchecker::integer_t min = std::numeric_limits<tchecker::integer_t>::min(),
                   tchecker::integer_t max = std::numeric_limits<tchecker::integer_t>::max(),
                   tchecker::integer_t initial = std::numeric_limits<tchecker::integer_t>::min(),
-                  tchecker::system::attributes_t const & attr = tchecker::system::attributes_t());
+                  tchecker::system::attributes_t const & attributes = tchecker::system::attributes_t());
 
   /*!
    \brief Accessor
@@ -96,8 +96,8 @@ public:
   inline tchecker::integer_variables_t const & integer_variables() const { return _integer_variables; }
 
 private:
-  tchecker::integer_variables_t _integer_variables;                    /*!< Integer variables */
-  std::vector<tchecker::system::attributes_t> _integer_variables_attr; /*!< Integer variables attributes */
+  tchecker::integer_variables_t _integer_variables;                          /*!< Integer variables */
+  std::vector<tchecker::system::attributes_t> _integer_variables_attributes; /*!< Integer variables attributes */
 };
 
 } // end of namespace system
