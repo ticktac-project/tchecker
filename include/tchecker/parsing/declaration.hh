@@ -41,6 +41,12 @@ class declaration_visitor_t;
 class attr_parsing_position_t {
 public:
   /*!
+   \brief Default constructor
+   \post Has empty key and value position
+  */
+  attr_parsing_position_t() = default;
+
+  /*!
    \brief Constructor
    \param key_position : parsing position of the attribute key
    \param value_position : parsing position of the attribute value
@@ -161,7 +167,7 @@ public:
    \brief Accessor
    \return Parsing position of the attribute
   */
-  inline tchecker::parsing::attr_parsing_position_t const & parsing_position() { return _parsing_position; }
+  inline tchecker::parsing::attr_parsing_position_t const & parsing_position() const { return _parsing_position; }
 
 private:
   std::string _key;                                             /*!< Key */

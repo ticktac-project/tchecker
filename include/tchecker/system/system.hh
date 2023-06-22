@@ -46,9 +46,9 @@ public:
   /*!
    \brief Constructor
    \param name : system name
-   \param attr : system attributes
+   \param attributes : system attributes
    */
-  system_t(std::string const & name, tchecker::system::attributes_t const & attr = tchecker::system::attributes_t());
+  system_t(std::string const & name, tchecker::system::attributes_t const & attributes = tchecker::system::attributes_t());
 
   /*!
    \brief Constructor
@@ -93,7 +93,7 @@ public:
    \brief Accessor
    \return system attributes
    */
-  inline tchecker::system::attributes_t const & attributes() const { return _attr; }
+  inline tchecker::system::attributes_t const & attributes() const { return _attributes; }
 
   /*!
    \brief Accessor
@@ -108,7 +108,7 @@ public:
    \throw std::invalid_argument : if there is another declared variable name (of any type)
    */
   void add_clock(std::string const & name, tchecker::clock_id_t size = 1,
-                 tchecker::system::attributes_t const & attr = tchecker::system::attributes_t());
+                 tchecker::system::attributes_t const & attributes = tchecker::system::attributes_t());
 
   using tchecker::system::clocks_t::clock_attributes;
   using tchecker::system::clocks_t::clock_id;
@@ -124,7 +124,7 @@ public:
    \throw std::invalid_argument : if pid, src, tgt or event_id do not correspond to a declared process/location/event
    */
   void add_edge(tchecker::process_id_t pid, tchecker::loc_id_t src, tchecker::loc_id_t tgt, tchecker::event_id_t event_id,
-                tchecker::system::attributes_t const & attr = tchecker::system::attributes_t());
+                tchecker::system::attributes_t const & attributes = tchecker::system::attributes_t());
 
   using tchecker::system::edges_t::edge;
   using tchecker::system::edges_t::edges;
@@ -155,7 +155,7 @@ public:
                   tchecker::integer_t min = std::numeric_limits<tchecker::integer_t>::min(),
                   tchecker::integer_t max = std::numeric_limits<tchecker::integer_t>::max(),
                   tchecker::integer_t initial = std::numeric_limits<tchecker::integer_t>::min(),
-                  tchecker::system::attributes_t const & attr = tchecker::system::attributes_t());
+                  tchecker::system::attributes_t const & attributes = tchecker::system::attributes_t());
 
   using tchecker::system::intvars_t::integer_variables;
   using tchecker::system::intvars_t::intvar_attributes;
@@ -169,10 +169,10 @@ public:
   /*!
    \brief Add a location (see tchecker::system::locs_t::add_location)
    \throw std::invalid_argument : if pid is not a declared process, of if name is already a declared location of process pid
-   \note if attribute `initial` is in attr, then the location is added as an initial location of process pid
+   \note if attribute `initial` is in attributes, then the location is added as an initial location of process pid
    */
   void add_location(tchecker::process_id_t pid, std::string const & name,
-                    tchecker::system::attributes_t const & attr = tchecker::system::attributes_t());
+                    tchecker::system::attributes_t const & attributes = tchecker::system::attributes_t());
 
   using tchecker::system::locs_t::initial_locations;
   using tchecker::system::locs_t::is_initial_location;
@@ -196,7 +196,7 @@ public:
    \throw std::invalid_argument : id a process or an event in v is not declared
    */
   void add_synchronization(std::vector<tchecker::system::sync_constraint_t> const & v,
-                           tchecker::system::attributes_t const & attr = tchecker::system::attributes_t());
+                           tchecker::system::attributes_t const & attributes = tchecker::system::attributes_t());
 
   using tchecker::system::synchronizations_t::synchronization;
   using tchecker::system::synchronizations_t::synchronizations;
@@ -210,8 +210,8 @@ private:
    */
   bool has_variable(std::string const & name);
 
-  std::string _name;                    /*!< System name */
-  tchecker::system::attributes_t _attr; /*!< System attributes */
+  std::string _name;                          /*!< System name */
+  tchecker::system::attributes_t _attributes; /*!< System attributes */
 };
 
 } // end of namespace system

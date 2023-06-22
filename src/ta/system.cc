@@ -128,15 +128,15 @@ void system_t::compute_from_syncprod_system()
   _urgent.resize(locations_count);
 
   for (tchecker::loc_id_t id = 0; id < locations_count; ++id) {
-    auto const & attr = tchecker::syncprod::system_t::location(id)->attributes();
-    set_invariant(id, attr.values("invariant"));
-    set_urgent(id, attr.values("urgent"));
+    auto const & attributes = tchecker::syncprod::system_t::location(id)->attributes();
+    set_invariant(id, attributes.range("invariant"));
+    set_urgent(id, attributes.range("urgent"));
   }
 
   for (tchecker::edge_id_t id = 0; id < edges_count; ++id) {
-    auto const & attr = tchecker::syncprod::system_t::edge(id)->attributes();
-    set_guards(id, attr.values("provided"));
-    set_statements(id, attr.values("do"));
+    auto const & attributes = tchecker::syncprod::system_t::edge(id)->attributes();
+    set_guards(id, attributes.range("provided"));
+    set_statements(id, attributes.range("do"));
   }
 
   if (tchecker::ta::has_guarded_weakly_synchronized_event(*this))
@@ -144,19 +144,38 @@ void system_t::compute_from_syncprod_system()
 }
 
 static tchecker::expression_t *
-conjunction_from_attrs(tchecker::range_t<tchecker::system::attributes_t::const_iterator_t> const & attrs,
-                       std::string const & context)
+conjunction_from_attributes(tchecker::range_t<tchecker::system::attributes_t::const_iterator_t> const & attributes,
+                            tchecker::integer_variables_t const & localvars, tchecker::integer_variables_t const & intvars,
+                            tchecker::clock_variables_t clocks)
 {
   tchecker::expression_t * expr = nullptr;
 
-  for (auto && [key, value] : attrs) {
-    tchecker::expression_t * value_expr = tchecker::parsing::parse_expression(context, value);
+  for (auto && attr : attributes) {
+    // parse
+    tchecker::expression_t * value_expr =
+        tchecker::parsing::parse_expression(attr.parsing_position().value_position(), attr.value());
 
     if (value_expr == nullptr) {
       delete expr;
       return nullptr;
     }
 
+    // type check
+    tchecker::typed_expression_t * typed_value_expr = tchecker::typecheck(*value_expr, localvars, intvars, clocks);
+
+    if (!tchecker::bool_valued(typed_value_expr->type())) {
+      delete expr;
+      delete value_expr;
+      delete typed_value_expr;
+
+      std::stringstream oss;
+      oss << attr.parsing_position().value_position() << " expression is not bool valued";
+      throw std::invalid_argument(oss.str());
+    }
+
+    delete typed_value_expr;
+
+    // aggregate
     if (expr != nullptr)
       expr = new tchecker::binary_expression_t(tchecker::EXPR_OP_LAND, expr, value_expr);
     else
@@ -173,23 +192,16 @@ conjunction_from_attrs(tchecker::range_t<tchecker::system::attributes_t::const_i
 void system_t::set_invariant(tchecker::loc_id_t id,
                              tchecker::range_t<tchecker::system::attributes_t::const_iterator_t> const & invariants)
 {
-  std::string context = "In process " + tchecker::syncprod::system_t::process_name(location(id)->pid()) + ", location " +
-                        tchecker::syncprod::system_t::location(id)->name() + ", invariant";
-
   tchecker::integer_variables_t localvars;
 
-  std::shared_ptr<tchecker::expression_t> invariant_expr{conjunction_from_attrs(invariants, context)};
+  std::shared_ptr<tchecker::expression_t> invariant_expr{
+      conjunction_from_attributes(invariants, localvars, integer_variables(), clock_variables())};
   if (invariant_expr.get() == nullptr)
     throw std::invalid_argument("Syntax error");
 
   std::shared_ptr<tchecker::typed_expression_t> invariant_typed_expr{
       tchecker::typecheck(*invariant_expr, localvars, integer_variables(), clock_variables())};
-
-  if (!tchecker::bool_valued(invariant_typed_expr->type())) {
-    std::stringstream oss;
-    oss << context << " expression is not bool valued";
-    throw std::invalid_argument(oss.str());
-  }
+  assert(tchecker::bool_valued(invariant_typed_expr->type()));
 
   try {
     std::shared_ptr<tchecker::bytecode_t> invariant_bytecode{tchecker::compile(*invariant_typed_expr),
@@ -198,7 +210,7 @@ void system_t::set_invariant(tchecker::loc_id_t id,
   }
   catch (std::exception const & e) {
     std::stringstream oss;
-    oss << context << " " << e.what();
+    oss << e.what();
     throw std::invalid_argument(oss.str());
   }
 }
@@ -213,25 +225,16 @@ void system_t::set_urgent(tchecker::loc_id_t id,
 void system_t::set_guards(tchecker::edge_id_t id,
                           tchecker::range_t<tchecker::system::attributes_t::const_iterator_t> const & guards)
 {
-  std::string context = "In process " + tchecker::syncprod::system_t::process_name(edge(id)->pid()) + ", edge from " +
-                        tchecker::syncprod::system_t::location(edge(id)->src())->name() + " to " +
-                        tchecker::syncprod::system_t::location(edge(id)->tgt())->name() + " with event " +
-                        tchecker::syncprod::system_t::event_name(edge(id)->event_id()) + ", provided";
-
   tchecker::integer_variables_t localvars;
 
-  std::shared_ptr<tchecker::expression_t> guard_expr{conjunction_from_attrs(guards, context)};
+  std::shared_ptr<tchecker::expression_t> guard_expr{
+      conjunction_from_attributes(guards, localvars, integer_variables(), clock_variables())};
   if (guard_expr.get() == nullptr)
     throw std::invalid_argument("Syntax error");
 
   std::shared_ptr<tchecker::typed_expression_t> guard_typed_expr{
       tchecker::typecheck(*guard_expr, localvars, integer_variables(), clock_variables())};
-
-  if (!tchecker::bool_valued(guard_typed_expr->type())) {
-    std::stringstream oss;
-    oss << context << " expression is not bool valued";
-    throw std::invalid_argument(oss.str());
-  }
+  assert(tchecker::bool_valued(guard_typed_expr->type()));
 
   try {
     std::shared_ptr<tchecker::bytecode_t> guard_bytecode{tchecker::compile(*guard_typed_expr),
@@ -240,25 +243,37 @@ void system_t::set_guards(tchecker::edge_id_t id,
   }
   catch (std::exception const & e) {
     std::stringstream oss;
-    oss << context << " " << e.what();
+    oss << e.what();
     throw std::invalid_argument(oss.str());
   }
 }
 
 static tchecker::statement_t *
-sequence_from_attrs(tchecker::range_t<tchecker::system::attributes_t::const_iterator_t> const & attrs,
-                    std::string const & context)
+sequence_from_attributes(tchecker::range_t<tchecker::system::attributes_t::const_iterator_t> const & attributes,
+                         tchecker::integer_variables_t const & localvars, tchecker::integer_variables_t const & intvars,
+                         tchecker::clock_variables_t const & clocks)
 {
   tchecker::statement_t * stmt = nullptr;
 
-  for (auto && [key, value] : attrs) {
-    tchecker::statement_t * value_stmt = tchecker::parsing::parse_statement(context, value);
+  for (auto && attr : attributes) {
+    // parse
+    tchecker::statement_t * value_stmt =
+        tchecker::parsing::parse_statement(attr.parsing_position().value_position(), attr.value());
 
     if (value_stmt == nullptr) {
       delete stmt;
       return nullptr;
     }
 
+    // type check
+    tchecker::typed_statement_t * typed_value_stmt =
+        tchecker::typecheck(*value_stmt, localvars, intvars, clocks, [&](std::string const & e) {
+          std::cerr << tchecker::log_error << attr.parsing_position().value_position() << " " << e << std::endl;
+        });
+
+    delete typed_value_stmt;
+
+    // aggregate
     if (stmt != nullptr)
       stmt = new tchecker::sequence_statement_t(stmt, value_stmt);
     else
@@ -275,14 +290,10 @@ sequence_from_attrs(tchecker::range_t<tchecker::system::attributes_t::const_iter
 void system_t::set_statements(tchecker::edge_id_t id,
                               tchecker::range_t<tchecker::system::attributes_t::const_iterator_t> const & statements)
 {
-  std::string context = "In process " + tchecker::syncprod::system_t::process_name(edge(id)->pid()) + ", edge from " +
-                        tchecker::syncprod::system_t::location(edge(id)->src())->name() + " to " +
-                        tchecker::syncprod::system_t::location(edge(id)->tgt())->name() + " with event " +
-                        tchecker::syncprod::system_t::event_name(edge(id)->event_id()) + ", do";
-
   tchecker::integer_variables_t localvars;
 
-  std::shared_ptr<tchecker::statement_t> stmt{sequence_from_attrs(statements, context)};
+  std::shared_ptr<tchecker::statement_t> stmt{
+      sequence_from_attributes(statements, localvars, integer_variables(), clock_variables())};
   if (stmt.get() == nullptr)
     throw std::invalid_argument("Syntax error");
 
@@ -297,7 +308,7 @@ void system_t::set_statements(tchecker::edge_id_t id,
   }
   catch (std::exception const & e) {
     std::stringstream oss;
-    oss << context << " " << e.what();
+    oss << e.what();
     throw std::invalid_argument(oss.str());
   }
 }
