@@ -1,1 +1,1 @@
-ERROR: In process P, edge from l0 to l1 with event a, provided expression is not bool valued
+ERROR: 21.25-31 expression is not bool valued
