@@ -356,7 +356,7 @@ TOK_ID ":" text_or_empty
     key_loc << @1;
     value_loc << @3;
     boost::trim($3);
-    $$ = new tchecker::parsing::attr_t($1, $3, key_loc.str(), value_loc.str());
+    $$ = new tchecker::parsing::attr_t($1, $3, tchecker::parsing::attr_parsing_position_t{key_loc.str(), value_loc.str()});
   }
 }
 ;

@@ -14,11 +14,24 @@ namespace tchecker {
 
 namespace parsing {
 
+/* attr_parsing_position_t */
+
+attr_parsing_position_t::attr_parsing_position_t(std::string const & key_position, std::string const & value_position)
+    : _key_position(key_position), _value_position(value_position)
+{
+}
+
 /* attr_t */
 
-attr_t::attr_t(std::string const & key, std::string const & value, std::string const & key_context,
-               std::string const & value_context)
-    : _key(key), _value(value), _key_context(key_context), _value_context(value_context)
+attr_t::attr_t(std::string const & key, std::string const & value,
+               tchecker::parsing::attr_parsing_position_t const & parsing_position)
+    : _key(key), _value(value), _parsing_position(parsing_position)
+{
+}
+
+attr_t::attr_t(std::string const & key, std::string const & value,
+               tchecker::parsing::attr_parsing_position_t && parsing_position)
+    : _key(key), _value(value), _parsing_position(std::move(parsing_position))
 {
 }
 
@@ -391,7 +404,7 @@ system_declaration_t::~system_declaration_t()
 }
 
 /*!
- \class system_dusplicator_t
+ \class system_duplicator_t
  \brief Duplicates declarations in a system declaration
  */
 class system_duplicator_t : public tchecker::parsing::declaration_visitor_t {

@@ -35,6 +35,61 @@ class declaration_visitor_t;
 /* Attributes */
 
 /*!
+ \class attr_parsing_position_t
+ \brief Parsing postion for attributes
+*/
+class attr_parsing_position_t {
+public:
+  /*!
+   \brief Constructor
+   \param key_position : parsing position of the attribute key
+   \param value_position : parsing position of the attribute value
+  */
+  attr_parsing_position_t(std::string const & key_position, std::string const & value_position);
+
+  /*!
+   \brief Copy constructor
+  */
+  attr_parsing_position_t(tchecker::parsing::attr_parsing_position_t const &) = default;
+
+  /*!
+   \brief Move constructor
+  */
+  attr_parsing_position_t(tchecker::parsing::attr_parsing_position_t &&) = default;
+
+  /*!
+   \brief Destructor
+  */
+  ~attr_parsing_position_t() = default;
+
+  /*!
+   \brief Assignment operator
+  */
+  tchecker::parsing::attr_parsing_position_t & operator=(tchecker::parsing::attr_parsing_position_t const &) = default;
+
+  /*!
+   \brief Move assignment operator
+  */
+  tchecker::parsing::attr_parsing_position_t & operator=(tchecker::parsing::attr_parsing_position_t &&) = default;
+
+  /*!
+   \brief Accessor
+   \return Parsing position of the attribute key
+  */
+  inline std::string const & key_position() const { return _key_position; }
+
+  /*!
+   \brief Accessor
+   \return Parsing position of the attribute value
+  */
+  inline std::string const & value_position() const { return _value_position; }
+
+private:
+  std::string _key_position;   /*!< Parsing position of the attribute key */
+  std::string _value_position; /*!< Parsing position of the attribute value */
+};
+
+/*!
  \class attr_t
  \brief Attribute for declarations
  */
@@ -44,11 +99,18 @@ public:
    \brief Constructor
    \param key : attribute key
    \param value : attribute value
-   \param key_context : contextual information for key (position in input file, etc)
-   \param value_context : contextual information for value (position in input file, etc)
+   \param parsing_position : parsing position of the attribute
    */
-  attr_t(std::string const & key, std::string const & value, std::string const & key_context,
-         std::string const & value_context);
+  attr_t(std::string const & key, std::string const & value,
+         tchecker::parsing::attr_parsing_position_t const & parsing_position);
+
+  /*!
+  \brief Constructor
+  \param key : attribute key
+  \param value : attribute value
+  \param parsing_position : parsing position of the attribute
+  */
+  attr_t(std::string const & key, std::string const & value, tchecker::parsing::attr_parsing_position_t && parsing_position);
 
   /*!
    \brief Copy constructor
@@ -97,21 +159,14 @@ public:
 
   /*!
    \brief Accessor
-   \return Contextual information for key
-   */
-  inline std::string const & key_context() const { return _key_context; }
-
-  /*!
-   \brief Accessor
-   \return Contextual information for value
-   */
-  inline std::string const & value_context() const { return _value_context; }
+   \return Parsing position of the attribute
+  */
+  inline tchecker::parsing::attr_parsing_position_t const & parsing_position() { return _parsing_position; }
 
 private:
-  std::string _key;           /*!< Key */
-  std::string _value;         /*!< Value */
-  std::string _key_context;   /*!< Contextual information for key */
-  std::string _value_context; /*!< Contextual information for value */
+  std::string _key;                                             /*!< Key */
+  std::string _value;                                           /*!< Value */
+  tchecker::parsing::attr_parsing_position_t _parsing_position; /*!< Parsing position */
 };
 
 /*!
