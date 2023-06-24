@@ -122,7 +122,7 @@ std::shared_ptr<tchecker::parsing::system_declaration_t> load_system(std::string
     sysdecl = tchecker::parsing::parse_system_declaration(filename);
   }
   catch (std::exception const & e) {
-    std::cerr << tchecker::log_error << " " << e.what() << std::endl;
+    std::cerr << tchecker::log_error << e.what() << std::endl;
   }
 
   if (sysdecl == nullptr)
