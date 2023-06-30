@@ -10,8 +10,8 @@
 #include "tchecker/dbm/db.hh"
 
 #define DB(x, y)  tchecker::dbm::db((x), (y))
-#define DB_LE     tchecker::dbm::LE
-#define DB_LT     tchecker::dbm::LT
+#define DB_LE     tchecker::LE
+#define DB_LT     tchecker::LT
 #define SUM(x, y) tchecker::dbm::sum((x), (y))
 #define ADD(x, y) tchecker::dbm::add((x), (y))
 #define HASH(x)   tchecker::dbm::hash(x)
@@ -48,42 +48,42 @@ TEST_CASE("construction of upper bounds", "[db]")
 
   SECTION("provided upper bounds")
   {
-    REQUIRE(CMP(tchecker::dbm::LE_ZERO) == tchecker::dbm::LE);
+    REQUIRE(CMP(tchecker::dbm::LE_ZERO) == tchecker::LE);
     REQUIRE(VAL(tchecker::dbm::LE_ZERO) == 0);
-    REQUIRE(CMP(tchecker::dbm::LT_ZERO) == tchecker::dbm::LT);
+    REQUIRE(CMP(tchecker::dbm::LT_ZERO) == tchecker::LT);
     REQUIRE(VAL(tchecker::dbm::LT_ZERO) == 0);
-    REQUIRE(CMP(tchecker::dbm::LT_INFINITY) == tchecker::dbm::LT);
+    REQUIRE(CMP(tchecker::dbm::LT_INFINITY) == tchecker::LT);
     REQUIRE(VAL(tchecker::dbm::LT_INFINITY) == max_int_used);
   }
 
   SECTION("user defined upper bounds")
   {
-    REQUIRE(CMP(le_1) == tchecker::dbm::LE);
+    REQUIRE(CMP(le_1) == tchecker::LE);
     REQUIRE(VAL(le_1) == 1);
-    REQUIRE(CMP(lt_1) == tchecker::dbm::LT);
+    REQUIRE(CMP(lt_1) == tchecker::LT);
     REQUIRE(VAL(lt_1) == 1);
-    REQUIRE(CMP(lt_m1) == tchecker::dbm::LT);
+    REQUIRE(CMP(lt_m1) == tchecker::LT);
     REQUIRE(VAL(lt_m1) == -1);
-    REQUIRE(CMP(le_m3) == tchecker::dbm::LE);
+    REQUIRE(CMP(le_m3) == tchecker::LE);
     REQUIRE(VAL(le_m3) == -3);
   }
 
   SECTION("non representable upper bounds")
   {
-    REQUIRE_THROWS_AS(DB(tchecker::dbm::LT, max_int_used), std::invalid_argument);
-    REQUIRE_THROWS_AS(DB(tchecker::dbm::LT, max_int_used + 1), std::invalid_argument);
-    REQUIRE_THROWS_AS(DB(tchecker::dbm::LT, min_int_used - 1), std::invalid_argument);
-    REQUIRE_NOTHROW(DB(tchecker::dbm::LT, max_int_used - 1));
-    REQUIRE_NOTHROW(DB(tchecker::dbm::LT, min_int_used));
+    REQUIRE_THROWS_AS(DB(tchecker::LT, max_int_used), std::invalid_argument);
+    REQUIRE_THROWS_AS(DB(tchecker::LT, max_int_used + 1), std::invalid_argument);
+    REQUIRE_THROWS_AS(DB(tchecker::LT, min_int_used - 1), std::invalid_argument);
+    REQUIRE_NOTHROW(DB(tchecker::LT, max_int_used - 1));
+    REQUIRE_NOTHROW(DB(tchecker::LT, min_int_used));
   }
 }
 
 TEST_CASE("hash values of upper bounds", "[db]")
 {
 
-  tchecker::dbm::db_t le_1a = DB(tchecker::dbm::LE, 1); // <= 1
-  tchecker::dbm::db_t le_1b = DB(tchecker::dbm::LE, 1); // <= 1
-  tchecker::dbm::db_t lt_0 = DB(tchecker::dbm::LT, 0);  // < 0
+  tchecker::dbm::db_t le_1a = DB(tchecker::LE, 1); // <= 1
+  tchecker::dbm::db_t le_1b = DB(tchecker::LE, 1); // <= 1
+  tchecker::dbm::db_t lt_0 = DB(tchecker::LT, 0);  // < 0
 
   SECTION("same upper bounds have same hash code")
   {
@@ -102,10 +102,10 @@ TEST_CASE("hash values of upper bounds", "[db]")
 TEST_CASE("comparators <,<=,>=,>", "[db]")
 {
 
-  tchecker::dbm::db_t le_1 = DB(tchecker::dbm::LE, 1);   // <= 1
-  tchecker::dbm::db_t lt_1 = DB(tchecker::dbm::LT, 1);   // < 1
-  tchecker::dbm::db_t le_m1 = DB(tchecker::dbm::LE, -1); // <= -1
-  tchecker::dbm::db_t lt_m5 = DB(tchecker::dbm::LT, -5); // < -5
+  tchecker::dbm::db_t le_1 = DB(tchecker::LE, 1);   // <= 1
+  tchecker::dbm::db_t lt_1 = DB(tchecker::LT, 1);   // < 1
+  tchecker::dbm::db_t le_m1 = DB(tchecker::LE, -1); // <= -1
+  tchecker::dbm::db_t lt_m5 = DB(tchecker::LT, -5); // < -5
 
   SECTION("less-than comparator <")
   {
@@ -336,13 +336,13 @@ TEST_CASE("comparators <,<=,>=,>", "[db]")
 TEST_CASE("sum", "[db]")
 {
 
-  tchecker::dbm::db_t le_1 = DB(tchecker::dbm::LE, 1);     // <= 1
-  tchecker::dbm::db_t lt_2 = DB(tchecker::dbm::LT, 2);     // < 2
-  tchecker::dbm::db_t le_m1 = DB(tchecker::dbm::LE, -1);   // <= -1
-  tchecker::dbm::db_t lt_m11 = DB(tchecker::dbm::LT, -11); // < -11
+  tchecker::dbm::db_t le_1 = DB(tchecker::LE, 1);     // <= 1
+  tchecker::dbm::db_t lt_2 = DB(tchecker::LT, 2);     // < 2
+  tchecker::dbm::db_t le_m1 = DB(tchecker::LE, -1);   // <= -1
+  tchecker::dbm::db_t lt_m11 = DB(tchecker::LT, -11); // < -11
 
-  tchecker::dbm::db_t le_big = DB(tchecker::dbm::LE, max_int_used - 1);
-  tchecker::dbm::db_t le_small = DB(tchecker::dbm::LE, min_int_used);
+  tchecker::dbm::db_t le_big = DB(tchecker::LE, max_int_used - 1);
+  tchecker::dbm::db_t le_small = DB(tchecker::LE, min_int_used);
 
   SECTION("sum of upper bounds")
   {
@@ -426,8 +426,8 @@ TEST_CASE("add", "[db]")
   tchecker::dbm::db_t le_3 = DB(DB_LE, 3);   // <= 3
   tchecker::dbm::db_t lt_m2 = DB(DB_LT, -2); // < -2
 
-  tchecker::dbm::db_t le_big = DB(tchecker::dbm::LE, max_int_used - 1);
-  tchecker::dbm::db_t le_small = DB(tchecker::dbm::LE, min_int_used);
+  tchecker::dbm::db_t le_big = DB(tchecker::LE, max_int_used - 1);
+  tchecker::dbm::db_t le_small = DB(tchecker::LE, min_int_used);
 
   SECTION("add value to upper bound")
   {

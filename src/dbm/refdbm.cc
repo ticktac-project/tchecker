@@ -271,7 +271,7 @@ bool is_alu_star_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const
       // second condition (<=,Ux) + Z{r(x),x} >= (<=,0) if x is a clock (not a
       // reference clock)
       if (x >= refcount) {
-        tchecker::dbm::db_t const le_Ux = tchecker::dbm::db(tchecker::dbm::LE, Ux);
+        tchecker::dbm::db_t const le_Ux = tchecker::dbm::db(tchecker::LE, Ux);
         tchecker::clock_id_t const rx = refmap[x];
 
         if (tchecker::dbm::sum(le_Ux, RDBM1(rx, x)) < tchecker::dbm::LE_ZERO)
@@ -281,7 +281,7 @@ bool is_alu_star_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const
       // third condition (<,-Ly) + Z'{y,x} < Z{r(y),x} if y is a clock (not a
       // reference clock)
       if (y >= refcount) {
-        tchecker::dbm::db_t const lt_minus_Ly = tchecker::dbm::db(tchecker::dbm::LT, -Ly);
+        tchecker::dbm::db_t const lt_minus_Ly = tchecker::dbm::db(tchecker::LT, -Ly);
         tchecker::clock_id_t const ry = refmap[y];
 
         if (tchecker::dbm::sum(lt_minus_Ly, RDBM2(y, x)) >= RDBM1(ry, x))
@@ -351,7 +351,7 @@ bool is_time_elapse_alu_star_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm
         continue;
 
       // second condition (<=,Ux) + Z{r(x),x} >= (<=,0) for clock x
-      tchecker::dbm::db_t const le_Ux = tchecker::dbm::db(tchecker::dbm::LE, Ux);
+      tchecker::dbm::db_t const le_Ux = tchecker::dbm::db(tchecker::LE, Ux);
       tchecker::clock_id_t const rx = refmap[x];
 
       if (tchecker::dbm::sum(le_Ux, RDBM1(rx, x)) < tchecker::dbm::LE_ZERO)
@@ -360,7 +360,7 @@ bool is_time_elapse_alu_star_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm
       // third condition (<,-Ly) + Z'{y,x} < Z{r(y),x} if y is a clock (not a
       // reference clock)
       if (y >= refcount) {
-        tchecker::dbm::db_t const lt_minus_Ly = tchecker::dbm::db(tchecker::dbm::LT, -Ly);
+        tchecker::dbm::db_t const lt_minus_Ly = tchecker::dbm::db(tchecker::LT, -Ly);
         tchecker::clock_id_t const ry = refmap[y];
 
         if (tchecker::dbm::sum(lt_minus_Ly, RDBM2(y, x)) >= RDBM1(ry, x))
@@ -428,7 +428,7 @@ bool is_sync_alu_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const
       min_tx1 = tchecker::dbm::min(min_tx1, LTE_RDBM1(t, x));
 
     // Check 1st condition
-    if (min_tx1 < tchecker::dbm::db(tchecker::dbm::LE, -Ux))
+    if (min_tx1 < tchecker::dbm::db(tchecker::LE, -Ux))
       continue;
 
     // Compute min_tx2 = min {dbm2[t,x] | t ref clock}
@@ -453,7 +453,7 @@ bool is_sync_alu_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const
 
       // Check 2nd and 3rd conditions (of second case above)
       if (LTE_RDBM2(y, x) < LTE_RDBM1(y, x) &&
-          tchecker::dbm::sum(LTE_RDBM2(y, x), tchecker::dbm::db(tchecker::dbm::LT, -Ly)) < min_tx1)
+          tchecker::dbm::sum(LTE_RDBM2(y, x), tchecker::dbm::db(tchecker::LT, -Ly)) < min_tx1)
         return false;
     }
   }
@@ -474,7 +474,7 @@ std::size_t hash(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_var
 }
 
 enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
-                                       tchecker::clock_id_t x, tchecker::clock_id_t y, tchecker::dbm::comparator_t cmp,
+                                       tchecker::clock_id_t x, tchecker::clock_id_t y, tchecker::ineq_cmp_t cmp,
                                        tchecker::integer_t value)
 {
   assert(rdbm != nullptr);
@@ -488,9 +488,7 @@ enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * rdbm, tchecker::ref
                                        tchecker::clock_constraint_t const & c)
 {
   tchecker::clock_constraint_t translated = r.translate(c);
-  tchecker::dbm::comparator_t cmp =
-      (translated.comparator() == tchecker::clock_constraint_t::LE ? tchecker::dbm::LE : tchecker::dbm::LT);
-  return tchecker::refdbm::constrain(rdbm, r, translated.id1(), translated.id2(), cmp, translated.value());
+  return tchecker::refdbm::constrain(rdbm, r, translated.id1(), translated.id2(), translated.comparator(), translated.value());
 }
 
 enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
@@ -536,7 +534,7 @@ enum tchecker::dbm::status_t bound_spread(tchecker::dbm::db_t * rdbm, tchecker::
   if (spread == tchecker::refdbm::UNBOUNDED_SPREAD)
     return tchecker::dbm::NON_EMPTY;
 
-  tchecker::dbm::db_t const le_spread = tchecker::dbm::db(tchecker::dbm::LE, spread);
+  tchecker::dbm::db_t const le_spread = tchecker::dbm::db(tchecker::LE, spread);
 
   tchecker::clock_id_t const rdim = r.size();
 

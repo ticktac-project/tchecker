@@ -38,8 +38,8 @@ tchecker::clock_id_t clock_variables_t::declare(std::string const & name, tcheck
 
 /* clock_constraint_t */
 
-clock_constraint_t::clock_constraint_t(tchecker::clock_id_t id1, tchecker::clock_id_t id2,
-                                       enum tchecker::clock_constraint_t::comparator_t cmp, tchecker::integer_t value)
+clock_constraint_t::clock_constraint_t(tchecker::clock_id_t id1, tchecker::clock_id_t id2, enum tchecker::ineq_cmp_t cmp,
+                                       tchecker::integer_t value)
     : _id1(id1), _id2(id2), _cmp(cmp), _value(value)
 {
   if (_id1 == tchecker::REFCLOCK_ID && _id2 == tchecker::REFCLOCK_ID)
@@ -65,7 +65,7 @@ std::size_t hash_value(tchecker::clock_constraint_t const & c)
 
 std::ostream & operator<<(std::ostream & os, tchecker::clock_constraint_t const & c)
 {
-  os << c._id1 << "-" << c._id2 << (c._cmp == tchecker::clock_constraint_t::LT ? "<" : "<=") << c._value;
+  os << c._id1 << "-" << c._id2 << (c._cmp == tchecker::LT ? "<" : "<=") << c._value;
   return os;
 }
 
@@ -80,9 +80,9 @@ std::ostream & output(std::ostream & os, tchecker::clock_constraint_t const & c,
     os << index.value(id2);
   }
   if (id1 != tchecker::REFCLOCK_ID)
-    os << (c.comparator() == tchecker::clock_constraint_t::LT ? "<" : "<=");
+    os << (c.comparator() == tchecker::LT ? "<" : "<=");
   else
-    os << (c.comparator() == tchecker::clock_constraint_t::LT ? ">" : ">=");
+    os << (c.comparator() == tchecker::LT ? ">" : ">=");
   os << (id1 != tchecker::REFCLOCK_ID ? c.value() : -c.value());
   return os;
 }
@@ -101,7 +101,7 @@ int lexical_cmp(tchecker::clock_constraint_t const & c1, tchecker::clock_constra
   if (c1.id2() != c2.id2())
     return (c1.id2() < c2.id2() ? -1 : 1);
   if (c1.comparator() != c2.comparator())
-    return (c1.comparator() == tchecker::clock_constraint_t::LT ? -1 : 1);
+    return (c1.comparator() == tchecker::LT ? -1 : 1);
   return (c1.value() == c2.value() ? 0 : (c1.value() < c2.value() ? -1 : 1));
 }
 

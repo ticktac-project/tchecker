@@ -148,7 +148,7 @@ void df_solver_t::add_lower_bound_guard(tchecker::loc_id_t l, tchecker::clock_id
   assert(l < _loc_number);
   assert(x < _clock_number);
   // L_{l, x} >= c  (i.e. 0 - L_{l, x} <= -c)
-  _has_solution &= (tchecker::dbm::constrain(_L, _dim, 0, index(l, x), tchecker::dbm::LE, -c) != tchecker::dbm::EMPTY);
+  _has_solution &= (tchecker::dbm::constrain(_L, _dim, 0, index(l, x), tchecker::LE, -c) != tchecker::dbm::EMPTY);
 }
 
 void df_solver_t::add_upper_bound_guard(tchecker::loc_id_t l, tchecker::clock_id_t x, tchecker::integer_t c)
@@ -156,7 +156,7 @@ void df_solver_t::add_upper_bound_guard(tchecker::loc_id_t l, tchecker::clock_id
   assert(l < _loc_number);
   assert(x < _clock_number);
   // U_{l, x} >= c  (i.e. 0 - U_{l ,x} <= -c)
-  _has_solution &= (tchecker::dbm::constrain(_U, _dim, 0, index(l, x), tchecker::dbm::LE, -c) != tchecker::dbm::EMPTY);
+  _has_solution &= (tchecker::dbm::constrain(_U, _dim, 0, index(l, x), tchecker::LE, -c) != tchecker::dbm::EMPTY);
 }
 
 void df_solver_t::add_assignment(tchecker::loc_id_t l1, tchecker::loc_id_t l2, tchecker::clock_id_t x, tchecker::clock_id_t y,
@@ -167,19 +167,15 @@ void df_solver_t::add_assignment(tchecker::loc_id_t l1, tchecker::loc_id_t l2, t
   assert(x < _clock_number);
   assert(y < _clock_number);
   // Propagation over the edge: L_{l2,x} - L_{l1,y} <= c / U_{l2,x} - U_{l1,xy} <= c
-  _has_solution &=
-      (tchecker::dbm::constrain(_L, _dim, index(l2, x), index(l1, y), tchecker::dbm::LE, c) != tchecker::dbm::EMPTY);
-  _has_solution &=
-      (tchecker::dbm::constrain(_U, _dim, index(l2, x), index(l1, y), tchecker::dbm::LE, c) != tchecker::dbm::EMPTY);
+  _has_solution &= (tchecker::dbm::constrain(_L, _dim, index(l2, x), index(l1, y), tchecker::LE, c) != tchecker::dbm::EMPTY);
+  _has_solution &= (tchecker::dbm::constrain(_U, _dim, index(l2, x), index(l1, y), tchecker::LE, c) != tchecker::dbm::EMPTY);
 
   // Propagation across processes: L_{m,x} - L_{l1,y} <= c / U_{m,x} - U_{l1,y} <= c
   // for every location m in another process
   for (tchecker::loc_id_t m = 0; m < _loc_number; ++m)
     if (_loc_pid[m] != _loc_pid[l1]) {
-      _has_solution &=
-          (tchecker::dbm::constrain(_L, _dim, index(m, x), index(l1, y), tchecker::dbm::LE, c) != tchecker::dbm::EMPTY);
-      _has_solution &=
-          (tchecker::dbm::constrain(_U, _dim, index(m, x), index(l1, y), tchecker::dbm::LE, c) != tchecker::dbm::EMPTY);
+      _has_solution &= (tchecker::dbm::constrain(_L, _dim, index(m, x), index(l1, y), tchecker::LE, c) != tchecker::dbm::EMPTY);
+      _has_solution &= (tchecker::dbm::constrain(_U, _dim, index(m, x), index(l1, y), tchecker::LE, c) != tchecker::dbm::EMPTY);
     }
 }
 
@@ -189,11 +185,9 @@ void df_solver_t::add_no_assignement(tchecker::loc_id_t l1, tchecker::loc_id_t l
   assert(l2 < _loc_number);
   assert(x < _clock_number);
   // L_{l2,x} - L_{l1,x} <= 0
-  _has_solution &=
-      (tchecker::dbm::constrain(_L, _dim, index(l2, x), index(l1, x), tchecker::dbm::LE, 0) != tchecker::dbm::EMPTY);
+  _has_solution &= (tchecker::dbm::constrain(_L, _dim, index(l2, x), index(l1, x), tchecker::LE, 0) != tchecker::dbm::EMPTY);
   // U_{l2,x} - U_{l1,x} <= 0
-  _has_solution &=
-      (tchecker::dbm::constrain(_U, _dim, index(l2, x), index(l1, x), tchecker::dbm::LE, 0) != tchecker::dbm::EMPTY);
+  _has_solution &= (tchecker::dbm::constrain(_U, _dim, index(l2, x), index(l1, x), tchecker::LE, 0) != tchecker::dbm::EMPTY);
 }
 
 std::size_t df_solver_t::index(tchecker::loc_id_t l, tchecker::clock_id_t x) const

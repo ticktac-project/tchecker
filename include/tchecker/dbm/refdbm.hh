@@ -454,7 +454,7 @@ std::size_t hash(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_var
  tchecker::dbm::db_t (only if compilation flag DBM_UNSAFE is not set)
  */
 enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
-                                       tchecker::clock_id_t x, tchecker::clock_id_t y, tchecker::dbm::comparator_t cmp,
+                                       tchecker::clock_id_t x, tchecker::clock_id_t y, tchecker::ineq_cmp_t cmp,
                                        tchecker::integer_t value);
 
 /*!

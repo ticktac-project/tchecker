@@ -248,39 +248,37 @@ TEST_CASE("translation of clock constraints", "[clocks]")
 
   SECTION("Upper-bound constraint")
   {
-    tchecker::clock_constraint_t c =
-        r.translate(tchecker::clock_constraint_t(_x, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 1));
+    tchecker::clock_constraint_t c = r.translate(tchecker::clock_constraint_t(_x, tchecker::REFCLOCK_ID, tchecker::LE, 1));
     REQUIRE(c.id1() == x);
     REQUIRE(c.id2() == t0);
-    REQUIRE(c.comparator() == tchecker::clock_constraint_t::LE);
+    REQUIRE(c.comparator() == tchecker::LE);
     REQUIRE(c.value() == 1);
   }
 
   SECTION("Lower-bound constraint")
   {
-    tchecker::clock_constraint_t c =
-        r.translate(tchecker::clock_constraint_t(tchecker::REFCLOCK_ID, _z1, tchecker::clock_constraint_t::LE, -3));
+    tchecker::clock_constraint_t c = r.translate(tchecker::clock_constraint_t(tchecker::REFCLOCK_ID, _z1, tchecker::LE, -3));
     REQUIRE(c.id1() == t2);
     REQUIRE(c.id2() == z1);
-    REQUIRE(c.comparator() == tchecker::clock_constraint_t::LE);
+    REQUIRE(c.comparator() == tchecker::LE);
     REQUIRE(c.value() == -3);
   }
 
   SECTION("Diagonal constraint, same reference clock")
   {
-    tchecker::clock_constraint_t c = r.translate(tchecker::clock_constraint_t(_z1, _z2, tchecker::clock_constraint_t::LT, 19));
+    tchecker::clock_constraint_t c = r.translate(tchecker::clock_constraint_t(_z1, _z2, tchecker::LT, 19));
     REQUIRE(c.id1() == z1);
     REQUIRE(c.id2() == z2);
-    REQUIRE(c.comparator() == tchecker::clock_constraint_t::LT);
+    REQUIRE(c.comparator() == tchecker::LT);
     REQUIRE(c.value() == 19);
   }
 
   SECTION("Diagonal constraint, distinct reference clocks")
   {
-    tchecker::clock_constraint_t c = r.translate(tchecker::clock_constraint_t(_y, _x, tchecker::clock_constraint_t::LE, -5));
+    tchecker::clock_constraint_t c = r.translate(tchecker::clock_constraint_t(_y, _x, tchecker::LE, -5));
     REQUIRE(c.id1() == y);
     REQUIRE(c.id2() == x);
-    REQUIRE(c.comparator() == tchecker::clock_constraint_t::LE);
+    REQUIRE(c.comparator() == tchecker::LE);
     REQUIRE(c.value() == -5);
   }
 }

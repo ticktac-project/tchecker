@@ -105,6 +105,17 @@ static_assert(REFCLOCK_ID <= std::numeric_limits<tchecker::integer_t>::max());
 std::string const REFCLOCK_NAME("0");
 
 /*!
+ \brief Type inequality comparator
+ */
+enum ineq_cmp_t : unsigned {
+  LT = 0, /*!< less-than < */
+  LE = 1, /*!< less-than-or-equal-to, i.e. <= */
+};
+
+static_assert(tchecker::LT == 0, "Less-than should be 0");
+static_assert(tchecker::LE == 1, "Less-than should be 1");
+
+/*!
  \brief Type of label identifiers
  */
 using label_id_t = tchecker::id_t;

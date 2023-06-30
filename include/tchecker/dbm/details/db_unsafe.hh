@@ -36,13 +36,8 @@ using db_t = tchecker::integer_t;
 
 static_assert(std::is_same<tchecker::integer_t, tchecker::dbm::db_t>::value, "");
 
-/*!
- \brief Type of difference bound comparator: < or <=
- */
-enum comparator_t {
-  LT = 0, /*!< less-than < */
-  LE = 1, /*!< less-than-or-equal-to, i.e. <= */
-};
+static_assert(tchecker::LT == 0, "tchecker::LT must be 0");
+static_assert(tchecker::LE == 1, "tchecker::LT must be 1");
 
 tchecker::dbm::db_t const INF_VALUE = tchecker::int_maxval >> 1; /*!< Infinity value */
 tchecker::dbm::db_t const MAX_VALUE = INF_VALUE - 1;             /*!< Maximum value */
@@ -52,8 +47,8 @@ static_assert(tchecker::dbm::INF_VALUE != tchecker::dbm::MAX_VALUE, "");
 static_assert(tchecker::dbm::INF_VALUE != tchecker::dbm::MIN_VALUE, "");
 static_assert(tchecker::dbm::MAX_VALUE != tchecker::dbm::MIN_VALUE, "");
 
-tchecker::dbm::db_t const LE_ZERO = (0 << 1) | tchecker::dbm::LE;             /*!< <=0 */
-tchecker::dbm::db_t const LT_ZERO = (0 << 1) | tchecker::dbm::LT;             /*!< <0 */
+tchecker::dbm::db_t const LE_ZERO = (0 << 1) | tchecker::LE;                  /*!< <=0 */
+tchecker::dbm::db_t const LT_ZERO = (0 << 1) | tchecker::LT;                  /*!< <0 */
 tchecker::dbm::db_t const LT_INFINITY = (INF_VALUE << 1) | tchecker::dbm::LT; /*!< <inf */
 
 static_assert(tchecker::dbm::LE_ZERO != tchecker::dbm::LT_ZERO, "");
@@ -73,7 +68,7 @@ static_assert(tchecker::dbm::LE_ZERO != tchecker::dbm::LT_INFINITY, "");
  this is incorrect on architectures that do not use two-complement representation
  of signed integers (checked by static_assert)
  */
-inline tchecker::dbm::db_t db(enum tchecker::dbm::comparator_t cmp, tchecker::integer_t value) { return ((value << 1) | cmp); }
+inline tchecker::dbm::db_t db(enum tchecker::ineq_cmp_t cmp, tchecker::integer_t value) { return ((value << 1) | cmp); }
 
 /*!
  \brief Sum of difference bounds
@@ -137,9 +132,9 @@ inline int db_cmp(tchecker::dbm::db_t db1, tchecker::dbm::db_t db2) { return (db
  \param db : a difference bound
  \return the comparator in db
  */
-inline enum tchecker::dbm::comparator_t comparator(tchecker::dbm::db_t db)
+inline enum tchecker::ineq_cmp_t comparator(tchecker::dbm::db_t db)
 {
-  return ((db & tchecker::dbm::LE) ? tchecker::dbm::LE : tchecker::dbm::LT);
+  return ((db & tchecker::LE) ? tchecker::LE : tchecker::LT);
 }
 
 /*!

@@ -229,7 +229,7 @@ enum tchecker::dbm::status_t tighten(tchecker::dbm::db_t * dbm, tchecker::clock_
  DBM_UNSAFE is not set)
  */
 enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x,
-                                       tchecker::clock_id_t y, tchecker::dbm::comparator_t cmp, tchecker::integer_t value);
+                                       tchecker::clock_id_t y, tchecker::ineq_cmp_t cmp, tchecker::integer_t value);
 
 /*!
  \brief Constrain a DBM w.r.t. clock constraints container
