@@ -120,13 +120,13 @@ TEST_CASE("is_empty_0", "[refdbm]")
 
   SECTION("DBM with negative value at (0,0)")
   {
-    RDBM(0, 0) = tchecker::dbm::db(tchecker::dbm::LT, 0);
+    RDBM(0, 0) = tchecker::dbm::db(tchecker::LT, 0);
     REQUIRE(tchecker::refdbm::is_empty_0(rdbm, r));
   }
 
   SECTION("DBM with non-negative value at (0,0)")
   {
-    RDBM(0, 0) = tchecker::dbm::db(tchecker::dbm::LE, 3);
+    RDBM(0, 0) = tchecker::dbm::db(tchecker::LE, 3);
     REQUIRE_FALSE(tchecker::refdbm::is_empty_0(rdbm, r));
   }
 
@@ -269,9 +269,9 @@ TEST_CASE("is_open_up", "[refdbm]")
   SECTION("DBM with lower bounds is open up")
   {
     tchecker::refdbm::universal_positive(rdbm, r);
-    RDBM(tx1, x1) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM(ty2, y2) = tchecker::dbm::db(tchecker::dbm::LE, -6);
-    RDBM(x1, z1) = tchecker::dbm::db(tchecker::dbm::LE, 3);
+    RDBM(tx1, x1) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM(ty2, y2) = tchecker::dbm::db(tchecker::LE, -6);
+    RDBM(x1, z1) = tchecker::dbm::db(tchecker::LE, 3);
     tchecker::refdbm::tighten(rdbm, r);
 
     REQUIRE(tchecker::refdbm::is_open_up(rdbm, r));
@@ -280,7 +280,7 @@ TEST_CASE("is_open_up", "[refdbm]")
   SECTION("DBM with upper bounds on offset clocks and reference clocks")
   {
     tchecker::refdbm::universal_positive(rdbm, r);
-    RDBM(y2, ty2) = tchecker::dbm::db(tchecker::dbm::LT, 4);
+    RDBM(y2, ty2) = tchecker::dbm::db(tchecker::LT, 4);
     tchecker::refdbm::tighten(rdbm, r);
 
     REQUIRE_FALSE(tchecker::refdbm::is_open_up(rdbm, r));
@@ -289,7 +289,7 @@ TEST_CASE("is_open_up", "[refdbm]")
   SECTION("DBM with upper bounds on reference clocks")
   {
     tchecker::refdbm::universal_positive(rdbm, r);
-    RDBM(tz1, ty2) = tchecker::dbm::db(tchecker::dbm::LT, 1);
+    RDBM(tz1, ty2) = tchecker::dbm::db(tchecker::LT, 1);
     tchecker::refdbm::tighten(rdbm, r);
 
     REQUIRE_FALSE(tchecker::refdbm::is_open_up(rdbm, r));
@@ -298,7 +298,7 @@ TEST_CASE("is_open_up", "[refdbm]")
   SECTION("DBM with upper bounds on offset clocks")
   {
     tchecker::refdbm::universal_positive(rdbm, r);
-    RDBM(z1, y2) = tchecker::dbm::db(tchecker::dbm::LT, 1);
+    RDBM(z1, y2) = tchecker::dbm::db(tchecker::LT, 1);
     tchecker::refdbm::tighten(rdbm, r);
 
     REQUIRE(tchecker::refdbm::is_open_up(rdbm, r));
@@ -485,9 +485,9 @@ TEST_CASE("is_synchronizable", "[refdbm]")
   SECTION("Some synchronizable DBM with reference clocks")
   {
     tchecker::refdbm::universal_positive(rdbm, r);
-    RDBM(x1, x2) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM(x1, y) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM(z1, z2) = tchecker::dbm::db(tchecker::dbm::LE, 5);
+    RDBM(x1, x2) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM(x1, y) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM(z1, z2) = tchecker::dbm::db(tchecker::LE, 5);
     tchecker::refdbm::tighten(rdbm, r);
     REQUIRE_FALSE(tchecker::refdbm::is_empty_0(rdbm, r));
     REQUIRE(tchecker::refdbm::is_synchronizable(rdbm, r));
@@ -496,7 +496,7 @@ TEST_CASE("is_synchronizable", "[refdbm]")
   SECTION("Some non-synchronizable DBM with reference clocks")
   {
     tchecker::refdbm::universal_positive(rdbm, r);
-    RDBM(t1, t2) = tchecker::dbm::db(tchecker::dbm::LE, -1);
+    RDBM(t1, t2) = tchecker::dbm::db(tchecker::LE, -1);
     tchecker::refdbm::tighten(rdbm, r);
     REQUIRE_FALSE(tchecker::refdbm::is_empty_0(rdbm, r));
     REQUIRE_FALSE(tchecker::refdbm::is_synchronizable(rdbm, r));
@@ -505,10 +505,10 @@ TEST_CASE("is_synchronizable", "[refdbm]")
   SECTION("Some, non-trivial, non-synchronizable DBM with reference clocks")
   {
     tchecker::refdbm::universal_positive(rdbm, r);
-    RDBM(x1, t0) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM(y, x1) = tchecker::dbm::db(tchecker::dbm::LT, -5);
-    RDBM(t1, y) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM(t1, t0) = tchecker::dbm::db(tchecker::dbm::LE, 4);
+    RDBM(x1, t0) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM(y, x1) = tchecker::dbm::db(tchecker::LT, -5);
+    RDBM(t1, y) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM(t1, t0) = tchecker::dbm::db(tchecker::LE, 4);
     tchecker::refdbm::tighten(rdbm, r);
     REQUIRE_FALSE(tchecker::refdbm::is_empty_0(rdbm, r));
     REQUIRE_FALSE(tchecker::refdbm::is_synchronizable(rdbm, r));
@@ -676,10 +676,10 @@ TEST_CASE("is_alu_star_le", "[refdbm]")
     RDBM1(tz, tx) = tchecker::dbm::LE_ZERO;
     RDBM1(z, tz) = tchecker::dbm::LE_ZERO;
     RDBM1(tz, z) = tchecker::dbm::LE_ZERO;
-    RDBM1(tx, x) = tchecker::dbm::db(tchecker::dbm::LE, -1);
-    RDBM1(x, tx) = tchecker::dbm::db(tchecker::dbm::LT, 2);
-    RDBM1(ty, y) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM1(y, ty) = tchecker::dbm::db(tchecker::dbm::LE, 3);
+    RDBM1(tx, x) = tchecker::dbm::db(tchecker::LE, -1);
+    RDBM1(x, tx) = tchecker::dbm::db(tchecker::LT, 2);
+    RDBM1(ty, y) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM1(y, ty) = tchecker::dbm::db(tchecker::LE, 3);
     tchecker::refdbm::tighten(rdbm1, r);
 
     // rx = rz && z == rz && x - rx >= 3 && y - ry > 1
@@ -688,8 +688,8 @@ TEST_CASE("is_alu_star_le", "[refdbm]")
     RDBM2(tz, tx) = tchecker::dbm::LE_ZERO;
     RDBM2(z, tz) = tchecker::dbm::LE_ZERO;
     RDBM2(tz, z) = tchecker::dbm::LE_ZERO;
-    RDBM2(tx, x) = tchecker::dbm::db(tchecker::dbm::LE, -3);
-    RDBM2(ty, y) = tchecker::dbm::db(tchecker::dbm::LT, -1);
+    RDBM2(tx, x) = tchecker::dbm::db(tchecker::LE, -3);
+    RDBM2(ty, y) = tchecker::dbm::db(tchecker::LT, -1);
     tchecker::refdbm::tighten(rdbm2, r);
 
     // No clock bounds
@@ -709,10 +709,10 @@ TEST_CASE("is_alu_star_le", "[refdbm]")
     RDBM1(tz, tx) = tchecker::dbm::LE_ZERO;
     RDBM1(z, tz) = tchecker::dbm::LE_ZERO;
     RDBM1(tz, z) = tchecker::dbm::LE_ZERO;
-    RDBM1(tx, x) = tchecker::dbm::db(tchecker::dbm::LE, -1);
-    RDBM1(x, tx) = tchecker::dbm::db(tchecker::dbm::LT, 2);
-    RDBM1(ty, y) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM1(y, ty) = tchecker::dbm::db(tchecker::dbm::LE, 3);
+    RDBM1(tx, x) = tchecker::dbm::db(tchecker::LE, -1);
+    RDBM1(x, tx) = tchecker::dbm::db(tchecker::LT, 2);
+    RDBM1(ty, y) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM1(y, ty) = tchecker::dbm::db(tchecker::LE, 3);
     tchecker::refdbm::tighten(rdbm1, r);
 
     // rx = rz && z == rz && x - rx >= 3 && y - ry > 1
@@ -721,8 +721,8 @@ TEST_CASE("is_alu_star_le", "[refdbm]")
     RDBM2(tz, tx) = tchecker::dbm::LE_ZERO;
     RDBM2(z, tz) = tchecker::dbm::LE_ZERO;
     RDBM2(tz, z) = tchecker::dbm::LE_ZERO;
-    RDBM2(tx, x) = tchecker::dbm::db(tchecker::dbm::LE, -3);
-    RDBM2(ty, y) = tchecker::dbm::db(tchecker::dbm::LT, -1);
+    RDBM2(tx, x) = tchecker::dbm::db(tchecker::LE, -3);
+    RDBM2(ty, y) = tchecker::dbm::db(tchecker::LT, -1);
     tchecker::refdbm::tighten(rdbm2, r);
 
     // Clock bounds
@@ -738,12 +738,12 @@ TEST_CASE("is_alu_star_le", "[refdbm]")
   {
     // x - rx > 3
     tchecker::refdbm::universal_positive(rdbm1, r);
-    RDBM1(tx, x) = tchecker::dbm::db(tchecker::dbm::LT, -3);
+    RDBM1(tx, x) = tchecker::dbm::db(tchecker::LT, -3);
     tchecker::refdbm::tighten(rdbm1, r);
 
     // z - rz < 2 && x > y
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(z, tz) = tchecker::dbm::db(tchecker::dbm::LT, 2);
+    RDBM2(z, tz) = tchecker::dbm::db(tchecker::LT, 2);
     RDBM2(y, x) = tchecker::dbm::LT_ZERO;
     tchecker::refdbm::tighten(rdbm2, r);
 
@@ -786,13 +786,13 @@ TEST_CASE("is_sync_alu_le", "[refdbm]")
   {
     // x >= 4 && y >= 2
     tchecker::refdbm::universal_positive(rdbm1, r);
-    RDBM1(tx, x) = tchecker::dbm::db(tchecker::dbm::LT, -4);
-    RDBM1(ty, y) = tchecker::dbm::db(tchecker::dbm::LE, -2);
+    RDBM1(tx, x) = tchecker::dbm::db(tchecker::LT, -4);
+    RDBM1(ty, y) = tchecker::dbm::db(tchecker::LE, -2);
     tchecker::refdbm::tighten(rdbm1, r);
 
     // y >= 1 && x >= y
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(ty, y) = tchecker::dbm::db(tchecker::dbm::LE, -1);
+    RDBM2(ty, y) = tchecker::dbm::db(tchecker::LE, -1);
     RDBM2(y, x) = tchecker::dbm::LE_ZERO;
     tchecker::refdbm::tighten(rdbm2, r);
 
@@ -811,13 +811,13 @@ TEST_CASE("is_sync_alu_le", "[refdbm]")
   {
     // x >= 4 && y >= 2
     tchecker::refdbm::universal_positive(rdbm1, r);
-    RDBM1(tx, x) = tchecker::dbm::db(tchecker::dbm::LT, -4);
-    RDBM1(ty, y) = tchecker::dbm::db(tchecker::dbm::LE, -2);
+    RDBM1(tx, x) = tchecker::dbm::db(tchecker::LT, -4);
+    RDBM1(ty, y) = tchecker::dbm::db(tchecker::LE, -2);
     tchecker::refdbm::tighten(rdbm1, r);
 
     // y > 2 && x >= y
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(ty, y) = tchecker::dbm::db(tchecker::dbm::LT, -2); // here
+    RDBM2(ty, y) = tchecker::dbm::db(tchecker::LT, -2); // here
     RDBM2(y, x) = tchecker::dbm::LE_ZERO;
     tchecker::refdbm::tighten(rdbm2, r);
 
@@ -858,7 +858,7 @@ TEST_CASE("aLU* vs. sync-aLU vs. time-elapse-aLU*", "[refdbm]")
   u[x1 - refcount] = 10;
   u[x2 - refcount] = 10;
 
-  tchecker::dbm::db_t le_10 = tchecker::dbm::db(tchecker::dbm::LE, 10);
+  tchecker::dbm::db_t le_10 = tchecker::dbm::db(tchecker::LE, 10);
 
   SECTION("Test case inspired from Fischer model")
   {
@@ -1011,9 +1011,9 @@ TEST_CASE("constrain, for reference DBMs", "[refdbm]")
     tchecker::refdbm::universal(rdbm1, r);
     tchecker::refdbm::universal(rdbm2, r);
 
-    tchecker::dbm::status_t status = tchecker::refdbm::constrain(rdbm1, r, x, refmap[x], tchecker::dbm::LE, 1);
+    tchecker::dbm::status_t status = tchecker::refdbm::constrain(rdbm1, r, x, refmap[x], tchecker::LE, 1);
 
-    RDBM2(x, refmap[x]) = tchecker::dbm::db(tchecker::dbm::LE, 1);
+    RDBM2(x, refmap[x]) = tchecker::dbm::db(tchecker::LE, 1);
 
     REQUIRE(status == tchecker::dbm::NON_EMPTY);
     REQUIRE(tchecker::refdbm::is_tight(rdbm1, r));
@@ -1028,24 +1028,24 @@ TEST_CASE("constrain, for reference DBMs", "[refdbm]")
 
     tchecker::dbm::status_t status;
 
-    status = tchecker::refdbm::constrain(rdbm1, r, t0, t1, tchecker::dbm::LE, 7);
+    status = tchecker::refdbm::constrain(rdbm1, r, t0, t1, tchecker::LE, 7);
     REQUIRE(status == tchecker::dbm::NON_EMPTY);
-    status = tchecker::refdbm::constrain(rdbm1, r, t1, x, tchecker::dbm::LT, 4);
+    status = tchecker::refdbm::constrain(rdbm1, r, t1, x, tchecker::LT, 4);
     REQUIRE(status == tchecker::dbm::NON_EMPTY);
-    status = tchecker::refdbm::constrain(rdbm1, r, y1, y2, tchecker::dbm::LE, -1);
+    status = tchecker::refdbm::constrain(rdbm1, r, y1, y2, tchecker::LE, -1);
     REQUIRE(status == tchecker::dbm::NON_EMPTY);
 
-    RDBM2(t0, t1) = tchecker::dbm::db(tchecker::dbm::LE, 7);
+    RDBM2(t0, t1) = tchecker::dbm::db(tchecker::LE, 7);
     status = tchecker::refdbm::tighten(rdbm2, r);
     REQUIRE(status == tchecker::dbm::NON_EMPTY);
     REQUIRE(tchecker::refdbm::is_tight(rdbm2, r));
 
-    RDBM2(t1, x) = tchecker::dbm::db(tchecker::dbm::LT, 4);
+    RDBM2(t1, x) = tchecker::dbm::db(tchecker::LT, 4);
     status = tchecker::refdbm::tighten(rdbm2, r);
     REQUIRE(status == tchecker::dbm::NON_EMPTY);
     REQUIRE(tchecker::refdbm::is_tight(rdbm2, r));
 
-    RDBM2(y1, y2) = tchecker::dbm::db(tchecker::dbm::LE, -1);
+    RDBM2(y1, y2) = tchecker::dbm::db(tchecker::LE, -1);
     status = tchecker::refdbm::tighten(rdbm2, r);
     REQUIRE(status == tchecker::dbm::NON_EMPTY);
     REQUIRE(tchecker::refdbm::is_tight(rdbm2, r));
@@ -1059,7 +1059,7 @@ TEST_CASE("constrain, for reference DBMs", "[refdbm]")
     tchecker::dbm::db_t rdbm[rdim * rdim];
     tchecker::refdbm::universal(rdbm, r);
 
-    tchecker::dbm::status_t status = tchecker::refdbm::constrain(rdbm, r, t0, t0, tchecker::dbm::LT, 1);
+    tchecker::dbm::status_t status = tchecker::refdbm::constrain(rdbm, r, t0, t0, tchecker::LT, 1);
 
     REQUIRE(status == tchecker::dbm::NON_EMPTY);
     REQUIRE(tchecker::refdbm::is_tight(rdbm, r));
@@ -1071,7 +1071,7 @@ TEST_CASE("constrain, for reference DBMs", "[refdbm]")
     tchecker::dbm::db_t rdbm[rdim * rdim];
     tchecker::refdbm::universal_positive(rdbm, r);
 
-    tchecker::dbm::status_t status = tchecker::refdbm::constrain(rdbm, r, t1, t1, tchecker::dbm::LT, 0);
+    tchecker::dbm::status_t status = tchecker::refdbm::constrain(rdbm, r, t1, t1, tchecker::LT, 0);
 
     REQUIRE(status == tchecker::dbm::EMPTY);
     REQUIRE(tchecker::refdbm::is_empty_0(rdbm, r));
@@ -1083,10 +1083,10 @@ TEST_CASE("constrain, for reference DBMs", "[refdbm]")
     tchecker::refdbm::universal(rdbm1, r);
     tchecker::refdbm::universal(rdbm2, r);
 
-    tchecker::clock_constraint_t c{_x, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LT, 3};
+    tchecker::clock_constraint_t c{_x, tchecker::REFCLOCK_ID, tchecker::LT, 3};
     tchecker::dbm::status_t status = tchecker::refdbm::constrain(rdbm1, r, c);
 
-    RDBM2(x, refmap[x]) = tchecker::dbm::db(tchecker::dbm::LT, 3);
+    RDBM2(x, refmap[x]) = tchecker::dbm::db(tchecker::LT, 3);
 
     REQUIRE(status == tchecker::dbm::NON_EMPTY);
     REQUIRE(tchecker::refdbm::is_tight(rdbm1, r));
@@ -1100,23 +1100,23 @@ TEST_CASE("constrain, for reference DBMs", "[refdbm]")
     tchecker::refdbm::universal_positive(rdbm2, r);
 
     tchecker::clock_constraint_container_t cc;
-    cc.emplace_back(_x, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 4);
-    cc.emplace_back(_y1, _y2, tchecker::clock_constraint_t::LE, 1);
-    cc.emplace_back(tchecker::REFCLOCK_ID, _y1, tchecker::clock_constraint_t::LT, -2);
+    cc.emplace_back(_x, tchecker::REFCLOCK_ID, tchecker::LE, 4);
+    cc.emplace_back(_y1, _y2, tchecker::LE, 1);
+    cc.emplace_back(tchecker::REFCLOCK_ID, _y1, tchecker::LT, -2);
 
     tchecker::dbm::status_t status = tchecker::refdbm::constrain(rdbm1, r, cc);
 
-    RDBM2(x, refmap[x]) = tchecker::dbm::db(tchecker::dbm::LE, 4);
+    RDBM2(x, refmap[x]) = tchecker::dbm::db(tchecker::LE, 4);
     status = tchecker::refdbm::tighten(rdbm2, r);
     REQUIRE(status == tchecker::dbm::NON_EMPTY);
     REQUIRE(tchecker::refdbm::is_tight(rdbm2, r));
 
-    RDBM2(y1, y2) = tchecker::dbm::db(tchecker::dbm::LE, 1);
+    RDBM2(y1, y2) = tchecker::dbm::db(tchecker::LE, 1);
     status = tchecker::refdbm::tighten(rdbm2, r);
     REQUIRE(status == tchecker::dbm::NON_EMPTY);
     REQUIRE(tchecker::refdbm::is_tight(rdbm2, r));
 
-    RDBM2(refmap[y1], y1) = tchecker::dbm::db(tchecker::dbm::LT, -2);
+    RDBM2(refmap[y1], y1) = tchecker::dbm::db(tchecker::LT, -2);
     status = tchecker::refdbm::tighten(rdbm2, r);
     REQUIRE(status == tchecker::dbm::NON_EMPTY);
     REQUIRE(tchecker::refdbm::is_tight(rdbm2, r));
@@ -1158,7 +1158,7 @@ TEST_CASE("synchronize DBMs with reference clocks", "[refdbm]")
     tchecker::dbm::db_t rdbm[rdim * rdim];
     tchecker::refdbm::universal_positive(rdbm, r);
     RDBM(x1, t0) = tchecker::dbm::LE_ZERO;
-    RDBM(y1, x1) = tchecker::dbm::db(tchecker::dbm::LE, -1);
+    RDBM(y1, x1) = tchecker::dbm::db(tchecker::LE, -1);
     RDBM(t1, y1) = tchecker::dbm::LE_ZERO;
     tchecker::refdbm::tighten(rdbm, r);
 
@@ -1205,7 +1205,7 @@ TEST_CASE("synchronize DBMs with reference clocks, partial synchronization", "[r
     tchecker::dbm::db_t rdbm[rdim * rdim];
     tchecker::refdbm::universal_positive(rdbm, r);
     RDBM(x1, t0) = tchecker::dbm::LE_ZERO;
-    RDBM(y1, x1) = tchecker::dbm::db(tchecker::dbm::LE, -1);
+    RDBM(y1, x1) = tchecker::dbm::db(tchecker::LE, -1);
     RDBM(t1, y1) = tchecker::dbm::LE_ZERO;
     tchecker::refdbm::tighten(rdbm, r);
 
@@ -1222,7 +1222,7 @@ TEST_CASE("synchronize DBMs with reference clocks, partial synchronization", "[r
     tchecker::dbm::db_t rdbm1[rdim * rdim];
     tchecker::refdbm::universal_positive(rdbm1, r);
     RDBM1(x1, t0) = tchecker::dbm::LE_ZERO;
-    RDBM1(y1, x1) = tchecker::dbm::db(tchecker::dbm::LE, -1);
+    RDBM1(y1, x1) = tchecker::dbm::db(tchecker::LE, -1);
     RDBM1(t1, y1) = tchecker::dbm::LE_ZERO;
     tchecker::refdbm::tighten(rdbm1, r);
 
@@ -1236,7 +1236,7 @@ TEST_CASE("synchronize DBMs with reference clocks, partial synchronization", "[r
     tchecker::dbm::db_t rdbm2[rdim * rdim];
     tchecker::refdbm::universal_positive(rdbm2, r);
     RDBM2(x1, t0) = tchecker::dbm::LE_ZERO;
-    RDBM2(y1, x1) = tchecker::dbm::db(tchecker::dbm::LE, -1);
+    RDBM2(y1, x1) = tchecker::dbm::db(tchecker::LE, -1);
     RDBM2(t1, y1) = tchecker::dbm::LE_ZERO;
     RDBM2(t0, t2) = tchecker::dbm::LE_ZERO;
     RDBM2(t2, t0) = tchecker::dbm::LE_ZERO;
@@ -1277,7 +1277,7 @@ TEST_CASE("Spread bounding DBMs with reference clocks", "[refdbm]")
     tchecker::refdbm::universal_positive(rdbm2, r);
     for (tchecker::clock_id_t t1 = 0; t1 < r.refcount(); ++t1) {
       for (tchecker::clock_id_t t2 = 0; t2 < r.refcount(); ++t2)
-        RDBM2(t1, t2) = MIN(RDBM2(t1, t2), tchecker::dbm::db(tchecker::dbm::LE, spread));
+        RDBM2(t1, t2) = MIN(RDBM2(t1, t2), tchecker::dbm::db(tchecker::LE, spread));
       RDBM2(t1, t1) = tchecker::dbm::LE_ZERO;
     }
     tchecker::refdbm::tighten(rdbm2, r);
@@ -1289,7 +1289,7 @@ TEST_CASE("Spread bounding DBMs with reference clocks", "[refdbm]")
   {
     tchecker::dbm::db_t rdbm1[rdim * rdim];
     tchecker::refdbm::universal_positive(rdbm1, r);
-    RDBM1(t0, t1) = tchecker::dbm::db(tchecker::dbm::LT, -1);
+    RDBM1(t0, t1) = tchecker::dbm::db(tchecker::LT, -1);
     tchecker::refdbm::tighten(rdbm1, r);
 
     auto status = tchecker::refdbm::bound_spread(rdbm1, r, 1);
@@ -1315,7 +1315,7 @@ TEST_CASE("Spread bounding DBMs with reference clocks", "[refdbm]")
 
     for (tchecker::clock_id_t t = 0; t != r.refcount(); ++t) {
       for (tchecker::clock_id_t tt = 0; tt != r.refcount(); ++tt)
-        RDBM1(t, tt) = tchecker::dbm::db(tchecker::dbm::LE, 2);
+        RDBM1(t, tt) = tchecker::dbm::db(tchecker::LE, 2);
       RDBM1(t, t) = tchecker::dbm::LE_ZERO;
     }
 
@@ -1339,7 +1339,7 @@ TEST_CASE("Spread bounding DBMs with reference clocks", "[refdbm]")
 
     for (tchecker::clock_id_t t = 0; t != r.refcount(); ++t) {
       for (tchecker::clock_id_t tt = 0; tt != r.refcount(); ++tt)
-        RDBM2(t, tt) = tchecker::dbm::db(tchecker::dbm::LE, spread);
+        RDBM2(t, tt) = tchecker::dbm::db(tchecker::LE, spread);
       RDBM2(t, t) = tchecker::dbm::LE_ZERO;
     }
 
@@ -1361,7 +1361,7 @@ TEST_CASE("Spread bounding DBMs with reference clocks", "[refdbm]")
 
     for (tchecker::clock_id_t t = 0; t != r.refcount(); ++t) {
       for (tchecker::clock_id_t tt = 0; tt != r.refcount(); ++tt)
-        RDBM1(t, tt) = tchecker::dbm::db(tchecker::dbm::LE, 2);
+        RDBM1(t, tt) = tchecker::dbm::db(tchecker::LE, 2);
       RDBM1(t, t) = tchecker::dbm::LE_ZERO;
     }
 
@@ -1387,12 +1387,12 @@ TEST_CASE("Spread bounding DBMs with reference clocks", "[refdbm]")
     // (ti - tj <= 1 for all i,j in {0,1}) & (ti - t2 <= 2) & (t2 - ti <= 2)
     tchecker::dbm::db_t rdbm2[rdim * rdim];
     tchecker::refdbm::universal(rdbm2, r);
-    RDBM2(t0, t1) = tchecker::dbm::db(tchecker::dbm::LE, spread);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LE, spread);
-    RDBM2(t0, t2) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(t2, t0) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(t1, t2) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(t2, t1) = tchecker::dbm::db(tchecker::dbm::LE, 2);
+    RDBM2(t0, t1) = tchecker::dbm::db(tchecker::LE, spread);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LE, spread);
+    RDBM2(t0, t2) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(t2, t0) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(t1, t2) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(t2, t1) = tchecker::dbm::db(tchecker::LE, 2);
 
     for (tchecker::clock_id_t u = r.refcount(); u < r.size(); ++u) {
       RDBM2(u, refmap[u]) = tchecker::dbm::LE_ZERO;
@@ -1466,8 +1466,8 @@ TEST_CASE("Reset to reference clock on DBMs with reference clocks", "[refdbm]")
   {
     tchecker::dbm::db_t rdbm[rdim * rdim];
     tchecker::refdbm::universal_positive(rdbm, r);
-    RDBM(tz1, z1) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM(z1, tz1) = tchecker::dbm::db(tchecker::dbm::LE, 5);
+    RDBM(tz1, z1) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM(z1, tz1) = tchecker::dbm::db(tchecker::LE, 5);
     tchecker::refdbm::tighten(rdbm, r);
 
     tchecker::refdbm::reset_to_reference_clock(rdbm, r, z1);
@@ -1485,8 +1485,8 @@ TEST_CASE("Reset to reference clock on DBMs with reference clocks", "[refdbm]")
     tchecker::dbm::db_t rdbm[rdim * rdim];
     tchecker::refdbm::universal_positive(rdbm, r);
     tchecker::refdbm::synchronize(rdbm, r);
-    RDBM(ty1, y1) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM(y1, ty1) = tchecker::dbm::db(tchecker::dbm::LE, 5);
+    RDBM(ty1, y1) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM(y1, ty1) = tchecker::dbm::db(tchecker::LE, 5);
     tchecker::refdbm::tighten(rdbm, r);
 
     tchecker::refdbm::reset_to_reference_clock(rdbm, r, y1);
@@ -1504,8 +1504,8 @@ TEST_CASE("Reset to reference clock on DBMs with reference clocks", "[refdbm]")
   {
     tchecker::dbm::db_t rdbm[rdim * rdim];
     tchecker::refdbm::universal_positive(rdbm, r);
-    RDBM(tz1, z1) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM(z1, tz1) = tchecker::dbm::db(tchecker::dbm::LE, 5);
+    RDBM(tz1, z1) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM(z1, tz1) = tchecker::dbm::db(tchecker::LE, 5);
     tchecker::refdbm::tighten(rdbm, r);
 
     tchecker::clock_reset_t cr{_z1, tchecker::REFCLOCK_ID, 0};
@@ -1522,12 +1522,12 @@ TEST_CASE("Reset to reference clock on DBMs with reference clocks", "[refdbm]")
   {
     tchecker::dbm::db_t rdbm[rdim * rdim];
     tchecker::refdbm::universal_positive(rdbm, r);
-    RDBM(tz1, z1) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM(z1, tz1) = tchecker::dbm::db(tchecker::dbm::LE, 5);
-    RDBM(tx, x) = tchecker::dbm::db(tchecker::dbm::LE, -7);
-    RDBM(x, tx) = tchecker::dbm::db(tchecker::dbm::LT, 15);
-    RDBM(ty2, y2) = tchecker::dbm::db(tchecker::dbm::LT, 0);
-    RDBM(y2, ty2) = tchecker::dbm::db(tchecker::dbm::LE, 3);
+    RDBM(tz1, z1) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM(z1, tz1) = tchecker::dbm::db(tchecker::LE, 5);
+    RDBM(tx, x) = tchecker::dbm::db(tchecker::LE, -7);
+    RDBM(x, tx) = tchecker::dbm::db(tchecker::LT, 15);
+    RDBM(ty2, y2) = tchecker::dbm::db(tchecker::LT, 0);
+    RDBM(y2, ty2) = tchecker::dbm::db(tchecker::LE, 3);
     tchecker::refdbm::tighten(rdbm, r);
 
     tchecker::clock_reset_container_t rc;
@@ -1706,12 +1706,12 @@ TEST_CASE("asynchronous_open_up on DBMs with reference clocks", "[refdbm]")
     tchecker::refdbm::universal_positive(rdbm, r);
     RDBM(t0, t1) = tchecker::dbm::LE_ZERO;
     RDBM(t1, t0) = tchecker::dbm::LE_ZERO;
-    RDBM(t1, y) = tchecker::dbm::db(tchecker::dbm::LE, -1);
-    RDBM(t2, t1) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM(y, t1) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM(y, x) = tchecker::dbm::db(tchecker::dbm::LE, 8);
-    RDBM(z1, z2) = tchecker::dbm::db(tchecker::dbm::LE, -1);
-    RDBM(z2, z1) = tchecker::dbm::db(tchecker::dbm::LE, 3);
+    RDBM(t1, y) = tchecker::dbm::db(tchecker::LE, -1);
+    RDBM(t2, t1) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM(y, t1) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM(y, x) = tchecker::dbm::db(tchecker::LE, 8);
+    RDBM(z1, z2) = tchecker::dbm::db(tchecker::LE, -1);
+    RDBM(z2, z1) = tchecker::dbm::db(tchecker::LE, 3);
     tchecker::refdbm::tighten(rdbm, r);
 
     tchecker::dbm::db_t rdbm2[rdim * rdim];
@@ -1732,13 +1732,13 @@ TEST_CASE("asynchronous_open_up on DBMs with reference clocks", "[refdbm]")
     RDBM(t0, t1) = tchecker::dbm::LE_ZERO;
     RDBM(t0, x) = tchecker::dbm::LE_ZERO;
     RDBM(t1, t0) = tchecker::dbm::LE_ZERO;
-    RDBM(t1, y) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM(t2, t1) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM(t2, z1) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM(y, t1) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM(y, x) = tchecker::dbm::db(tchecker::dbm::LE, 8);
-    RDBM(z1, z2) = tchecker::dbm::db(tchecker::dbm::LE, -1);
-    RDBM(z2, z1) = tchecker::dbm::db(tchecker::dbm::LE, 3);
+    RDBM(t1, y) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM(t2, t1) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM(t2, z1) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM(y, t1) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM(y, x) = tchecker::dbm::db(tchecker::LE, 8);
+    RDBM(z1, z2) = tchecker::dbm::db(tchecker::LE, -1);
+    RDBM(z2, z1) = tchecker::dbm::db(tchecker::LE, 3);
     tchecker::refdbm::tighten(rdbm, r);
 
     boost::dynamic_bitset<> delay_allowed(refcount, 0);
@@ -1960,11 +1960,11 @@ TEST_CASE("to_dbm on DBMs with reference clocks", "[refdbm]")
   {
     tchecker::dbm::db_t rdbm[rdim * rdim];
     tchecker::refdbm::universal_positive(rdbm, r);
-    RDBM(t1, y) = tchecker::dbm::db(tchecker::dbm::LT, -2);
-    RDBM(t2, z) = tchecker::dbm::db(tchecker::dbm::LE, -1);
-    RDBM(x1, x2) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM(x2, x1) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM(z, y) = tchecker::dbm::db(tchecker::dbm::LE, 7);
+    RDBM(t1, y) = tchecker::dbm::db(tchecker::LT, -2);
+    RDBM(t2, z) = tchecker::dbm::db(tchecker::LE, -1);
+    RDBM(x1, x2) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM(x2, x1) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM(z, y) = tchecker::dbm::db(tchecker::LE, 7);
     tchecker::refdbm::tighten(rdbm, r);
     tchecker::refdbm::synchronize(rdbm, r);
 
@@ -1974,16 +1974,16 @@ TEST_CASE("to_dbm on DBMs with reference clocks", "[refdbm]")
     tchecker::dbm::db_t dbm2[dim * dim];
     DBM2(0, 0) = tchecker::dbm::LE_ZERO;
     DBM2(0, _x1) = tchecker::dbm::LE_ZERO;
-    DBM2(0, _x2) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    DBM2(0, _y) = tchecker::dbm::db(tchecker::dbm::LT, -2);
-    DBM2(0, _z) = tchecker::dbm::db(tchecker::dbm::LE, -1);
+    DBM2(0, _x2) = tchecker::dbm::db(tchecker::LT, -1);
+    DBM2(0, _y) = tchecker::dbm::db(tchecker::LT, -2);
+    DBM2(0, _z) = tchecker::dbm::db(tchecker::LE, -1);
     DBM2(_x1, 0) = tchecker::dbm::LT_INFINITY;
     DBM2(_x1, _x1) = tchecker::dbm::LE_ZERO;
-    DBM2(_x1, _x2) = tchecker::dbm::db(tchecker::dbm::LT, -1);
+    DBM2(_x1, _x2) = tchecker::dbm::db(tchecker::LT, -1);
     DBM2(_x1, _y) = tchecker::dbm::LT_INFINITY;
     DBM2(_x1, _z) = tchecker::dbm::LT_INFINITY;
     DBM2(_x2, 0) = tchecker::dbm::LT_INFINITY;
-    DBM2(_x2, _x1) = tchecker::dbm::db(tchecker::dbm::LE, 2);
+    DBM2(_x2, _x1) = tchecker::dbm::db(tchecker::LE, 2);
     DBM2(_x2, _x2) = tchecker::dbm::LE_ZERO;
     DBM2(_x2, _y) = tchecker::dbm::LT_INFINITY;
     DBM2(_x2, _z) = tchecker::dbm::LT_INFINITY;
@@ -1995,7 +1995,7 @@ TEST_CASE("to_dbm on DBMs with reference clocks", "[refdbm]")
     DBM2(_z, 0) = tchecker::dbm::LT_INFINITY;
     DBM2(_z, _x1) = tchecker::dbm::LT_INFINITY;
     DBM2(_z, _x2) = tchecker::dbm::LT_INFINITY;
-    DBM2(_z, _y) = tchecker::dbm::db(tchecker::dbm::LE, 7);
+    DBM2(_z, _y) = tchecker::dbm::db(tchecker::LE, 7);
     DBM2(_z, _z) = tchecker::dbm::LE_ZERO;
 
     REQUIRE(tchecker::dbm::is_equal(dbm, dbm2, dim));

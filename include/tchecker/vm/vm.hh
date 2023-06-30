@@ -440,8 +440,8 @@ protected:
       auto const bound = top_and_pop<tchecker::integer_t>();
       auto const id2 = top_and_pop<tchecker::clock_id_t>();
       auto const id1 = top_and_pop<tchecker::clock_id_t>();
-      static_assert(tchecker::clock_constraint_t::LT == 0, "");
-      clkconstr.emplace_back(id1, id2, (cmp == 0 ? tchecker::clock_constraint_t::LT : tchecker::clock_constraint_t::LE), bound);
+      static_assert(tchecker::LT == 0, "");
+      clkconstr.emplace_back(id1, id2, (cmp == 0 ? tchecker::LT : tchecker::LE), bound);
       return 1;
     }
 

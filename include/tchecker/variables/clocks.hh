@@ -86,17 +86,6 @@ using flat_clock_variables_t =
 class clock_constraint_t {
 public:
   /*!
-   \brief Type of comparator
-   */
-  enum comparator_t {
-    LT = 0, /*!< less-than < */
-    LE = 1, /*!< less-than-or-equal-to <= */
-  };
-
-  static_assert(static_cast<int>(tchecker::clock_constraint_t::LE) == static_cast<int>(tchecker::dbm::LE), "");
-  static_assert(static_cast<int>(tchecker::clock_constraint_t::LT) == static_cast<int>(tchecker::dbm::LT), "");
-
-  /*!
    \brief Constructor
    \param id1 : index of 1st clock
    \param id2 : index of 2nd clock
@@ -106,7 +95,7 @@ public:
    \post this represents id1 - id2 # value where # is < or <= depending on cmp
    \throw std::invalid_argument : if both id1 and id2 are tchecker::REFCLOCK_ID
    */
-  clock_constraint_t(tchecker::clock_id_t id1, tchecker::clock_id_t id2, enum tchecker::clock_constraint_t::comparator_t cmp,
+  clock_constraint_t(tchecker::clock_id_t id1, tchecker::clock_id_t id2, enum tchecker::ineq_cmp_t cmp,
                      tchecker::integer_t value);
 
   /*!
@@ -162,13 +151,13 @@ public:
    \brief Accessor
    \return comparator (< or <=)
    */
-  inline constexpr enum tchecker::clock_constraint_t::comparator_t comparator() const { return _cmp; }
+  inline constexpr enum tchecker::ineq_cmp_t comparator() const { return _cmp; }
 
   /*!
    \brief Accessor
    \return comparator (< or <=)
    */
-  inline constexpr enum tchecker::clock_constraint_t::comparator_t & comparator() { return _cmp; }
+  inline constexpr enum tchecker::ineq_cmp_t & comparator() { return _cmp; }
 
   /*!
    \brief Accessor
@@ -199,10 +188,10 @@ public:
 protected:
   friend std::ostream & operator<<(std::ostream & os, tchecker::clock_constraint_t const & c);
 
-  tchecker::clock_id_t _id1;                            /*!< ID of 1st clock */
-  tchecker::clock_id_t _id2;                            /*!< ID of 2nd clock */
-  enum tchecker::clock_constraint_t::comparator_t _cmp; /*!< Comparator < or <= */
-  tchecker::integer_t _value;                           /*!< Value */
+  tchecker::clock_id_t _id1;      /*!< ID of 1st clock */
+  tchecker::clock_id_t _id2;      /*!< ID of 2nd clock */
+  enum tchecker::ineq_cmp_t _cmp; /*!< Comparator < or <= */
+  tchecker::integer_t _value;     /*!< Value */
 };
 
 /*!

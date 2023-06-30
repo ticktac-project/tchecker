@@ -24,7 +24,7 @@ std::ostream & output(std::ostream & os, tchecker::dbm::db_t const & db)
 
 std::string comparator_str(tchecker::dbm::db_t const & db)
 {
-  return (tchecker::dbm::comparator(db) == tchecker::dbm::LE ? "<=" : "<");
+  return (tchecker::dbm::comparator(db) == tchecker::LE ? "<=" : "<");
 }
 
 } // namespace dbm

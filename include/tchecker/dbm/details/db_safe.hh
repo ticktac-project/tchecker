@@ -21,13 +21,7 @@ namespace tchecker {
 
 namespace dbm {
 
-/*!
- \brief Type of difference bound comparator: < or <=
- */
-enum comparator_t : unsigned {
-  LT = 0, /*!< less-than < */
-  LE = 1, /*!< less-than-or-equal-to, i.e. <= */
-};
+static_assert(tchecker::LT < tchecker::LE, "tchecker::LT need to be smaller than tchecker::LE");
 
 /*!
  \brief Strengthen
@@ -35,8 +29,7 @@ enum comparator_t : unsigned {
  \param cmp2 : comparator
  \return stronger comparator between cmp1 and cmp2
 */
-constexpr enum tchecker::dbm::comparator_t comparator_stronger(enum tchecker::dbm::comparator_t cmp1,
-                                                               enum tchecker::dbm::comparator_t cmp2)
+constexpr enum tchecker::ineq_cmp_t comparator_stronger(enum tchecker::ineq_cmp_t cmp1, enum tchecker::ineq_cmp_t cmp2)
 {
   return (cmp1 < cmp2 ? cmp1 : cmp2);
 }
@@ -45,7 +38,7 @@ constexpr enum tchecker::dbm::comparator_t comparator_stronger(enum tchecker::db
  \brief Type of difference bounds
  */
 struct db_t {
-  enum tchecker::dbm::comparator_t cmp : 1;
+  enum tchecker::ineq_cmp_t cmp : 1;
 #if (INTEGER_T_SIZE == 64)
   tchecker::integer_t value : 63;
 #elif (INTEGER_T_SIZE == 32)
@@ -84,9 +77,9 @@ static_assert(tchecker::dbm::INF_VALUE != tchecker::dbm::MAX_VALUE, "");
 static_assert(tchecker::dbm::INF_VALUE != tchecker::dbm::MIN_VALUE, "");
 static_assert(tchecker::dbm::MAX_VALUE != tchecker::dbm::MIN_VALUE, "");
 
-constexpr tchecker::dbm::db_t const LE_ZERO = {tchecker::dbm::LE, 0};             /*!< <=0 */
-constexpr tchecker::dbm::db_t const LT_ZERO = {tchecker::dbm::LT, 0};             /*!< <0 */
-constexpr tchecker::dbm::db_t const LT_INFINITY = {tchecker::dbm::LT, INF_VALUE}; /*!< <inf */
+constexpr tchecker::dbm::db_t const LE_ZERO = {tchecker::LE, 0};             /*!< <=0 */
+constexpr tchecker::dbm::db_t const LT_ZERO = {tchecker::LT, 0};             /*!< <0 */
+constexpr tchecker::dbm::db_t const LT_INFINITY = {tchecker::LT, INF_VALUE}; /*!< <inf */
 
 static_assert(tchecker::dbm::LE_ZERO != tchecker::dbm::LT_ZERO, "");
 static_assert(tchecker::dbm::LT_ZERO != tchecker::dbm::LT_INFINITY, "");
@@ -100,7 +93,7 @@ static_assert(tchecker::dbm::LE_ZERO != tchecker::dbm::LT_INFINITY, "");
  \return <value if cmp is LT and <=value if cmp is LE
  \throw std::invalid_argument : if value is not between MIN_VALUE and MAX_VALUE
  */
-inline tchecker::dbm::db_t db(enum tchecker::dbm::comparator_t cmp, tchecker::integer_t value)
+inline tchecker::dbm::db_t db(enum tchecker::ineq_cmp_t cmp, tchecker::integer_t value)
 {
   if ((value < MIN_VALUE) || (value > MAX_VALUE))
     throw std::invalid_argument("value out of bounds");
@@ -142,7 +135,7 @@ inline tchecker::dbm::db_t sum(tchecker::dbm::db_t const & db1, tchecker::dbm::d
  */
 inline tchecker::dbm::db_t add(tchecker::dbm::db_t const & db, tchecker::integer_t value)
 {
-  return tchecker::dbm::sum(db, db_t{tchecker::dbm::LE, value});
+  return tchecker::dbm::sum(db, db_t{tchecker::LE, value});
 }
 
 /*!
@@ -229,7 +222,7 @@ inline tchecker::dbm::db_t max(tchecker::dbm::db_t const & db1, tchecker::dbm::d
  \param db : a difference bound
  \return the comparator in db
  */
-inline enum tchecker::dbm::comparator_t comparator(tchecker::dbm::db_t const & db) { return db.cmp; }
+inline enum tchecker::ineq_cmp_t comparator(tchecker::dbm::db_t const & db) { return db.cmp; }
 
 /*!
  \brief Accessor
