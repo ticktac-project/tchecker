@@ -76,7 +76,7 @@ TEST_CASE("standard semantics: initial zone", "[refzg semantics]")
   SECTION("initial zone, satisfied src invariant, delays not allowed, unbounded spread")
   {
     // src invariant: x1<=4
-    src_invariant.push_back(tchecker::clock_constraint_t{x1, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 4});
+    src_invariant.push_back(tchecker::clock_constraint_t{x1, tchecker::REFCLOCK_ID, tchecker::LE, 4});
 
     tchecker::state_status_t status = semantics->initial(rdbm, r, src_delay_allowed, src_invariant, spread);
     REQUIRE(status == tchecker::STATE_OK);
@@ -90,7 +90,7 @@ TEST_CASE("standard semantics: initial zone", "[refzg semantics]")
   SECTION("initial zone, unsatisfied src invariant, delays not allowed, unbounded spread")
   {
     // src invariant: 0<x
-    src_invariant.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, x1, tchecker::clock_constraint_t::LT, 0});
+    src_invariant.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, x1, tchecker::LT, 0});
 
     tchecker::state_status_t status = semantics->initial(rdbm, r, src_delay_allowed, src_invariant, spread);
     REQUIRE(status == tchecker::STATE_CLOCKS_SRC_INVARIANT_VIOLATED);
@@ -102,7 +102,7 @@ TEST_CASE("standard semantics: initial zone", "[refzg semantics]")
     src_delay_allowed.set();
 
     // src invariant: z<=1
-    src_invariant.push_back(tchecker::clock_constraint_t{z, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 1});
+    src_invariant.push_back(tchecker::clock_constraint_t{z, tchecker::REFCLOCK_ID, tchecker::LE, 1});
 
     tchecker::state_status_t status = semantics->initial(rdbm, r, src_delay_allowed, src_invariant, spread);
     REQUIRE(status == tchecker::STATE_OK);
@@ -119,7 +119,7 @@ TEST_CASE("standard semantics: initial zone", "[refzg semantics]")
     src_delay_allowed.set();
 
     // src invariant: y2<=5
-    src_invariant.push_back(tchecker::clock_constraint_t{y2, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 5});
+    src_invariant.push_back(tchecker::clock_constraint_t{y2, tchecker::REFCLOCK_ID, tchecker::LE, 5});
 
     // bounded spread: 2
     spread = 2;
@@ -177,18 +177,18 @@ TEST_CASE("standard semantics: final zone", "[refzg semantics]")
   SECTION("final zone, satisfied tgt invariant, delays not allowed, unbounded spread")
   {
     // tgt invariant: 2<x<7 && y<=4
-    tgt_invariant.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, x, tchecker::clock_constraint_t::LT, -2});
-    tgt_invariant.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LT, 7});
-    tgt_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 4});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, x, tchecker::LT, -2});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::LT, 7});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::LE, 4});
 
     tchecker::state_status_t status = semantics->final(rdbm, r, tgt_delay_allowed, tgt_invariant, spread);
     REQUIRE(status == tchecker::STATE_OK);
 
     // expected dbm: 2<x-t0<7 && y-t1<=4
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LT, -2);
-    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::dbm::LT, 7);
-    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::dbm::LE, 4);
+    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LT, -2);
+    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::LT, 7);
+    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::LE, 4);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -196,9 +196,9 @@ TEST_CASE("standard semantics: final zone", "[refzg semantics]")
   SECTION("final zone, unsatisfied tgt invariant, delays not allowed, unbounded spread")
   {
     // tgt invariant: x<y && y<z1 && z1<x
-    tgt_invariant.push_back(tchecker::clock_constraint_t{x, y, tchecker::clock_constraint_t::LT, 0});
-    tgt_invariant.push_back(tchecker::clock_constraint_t{y, z1, tchecker::clock_constraint_t::LT, 0});
-    tgt_invariant.push_back(tchecker::clock_constraint_t{z1, x, tchecker::clock_constraint_t::LT, 0});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{x, y, tchecker::LT, 0});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{y, z1, tchecker::LT, 0});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{z1, x, tchecker::LT, 0});
 
     tchecker::state_status_t status = semantics->final(rdbm, r, tgt_delay_allowed, tgt_invariant, spread);
     REQUIRE(status == tchecker::STATE_CLOCKS_TGT_INVARIANT_VIOLATED);
@@ -210,8 +210,8 @@ TEST_CASE("standard semantics: final zone", "[refzg semantics]")
     tgt_delay_allowed.set();
 
     // tgt invariant: z1-x<0 && x<=4
-    tgt_invariant.push_back(tchecker::clock_constraint_t{z1, x, tchecker::clock_constraint_t::LT, 0});
-    tgt_invariant.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 4});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{z1, x, tchecker::LT, 0});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::LE, 4});
 
     tchecker::state_status_t status = semantics->final(rdbm, r, tgt_delay_allowed, tgt_invariant, spread);
     REQUIRE(status == tchecker::STATE_OK);
@@ -223,10 +223,10 @@ TEST_CASE("standard semantics: final zone", "[refzg semantics]")
     RDBM2(t2, ID_TO_RDBM(z1)) = tchecker::dbm::LE_ZERO;
     RDBM2(t2, ID_TO_RDBM(z2)) = tchecker::dbm::LE_ZERO;
     RDBM2(ID_TO_RDBM(z1), ID_TO_RDBM(x)) = tchecker::dbm::LT_ZERO;
-    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::dbm::LE, 4);
+    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::LE, 4);
     RDBM2(t2, ID_TO_RDBM(x)) = tchecker::dbm::LT_ZERO;
-    RDBM2(ID_TO_RDBM(z1), t0) = tchecker::dbm::db(tchecker::dbm::LT, 4);
-    RDBM2(t2, t0) = tchecker::dbm::db(tchecker::dbm::LT, 4);
+    RDBM2(ID_TO_RDBM(z1), t0) = tchecker::dbm::db(tchecker::LT, 4);
+    RDBM2(t2, t0) = tchecker::dbm::db(tchecker::LT, 4);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -237,7 +237,7 @@ TEST_CASE("standard semantics: final zone", "[refzg semantics]")
     tgt_delay_allowed.set();
 
     // src invariant: y<=5
-    tgt_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 5});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::LE, 5});
 
     // bounded spread: 3
     spread = 3;
@@ -255,26 +255,26 @@ TEST_CASE("standard semantics: final zone", "[refzg semantics]")
     RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::LE_ZERO;
     RDBM2(t2, ID_TO_RDBM(z1)) = tchecker::dbm::LE_ZERO;
     RDBM2(t2, ID_TO_RDBM(z2)) = tchecker::dbm::LE_ZERO;
-    RDBM2(t0, t1) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(t0, t2) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(t2, t0) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(t1, t2) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(t2, t1) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(t0, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(t0, ID_TO_RDBM(z1)) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(t0, ID_TO_RDBM(z2)) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(t1, ID_TO_RDBM(z1)) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(t1, ID_TO_RDBM(z2)) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(t2, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(t2, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::dbm::LE, 8);
-    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::dbm::LE, 5);
-    RDBM2(ID_TO_RDBM(y), t2) = tchecker::dbm::db(tchecker::dbm::LE, 8);
-    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 8);
-    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(z1)) = tchecker::dbm::db(tchecker::dbm::LE, 8);
-    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(z2)) = tchecker::dbm::db(tchecker::dbm::LE, 8);
+    RDBM2(t0, t1) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(t0, t2) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(t2, t0) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(t1, t2) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(t2, t1) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(t0, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(t0, ID_TO_RDBM(z1)) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(t0, ID_TO_RDBM(z2)) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(t1, ID_TO_RDBM(z1)) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(t1, ID_TO_RDBM(z2)) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(t2, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(t2, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::LE, 8);
+    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::LE, 5);
+    RDBM2(ID_TO_RDBM(y), t2) = tchecker::dbm::db(tchecker::LE, 8);
+    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 8);
+    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(z1)) = tchecker::dbm::db(tchecker::LE, 8);
+    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(z2)) = tchecker::dbm::db(tchecker::LE, 8);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -302,9 +302,9 @@ TEST_CASE("standard semantics: next zone", "[refzg semantics]")
   tchecker::dbm::db_t rdbm[rdim * rdim];
   tchecker::refdbm::universal_positive(rdbm, r);
   tchecker::clock_constraint_container_t zone;
-  zone.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, x, tchecker::clock_constraint_t::LT, -1});
-  zone.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 3});
-  zone.push_back(tchecker::clock_constraint_t{y, x, tchecker::clock_constraint_t::LE, 1});
+  zone.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, x, tchecker::LT, -1});
+  zone.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::LE, 3});
+  zone.push_back(tchecker::clock_constraint_t{y, x, tchecker::LE, 1});
   tchecker::refdbm::constrain(rdbm, r, zone);
 
   // expected zone
@@ -326,12 +326,12 @@ TEST_CASE("standard semantics: next zone", "[refzg semantics]")
 
     // expected dbm: t0-x<-1 & x-t0<=3 & y-x<=1 & t1-y<=0 & y-t0<=4 & t1-x<=1 & t1-t0<=4
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::dbm::LE, 4);
-    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LE, 4);
+    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::LE, 4);
+    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LE, 4);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -339,7 +339,7 @@ TEST_CASE("standard semantics: next zone", "[refzg semantics]")
   SECTION("next zone, sat. src invariant, true guard and tgt invariant, no sync, no reset, no delay, unbounded spread")
   {
     // src invariant: y<2
-    src_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LT, 2});
+    src_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::LT, 2});
 
     tchecker::state_status_t status = semantics->next(rdbm, r, src_delay_allowed, src_invariant, sync_ref_clocks, guard,
                                                       clkreset, tgt_delay_allowed, tgt_invariant, spread);
@@ -347,14 +347,14 @@ TEST_CASE("standard semantics: next zone", "[refzg semantics]")
 
     // expected dbm: t0-x<1 & x-t0<=3 & y-x<=1 & t1-y<=0 & y-t0<=4 & t1-t0<=4 & t1-x<=1 & y-t1<2
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
+    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
     RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::LE_ZERO;
-    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::dbm::LE, 4);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LE, 4);
-    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::dbm::LT, 2);
+    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::LE, 4);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LE, 4);
+    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::LT, 2);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -365,7 +365,7 @@ TEST_CASE("standard semantics: next zone", "[refzg semantics]")
     src_delay_allowed.set(t0);
 
     // src invariant: x<10
-    src_invariant.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LT, 10});
+    src_invariant.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::LT, 10});
 
     tchecker::state_status_t status = semantics->next(rdbm, r, src_delay_allowed, src_invariant, sync_ref_clocks, guard,
                                                       clkreset, tgt_delay_allowed, tgt_invariant, spread);
@@ -373,13 +373,13 @@ TEST_CASE("standard semantics: next zone", "[refzg semantics]")
 
     // expected dbm: t0-x<-1 & x-t0<10 & y-x<=1 & t1-y<=0 & t1-x<=1 & y-t0<11 & t1-t0<11
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::dbm::LT, 10);
-    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
+    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::LT, 10);
+    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
     RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::LE_ZERO;
-    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::dbm::LT, 11);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LT, 11);
+    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::LT, 11);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LT, 11);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -387,7 +387,7 @@ TEST_CASE("standard semantics: next zone", "[refzg semantics]")
   SECTION("next zone, unsat. src invariant, true guard and tgt invariant, no sync, no reset, no delay, unbounded spread")
   {
     // src invariant: x<=1
-    src_invariant.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 1});
+    src_invariant.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::LE, 1});
 
     tchecker::state_status_t status = semantics->next(rdbm, r, src_delay_allowed, src_invariant, sync_ref_clocks, guard,
                                                       clkreset, tgt_delay_allowed, tgt_invariant, spread);
@@ -401,11 +401,11 @@ TEST_CASE("standard semantics: next zone", "[refzg semantics]")
     src_delay_allowed.set(t1);
 
     // src invariant: x<10
-    src_invariant.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LT, 10});
+    src_invariant.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::LT, 10});
 
     // guard: y==2
-    guard.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 2});
-    guard.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, y, tchecker::clock_constraint_t::LE, -2});
+    guard.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::LE, 2});
+    guard.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, y, tchecker::LE, -2});
 
     tchecker::state_status_t status = semantics->next(rdbm, r, src_delay_allowed, src_invariant, sync_ref_clocks, guard,
                                                       clkreset, tgt_delay_allowed, tgt_invariant, spread);
@@ -413,14 +413,14 @@ TEST_CASE("standard semantics: next zone", "[refzg semantics]")
 
     // expected dbm: t0-x<-1 & y-x<=1 & t1-y<=-2 & t1-x<=-1 & y-t1<=2 & x-t0<10 & y-t0<11 & t1-t0<9
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, -2);
-    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, -1);
-    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::dbm::LT, 10);
-    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::dbm::LT, 11);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LT, 9);
+    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, -2);
+    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, -1);
+    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::LT, 10);
+    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::LT, 11);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LT, 9);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -432,10 +432,10 @@ TEST_CASE("standard semantics: next zone", "[refzg semantics]")
     src_delay_allowed.set(t1);
 
     // src invariant: x<10
-    src_invariant.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LT, 10});
+    src_invariant.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::LT, 10});
 
     // guard: x>67
-    guard.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, x, tchecker::clock_constraint_t::LT, -67});
+    guard.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, x, tchecker::LT, -67});
 
     tchecker::state_status_t status = semantics->next(rdbm, r, src_delay_allowed, src_invariant, sync_ref_clocks, guard,
                                                       clkreset, tgt_delay_allowed, tgt_invariant, spread);
@@ -445,8 +445,8 @@ TEST_CASE("standard semantics: next zone", "[refzg semantics]")
   SECTION("next zone, sat. guard, true src and tgt invariant, sync {t0, t1}, no reset, no delay, unbounded spread")
   {
     // guard: 2<=x<3
-    guard.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LT, 3});
-    guard.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, x, tchecker::clock_constraint_t::LE, -2});
+    guard.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::LT, 3});
+    guard.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, x, tchecker::LE, -2});
 
     // sync {t0, t1}
     sync_ref_clocks.set(t0);
@@ -459,18 +459,18 @@ TEST_CASE("standard semantics: next zone", "[refzg semantics]")
     // expected dbm: t0-x<=-2 & x-t0<3 & y-x<=1 & t1-y<=0 & y-t0<4 & t1-t0<=0 & t0-t1<=0
     //               & x-t1<3 & y-t1<4 & t1-x<=-2 & t0-y<=0 & x-y<3
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, -2);
-    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::dbm::LT, 3);
-    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::dbm::LT, 4);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t0, t1) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(x), t1) = tchecker::dbm::db(tchecker::dbm::LT, 3);
-    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::dbm::LT, 4);
-    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, -2);
-    RDBM2(t0, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(x), ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LT, 3);
+    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, -2);
+    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::LT, 3);
+    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::LT, 4);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t0, t1) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(x), t1) = tchecker::dbm::db(tchecker::LT, 3);
+    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::LT, 4);
+    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, -2);
+    RDBM2(t0, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(x), ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LT, 3);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -478,7 +478,7 @@ TEST_CASE("standard semantics: next zone", "[refzg semantics]")
   SECTION("next zone, unsat. sync {t0, t1}")
   {
     // constraint zone with t0<t1 to get unsatisfiable sync
-    enum tchecker::dbm::status_t status = tchecker::refdbm::constrain(rdbm, r, t0, t1, tchecker::dbm::LT, 0);
+    enum tchecker::dbm::status_t status = tchecker::refdbm::constrain(rdbm, r, t0, t1, tchecker::LT, 0);
     REQUIRE(status == tchecker::dbm::NON_EMPTY);
 
     // sync {t0, t1}
@@ -496,8 +496,8 @@ TEST_CASE("standard semantics: next zone", "[refzg semantics]")
     src_delay_allowed.set(t1);
 
     // guard: 2<=x<3
-    guard.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LT, 3});
-    guard.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, x, tchecker::clock_constraint_t::LE, -2});
+    guard.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::LT, 3});
+    guard.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, x, tchecker::LE, -2});
 
     // sync {t0, t1}
     sync_ref_clocks.set(t0);
@@ -513,18 +513,18 @@ TEST_CASE("standard semantics: next zone", "[refzg semantics]")
     // expected dbm: t0-t1<=0 & t1-t0<=0 & t0-x<=0 & t1-x<=0 & x-t0<=0 & x-t1<=0 & y-t0<4 & y-t1<4 & t1-y<=0
     //        & t0-y<=0 & y-x<4 & x-y<=0
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t0, t1) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(x), t1) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::dbm::LT, 4);
-    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::dbm::LT, 4);
-    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t0, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LT, 4);
-    RDBM2(ID_TO_RDBM(x), ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
+    RDBM2(t0, t1) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(x), t1) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::LT, 4);
+    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::LT, 4);
+    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t0, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LT, 4);
+    RDBM2(ID_TO_RDBM(x), ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 0);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -544,14 +544,14 @@ TEST_CASE("standard semantics: next zone", "[refzg semantics]")
 
     // expected dbm: t0-x<=0 & x-t0<=0 & t1-y<=0 & y-t1<=0 & t1-t0<=4 & t1-x<=4 & y-t0<=4 & y-x<=4
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LE, 4);
-    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 4);
-    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::dbm::LE, 4);
-    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 4);
+    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LE, 4);
+    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 4);
+    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::LE, 4);
+    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 4);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -562,8 +562,8 @@ TEST_CASE("standard semantics: next zone", "[refzg semantics]")
     src_delay_allowed.set(t0);
 
     // tgt invariant x<=2 & y<1
-    tgt_invariant.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 2});
-    tgt_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LT, 1});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::LE, 2});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::LT, 1});
 
     tchecker::state_status_t status = semantics->next(rdbm, r, src_delay_allowed, src_invariant, sync_ref_clocks, guard,
                                                       clkreset, tgt_delay_allowed, tgt_invariant, spread);
@@ -571,14 +571,14 @@ TEST_CASE("standard semantics: next zone", "[refzg semantics]")
 
     // expected dbm: t0-x<-1 & y-x<=1 & t1-y<=0 & t1-x<=1 & x-t0<=2 & y-t1<1 & y-t0<=3 & t1-t0<=3
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::dbm::LT, 1);
-    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LE, 3);
+    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::LT, 1);
+    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LE, 3);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -586,7 +586,7 @@ TEST_CASE("standard semantics: next zone", "[refzg semantics]")
   SECTION("next zone, unsat. tgt inv.")
   {
     // tgt invariant x<=1
-    tgt_invariant.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 1});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::LE, 1});
 
     tchecker::state_status_t status = semantics->next(rdbm, r, src_delay_allowed, src_invariant, sync_ref_clocks, guard,
                                                       clkreset, tgt_delay_allowed, tgt_invariant, spread);
@@ -602,8 +602,8 @@ TEST_CASE("standard semantics: next zone", "[refzg semantics]")
     spread = 1;
 
     // tgt invariant x<=2 & y<1
-    tgt_invariant.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 2});
-    tgt_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LT, 1});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::LE, 2});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::LT, 1});
 
     tchecker::state_status_t status = semantics->next(rdbm, r, src_delay_allowed, src_invariant, sync_ref_clocks, guard,
                                                       clkreset, tgt_delay_allowed, tgt_invariant, spread);
@@ -612,18 +612,18 @@ TEST_CASE("standard semantics: next zone", "[refzg semantics]")
     // expected dbm: t0-x<-1 & t1-y<=0 & x-t0<=2 & y-t1<1 & t0-t1<=1 & t1-t0<=1
     //      &  t0-y<=1 & x-t1<=3 & t1-x<0 & y-t0<2 & x-y<=3 & y-x<1
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::dbm::LT, 1);
-    RDBM2(t0, t1) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(t0, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(ID_TO_RDBM(x), t1) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LT, 0);
-    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::dbm::LT, 2);
-    RDBM2(ID_TO_RDBM(x), ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LT, 1);
+    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::LT, 1);
+    RDBM2(t0, t1) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(t0, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(ID_TO_RDBM(x), t1) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LT, 0);
+    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::LT, 2);
+    RDBM2(ID_TO_RDBM(x), ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LT, 1);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -631,8 +631,8 @@ TEST_CASE("standard semantics: next zone", "[refzg semantics]")
   SECTION("next zone, impossible bounded spread")
   {
     // src invariant: x-y<=0 & y<=0
-    src_invariant.push_back(tchecker::clock_constraint_t{x, y, tchecker::clock_constraint_t::LE, 0});
-    src_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 0});
+    src_invariant.push_back(tchecker::clock_constraint_t{x, y, tchecker::LE, 0});
+    src_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::LE, 0});
 
     // bounded spread
     spread = 1;
@@ -707,9 +707,9 @@ TEST_CASE("standard semantics: previous zone", "[refzg semantics]")
   tchecker::dbm::db_t rdbm[rdim * rdim];
   tchecker::refdbm::universal_positive(rdbm, r);
   tchecker::clock_constraint_container_t zone;
-  zone.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, x, tchecker::clock_constraint_t::LT, -1});
-  zone.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 3});
-  zone.push_back(tchecker::clock_constraint_t{y, x, tchecker::clock_constraint_t::LE, 1});
+  zone.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, x, tchecker::LT, -1});
+  zone.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::LE, 3});
+  zone.push_back(tchecker::clock_constraint_t{y, x, tchecker::LE, 1});
   tchecker::refdbm::constrain(rdbm, r, zone);
 
   // expected zone
@@ -731,13 +731,13 @@ TEST_CASE("standard semantics: previous zone", "[refzg semantics]")
 
     // expected dbm: t0-x<-1 & x-t0<=3 & y-x<=1 & t1-y<=0 & y-t0<=4 & t1-t0<=4 & t1-x<=1
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::dbm::LE, 4);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LE, 4);
-    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
+    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::LE, 4);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LE, 4);
+    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -745,7 +745,7 @@ TEST_CASE("standard semantics: previous zone", "[refzg semantics]")
   SECTION("previous zone, true src invariant, guard, sat. tgt invariant, no sync, no reset, no delay, unbounded spread")
   {
     // tgt invariant: y<2
-    tgt_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LT, 2});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::LT, 2});
 
     tchecker::state_status_t status = semantics->prev(rdbm, r, src_delay_allowed, src_invariant, sync_ref_clocks, guard,
                                                       clkreset, tgt_delay_allowed, tgt_invariant, spread);
@@ -753,14 +753,14 @@ TEST_CASE("standard semantics: previous zone", "[refzg semantics]")
 
     // expected dbm: t0-x<-1 & x-t0<=3 & y-x<=1 & t1-y<=0 & y-t0<=4 & t1-t0<=4 & t1-x<=1 & y-t1<2
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::dbm::LE, 4);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LE, 4);
-    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::dbm::LT, 2);
+    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::LE, 4);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LE, 4);
+    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::LT, 2);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -768,7 +768,7 @@ TEST_CASE("standard semantics: previous zone", "[refzg semantics]")
   SECTION("previous zone, unsat. tgt invariant")
   {
     // tgt invariant: x<1
-    tgt_invariant.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LT, 1});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::LT, 1});
 
     tchecker::state_status_t status = semantics->prev(rdbm, r, src_delay_allowed, src_invariant, sync_ref_clocks, guard,
                                                       clkreset, tgt_delay_allowed, tgt_invariant, spread);
@@ -778,7 +778,7 @@ TEST_CASE("standard semantics: previous zone", "[refzg semantics]")
   SECTION("previous zone, true src invariant, guard, sat. tgt invariant, no sync, reset y:=0, no delay, unbounded spread")
   {
     // tgt invariant: y<2
-    tgt_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LT, 2});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::LT, 2});
 
     // reset y:=0
     clkreset.push_back(tchecker::clock_reset_t{y, tchecker::REFCLOCK_ID, 0});
@@ -789,11 +789,11 @@ TEST_CASE("standard semantics: previous zone", "[refzg semantics]")
 
     // expected dbm: t0-x<-1 & x-t0<=3 & t1-y<=0 & t1-t0<=4 & t1-x<=1
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LE, 4);
-    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
+    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LE, 4);
+    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -805,7 +805,7 @@ TEST_CASE("standard semantics: previous zone", "[refzg semantics]")
     tgt_delay_allowed.set(t1);
 
     // tgt invariant: y<2
-    tgt_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LT, 2});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::LT, 2});
 
     tchecker::state_status_t status = semantics->prev(rdbm, r, src_delay_allowed, src_invariant, sync_ref_clocks, guard,
                                                       clkreset, tgt_delay_allowed, tgt_invariant, spread);
@@ -813,14 +813,14 @@ TEST_CASE("standard semantics: previous zone", "[refzg semantics]")
 
     // expected dbm: t0-x<-1 & x-t0<=3 & y-x<=1 & t1-y<=0 & y-t0<=4 & t1-t0<=4 & t1-x<=1 & y-t1<2
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::dbm::LE, 4);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LE, 4);
-    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::dbm::LT, 2);
+    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::LE, 4);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LE, 4);
+    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::LT, 2);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -842,7 +842,7 @@ TEST_CASE("standard semantics: previous zone", "[refzg semantics]")
     sync_ref_clocks.set(t1);
 
     // tgt invariant: y<2
-    tgt_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LT, 2});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::LT, 2});
 
     tchecker::state_status_t status = semantics->prev(rdbm, r, src_delay_allowed, src_invariant, sync_ref_clocks, guard,
                                                       clkreset, tgt_delay_allowed, tgt_invariant, spread);
@@ -851,18 +851,18 @@ TEST_CASE("standard semantics: previous zone", "[refzg semantics]")
     // expected dbm: t0-x<-1 & x-t0<=3 & t1-y<=0 & t1-x<-1 & y-t1<2 & t0-t1<=0 & t1-t0<=0
     //             & x-t1<=3 & t0-y<=0 & y-t0<2 & x-y<=3 & y-x<1
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::dbm::LT, 2);
-    RDBM2(t0, t1) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(x), t1) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(t0, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::dbm::LT, 2);
-    RDBM2(ID_TO_RDBM(x), ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LT, 1);
+    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::LT, 2);
+    RDBM2(t0, t1) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(x), t1) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(t0, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::LT, 2);
+    RDBM2(ID_TO_RDBM(x), ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LT, 1);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -870,7 +870,7 @@ TEST_CASE("standard semantics: previous zone", "[refzg semantics]")
   SECTION("previous zone, impossible sync")
   {
     // constrain zone to have t0<t1
-    tchecker::refdbm::constrain(rdbm, r, t0, t1, tchecker::dbm::LT, 0);
+    tchecker::refdbm::constrain(rdbm, r, t0, t1, tchecker::LT, 0);
 
     // sync {t0,t1}
     sync_ref_clocks.set(t0);
@@ -884,8 +884,8 @@ TEST_CASE("standard semantics: previous zone", "[refzg semantics]")
   SECTION("previous zone, true src and tgt invariant, sat. guard, no sync, no reset, no delay, unbounded spread")
   {
     // guard: x<2 & y<=6
-    guard.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LT, 2});
-    guard.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 6});
+    guard.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::LT, 2});
+    guard.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::LE, 6});
 
     tchecker::state_status_t status = semantics->prev(rdbm, r, src_delay_allowed, src_invariant, sync_ref_clocks, guard,
                                                       clkreset, tgt_delay_allowed, tgt_invariant, spread);
@@ -893,14 +893,14 @@ TEST_CASE("standard semantics: previous zone", "[refzg semantics]")
 
     // expected dbm: t0-x<-1 & x-t0<2 & y-t1<=6 & t1-y<=0 & y-t0<3 & t1-x<=1 & y-x<=1 & t1-t0<3
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::dbm::LT, 2);
-    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::dbm::LE, 6);
-    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::dbm::LT, 3);
-    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LT, 3);
+    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::LT, 2);
+    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::LE, 6);
+    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::LT, 3);
+    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LT, 3);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -908,7 +908,7 @@ TEST_CASE("standard semantics: previous zone", "[refzg semantics]")
   SECTION("previous zone, unsat. guard")
   {
     // guard: x<1
-    guard.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LT, 1});
+    guard.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::LT, 1});
 
     tchecker::state_status_t status = semantics->prev(rdbm, r, src_delay_allowed, src_invariant, sync_ref_clocks, guard,
                                                       clkreset, tgt_delay_allowed, tgt_invariant, spread);
@@ -918,7 +918,7 @@ TEST_CASE("standard semantics: previous zone", "[refzg semantics]")
   SECTION("previous zone, sat. src invariant, true guard and tgt invariant, no sync, no reset, no delay, unbounded spread")
   {
     // src invariant: x<2
-    guard.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LT, 2});
+    guard.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::LT, 2});
 
     tchecker::state_status_t status = semantics->prev(rdbm, r, src_delay_allowed, src_invariant, sync_ref_clocks, guard,
                                                       clkreset, tgt_delay_allowed, tgt_invariant, spread);
@@ -926,13 +926,13 @@ TEST_CASE("standard semantics: previous zone", "[refzg semantics]")
 
     // expected dbm: t0-x<-1 & x-t0<2 & y-x<=1 & t1-y<=0 & y-t0<3 & t1-t0<3 & t1-x<=1
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::dbm::LT, 2);
-    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::dbm::LT, 3);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LT, 3);
-    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
+    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::LT, 2);
+    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::LT, 3);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LT, 3);
+    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -943,7 +943,7 @@ TEST_CASE("standard semantics: previous zone", "[refzg semantics]")
     src_delay_allowed.set(t1);
 
     // src invariant: y<=3
-    guard.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 3});
+    guard.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::LE, 3});
 
     tchecker::state_status_t status = semantics->prev(rdbm, r, src_delay_allowed, src_invariant, sync_ref_clocks, guard,
                                                       clkreset, tgt_delay_allowed, tgt_invariant, spread);
@@ -951,14 +951,14 @@ TEST_CASE("standard semantics: previous zone", "[refzg semantics]")
 
     // expected dbm: t0-x<-1 & x-t0<=3 & y-x<=1 & t1-y<=0 & y-t0<=4 & t1-t0<=4 & t1-x<=1 & y-t1<=3
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::dbm::LE, 4);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LE, 4);
-    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::dbm::LE, 3);
+    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::LE, 4);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LE, 4);
+    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::LE, 3);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -971,7 +971,7 @@ TEST_CASE("standard semantics: previous zone", "[refzg semantics]")
     src_delay_allowed.set(t1);
 
     // src invariant: y<=3
-    guard.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 3});
+    guard.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::LE, 3});
 
     // spead
     spread = 1;
@@ -983,18 +983,18 @@ TEST_CASE("standard semantics: previous zone", "[refzg semantics]")
     // expected dbm: t0-x<=0 & x-t0<=3 & y-x<=1 & t1-y<=0 & y-t1<=3 & y-t0<=4 & t1-x<=1
     // & t1-t0<=1 & t0-t1<=1 & x-t1<=4 & t0-y<=1 & x-y<=4
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::dbm::LE, 4);
-    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(t0, t1) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(ID_TO_RDBM(x), t1) = tchecker::dbm::db(tchecker::dbm::LE, 4);
-    RDBM2(t0, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(ID_TO_RDBM(x), ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 4);
+    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::LE, 4);
+    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(t0, t1) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(ID_TO_RDBM(x), t1) = tchecker::dbm::db(tchecker::LE, 4);
+    RDBM2(t0, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(ID_TO_RDBM(x), ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 4);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -1002,7 +1002,7 @@ TEST_CASE("standard semantics: previous zone", "[refzg semantics]")
   SECTION("previous zone, unsat. src invariant")
   {
     // src invariant: x<=0
-    src_invariant.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 0});
+    src_invariant.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::LE, 0});
 
     tchecker::state_status_t status = semantics->prev(rdbm, r, src_delay_allowed, src_invariant, sync_ref_clocks, guard,
                                                       clkreset, tgt_delay_allowed, tgt_invariant, spread);
@@ -1097,7 +1097,7 @@ TEST_CASE("elapsed semantics: initial zone", "[refzg semantics]")
     src_delay_allowed.set(t2);
 
     // src invariant: y1<=7
-    src_invariant.push_back(tchecker::clock_constraint_t{y1, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 7});
+    src_invariant.push_back(tchecker::clock_constraint_t{y1, tchecker::REFCLOCK_ID, tchecker::LE, 7});
 
     tchecker::state_status_t status = semantics->initial(rdbm, r, src_delay_allowed, src_invariant, spread);
     REQUIRE(status == tchecker::STATE_OK);
@@ -1109,48 +1109,48 @@ TEST_CASE("elapsed semantics: initial zone", "[refzg semantics]")
     //     & y1-t1<=7 & y1-y2<=0 & y1-x1<=0 & y1-x2<=0 & y1-z<=0
     //     & t0-t1<=7 & t2-t1<=7 & x1-t1<=7 & x2-t1<=7 & y2-t1<=7 & z-t1<=7
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t0, ID_TO_RDBM(x1)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t0, ID_TO_RDBM(x2)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t1, ID_TO_RDBM(y1)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t1, ID_TO_RDBM(y2)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t2, ID_TO_RDBM(z)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(x1), ID_TO_RDBM(x2)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(x1), ID_TO_RDBM(y1)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(x1), ID_TO_RDBM(y2)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(x1), ID_TO_RDBM(z)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(x2), ID_TO_RDBM(x1)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(x2), ID_TO_RDBM(y1)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(x2), ID_TO_RDBM(y2)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(x2), ID_TO_RDBM(z)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y1), ID_TO_RDBM(x1)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y1), ID_TO_RDBM(x2)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y1), ID_TO_RDBM(y2)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y1), ID_TO_RDBM(z)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y2), ID_TO_RDBM(x1)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y2), ID_TO_RDBM(x2)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y2), ID_TO_RDBM(y1)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y2), ID_TO_RDBM(z)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(z), ID_TO_RDBM(x1)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(z), ID_TO_RDBM(x2)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(z), ID_TO_RDBM(y1)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(z), ID_TO_RDBM(y2)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t0, ID_TO_RDBM(y1)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t0, ID_TO_RDBM(y2)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t0, ID_TO_RDBM(z)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t1, ID_TO_RDBM(x1)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t1, ID_TO_RDBM(x2)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t1, ID_TO_RDBM(z)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t2, ID_TO_RDBM(x1)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t2, ID_TO_RDBM(x2)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t2, ID_TO_RDBM(y1)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t2, ID_TO_RDBM(y2)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y1), t1) = tchecker::dbm::db(tchecker::dbm::LE, 7);
-    RDBM2(t0, t1) = tchecker::dbm::db(tchecker::dbm::LE, 7);
-    RDBM2(t2, t1) = tchecker::dbm::db(tchecker::dbm::LE, 7);
-    RDBM2(ID_TO_RDBM(x1), t1) = tchecker::dbm::db(tchecker::dbm::LE, 7);
-    RDBM2(ID_TO_RDBM(x2), t1) = tchecker::dbm::db(tchecker::dbm::LE, 7);
-    RDBM2(ID_TO_RDBM(y2), t1) = tchecker::dbm::db(tchecker::dbm::LE, 7);
-    RDBM2(ID_TO_RDBM(z), t1) = tchecker::dbm::db(tchecker::dbm::LE, 7);
+    RDBM2(t0, ID_TO_RDBM(x1)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t0, ID_TO_RDBM(x2)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t1, ID_TO_RDBM(y1)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t1, ID_TO_RDBM(y2)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t2, ID_TO_RDBM(z)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(x1), ID_TO_RDBM(x2)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(x1), ID_TO_RDBM(y1)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(x1), ID_TO_RDBM(y2)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(x1), ID_TO_RDBM(z)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(x2), ID_TO_RDBM(x1)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(x2), ID_TO_RDBM(y1)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(x2), ID_TO_RDBM(y2)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(x2), ID_TO_RDBM(z)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y1), ID_TO_RDBM(x1)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y1), ID_TO_RDBM(x2)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y1), ID_TO_RDBM(y2)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y1), ID_TO_RDBM(z)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y2), ID_TO_RDBM(x1)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y2), ID_TO_RDBM(x2)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y2), ID_TO_RDBM(y1)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y2), ID_TO_RDBM(z)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(z), ID_TO_RDBM(x1)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(z), ID_TO_RDBM(x2)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(z), ID_TO_RDBM(y1)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(z), ID_TO_RDBM(y2)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t0, ID_TO_RDBM(y1)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t0, ID_TO_RDBM(y2)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t0, ID_TO_RDBM(z)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t1, ID_TO_RDBM(x1)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t1, ID_TO_RDBM(x2)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t1, ID_TO_RDBM(z)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t2, ID_TO_RDBM(x1)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t2, ID_TO_RDBM(x2)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t2, ID_TO_RDBM(y1)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t2, ID_TO_RDBM(y2)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y1), t1) = tchecker::dbm::db(tchecker::LE, 7);
+    RDBM2(t0, t1) = tchecker::dbm::db(tchecker::LE, 7);
+    RDBM2(t2, t1) = tchecker::dbm::db(tchecker::LE, 7);
+    RDBM2(ID_TO_RDBM(x1), t1) = tchecker::dbm::db(tchecker::LE, 7);
+    RDBM2(ID_TO_RDBM(x2), t1) = tchecker::dbm::db(tchecker::LE, 7);
+    RDBM2(ID_TO_RDBM(y2), t1) = tchecker::dbm::db(tchecker::LE, 7);
+    RDBM2(ID_TO_RDBM(z), t1) = tchecker::dbm::db(tchecker::LE, 7);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -1158,7 +1158,7 @@ TEST_CASE("elapsed semantics: initial zone", "[refzg semantics]")
   SECTION("initial zone, unsatisfied src invariant, delays not allowed, unbounded spread")
   {
     // src invariant: x1<0
-    src_invariant.push_back(tchecker::clock_constraint_t{x1, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LT, 0});
+    src_invariant.push_back(tchecker::clock_constraint_t{x1, tchecker::REFCLOCK_ID, tchecker::LT, 0});
 
     tchecker::state_status_t status = semantics->initial(rdbm, r, src_delay_allowed, src_invariant, spread);
     REQUIRE(status == tchecker::STATE_CLOCKS_SRC_INVARIANT_VIOLATED);
@@ -1170,7 +1170,7 @@ TEST_CASE("elapsed semantics: initial zone", "[refzg semantics]")
     src_delay_allowed.set(t0);
 
     // src invariant: x1<=3
-    src_invariant.push_back(tchecker::clock_constraint_t{x1, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 3});
+    src_invariant.push_back(tchecker::clock_constraint_t{x1, tchecker::REFCLOCK_ID, tchecker::LE, 3});
 
     // bounded spread: 2
     spread = 2;
@@ -1183,13 +1183,13 @@ TEST_CASE("elapsed semantics: initial zone", "[refzg semantics]")
     // src inv: t0-x1<=0 & x1-t0<=3 & t1=t2=x1=x2=y1=y2=z
     // spread: t0-x1<=0 & x1-t0<=2 & t1-t0<=2 & t2-t0<=2 & t1=t2=x1=x2=y1=y2=z
     tchecker::refdbm::zero(rdbm2, r);
-    RDBM2(ID_TO_RDBM(x1), t0) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(t2, t0) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(ID_TO_RDBM(x2), t0) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(ID_TO_RDBM(y1), t0) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(ID_TO_RDBM(y2), t0) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(ID_TO_RDBM(z), t0) = tchecker::dbm::db(tchecker::dbm::LE, 2);
+    RDBM2(ID_TO_RDBM(x1), t0) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(t2, t0) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(ID_TO_RDBM(x2), t0) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(ID_TO_RDBM(y1), t0) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(ID_TO_RDBM(y2), t0) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(ID_TO_RDBM(z), t0) = tchecker::dbm::db(tchecker::LE, 2);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -1240,23 +1240,23 @@ TEST_CASE("elapsed semantics: final zone", "[refzg semantics]")
   SECTION("final zone, satisfied tgt invariant, delays not allowed, unbounded spread")
   {
     // tgt invariant: y1<=7 & z==8
-    tgt_invariant.push_back(tchecker::clock_constraint_t{y1, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 7});
-    tgt_invariant.push_back(tchecker::clock_constraint_t{z, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 8});
-    tgt_invariant.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, z, tchecker::clock_constraint_t::LE, -8});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{y1, tchecker::REFCLOCK_ID, tchecker::LE, 7});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{z, tchecker::REFCLOCK_ID, tchecker::LE, 8});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, z, tchecker::LE, -8});
 
     tchecker::state_status_t status = semantics->final(rdbm, r, tgt_delay_allowed, tgt_invariant, spread);
     REQUIRE(status == tchecker::STATE_OK);
 
     // expected dbm: t0-x1<=0 & t0-x2<=0 & & t1-y1<=0 & y1-t1<=7 & t1-y2<=0 & y1-y2<=7 & t2-z<=-8 & z-t2<=8
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t0, ID_TO_RDBM(x1)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t0, ID_TO_RDBM(x2)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t1, ID_TO_RDBM(y1)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y1), t1) = tchecker::dbm::db(tchecker::dbm::LE, 7);
-    RDBM2(t1, ID_TO_RDBM(y2)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y1), ID_TO_RDBM(y2)) = tchecker::dbm::db(tchecker::dbm::LE, 7);
-    RDBM2(t2, ID_TO_RDBM(z)) = tchecker::dbm::db(tchecker::dbm::LE, -8);
-    RDBM2(ID_TO_RDBM(z), t2) = tchecker::dbm::db(tchecker::dbm::LE, 8);
+    RDBM2(t0, ID_TO_RDBM(x1)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t0, ID_TO_RDBM(x2)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t1, ID_TO_RDBM(y1)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y1), t1) = tchecker::dbm::db(tchecker::LE, 7);
+    RDBM2(t1, ID_TO_RDBM(y2)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y1), ID_TO_RDBM(y2)) = tchecker::dbm::db(tchecker::LE, 7);
+    RDBM2(t2, ID_TO_RDBM(z)) = tchecker::dbm::db(tchecker::LE, -8);
+    RDBM2(ID_TO_RDBM(z), t2) = tchecker::dbm::db(tchecker::LE, 8);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -1264,7 +1264,7 @@ TEST_CASE("elapsed semantics: final zone", "[refzg semantics]")
   SECTION("final zone, unsatisfied tgt invariant, delays not allowed, unbounded spread")
   {
     // tgt invariant: x1<0
-    tgt_invariant.push_back(tchecker::clock_constraint_t{x1, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LT, 0});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{x1, tchecker::REFCLOCK_ID, tchecker::LT, 0});
 
     tchecker::state_status_t status = semantics->final(rdbm, r, tgt_delay_allowed, tgt_invariant, spread);
     REQUIRE(status == tchecker::STATE_CLOCKS_TGT_INVARIANT_VIOLATED);
@@ -1276,20 +1276,20 @@ TEST_CASE("elapsed semantics: final zone", "[refzg semantics]")
     tgt_delay_allowed.set();
 
     // tgt invariant: x2<=1
-    tgt_invariant.push_back(tchecker::clock_constraint_t{x2, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 1});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{x2, tchecker::REFCLOCK_ID, tchecker::LE, 1});
 
     tchecker::state_status_t status = semantics->final(rdbm, r, tgt_delay_allowed, tgt_invariant, spread);
     REQUIRE(status == tchecker::STATE_OK);
 
     // expected dbm: t0-x1<=0 & t0-x2<=0 x2-t0<=1 & x2-x1<=1 & t1-y1<=0 & t1-y2<=0 & t2-z<=0
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t0, ID_TO_RDBM(x1)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t0, ID_TO_RDBM(x2)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(x2), t0) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(ID_TO_RDBM(x2), ID_TO_RDBM(x1)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(t1, ID_TO_RDBM(y1)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t1, ID_TO_RDBM(y2)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t2, ID_TO_RDBM(z)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
+    RDBM2(t0, ID_TO_RDBM(x1)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t0, ID_TO_RDBM(x2)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(x2), t0) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(ID_TO_RDBM(x2), ID_TO_RDBM(x1)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(t1, ID_TO_RDBM(y1)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t1, ID_TO_RDBM(y2)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t2, ID_TO_RDBM(z)) = tchecker::dbm::db(tchecker::LE, 0);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -1300,9 +1300,9 @@ TEST_CASE("elapsed semantics: final zone", "[refzg semantics]")
     tgt_delay_allowed.set(t0);
 
     // tgt invariant: y2<=5 & 1<=x1<7
-    tgt_invariant.push_back(tchecker::clock_constraint_t{y2, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 5});
-    tgt_invariant.push_back(tchecker::clock_constraint_t{x1, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LT, 7});
-    tgt_invariant.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, x1, tchecker::clock_constraint_t::LE, -1});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{y2, tchecker::REFCLOCK_ID, tchecker::LE, 5});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{x1, tchecker::REFCLOCK_ID, tchecker::LT, 7});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, x1, tchecker::LE, -1});
 
     // bounded spread: 2
     spread = 2;
@@ -1316,41 +1316,41 @@ TEST_CASE("elapsed semantics: final zone", "[refzg semantics]")
     // & t2-x2<=2 & t2-x1<=1 & t1-z<=2 & y2-t2<=7 & t2-y1<=2 & t2-y2<=2
     // & x1-y1<9 & x1-y2<9 & y2-x2<=7 & y2-x1<=6 & x1-z<9 & y2-z<=7
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t0, ID_TO_RDBM(x2)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t1, ID_TO_RDBM(y1)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t1, ID_TO_RDBM(y2)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t2, ID_TO_RDBM(z)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y2), t1) = tchecker::dbm::db(tchecker::dbm::LE, 5);
-    RDBM2(t0, ID_TO_RDBM(x1)) = tchecker::dbm::db(tchecker::dbm::LE, -1);
-    RDBM2(ID_TO_RDBM(x1), t0) = tchecker::dbm::db(tchecker::dbm::LT, 7);
-    RDBM2(ID_TO_RDBM(y2), ID_TO_RDBM(y1)) = tchecker::dbm::db(tchecker::dbm::LE, 5);
-    RDBM2(ID_TO_RDBM(x1), ID_TO_RDBM(x2)) = tchecker::dbm::db(tchecker::dbm::LT, 7);
-    RDBM2(t0, t1) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(t0, t2) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(t2, t0) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(t1, t2) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(t2, t1) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(t0, ID_TO_RDBM(y1)) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(t0, ID_TO_RDBM(y2)) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(ID_TO_RDBM(x1), t1) = tchecker::dbm::db(tchecker::dbm::LT, 9);
-    RDBM2(t1, ID_TO_RDBM(x2)) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(ID_TO_RDBM(y2), t0) = tchecker::dbm::db(tchecker::dbm::LE, 7);
-    RDBM2(t1, ID_TO_RDBM(x1)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(t0, ID_TO_RDBM(z)) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(ID_TO_RDBM(x1), t2) = tchecker::dbm::db(tchecker::dbm::LT, 9);
-    RDBM2(t2, ID_TO_RDBM(x2)) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(t2, ID_TO_RDBM(x1)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(t1, ID_TO_RDBM(z)) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(ID_TO_RDBM(y2), t2) = tchecker::dbm::db(tchecker::dbm::LE, 7);
-    RDBM2(t2, ID_TO_RDBM(y1)) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(t2, ID_TO_RDBM(y2)) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(ID_TO_RDBM(x1), ID_TO_RDBM(y1)) = tchecker::dbm::db(tchecker::dbm::LT, 9);
-    RDBM2(ID_TO_RDBM(x1), ID_TO_RDBM(y2)) = tchecker::dbm::db(tchecker::dbm::LT, 9);
-    RDBM2(ID_TO_RDBM(y2), ID_TO_RDBM(x2)) = tchecker::dbm::db(tchecker::dbm::LE, 7);
-    RDBM2(ID_TO_RDBM(y2), ID_TO_RDBM(x1)) = tchecker::dbm::db(tchecker::dbm::LE, 6);
-    RDBM2(ID_TO_RDBM(x1), ID_TO_RDBM(z)) = tchecker::dbm::db(tchecker::dbm::LT, 9);
-    RDBM2(ID_TO_RDBM(y2), ID_TO_RDBM(z)) = tchecker::dbm::db(tchecker::dbm::LE, 7);
+    RDBM2(t0, ID_TO_RDBM(x2)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t1, ID_TO_RDBM(y1)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t1, ID_TO_RDBM(y2)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t2, ID_TO_RDBM(z)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y2), t1) = tchecker::dbm::db(tchecker::LE, 5);
+    RDBM2(t0, ID_TO_RDBM(x1)) = tchecker::dbm::db(tchecker::LE, -1);
+    RDBM2(ID_TO_RDBM(x1), t0) = tchecker::dbm::db(tchecker::LT, 7);
+    RDBM2(ID_TO_RDBM(y2), ID_TO_RDBM(y1)) = tchecker::dbm::db(tchecker::LE, 5);
+    RDBM2(ID_TO_RDBM(x1), ID_TO_RDBM(x2)) = tchecker::dbm::db(tchecker::LT, 7);
+    RDBM2(t0, t1) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(t0, t2) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(t2, t0) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(t1, t2) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(t2, t1) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(t0, ID_TO_RDBM(y1)) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(t0, ID_TO_RDBM(y2)) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(ID_TO_RDBM(x1), t1) = tchecker::dbm::db(tchecker::LT, 9);
+    RDBM2(t1, ID_TO_RDBM(x2)) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(ID_TO_RDBM(y2), t0) = tchecker::dbm::db(tchecker::LE, 7);
+    RDBM2(t1, ID_TO_RDBM(x1)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(t0, ID_TO_RDBM(z)) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(ID_TO_RDBM(x1), t2) = tchecker::dbm::db(tchecker::LT, 9);
+    RDBM2(t2, ID_TO_RDBM(x2)) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(t2, ID_TO_RDBM(x1)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(t1, ID_TO_RDBM(z)) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(ID_TO_RDBM(y2), t2) = tchecker::dbm::db(tchecker::LE, 7);
+    RDBM2(t2, ID_TO_RDBM(y1)) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(t2, ID_TO_RDBM(y2)) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(ID_TO_RDBM(x1), ID_TO_RDBM(y1)) = tchecker::dbm::db(tchecker::LT, 9);
+    RDBM2(ID_TO_RDBM(x1), ID_TO_RDBM(y2)) = tchecker::dbm::db(tchecker::LT, 9);
+    RDBM2(ID_TO_RDBM(y2), ID_TO_RDBM(x2)) = tchecker::dbm::db(tchecker::LE, 7);
+    RDBM2(ID_TO_RDBM(y2), ID_TO_RDBM(x1)) = tchecker::dbm::db(tchecker::LE, 6);
+    RDBM2(ID_TO_RDBM(x1), ID_TO_RDBM(z)) = tchecker::dbm::db(tchecker::LT, 9);
+    RDBM2(ID_TO_RDBM(y2), ID_TO_RDBM(z)) = tchecker::dbm::db(tchecker::LE, 7);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -1378,9 +1378,9 @@ TEST_CASE("elapsed semantics: next zone", "[refzg semantics]")
   tchecker::dbm::db_t rdbm[rdim * rdim];
   tchecker::refdbm::universal_positive(rdbm, r);
   tchecker::clock_constraint_container_t zone;
-  zone.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, x, tchecker::clock_constraint_t::LT, -1});
-  zone.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 3});
-  zone.push_back(tchecker::clock_constraint_t{y, x, tchecker::clock_constraint_t::LE, 1});
+  zone.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, x, tchecker::LT, -1});
+  zone.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::LE, 3});
+  zone.push_back(tchecker::clock_constraint_t{y, x, tchecker::LE, 1});
   tchecker::refdbm::constrain(rdbm, r, zone);
 
   // expected zone
@@ -1402,12 +1402,12 @@ TEST_CASE("elapsed semantics: next zone", "[refzg semantics]")
 
     // expected dbm: t0-x<-1 & x-t0<=3 & y-x<=1 & t1-y<=0 & y-t0<=4 & t1-t0<=4 & t1-x<=1
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::dbm::LE, 4);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LE, 4);
-    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
+    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::LE, 4);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LE, 4);
+    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -1415,7 +1415,7 @@ TEST_CASE("elapsed semantics: next zone", "[refzg semantics]")
   SECTION("next zone, sat. src invariant, true guard and tgt invariant, no sync, no reset, no delay, unbounded spread")
   {
     // src invariant: y<2
-    src_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LT, 2});
+    src_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::LT, 2});
 
     tchecker::state_status_t status = semantics->next(rdbm, r, src_delay_allowed, src_invariant, sync_ref_clocks, guard,
                                                       clkreset, tgt_delay_allowed, tgt_invariant, spread);
@@ -1423,13 +1423,13 @@ TEST_CASE("elapsed semantics: next zone", "[refzg semantics]")
 
     // expected dbm: t0-x<-1 & x-t0<=3 & y-x<=1 & t1-y<=0 & y-t0<=4 & t1-t0<=4 & t1-x<=1 & y-t1<2
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::dbm::LE, 4);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LE, 4);
-    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::dbm::LT, 2);
+    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::LE, 4);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LE, 4);
+    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::LT, 2);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -1437,7 +1437,7 @@ TEST_CASE("elapsed semantics: next zone", "[refzg semantics]")
   SECTION("next zone, unsat. src invariant")
   {
     // src invariant: x<1
-    src_invariant.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LT, 1});
+    src_invariant.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::LT, 1});
 
     tchecker::state_status_t status = semantics->next(rdbm, r, src_delay_allowed, src_invariant, sync_ref_clocks, guard,
                                                       clkreset, tgt_delay_allowed, tgt_invariant, spread);
@@ -1447,8 +1447,8 @@ TEST_CASE("elapsed semantics: next zone", "[refzg semantics]")
   SECTION("next zone, sat. guard, true src and tgt invariant, no sync, no reset, no delay, unbounded spread")
   {
     // guard: x==y
-    guard.push_back(tchecker::clock_constraint_t{x, y, tchecker::clock_constraint_t::LE, 0});
-    guard.push_back(tchecker::clock_constraint_t{y, x, tchecker::clock_constraint_t::LE, 0});
+    guard.push_back(tchecker::clock_constraint_t{x, y, tchecker::LE, 0});
+    guard.push_back(tchecker::clock_constraint_t{y, x, tchecker::LE, 0});
 
     tchecker::state_status_t status = semantics->next(rdbm, r, src_delay_allowed, src_invariant, sync_ref_clocks, guard,
                                                       clkreset, tgt_delay_allowed, tgt_invariant, spread);
@@ -1456,15 +1456,15 @@ TEST_CASE("elapsed semantics: next zone", "[refzg semantics]")
 
     // expected dbm: t0-x<-1 & x-t0<=3 & t1-y<=0 & x-y<=0 & y-x<=0 & t0-y<-1 & y-t0<=3 & t1-x<=0 & t1-t0<=3
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(x), ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t0, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LE, 3);
+    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(x), ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t0, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LE, 3);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -1472,7 +1472,7 @@ TEST_CASE("elapsed semantics: next zone", "[refzg semantics]")
   SECTION("next zone, unsat. guard")
   {
     // guard: x>7
-    guard.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, x, tchecker::clock_constraint_t::LT, -7});
+    guard.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, x, tchecker::LT, -7});
 
     tchecker::state_status_t status = semantics->next(rdbm, r, src_delay_allowed, src_invariant, sync_ref_clocks, guard,
                                                       clkreset, tgt_delay_allowed, tgt_invariant, spread);
@@ -1482,11 +1482,11 @@ TEST_CASE("elapsed semantics: next zone", "[refzg semantics]")
   SECTION("next zone, sat. src invariant and guard, true tgt invariant, sync {t0, t1}, no reset, no delay, unbounded spread")
   {
     // src invariant: y<=2
-    src_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 2});
+    src_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::LE, 2});
 
     // guard: x==y
-    guard.push_back(tchecker::clock_constraint_t{x, y, tchecker::clock_constraint_t::LE, 0});
-    guard.push_back(tchecker::clock_constraint_t{y, x, tchecker::clock_constraint_t::LE, 0});
+    guard.push_back(tchecker::clock_constraint_t{x, y, tchecker::LE, 0});
+    guard.push_back(tchecker::clock_constraint_t{y, x, tchecker::LE, 0});
 
     // synchronisation {t0, t1}
     sync_ref_clocks.set(t0);
@@ -1499,18 +1499,18 @@ TEST_CASE("elapsed semantics: next zone", "[refzg semantics]")
     // expected dbm: t0-x<-1 & y-t1<=2 & x-y<=0 & y-x<=0 & t0-y<-1 & t0-t1<=0 & t1-t0<=0
     //             & t1-x<-1 & y-t0<=2 & t1-y<-1 & x-t0<=2 & x-t1<=2
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(ID_TO_RDBM(x), ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t0, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(t0, t1) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(ID_TO_RDBM(x), t1) = tchecker::dbm::db(tchecker::dbm::LE, 2);
+    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(ID_TO_RDBM(x), ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t0, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(t0, t1) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(ID_TO_RDBM(x), t1) = tchecker::dbm::db(tchecker::LE, 2);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -1518,7 +1518,7 @@ TEST_CASE("elapsed semantics: next zone", "[refzg semantics]")
   SECTION("next zone, impossible sync")
   {
     // constrain dbm with t0<t1
-    tchecker::refdbm::constrain(rdbm, r, t0, t1, tchecker::dbm::LT, 0);
+    tchecker::refdbm::constrain(rdbm, r, t0, t1, tchecker::LT, 0);
 
     // synchronization {t0, t1}
     sync_ref_clocks.set(t0);
@@ -1532,11 +1532,11 @@ TEST_CASE("elapsed semantics: next zone", "[refzg semantics]")
   SECTION("next zone, sat. src invariant and guard, true tgt invariant, no sync, reset {x}, no delay, unbounded spread")
   {
     // src invariant: y<=2
-    src_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 2});
+    src_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::LE, 2});
 
     // guard: x==y
-    guard.push_back(tchecker::clock_constraint_t{x, y, tchecker::clock_constraint_t::LE, 0});
-    guard.push_back(tchecker::clock_constraint_t{y, x, tchecker::clock_constraint_t::LE, 0});
+    guard.push_back(tchecker::clock_constraint_t{x, y, tchecker::LE, 0});
+    guard.push_back(tchecker::clock_constraint_t{y, x, tchecker::LE, 0});
 
     // reset {x}
     clkreset.push_back(tchecker::clock_reset_t{x, tchecker::REFCLOCK_ID, 0});
@@ -1548,18 +1548,18 @@ TEST_CASE("elapsed semantics: next zone", "[refzg semantics]")
     // expected dbm: t1-y<=0 & y-t1<=2 & y-t0<=3 & t0-y<-1 & t1-t0<=3 & t0-t1<1
     // & t0-x<=0 & x-t0<=0 & y-x<=3 & t1-x<=3 & x-y<-1 & x-t1<1
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(t0, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(t0, t1) = tchecker::dbm::db(tchecker::dbm::LT, 1);
-    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(ID_TO_RDBM(x), ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(ID_TO_RDBM(x), t1) = tchecker::dbm::db(tchecker::dbm::LT, 1);
+    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(t0, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(t0, t1) = tchecker::dbm::db(tchecker::LT, 1);
+    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(ID_TO_RDBM(x), ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(ID_TO_RDBM(x), t1) = tchecker::dbm::db(tchecker::LT, 1);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -1570,7 +1570,7 @@ TEST_CASE("elapsed semantics: next zone", "[refzg semantics]")
     clkreset.push_back(tchecker::clock_reset_t{y, tchecker::REFCLOCK_ID, 0});
 
     // tgt invariant: x<=2
-    tgt_invariant.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 2});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::LE, 2});
 
     tchecker::state_status_t status = semantics->next(rdbm, r, src_delay_allowed, src_invariant, sync_ref_clocks, guard,
                                                       clkreset, tgt_delay_allowed, tgt_invariant, spread);
@@ -1578,14 +1578,14 @@ TEST_CASE("elapsed semantics: next zone", "[refzg semantics]")
 
     // expected dbm: t0-x<-1 & t1-x<=1 & t1-y<=0 & y-t1<=0 & y-x<=1 & x-t0<=2 & t1-t0<=3 & y-t0<=3
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::dbm::LE, 3);
+    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::LE, 3);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -1593,10 +1593,10 @@ TEST_CASE("elapsed semantics: next zone", "[refzg semantics]")
   SECTION("next zone, sat. src invariant, guard, and tgt invariant, sync {t0, t1}, reset {x}, delay {t0}, unbounded spread")
   {
     // src invariant: y<7
-    src_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LT, 7});
+    src_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::LT, 7});
 
     // guard: y>1
-    guard.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, y, tchecker::clock_constraint_t::LT, -1});
+    guard.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, y, tchecker::LT, -1});
 
     // sync {t0, t1}
     sync_ref_clocks.set(t0);
@@ -1606,7 +1606,7 @@ TEST_CASE("elapsed semantics: next zone", "[refzg semantics]")
     clkreset.push_back(tchecker::clock_reset_t{x, tchecker::REFCLOCK_ID, 0});
 
     // tgt invariant: y<=2
-    tgt_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 2});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::LE, 2});
 
     // tgt delay: {t0}
     tgt_delay_allowed.set(t0);
@@ -1617,15 +1617,15 @@ TEST_CASE("elapsed semantics: next zone", "[refzg semantics]")
 
     // expected dbm: t1-y<-1 & t0-t1<=0 & t0-y<-1 & t0-x<=0 & x-t1<=0 & x-y<-1 & t1-x<=0 & y-t1<=2 & y-x<=2
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(t0, t1) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t0, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(x), t1) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(x), ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 2);
+    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(t0, t1) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t0, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(x), t1) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(x), ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 2);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -1636,7 +1636,7 @@ TEST_CASE("elapsed semantics: next zone", "[refzg semantics]")
     clkreset.push_back(tchecker::clock_reset_t{x, tchecker::REFCLOCK_ID, 0});
 
     // tgt invariant: x>0
-    tgt_invariant.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, x, tchecker::clock_constraint_t::LT, 0});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, x, tchecker::LT, 0});
 
     tchecker::state_status_t status = semantics->next(rdbm, r, src_delay_allowed, src_invariant, sync_ref_clocks, guard,
                                                       clkreset, tgt_delay_allowed, tgt_invariant, spread);
@@ -1646,10 +1646,10 @@ TEST_CASE("elapsed semantics: next zone", "[refzg semantics]")
   SECTION("next zone, sat. src invariant, guard, and tgt invariant, sync {t0, t1}, reset {x}, delay {t0}, bounded spread")
   {
     // src invariant: y<7
-    src_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LT, 7});
+    src_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::LT, 7});
 
     // guard: y>1
-    guard.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, y, tchecker::clock_constraint_t::LT, -1});
+    guard.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, y, tchecker::LT, -1});
 
     // sync {t0, t1}
     sync_ref_clocks.set(t0);
@@ -1659,7 +1659,7 @@ TEST_CASE("elapsed semantics: next zone", "[refzg semantics]")
     clkreset.push_back(tchecker::clock_reset_t{x, tchecker::REFCLOCK_ID, 0});
 
     // tgt invariant: y<=2
-    tgt_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 2});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::LE, 2});
 
     // tgt delay: {t0}
     tgt_delay_allowed.set(t0);
@@ -1674,18 +1674,18 @@ TEST_CASE("elapsed semantics: next zone", "[refzg semantics]")
     // expected dbm: t1-y<-1 & t0-t1<=0 & t0-y<-1 & t0-x<=0 & x-t1<=0 & x-y<-1 & t1-x<=0 & y-t1<=2 & y-x<=2
     // & t1-t0<=1 & x-t0<=1 & y-t0<=3
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(t0, t1) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t0, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(x), t1) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(x), ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::dbm::LE, 3);
+    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(t0, t1) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t0, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(x), t1) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(x), ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::LE, 3);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -1750,9 +1750,9 @@ TEST_CASE("elapsed semantics: previous zone", "[refzg semantics]")
   tchecker::dbm::db_t rdbm[rdim * rdim];
   tchecker::refdbm::universal_positive(rdbm, r);
   tchecker::clock_constraint_container_t zone;
-  zone.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, x, tchecker::clock_constraint_t::LT, -1});
-  zone.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 3});
-  zone.push_back(tchecker::clock_constraint_t{y, x, tchecker::clock_constraint_t::LE, 1});
+  zone.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, x, tchecker::LT, -1});
+  zone.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::LE, 3});
+  zone.push_back(tchecker::clock_constraint_t{y, x, tchecker::LE, 1});
   tchecker::refdbm::constrain(rdbm, r, zone);
 
   // expected zone
@@ -1774,13 +1774,13 @@ TEST_CASE("elapsed semantics: previous zone", "[refzg semantics]")
 
     // expected dbm: t0-x<-1 & x-t0<=3 & y-x<=1 & t1-y<=0 & y-t0<=4 & t1-t0<=4 & t1-x<=1
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::dbm::LE, 4);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LE, 4);
-    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
+    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::LE, 4);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LE, 4);
+    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -1788,7 +1788,7 @@ TEST_CASE("elapsed semantics: previous zone", "[refzg semantics]")
   SECTION("previous zone, true src invariant and guard, sat. tgt invariant, no sync, no reset, no delay, unbounded spread")
   {
     // tgt invariant y<6
-    tgt_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LT, 6});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::LT, 6});
 
     tchecker::state_status_t status = semantics->prev(rdbm, r, src_delay_allowed, src_invariant, sync_ref_clocks, guard,
                                                       clkreset, tgt_delay_allowed, tgt_invariant, spread);
@@ -1796,14 +1796,14 @@ TEST_CASE("elapsed semantics: previous zone", "[refzg semantics]")
 
     // expected dbm: t0-x<-1 & x-t0<=3 & y-x<=1 & t1-y<=0 & y-t0<=4 & t1-t0<=4 & t1-x<=1 & y-t1<6
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::dbm::LE, 4);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LE, 4);
-    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::dbm::LT, 6);
+    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::LE, 4);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LE, 4);
+    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::LT, 6);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -1811,7 +1811,7 @@ TEST_CASE("elapsed semantics: previous zone", "[refzg semantics]")
   SECTION("previous zone, unsat. tgt invariant")
   {
     // tgt invariant x<=0
-    tgt_invariant.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 0});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::LE, 0});
 
     tchecker::state_status_t status = semantics->prev(rdbm, r, src_delay_allowed, src_invariant, sync_ref_clocks, guard,
                                                       clkreset, tgt_delay_allowed, tgt_invariant, spread);
@@ -1821,7 +1821,7 @@ TEST_CASE("elapsed semantics: previous zone", "[refzg semantics]")
   SECTION("previous zone, true src invariant and guard, sat. tgt invariant, no sync, no reset, delay {t0}, unbounded spread")
   {
     // tgt invariant y<6
-    tgt_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LT, 6});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::LT, 6});
 
     // delay {t0}
     tgt_delay_allowed.set(t0);
@@ -1832,14 +1832,14 @@ TEST_CASE("elapsed semantics: previous zone", "[refzg semantics]")
 
     // expected dbm: t0-x<=0 & x-t0<=3 & y-x<=1 & t1-y<=0 & y-t0<=4 & t1-t0<=4 & t1-x<=1 & y-t1<6
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::dbm::LE, 4);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LE, 4);
-    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::dbm::LT, 6);
+    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::LE, 4);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LE, 4);
+    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::LT, 6);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -1847,7 +1847,7 @@ TEST_CASE("elapsed semantics: previous zone", "[refzg semantics]")
   SECTION("previous zone, true src invariant and guard, sat. tgt invariant, no sync, reset {x}, delay {t0}, unbounded spread")
   {
     // tgt invariant y<6
-    tgt_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LT, 6});
+    tgt_invariant.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::LT, 6});
 
     // delay {t0}
     tgt_delay_allowed.set(t0);
@@ -1861,13 +1861,13 @@ TEST_CASE("elapsed semantics: previous zone", "[refzg semantics]")
 
     // expected dbm: t1-y<=0 & y-t1<6 & y-t0<=1 & t1-t0<=1 & t0-x<=0 & y-x<=1 & t1-x<=1
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::dbm::LT, 6);
-    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
+    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::LT, 6);
+    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -1888,10 +1888,10 @@ TEST_CASE("elapsed semantics: previous zone", "[refzg semantics]")
     clkreset.push_back(tchecker::clock_reset_t{y, tchecker::REFCLOCK_ID, 0});
 
     // guard: y=7 & 1<x<2
-    guard.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 7});
-    guard.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, y, tchecker::clock_constraint_t::LE, -7});
-    guard.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LT, 2});
-    guard.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, x, tchecker::clock_constraint_t::LT, -1});
+    guard.push_back(tchecker::clock_constraint_t{y, tchecker::REFCLOCK_ID, tchecker::LE, 7});
+    guard.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, y, tchecker::LE, -7});
+    guard.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::LT, 2});
+    guard.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, x, tchecker::LT, -1});
 
     tchecker::state_status_t status = semantics->prev(rdbm, r, src_delay_allowed, src_invariant, sync_ref_clocks, guard,
                                                       clkreset, tgt_delay_allowed, tgt_invariant, spread);
@@ -1899,14 +1899,14 @@ TEST_CASE("elapsed semantics: previous zone", "[refzg semantics]")
 
     // expected dbm: t0-x<-1 & t1-x<=1 & y-t1<=7 & t1-y<=-7 & x-t0<2 & y-t0<10 & y-x<=8 & t1-t0<3
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::dbm::LE, 7);
-    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, -7);
-    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::dbm::LT, 2);
-    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::dbm::LT, 10);
-    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LE, 8);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LT, 3);
+    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM2(ID_TO_RDBM(y), t1) = tchecker::dbm::db(tchecker::LE, 7);
+    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, -7);
+    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::LT, 2);
+    RDBM2(ID_TO_RDBM(y), t0) = tchecker::dbm::db(tchecker::LT, 10);
+    RDBM2(ID_TO_RDBM(y), ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LE, 8);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LT, 3);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -1914,7 +1914,7 @@ TEST_CASE("elapsed semantics: previous zone", "[refzg semantics]")
   SECTION("previous zone, unsat. guard")
   {
     // guard: x<1
-    guard.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LT, 1});
+    guard.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::LT, 1});
 
     tchecker::state_status_t status = semantics->prev(rdbm, r, src_delay_allowed, src_invariant, sync_ref_clocks, guard,
                                                       clkreset, tgt_delay_allowed, tgt_invariant, spread);
@@ -1936,15 +1936,15 @@ TEST_CASE("elapsed semantics: previous zone", "[refzg semantics]")
 
     // expected dbm: t0-x<-1 & x-t0<=3 & t1-y<=0 & t0-t1<=0 & t1-t0<=0 & x-t1<=3 & t0-y<=0 & t1-x<-1 & x-y<=3
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t0, t1) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(ID_TO_RDBM(x), t1) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    RDBM2(t0, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(ID_TO_RDBM(x), ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 3);
+    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t0, t1) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(ID_TO_RDBM(x), t1) = tchecker::dbm::db(tchecker::LE, 3);
+    RDBM2(t0, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(ID_TO_RDBM(x), ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 3);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -1953,7 +1953,7 @@ TEST_CASE("elapsed semantics: previous zone", "[refzg semantics]")
   SECTION("previous zone, impossible sync {t0, t1}")
   {
     // constrain t0<t1
-    tchecker::refdbm::constrain(rdbm, r, t0, t1, tchecker::dbm::LT, 0);
+    tchecker::refdbm::constrain(rdbm, r, t0, t1, tchecker::LT, 0);
 
     // synchronization {t0, t1}
     sync_ref_clocks.set(t0);
@@ -1974,7 +1974,7 @@ TEST_CASE("elapsed semantics: previous zone", "[refzg semantics]")
     sync_ref_clocks.set(t1);
 
     // src invariant: x<=2
-    src_invariant.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 2});
+    src_invariant.push_back(tchecker::clock_constraint_t{x, tchecker::REFCLOCK_ID, tchecker::LE, 2});
 
     tchecker::state_status_t status = semantics->prev(rdbm, r, src_delay_allowed, src_invariant, sync_ref_clocks, guard,
                                                       clkreset, tgt_delay_allowed, tgt_invariant, spread);
@@ -1982,15 +1982,15 @@ TEST_CASE("elapsed semantics: previous zone", "[refzg semantics]")
 
     // expected dbm: t0-x<-1 & t1-y<=0 & t0-t1<=0 & t1-t0<=0 & t0-y<=0 & t1-x<-1 & x-t0<=2 & x-t1<=2 & x-y<=2
     tchecker::refdbm::universal_positive(rdbm2, r);
-    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t0, t1) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t0, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 0);
-    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::dbm::LT, -1);
-    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(ID_TO_RDBM(x), t1) = tchecker::dbm::db(tchecker::dbm::LE, 2);
-    RDBM2(ID_TO_RDBM(x), ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::dbm::LE, 2);
+    RDBM2(t0, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(t1, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t0, t1) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t1, t0) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t0, ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 0);
+    RDBM2(t1, ID_TO_RDBM(x)) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM2(ID_TO_RDBM(x), t0) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(ID_TO_RDBM(x), t1) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM2(ID_TO_RDBM(x), ID_TO_RDBM(y)) = tchecker::dbm::db(tchecker::LE, 2);
 
     REQUIRE(tchecker::refdbm::is_equal(rdbm, rdbm2, r));
   }
@@ -2005,7 +2005,7 @@ TEST_CASE("elapsed semantics: previous zone", "[refzg semantics]")
     sync_ref_clocks.set(t1);
 
     // src invariant: x>5
-    src_invariant.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, x, tchecker::clock_constraint_t::LT, -5});
+    src_invariant.push_back(tchecker::clock_constraint_t{tchecker::REFCLOCK_ID, x, tchecker::LT, -5});
 
     tchecker::state_status_t status = semantics->prev(rdbm, r, src_delay_allowed, src_invariant, sync_ref_clocks, guard,
                                                       clkreset, tgt_delay_allowed, tgt_invariant, spread);

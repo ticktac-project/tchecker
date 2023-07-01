@@ -203,8 +203,8 @@ std::string to_string(tchecker::clock_reset_container_t const & c, tchecker::clo
 
 void clock_reset_to_constraints(tchecker::clock_reset_t const & r, tchecker::clock_constraint_container_t & cc)
 {
-  cc.push_back(tchecker::clock_constraint_t{r.left_id(), r.right_id(), tchecker::clock_constraint_t::LE, r.value()});
-  cc.push_back(tchecker::clock_constraint_t{r.right_id(), r.left_id(), tchecker::clock_constraint_t::LE, -r.value()});
+  cc.push_back(tchecker::clock_constraint_t{r.left_id(), r.right_id(), tchecker::LE, r.value()});
+  cc.push_back(tchecker::clock_constraint_t{r.right_id(), r.left_id(), tchecker::LE, -r.value()});
 }
 
 void clock_resets_to_constraints(tchecker::clock_reset_container_t const & rc, tchecker::clock_constraint_container_t & cc)

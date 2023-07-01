@@ -1112,10 +1112,10 @@ TEST_CASE("DBM free_clock (reverse reset)", "[dbm]")
 
     tchecker::dbm::db_t dbm[dim * dim];
     tchecker::dbm::universal_positive(dbm, dim);
-    DBM(0, x) = tchecker::dbm::db(tchecker::dbm::LE, -3);
-    DBM(x, 0) = tchecker::dbm::db(tchecker::dbm::LE, 3);
-    DBM(0, y) = tchecker::dbm::db(tchecker::dbm::LE, -4);
-    DBM(y, 0) = tchecker::dbm::db(tchecker::dbm::LE, 4);
+    DBM(0, x) = tchecker::dbm::db(tchecker::LE, -3);
+    DBM(x, 0) = tchecker::dbm::db(tchecker::LE, 3);
+    DBM(0, y) = tchecker::dbm::db(tchecker::LE, -4);
+    DBM(y, 0) = tchecker::dbm::db(tchecker::LE, 4);
     tchecker::dbm::tighten(dbm, dim);
 
     tchecker::dbm::db_t dbm2[dim * dim];
@@ -1143,10 +1143,10 @@ TEST_CASE("DBM free_clock (reverse reset)", "[dbm]")
 
     tchecker::dbm::db_t dbm[dim * dim];
     tchecker::dbm::universal_positive(dbm, dim);
-    DBM(0, x) = tchecker::dbm::db(tchecker::dbm::LT, -3);
-    DBM(x, 0) = tchecker::dbm::db(tchecker::dbm::LE, 5);
-    DBM(0, y) = tchecker::dbm::db(tchecker::dbm::LE, -1);
-    DBM(y, 0) = tchecker::dbm::db(tchecker::dbm::LT, 2);
+    DBM(0, x) = tchecker::dbm::db(tchecker::LT, -3);
+    DBM(x, 0) = tchecker::dbm::db(tchecker::LE, 5);
+    DBM(0, y) = tchecker::dbm::db(tchecker::LE, -1);
+    DBM(y, 0) = tchecker::dbm::db(tchecker::LT, 2);
     tchecker::dbm::tighten(dbm, dim);
 
     tchecker::dbm::db_t dbm2[dim * dim];
@@ -1265,10 +1265,10 @@ TEST_CASE("DBM open_down (reverse delay)", "[dbm]")
     tchecker::clock_id_t const dim = 3;
     tchecker::dbm::db_t dbm[dim * dim];
     tchecker::dbm::universal_positive(dbm, dim);
-    DBM(0, 1) = tchecker::dbm::db(tchecker::dbm::LE, -1);
-    DBM(1, 0) = tchecker::dbm::db(tchecker::dbm::LE, 1);
-    DBM(0, 2) = tchecker::dbm::db(tchecker::dbm::LE, -2);
-    DBM(2, 0) = tchecker::dbm::db(tchecker::dbm::LE, 2);
+    DBM(0, 1) = tchecker::dbm::db(tchecker::LE, -1);
+    DBM(1, 0) = tchecker::dbm::db(tchecker::LE, 1);
+    DBM(0, 2) = tchecker::dbm::db(tchecker::LE, -2);
+    DBM(2, 0) = tchecker::dbm::db(tchecker::LE, 2);
     tchecker::dbm::tighten(dbm, dim);
 
     tchecker::dbm::db_t dbm2[dim * dim];
@@ -1288,10 +1288,10 @@ TEST_CASE("DBM open_down (reverse delay)", "[dbm]")
     tchecker::clock_id_t const dim = 3;
     tchecker::dbm::db_t dbm[dim * dim];
     tchecker::dbm::universal_positive(dbm, dim);
-    DBM(0, 1) = tchecker::dbm::db(tchecker::dbm::LT, -3);
-    DBM(1, 0) = tchecker::dbm::db(tchecker::dbm::LE, 5);
-    DBM(0, 2) = tchecker::dbm::db(tchecker::dbm::LE, -1);
-    DBM(2, 0) = tchecker::dbm::db(tchecker::dbm::LT, 2);
+    DBM(0, 1) = tchecker::dbm::db(tchecker::LT, -3);
+    DBM(1, 0) = tchecker::dbm::db(tchecker::LE, 5);
+    DBM(0, 2) = tchecker::dbm::db(tchecker::LE, -1);
+    DBM(2, 0) = tchecker::dbm::db(tchecker::LT, 2);
     tchecker::dbm::tighten(dbm, dim);
 
     tchecker::dbm::db_t dbm2[dim * dim];
