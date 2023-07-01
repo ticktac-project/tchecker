@@ -190,6 +190,22 @@ class end_iterator_t {};
 static end_iterator_t const past_the_end_iterator; /*!< Past-the-end iterator */
 
 /*!
+ \brief Equality predicate on past-the-end iterators
+ \param it1 : past-the-end iterator
+ \param it2 : past-the-end iterator
+ \return true if it1 and it2 have the same address, false otherwise
+*/
+bool operator==(tchecker::end_iterator_t const & it1, tchecker::end_iterator_t const & it2);
+
+/*!
+ \brief Disequality predicate on past-the-end iterators
+ \param it1 : past-the-end iterator
+ \param it2 : past-the-end iterator
+ \return true if it1 and it2 have distinct addresses, false otherwise
+*/
+bool operator!=(tchecker::end_iterator_t const & it1, tchecker::end_iterator_t const & it2);
+
+/*!
  \class join_iterator_t
  \brief Join iterator over ranges. join_iterator_t makes a range of ranges
  ((x11,...,x1N),...,(xK1,...,xKM)) appear as the flat range
