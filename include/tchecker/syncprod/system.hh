@@ -204,6 +204,12 @@ public:
    */
   bool is_committed(tchecker::loc_id_t id) const;
 
+  /*!
+   \brief Accessor
+   \return the set of committed location ids
+  */
+  boost::dynamic_bitset<> const & committed_locations() const;
+
   // Processes
   using tchecker::system::system_t::is_process;
   using tchecker::system::system_t::process_attributes;

@@ -119,6 +119,8 @@ bool system_t::is_committed(tchecker::loc_id_t id) const
   return _committed[id] == 1;
 }
 
+boost::dynamic_bitset<> const & system_t::committed_locations() const { return _committed; }
+
 void system_t::extract_asynchronous_edges()
 {
   for (tchecker::system::edge_const_shared_ptr_t const & edge : edges())

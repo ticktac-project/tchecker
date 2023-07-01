@@ -26,7 +26,8 @@ loc_t::loc_t(tchecker::process_id_t pid, tchecker::loc_id_t id, std::string cons
 locs_t::locs_t(tchecker::system::locs_t const & locs) { add_locations(locs); }
 
 locs_t::locs_t(tchecker::system::locs_t && locs)
-    : _locs(std::move(locs._locs)), _initial_locs(std::move(locs._initial_locs)), _locs_index(std::move(locs._locs_index))
+    : _locs(std::move(locs._locs)), _process_locs(std::move(locs._process_locs)), _initial_locs(std::move(locs._initial_locs)),
+      _locs_index(std::move(locs._locs_index))
 {
 }
 
@@ -46,6 +47,7 @@ tchecker::system::locs_t & locs_t::operator=(tchecker::system::locs_t && locs)
   if (this != &locs) {
     clear();
     _locs = std::move(locs._locs);
+    _process_locs = std::move(locs._process_locs);
     _initial_locs = std::move(locs._initial_locs);
     _locs_index = std::move(locs._locs_index);
   }
@@ -55,6 +57,7 @@ tchecker::system::locs_t & locs_t::operator=(tchecker::system::locs_t && locs)
 void locs_t::clear()
 {
   _locs_index.clear();
+  _process_locs.clear();
   _initial_locs.clear();
   _locs.clear();
 }
@@ -72,6 +75,10 @@ void locs_t::add_location(tchecker::process_id_t pid, std::string const & name,
   if (pid >= _locs_index.size())
     _locs_index.resize(pid + 1);
   _locs_index[pid].add(name, loc); // may throw
+
+  if (pid >= _process_locs.size())
+    _process_locs.resize(pid + 1);
+  _process_locs[pid].push_back(loc);
 
   _locs.push_back(loc);
 
@@ -106,6 +113,13 @@ locs_t::const_iterator_t::const_iterator_t(std::vector<tchecker::system::loc_sha
 tchecker::range_t<tchecker::system::locs_t::const_iterator_t> locs_t::locations() const
 {
   return tchecker::make_range(const_iterator_t(_locs.begin()), const_iterator_t(_locs.end()));
+}
+
+tchecker::range_t<tchecker::system::locs_t::const_iterator_t> locs_t::locations(tchecker::process_id_t pid) const
+{
+  if (pid >= _process_locs.size())
+    throw std::invalid_argument("tchecker::locs_t::locations: pid out of range");
+  return tchecker::make_range(const_iterator_t{_process_locs[pid].begin()}, const_iterator_t{_process_locs[pid].end()});
 }
 
 tchecker::range_t<tchecker::system::locs_t::const_iterator_t> locs_t::initial_locations(tchecker::process_id_t pid) const

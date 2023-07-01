@@ -11,6 +11,7 @@
 #include <cstdlib>
 
 #include <boost/dynamic_bitset/dynamic_bitset.hpp>
+#include <boost/iterator/filter_iterator.hpp>
 
 #include "tchecker/basictypes.hh"
 #include "tchecker/syncprod/allocators.hh"
@@ -88,6 +89,153 @@ inline tchecker::state_status_t initial(tchecker::syncprod::system_t const & sys
                                         tchecker::syncprod::transition_t & t, tchecker::syncprod::initial_value_t const & v)
 {
   return tchecker::syncprod::initial(system, s.vloc_ptr(), t.vedge_ptr(), v);
+}
+
+/*!
+ \class final_iterator_t
+ \brief Type of iterator over final edges
+*/
+class final_iterator_t {
+  using location_tuples_iterator_t =
+      tchecker::cartesian_iterator_t<tchecker::range_t<tchecker::system::locs_t::const_iterator_t>>;
+
+public:
+  /*!
+   \brief Constructor
+   \param system : system of synchronized processes
+   \param final_labels : labels on final states
+   \post this iterator ranges over final edges in system that match final_labels
+  */
+  final_iterator_t(tchecker::syncprod::system_t const & system, boost::dynamic_bitset<> final_labels);
+
+  /*!
+   \brief Copy contructor
+  */
+  final_iterator_t(tchecker::syncprod::final_iterator_t const &) = default;
+
+  /*!
+   \brief Move contructor
+  */
+  final_iterator_t(tchecker::syncprod::final_iterator_t &&) = default;
+
+  /*!
+   \brief Destructor
+  */
+  ~final_iterator_t() = default;
+
+  /*!
+   \brief Assignment operator
+  */
+  tchecker::syncprod::final_iterator_t & operator=(tchecker::syncprod::final_iterator_t const &) = delete;
+
+  /*!
+   \brief Move assignment operator
+  */
+  tchecker::syncprod::final_iterator_t & operator=(tchecker::syncprod::final_iterator_t &&) = delete;
+
+  /*!
+   \brief Equality check
+  */
+  bool operator==(tchecker::syncprod::final_iterator_t const & it) const;
+
+  /*!
+   \brief Equality check w.r.t. past-the-end iterator
+  */
+  bool operator==(tchecker::end_iterator_t const & it) const;
+
+  /*!
+   \brief Disequality check
+  */
+  bool operator!=(tchecker::syncprod::final_iterator_t const & it) const;
+
+  /*!
+   \brief Disequality check w.r.t. past-the-end iterator
+  */
+  bool operator!=(tchecker::end_iterator_t const & it) const;
+
+  /*!
+   \brief Type of values (range of tchecker::system::loc_const_shared_ptr_t)
+  */
+  using value_type_t = std::iterator_traits<location_tuples_iterator_t>::value_type;
+
+  /*!
+   \brief Dereference operator
+  */
+  tchecker::syncprod::final_iterator_t::value_type_t operator*();
+
+  /*!
+   \brief Increment operator
+  */
+  tchecker::syncprod::final_iterator_t & operator++();
+
+private:
+  /*!
+   \brief Compute the set of labels in a range of locations
+  */
+  boost::dynamic_bitset<> locations_labels(value_type_t const & locations_range) const;
+
+  /*!
+   \brief Moves _it over final edges that do not match _final_labels
+  */
+  void advance_while_not_final();
+
+  tchecker::syncprod::system_t const & _system; /*!< System of synchronized processes */
+  boost::dynamic_bitset<> _final_labels;        /*!< Set of labels on final states */
+  location_tuples_iterator_t _it;               /*! Iterator over cartesian product of process locations */
+};
+
+/*!
+ \brief Type of range over final states
+*/
+using final_range_t = tchecker::range_t<tchecker::syncprod::final_iterator_t, tchecker::end_iterator_t>;
+
+/*!
+ \brief Accessor to final edges
+ \param system : a system
+ \param labels : a set of labels
+ \return range of final edges, i.e. edges to tuple of locations that match labels
+ */
+tchecker::syncprod::final_range_t final_edges(tchecker::syncprod::system_t const & system,
+                                              boost::dynamic_bitset<> const & labels);
+
+/*!
+ \brief Dereference type for iterator over final edges
+ */
+using final_value_t = tchecker::syncprod::final_iterator_t::value_type_t;
+
+/*!
+ \brief Compute final state
+ \param system : a system
+ \param vloc : tuple of locations
+ \param vedge : tuple of edges
+ \param v : value from final iterator (range of locations)
+ \pre the size of vloc and vedge is equal to the size of v
+ v has been obtained from system.
+ v yields locations of all the processes ordered by increasing process identifier in a final state
+ \post vloc has been initialized to the tuple of locations in v.
+ vedge has been initialized to an empty tuple of edges
+ \return tchecker::STATE_OK
+ \throw std::invalid_argument : if the size of vloc, vedge and v do not coincide
+ */
+tchecker::state_status_t final(tchecker::syncprod::system_t const & system,
+                               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
+                               tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+                               tchecker::syncprod::final_value_t const & v);
+
+/*!
+ \brief Compute final state and transition
+ \param system : a system
+ \param s : state
+ \param t : transition
+ \param v : value from final iterator (range of locations)
+ \post s has been initialized from v, and t is an empty transition
+ \return tchecker::STATE_OK
+ \throw std::invalid_argument : if s and v have incompatible sizes
+*/
+inline tchecker::state_status_t final(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t & s,
+                                      tchecker::syncprod::transition_t & t, tchecker::syncprod::initial_value_t const & v)
+{
+  return tchecker::syncprod::final(system, s.vloc_ptr(), t.vedge_ptr(), v);
 }
 
 /*!
@@ -232,17 +380,16 @@ outgoing_edges(tchecker::syncprod::system_t const & system,
 using outgoing_edges_value_t = tchecker::range_t<tchecker::syncprod::edges_iterator_t>;
 
 /*!
- \brief Compute next state
+ \brief Compute next tuples of locations and edges
  \param vloc : tuple of locations
  \param vedge : tuple of edges
  \param edges : range of edges in a asynchronous/synchronized edge from vloc
  \pre the source locations of edges match the locations in vloc,
- no process has more than one edge in vedge,
- and the pid of every process in vedge is less than the size of vloc
- \post the locations in vloc have been updated to target locations of edges for processes involved in edges.
- They and have been left unchanged for the other processes.
+ no process has more than one edge in edges,
+ and the pid of every process in edges is less than the size of vloc
+ \post vloc has been updated according to target locations in edges for involves processes
  vedge contains the identifiers of the edges in edges
- \return tchecker::STATE_OK if the sources locations in edges match the locations in vloc,
+ \return tchecker::STATE_OK if the source locations in edges match the locations in vloc,
  tchecker::STATE_INCOMPATIBLE_EDGE otherwise
  \throw std::invalid_argument : if the sizes of vloc and vedge do not match, or
  if the pid of an edge in edges is greater or equal to the size of vloc/vedge
@@ -266,6 +413,189 @@ inline tchecker::state_status_t next(tchecker::syncprod::system_t const & system
                                      tchecker::syncprod::transition_t & t, tchecker::syncprod::outgoing_edges_value_t const & v)
 {
   return tchecker::syncprod::next(system, s.vloc_ptr(), t.vedge_ptr(), v);
+}
+
+/*!
+\class incoming_edges_iterator_t
+\brief Incoming edges iterator taking committed processes into account. Iterates
+over the incoming edges that involve a committed process (if any), or over all
+incoming edges if no process is committed
+*/
+class incoming_edges_iterator_t {
+public:
+  /*!
+  \brief Constructor
+  \param sync_it : iterator over synchronized edges
+  \param async_it : iterator over asynchronous edges
+  \param committed_locs : set of committed locations IDs
+  \param committed_processes_tgt : set of committed processes in target tuple of locations
+  */
+  incoming_edges_iterator_t(tchecker::syncprod::vloc_synchronized_edges_iterator_t const & sync_it,
+                            tchecker::syncprod::vloc_asynchronous_edges_iterator_t const & async_it,
+                            boost::dynamic_bitset<> const & committed_locs,
+                            boost::dynamic_bitset<> const & committed_processes_tgt);
+
+  /*!
+  \brief Constructor
+  \param it : vloc edges iterator
+  \param committed_locs : set of committed locations IDs
+  \param committed_processes_tgt : set of committed processes in target tuple of locations
+  */
+  incoming_edges_iterator_t(tchecker::syncprod::vloc_edges_iterator_t const & it,
+                            boost::dynamic_bitset<> const & committed_locs,
+                            boost::dynamic_bitset<> const & committed_processes_tgt);
+
+  /*!
+  \brief Copy constructor
+  */
+  incoming_edges_iterator_t(tchecker::syncprod::incoming_edges_iterator_t const &) = default;
+
+  /*!
+  \brief Move constructor
+  */
+  incoming_edges_iterator_t(tchecker::syncprod::incoming_edges_iterator_t &&) = default;
+
+  /*!
+  \brief Destructor
+  */
+  ~incoming_edges_iterator_t() = default;
+
+  /*!
+  \brief Assignment operator
+  */
+  tchecker::syncprod::incoming_edges_iterator_t & operator=(tchecker::syncprod::incoming_edges_iterator_t const &) = default;
+
+  /*!
+  \brief Move-assignment operator
+  */
+  tchecker::syncprod::incoming_edges_iterator_t & operator=(tchecker::syncprod::incoming_edges_iterator_t &&) = default;
+
+  /*!
+  \brief Equality predicate
+  \param it : iterator
+  \return true if underlying vloc edges iterators are equal, and committed
+  processes are equal, false otherwise
+  */
+  bool operator==(tchecker::syncprod::incoming_edges_iterator_t const & it) const;
+
+  /*!
+  \brief Disequality predicate
+  \param it : iterator
+  \return opposite result to operator==
+  */
+  inline bool operator!=(tchecker::syncprod::incoming_edges_iterator_t const & it) const { return !(*this == it); }
+
+  /*!
+  \brief Equality predicate w.r.t. past-the-end iterator
+  \param it : past-the-end iterator
+  \return true if at_end(), false otherwise
+  */
+  bool operator==(tchecker::end_iterator_t const & it) const;
+
+  /*!
+  \brief Disequality predicate w.r.t. past-the-end iterator
+  \param it : past-the-end iterator
+  \return opposite to operator==
+  */
+  inline bool operator!=(tchecker::end_iterator_t const & it) const { return !(*this == it); }
+
+  /*!
+  \brief Dereference operator
+  \pre not at_end() (checked by assertion)
+  \return Range of iterator over collection of edges pointed to by this
+  \note return range is invalidated by operator++
+  */
+  tchecker::range_t<tchecker::syncprod::edges_iterator_t> operator*();
+
+  /*!
+   \brief Move to next
+   \pre not at_end() (checked by assertion)
+   \post this points to next tuple of edges (if any) that moves a committed
+   process if any, or next edge if no committed process
+   \return this after increment
+   \note invaldates ranges returned by operator*
+   */
+  tchecker::syncprod::incoming_edges_iterator_t & operator++();
+
+private:
+  /*!
+  \brief Move iterator forward
+  */
+  void advance_while_not_enabled();
+
+  /*!
+  \brief Checks if a range of edge is enabled w.r.t. committed locations
+  \param r : range of edges
+  \return true if either r involves a committed process, or all the processes
+  not involved in r are not committed, false otherwise
+  */
+  bool enabled_wrt_committed_processes(tchecker::range_t<tchecker::syncprod::edges_iterator_t> const & r) const;
+
+  /*!
+  \brief Checks if underlying iterator _it is past-the-end
+  */
+  bool at_end() const;
+
+  tchecker::syncprod::vloc_edges_iterator_t _it;    /*!< Underlying vloc edges iterator */
+  boost::dynamic_bitset<> _committed_locs;          /*!< Map : loc_id_t -> committed flag */
+  boost::dynamic_bitset<> _committed_processes_tgt; /*!< Committed processes in target tuple of locations */
+};
+
+/*!
+\brief Type of range over incoming edges
+*/
+using incoming_edges_range_t = tchecker::range_t<tchecker::syncprod::incoming_edges_iterator_t, tchecker::end_iterator_t>;
+
+/*!
+ \brief Accessor to incoming edges
+ \param system : a system
+ \param vloc : tuple of locations
+ \return range of incoming synchronized and asynchronous edges to vloc in system
+ */
+tchecker::syncprod::incoming_edges_range_t
+incoming_edges(tchecker::syncprod::system_t const & system,
+               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc);
+
+/*!
+ \brief Type of incoming vedge
+ \note type dereferenced by outgoing_edges_iterator_t, corresponds to tchecker::vedge_iterator_t
+ */
+using incoming_edges_value_t = tchecker::range_t<tchecker::syncprod::edges_iterator_t>;
+
+/*!
+ \brief Compute previous tuples of locations and edges
+ \param vloc : tuple of locations
+ \param vedge : tuple of edges
+ \param edges : range of edges in a asynchronous/synchronized edge to vloc
+ \pre the target locations of edges match the locations in vloc,
+ no process has more than one edge in edges,
+ and the pid of every process in edges is less than the size of vloc
+ \post vloc has been updated according to source locations of edges for processes involved in edges.
+ vedge contains the edge identifiers in edges
+ \return tchecker::STATE_OK if the target locations in edges match the locations in vloc,
+ tchecker::STATE_INCOMPATIBLE_EDGE otherwise
+ \throw std::invalid_argument : if the sizes of vloc and vedge do not match, or
+ if the pid of an edge in edges is greater or equal to the size of vloc/vedge
+ */
+tchecker::state_status_t prev(tchecker::syncprod::system_t const & system,
+                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
+                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+                              tchecker::syncprod::outgoing_edges_value_t const & edges);
+
+/*!
+\brief Compute previous state and transition
+\param system : a system
+\param s : state
+\param t : transition
+\param v : incoming edge value
+\post s have been updated from v, and t is the set of edges in v
+\return status of state s after update
+\throw std::invalid_argument : if s and v have incompatible size
+*/
+inline tchecker::state_status_t prev(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t & s,
+                                     tchecker::syncprod::transition_t & t, tchecker::syncprod::incoming_edges_value_t const & v)
+{
+  return tchecker::syncprod::prev(system, s.vloc_ptr(), t.vedge_ptr(), v);
 }
 
 /*!
@@ -304,9 +634,9 @@ boost::dynamic_bitset<> labels(tchecker::syncprod::system_t const & system, tche
 std::string labels_str(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t const & s);
 
 /*!
- \brief Checks is a state is a valid final state
+ \brief Checks is a tuple of locations is a valid final state
  \param system : a system
- \param s : a state
+ \param vloc : a tuple of locations
  \return true
 */
 bool is_valid_final(tchecker::syncprod::system_t const & system, tchecker::vloc_t const & vloc);

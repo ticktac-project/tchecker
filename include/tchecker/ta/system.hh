@@ -174,6 +174,7 @@ public:
   using tchecker::syncprod::system_t::labels_count;
 
   // Locations
+  using tchecker::syncprod::system_t::committed_locations;
   using tchecker::syncprod::system_t::initial_locations;
   using tchecker::syncprod::system_t::is_committed;
   using tchecker::syncprod::system_t::is_initial_location;

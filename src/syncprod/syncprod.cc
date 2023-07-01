@@ -13,7 +13,7 @@ namespace tchecker {
 
 namespace syncprod {
 
-/* Semantics functions */
+/* Initial states computation */
 
 tchecker::syncprod::initial_range_t initial_edges(tchecker::syncprod::system_t const & system)
 {
@@ -45,6 +45,90 @@ tchecker::state_status_t initial(tchecker::syncprod::system_t const & system,
   }
   if (pid != size)
     throw std::invalid_argument("initial range has incompatible size");
+
+  return tchecker::STATE_OK;
+}
+
+/* Final state computation */
+
+final_iterator_t::final_iterator_t(tchecker::syncprod::system_t const & system, boost::dynamic_bitset<> final_labels)
+    : _system(system), _final_labels(final_labels)
+{
+  // Build cartesian iterator tuple of locations in system
+  tchecker::process_id_t processes_count = system.processes_count();
+  for (tchecker::process_id_t pid = 0; pid < processes_count; ++pid)
+    _it.push_back(system.locations(pid));
+
+  advance_while_not_final();
+}
+
+bool final_iterator_t::operator==(tchecker::syncprod::final_iterator_t const & it) const
+{
+  return (&_system == &it._system) && (_final_labels == it._final_labels) && (_it == it._it);
+}
+
+bool final_iterator_t::operator==(tchecker::end_iterator_t const & it) const { return (_it == it); }
+
+bool final_iterator_t::operator!=(tchecker::syncprod::final_iterator_t const & it) const { return !(*this == it); }
+
+bool final_iterator_t::operator!=(tchecker::end_iterator_t const & it) const { return !(*this == it); }
+
+tchecker::syncprod::final_iterator_t::value_type_t final_iterator_t::operator*() { return *_it; }
+
+tchecker::syncprod::final_iterator_t & final_iterator_t::operator++()
+{
+  assert(_it != tchecker::past_the_end_iterator);
+  ++_it;
+  advance_while_not_final();
+  return *this;
+}
+
+boost::dynamic_bitset<> final_iterator_t::locations_labels(value_type_t const & locations_range) const
+{
+  boost::dynamic_bitset<> locations_labels(_final_labels.size());
+  locations_labels.reset();
+
+  // Compute label set in locations_range
+  for (auto && loc : locations_range)
+    locations_labels |= _system.labels(loc->id());
+
+  return locations_labels;
+}
+
+void final_iterator_t::advance_while_not_final()
+{
+  while (_it != tchecker::past_the_end_iterator) {
+    if (_final_labels <= locations_labels(*_it))
+      break;
+    ++_it;
+  };
+}
+
+tchecker::syncprod::final_range_t final_edges(tchecker::syncprod::system_t const & system,
+                                              boost::dynamic_bitset<> const & labels)
+{
+  return tchecker::make_range(tchecker::syncprod::final_iterator_t{system, labels}, tchecker::past_the_end_iterator);
+}
+
+tchecker::state_status_t final(tchecker::syncprod::system_t const & system,
+                               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
+                               tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+                               tchecker::syncprod::final_value_t const & v)
+{
+  auto size = vloc->size();
+  if (size != vedge->size())
+    throw std::invalid_argument("tchecker::syncprod::final: vloc and vedge have incompatible size");
+
+  auto begin = v.begin(), end = v.end();
+  tchecker::process_id_t pid = 0;
+  for (auto it = begin; it != end; ++it, ++pid) {
+    if (pid >= size)
+      throw std::invalid_argument("tchecker::syncprod::final: v has incompatible size");
+    (*vloc)[pid] = (*it)->id();
+    (*vedge)[pid] = tchecker::NO_EDGE;
+  }
+  if (pid != size)
+    throw std::invalid_argument("tchecker::syncprod::final: v has incompatible size");
 
   return tchecker::STATE_OK;
 }
@@ -127,6 +211,8 @@ outgoing_edges(tchecker::syncprod::system_t const & system,
   return tchecker::make_range(begin, tchecker::past_the_end_iterator);
 }
 
+/* next state computation */
+
 tchecker::state_status_t next(tchecker::syncprod::system_t const & system,
                               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
                               tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
@@ -149,6 +235,114 @@ tchecker::state_status_t next(tchecker::syncprod::system_t const & system,
   }
   return tchecker::STATE_OK;
 }
+
+/*! incoming_edges_iterator_t */
+
+incoming_edges_iterator_t::incoming_edges_iterator_t(tchecker::syncprod::vloc_synchronized_edges_iterator_t const & sync_it,
+                                                     tchecker::syncprod::vloc_asynchronous_edges_iterator_t const & async_it,
+                                                     boost::dynamic_bitset<> const & committed_locs,
+                                                     boost::dynamic_bitset<> const & committed_processes_tgt)
+    : _it(sync_it, async_it), _committed_locs(committed_locs), _committed_processes_tgt(committed_processes_tgt)
+{
+  advance_while_not_enabled();
+}
+
+incoming_edges_iterator_t::incoming_edges_iterator_t(tchecker::syncprod::vloc_edges_iterator_t const & it,
+                                                     boost::dynamic_bitset<> const & committed_locs,
+                                                     boost::dynamic_bitset<> const & committed_processes_tgt)
+    : _it(it), _committed_locs(committed_locs), _committed_processes_tgt(committed_processes_tgt)
+{
+  advance_while_not_enabled();
+}
+
+bool incoming_edges_iterator_t::operator==(tchecker::syncprod::incoming_edges_iterator_t const & it) const
+{
+  return (_it == it._it && _committed_locs == it._committed_locs) && (_committed_processes_tgt == it._committed_processes_tgt);
+}
+
+bool incoming_edges_iterator_t::operator==(tchecker::end_iterator_t const & it) const { return at_end(); }
+
+tchecker::range_t<tchecker::syncprod::edges_iterator_t> incoming_edges_iterator_t::operator*()
+{
+  assert(!at_end());
+  return *_it;
+}
+
+tchecker::syncprod::incoming_edges_iterator_t & incoming_edges_iterator_t::operator++()
+{
+  assert(!at_end());
+  ++_it;
+  advance_while_not_enabled();
+  return *this;
+}
+
+void incoming_edges_iterator_t::advance_while_not_enabled()
+{
+  while (!at_end()) {
+    if (enabled_wrt_committed_processes(*_it))
+      return;
+    ++_it;
+  }
+}
+
+bool incoming_edges_iterator_t::enabled_wrt_committed_processes(
+    tchecker::range_t<tchecker::syncprod::edges_iterator_t> const & r) const
+{
+  boost::dynamic_bitset<> non_involved_committed_procs(_committed_processes_tgt);
+
+  for (tchecker::system::edge_const_shared_ptr_t const & edge : r) {
+    if (_committed_locs[edge->src()])
+      return true;
+    non_involved_committed_procs.reset(edge->pid());
+  }
+
+  return non_involved_committed_procs.none();
+}
+
+bool incoming_edges_iterator_t::at_end() const { return _it == tchecker::past_the_end_iterator; }
+
+/* incoming edges */
+
+tchecker::syncprod::incoming_edges_range_t
+incoming_edges(tchecker::syncprod::system_t const & system,
+               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc)
+{
+  tchecker::range_t<tchecker::syncprod::vloc_synchronized_edges_iterator_t, tchecker::end_iterator_t> sync_edges(
+      tchecker::syncprod::incoming_synchronized_edges(system, vloc));
+
+  tchecker::range_t<tchecker::syncprod::vloc_asynchronous_edges_iterator_t, tchecker::end_iterator_t> async_edges(
+      tchecker::syncprod::incoming_asynchronous_edges(system, vloc));
+
+  tchecker::syncprod::incoming_edges_iterator_t begin(sync_edges.begin(), async_edges.begin(), system.committed_locations(),
+                                                      committed_processes(system, vloc));
+
+  return tchecker::make_range(begin, tchecker::past_the_end_iterator);
+}
+
+tchecker::state_status_t prev(tchecker::syncprod::system_t const & system,
+                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
+                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+                              tchecker::syncprod::incoming_edges_value_t const & edges)
+{
+  auto size = vloc->size();
+  if (size != vedge->size())
+    throw std::invalid_argument("tchecker::syncprod::prec: incompatible vloc and vedge");
+
+  for (tchecker::process_id_t pid = 0; pid < size; ++pid)
+    (*vedge)[pid] = tchecker::NO_EDGE;
+
+  for (tchecker::system::edge_const_shared_ptr_t const & edge : edges) {
+    if (edge->pid() >= size)
+      throw std::invalid_argument("tchecker::syncprod::prec: incompatible edges");
+    if ((*vloc)[edge->pid()] != edge->tgt())
+      return tchecker::STATE_INCOMPATIBLE_EDGE;
+    (*vloc)[edge->pid()] = edge->src();
+    (*vedge)[edge->pid()] = edge->id();
+  }
+  return tchecker::STATE_OK;
+}
+
+/* computed processes */
 
 boost::dynamic_bitset<> committed_processes(tchecker::syncprod::system_t const & system,
                                             tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc)
