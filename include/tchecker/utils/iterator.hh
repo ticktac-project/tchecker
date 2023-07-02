@@ -427,7 +427,7 @@ namespace tchecker {
 
 /*!
  \class cartesian_iterator_t
- \brief Iterator over a cartesian product of ranges
+ \brief Iterator over a cartesian product of ranges of the same type
  \tparam R : type of ranges, should have type tchecker::range_t<...>
  */
 template <class R> class cartesian_iterator_t {
@@ -700,6 +700,137 @@ private:
   std::vector<typename R::begin_iterator_t> _begins; /*!< Iterators to first elements */
   std::vector<typename R::end_iterator_t> _ends;     /*!< Past-the-end-iterators */
   std::vector<typename R::begin_iterator_t> _its;    /*!< Iterators on current elements */
+};
+
+/*!
+ \class cartesian_iterator2_t
+ \brief Iterator over a cartesian product of two ranges of potentially distinct types
+ \tparam R1 : type of first range, should have type tchecker::range_t<...>
+ \tparam R2 : type of second range, should have type tchecker::range_t<...>
+ */
+template <typename R1, typename R2> class cartesian_iterator2_t {
+public:
+  /*!
+   \brief Constructor
+   \param r1 : first range
+   \param r2 : second range
+   \post this is an iterator over r1 * r2
+   */
+  cartesian_iterator2_t(R1 const & r1, R2 const & r2) : _r1(r1), _r2(r2), _it1(r1.begin()), _it2(r2.begin()) {}
+
+  /*!
+   \brief Copy constructor
+   \param it : cartesian iterator
+   \post this is a copy of it
+   */
+  cartesian_iterator2_t(tchecker::cartesian_iterator2_t<R1, R2> const & it) = default;
+
+  /*!
+   \brief Move constructor
+   \param it : cartesian iterator
+   \post it has been moved to this
+   */
+  cartesian_iterator2_t(tchecker::cartesian_iterator2_t<R1, R2> && it) = default;
+
+  /*!
+   \brief Destructor
+   */
+  ~cartesian_iterator2_t() = default;
+
+  /*!
+   \brief Assignment operator
+   \param it : cartesian iterator
+   \post this is a copy of it
+   \return this after assignment
+   */
+  tchecker::cartesian_iterator2_t<R1, R2> & operator=(tchecker::cartesian_iterator2_t<R1, R2> const & it) = default;
+
+  /*!
+   \brief Move assignment operator
+   \param it : cartesian iterator
+   \post it has been moved to this
+   \return this after assignment
+   */
+  tchecker::cartesian_iterator2_t<R1, R2> & operator=(tchecker::cartesian_iterator2_t<R1, R2> && it) = default;
+
+  /*!
+   \brief Equality check
+   \param it : iterator
+   \return true if it and this are equal, false otherwise
+   */
+  bool operator==(tchecker::cartesian_iterator2_t<R1, R2> const & it) const
+  {
+    return (_r1 == it._r1 && _r2 == it._r2 && _it1 == it._it1 && _it2 == it._it2);
+  }
+
+  /*!
+   \brief Disequality check
+   \param it : iterator
+   \return true if it and this differ, false otherwise
+   */
+  bool operator!=(tchecker::cartesian_iterator2_t<R1, R2> const & it) const { return !(it == *this); }
+
+  /*!
+  \brief Equality check w.r.t. past-the-end iterator
+  \param end : past-the-end iterator
+  \return see at_end()
+  */
+  inline bool operator==(tchecker::end_iterator_t const & /*end*/) const { return at_end(); }
+
+  /*!
+  \brief Disequality check w.r.t. past-the-end iterator
+  \param end : past-the-end iterator
+  \return negation of operator==
+  */
+  inline bool operator!=(tchecker::end_iterator_t const & end) const { return !(*this == end); }
+
+  /*!
+   \brief Accessor
+   \pre not at_end() (checked by assertion)
+   \return pair <v1, v2> in ranges r1 and r2 pointed to by this iterator
+   */
+  decltype(auto) operator*()
+  {
+    assert(!at_end());
+    return std::make_tuple(*_it1, *_it2);
+  }
+
+  /*!
+   \brief Increment operator
+   \pre not at_end() (checked by assertion)
+   \post this points to next element or past-the-end
+   */
+  tchecker::cartesian_iterator2_t<R1, R2> & operator++()
+  {
+    assert(!at_end());
+
+    // increment _it2 if not at end
+    ++_it2;
+    if (_it2 != _r2.end())
+      return *this;
+
+    // else increment _it1
+    ++_it1;
+    if (_it1 == _r1.end())
+      return *this;
+
+    // if _it1 not at end, put back _it2 at beginning
+    _it2 = _r2.begin();
+    return *this;
+  }
+
+private:
+  /*!
+   \brief Accessor
+   \return true if current element is past-the-end cartesian product, false
+   otherwise
+   */
+  inline bool at_end() const { return (_it1 == _r1.end() && _it2 == _r2.end()); }
+
+  R1 _r1;                             /*!< First range */
+  R2 _r2;                             /*!< Second range */
+  typename R1::begin_iterator_t _it1; /*!< Current iterator in first range */
+  typename R2::begin_iterator_t _it2; /*!< Current iterator in second range */
 };
 
 } // end of namespace tchecker
