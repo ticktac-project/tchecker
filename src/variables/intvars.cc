@@ -23,6 +23,14 @@ intvar_info_t::intvar_info_t(unsigned int size, tchecker::integer_t min, tchecke
     throw std::invalid_argument("expecting min <= initial_value <= max");
 }
 
+/* intvar_values_range */
+
+tchecker::intvar_values_range_t intvar_values_range(tchecker::intvar_info_t const & intvar_info)
+{
+  return tchecker::make_range(tchecker::integer_iterator_t{intvar_info.min()},
+                              tchecker::integer_iterator_t{intvar_info.max() + 1});
+}
+
 /* integer_variables_t */
 
 tchecker::intvar_id_t integer_variables_t::declare(std::string const & name, tchecker::intvar_id_t size,
@@ -32,6 +40,17 @@ tchecker::intvar_id_t integer_variables_t::declare(std::string const & name, tch
   tchecker::intvar_info_t info{size, min, max, initial};
   return tchecker::array_variables_t<tchecker::intvar_id_t, tchecker::intvar_info_t, tchecker::intvar_index_t>::declare(name,
                                                                                                                         info);
+}
+
+/* flat_integer_variables_valuations_range  */
+
+tchecker::range_t<tchecker::flat_integer_variables_valuations_iterator_t, tchecker::end_iterator_t>
+flat_integer_variables_valuations_range(tchecker::flat_integer_variables_t const & intvars)
+{
+  tchecker::flat_integer_variables_valuations_iterator_t it;
+  for (tchecker::intvar_id_t id = 0; id < intvars.size(); ++id)
+    it.push_back(tchecker::intvar_values_range(intvars.info(id)));
+  return tchecker::make_range(it, tchecker::past_the_end_iterator);
 }
 
 /* intvars_valuation_t */

@@ -16,6 +16,8 @@
 
 #include <boost/iterator/transform_iterator.hpp>
 
+#include "tchecker/basictypes.hh"
+
 /*!
  \file iterator.hh
  \brief Iterators
@@ -716,5 +718,97 @@ template <class R> struct std::iterator_traits<tchecker::cartesian_iterator_t<R>
 
   using iterator_category = std::forward_iterator_tag;
 };
+
+namespace tchecker {
+
+/*!
+ \class integer_iterator_t
+ \brief Iterator over integer values
+*/
+class integer_iterator_t {
+public:
+  /*!
+   \brief Constructor
+   \param value : initial value
+  */
+  integer_iterator_t(tchecker::integer_t value = 0);
+
+  /*!
+   \brief Copy constructor
+  */
+  integer_iterator_t(tchecker::integer_iterator_t const &) = default;
+
+  /*!
+   \brief Move constructor
+  */
+  integer_iterator_t(tchecker::integer_iterator_t &&) = default;
+
+  /*!
+   \brief Destructor
+  */
+  ~integer_iterator_t() = default;
+
+  /*!
+   \brief Assignment operator
+  */
+  tchecker::integer_iterator_t & operator=(tchecker::integer_iterator_t const &) = default;
+
+  /*!
+   \brief Assignment operator
+  */
+  tchecker::integer_iterator_t & operator=(tchecker::integer_t const &);
+
+  /*!
+   \brief Move-ssignment operator
+  */
+  tchecker::integer_iterator_t & operator=(tchecker::integer_iterator_t &&) = default;
+
+  /*!
+   \brief Equality check
+   \param it : iterator
+   \return true if this iterator and it have the same current value, false otherwise
+  */
+  bool operator==(tchecker::integer_iterator_t const & it) const;
+
+  /*!
+   \brief Equality check
+   \param value : integer value
+   \return true if this current value is equal to value, false otherwise
+  */
+  bool operator==(tchecker::integer_t value) const;
+
+  /*!
+   \brief Disequality check
+  */
+  bool operator!=(tchecker::integer_iterator_t const & it) const;
+
+  /*!
+   \brief Disequality check
+  */
+  bool operator!=(tchecker::integer_t value) const;
+
+  /*!
+   \brief Dereference operator
+   \return current value of this iterator
+  */
+  tchecker::integer_t operator*() const;
+
+  /*!
+   \brief Increment operator
+   \post this iterator points to the next integer according to modular arithmetic
+  */
+  tchecker::integer_iterator_t & operator++();
+
+  /*!
+   \brief Decrement operator
+   \post this iterator points to the previous integer according to modular arithmetic
+  */
+  tchecker::integer_iterator_t & operator--();
+
+private:
+  tchecker::integer_t _current; /*!< Current integer value */
+};
+
+} // namespace tchecker
 
 #endif // TCHECKER_ITERATOR_HH

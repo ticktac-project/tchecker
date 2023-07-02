@@ -16,6 +16,7 @@
 #include "tchecker/utils/array.hh"
 #include "tchecker/utils/cache.hh"
 #include "tchecker/utils/index.hh"
+#include "tchecker/utils/iterator.hh"
 #include "tchecker/variables/variables.hh"
 
 /*!
@@ -94,6 +95,18 @@ private:
 };
 
 /*!
+ \brief Type of range over values of a bounded integer variable
+*/
+using intvar_values_range_t = tchecker::range_t<tchecker::integer_iterator_t>;
+
+/*!
+ \brief Compute range of values of a bounded integer variable
+ \param intvar_info : informations on bounded integer variable
+ \return a range of values of the bounded integer variable described by intvar_info
+ */
+tchecker::intvar_values_range_t intvar_values_range(tchecker::intvar_info_t const & intvar_info);
+
+/*!
  \brief Index of bounded integer variables
  */
 using intvar_index_t = tchecker::index_t<tchecker::intvar_id_t, std::string>;
@@ -134,6 +147,19 @@ protected:
  */
 using flat_integer_variables_t =
     tchecker::flat_variables_t<tchecker::intvar_id_t, tchecker::intvar_info_t, tchecker::intvar_index_t>;
+
+/*!
+ \brief Type of iterator over valuations of flat integer variables
+ */
+using flat_integer_variables_valuations_iterator_t = tchecker::cartesian_iterator_t<tchecker::intvar_values_range_t>;
+
+/*!
+ \brief Return the range of valuations of flat integer variables
+ \param intvars : flat bounded integer variables
+ \return the range of valuations of intvars
+ */
+tchecker::range_t<tchecker::flat_integer_variables_valuations_iterator_t, tchecker::end_iterator_t>
+flat_integer_variables_valuations_range(tchecker::flat_integer_variables_t const & intvars);
 
 // Integer variables valuation
 
