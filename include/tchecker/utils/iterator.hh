@@ -716,7 +716,11 @@ public:
    \param r2 : second range
    \post this is an iterator over r1 * r2
    */
-  cartesian_iterator2_t(R1 const & r1, R2 const & r2) : _r1(r1), _r2(r2), _it1(r1.begin()), _it2(r2.begin()) {}
+  cartesian_iterator2_t(R1 const & r1, R2 const & r2) : _r1(r1), _r2(r2), _it1(r1.begin()), _it2(r2.begin()), _empty(false)
+  {
+    if (r1.begin() == r1.end() || r2.begin() == r2.end())
+      _empty = true;
+  }
 
   /*!
    \brief Copy constructor
@@ -760,7 +764,7 @@ public:
    */
   bool operator==(tchecker::cartesian_iterator2_t<R1, R2> const & it) const
   {
-    return (_r1 == it._r1 && _r2 == it._r2 && _it1 == it._it1 && _it2 == it._it2);
+    return (_r1 == it._r1 && _r2 == it._r2 && _it1 == it._it1 && _it2 == it._it2 && _empty == it._empty);
   }
 
   /*!
@@ -825,12 +829,13 @@ private:
    \return true if current element is past-the-end cartesian product, false
    otherwise
    */
-  inline bool at_end() const { return (_it1 == _r1.end() && _it2 == _r2.end()); }
+  inline bool at_end() const { return (_empty || (_it1 == _r1.end() && _it2 == _r2.end())); }
 
   R1 _r1;                             /*!< First range */
   R2 _r2;                             /*!< Second range */
   typename R1::begin_iterator_t _it1; /*!< Current iterator in first range */
   typename R2::begin_iterator_t _it2; /*!< Current iterator in second range */
+  bool _empty;                        /*!< True if this iterator is empty */
 };
 
 } // end of namespace tchecker
@@ -842,6 +847,22 @@ template <class R> struct std::iterator_traits<tchecker::cartesian_iterator_t<R>
   using difference_type = typename std::iterator_traits<typename R::begin_iterator_t>::difference_type;
 
   using value_type = tchecker::range_t<typename tchecker::cartesian_iterator_t<R>::values_iterator_t>;
+
+  using pointer = value_type *;
+
+  using reference = value_type &;
+
+  using iterator_category = std::forward_iterator_tag;
+};
+
+/*!
+ \brief Iterator traits for cartesian_iterator2_t
+ */
+template <typename R1, typename R2> struct std::iterator_traits<tchecker::cartesian_iterator2_t<R1, R2>> {
+  using difference_type = nullptr_t;
+
+  using value_type = std::tuple<typename std::iterator_traits<typename R1::begin_iterator_t>::value_type,
+                                typename std::iterator_traits<typename R2::begin_iterator_t>::value_type>;
 
   using pointer = value_type *;
 
@@ -941,5 +962,20 @@ private:
 };
 
 } // namespace tchecker
+
+/*!
+ \brief Iterator traits for integer_iterator_t
+ */
+template <> struct std::iterator_traits<tchecker::integer_iterator_t> {
+  using difference_type = tchecker::integer_t;
+
+  using value_type = tchecker::integer_t;
+
+  using pointer = value_type *;
+
+  using reference = value_type &;
+
+  using iterator_category = std::forward_iterator_tag;
+};
 
 #endif // TCHECKER_ITERATOR_HH
