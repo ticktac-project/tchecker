@@ -650,7 +650,6 @@ public:
    */
   tchecker::range_t<tchecker::cartesian_iterator_t<R>::values_iterator_t> operator*()
   {
-    assert(_nranges != 0);
     values_iterator_t begin(_its.begin()), end(_its.end());
     return tchecker::make_range(begin, end);
   }
