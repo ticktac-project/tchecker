@@ -154,11 +154,23 @@ using flat_integer_variables_t =
 using flat_integer_variables_valuations_iterator_t = tchecker::cartesian_iterator_t<tchecker::intvar_values_range_t>;
 
 /*!
+ \brief Type of range over valuations of flat integer variables
+*/
+using flat_integer_variables_valuations_range_t =
+    tchecker::range_t<tchecker::flat_integer_variables_valuations_iterator_t, tchecker::end_iterator_t>;
+
+/*!
+ \brief Yype of values in a range over valuations of flat integer variables
+*/
+using flat_integer_variables_valuations_value_t =
+    std::iterator_traits<flat_integer_variables_valuations_iterator_t>::value_type;
+
+/*!
  \brief Return the range of valuations of flat integer variables
  \param intvars : flat bounded integer variables
  \return the range of valuations of intvars
  */
-tchecker::range_t<tchecker::flat_integer_variables_valuations_iterator_t, tchecker::end_iterator_t>
+tchecker::flat_integer_variables_valuations_range_t
 flat_integer_variables_valuations_range(tchecker::flat_integer_variables_t const & intvars);
 
 // Integer variables valuation

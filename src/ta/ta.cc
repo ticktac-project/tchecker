@@ -5,6 +5,8 @@
  *
  */
 
+#include <vector>
+
 #include "tchecker/ta/ta.hh"
 
 namespace tchecker {
@@ -58,6 +60,47 @@ tchecker::state_status_t initial(tchecker::ta::system_t const & system,
   return tchecker::STATE_OK;
 }
 
+tchecker::ta::final_range_t final_edges(tchecker::ta::system_t const & system, boost::dynamic_bitset<> const & labels)
+{
+  tchecker::ta::final_iterator_t it{tchecker::syncprod::final_edges(system.as_syncprod_system(), labels),
+                                    tchecker::flat_integer_variables_valuations_range(system.integer_variables().flattened())};
+  return tchecker::make_range(it, tchecker::past_the_end_iterator);
+}
+
+tchecker::state_status_t final(tchecker::ta::system_t const & system,
+                               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
+                               tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
+                               tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+                               tchecker::clock_constraint_container_t & invariant,
+                               tchecker::ta::final_value_t const & final_value)
+{
+  auto && [edges, valuation] = final_value;
+
+  // compute vloc and vedge from final edges
+  auto status = tchecker::syncprod::final(system.as_syncprod_system(), vloc, vedge, edges);
+  if (status != STATE_OK)
+    return status;
+
+  // compute intval
+  auto const & intvars = system.integer_variables().flattened();
+  tchecker::intvar_id_t intvars_size = intvars.size();
+  tchecker::intvar_id_t id = 0;
+  for (tchecker::integer_t v : valuation) {
+    if (id >= intvars_size)
+      throw std::runtime_error("tchecker::ta::final: valuation of incompatible size");
+    (*intval)[id] = v;
+    ++id;
+  }
+
+  // check invariant
+  tchecker::vm_t & vm = system.vm();
+  for (tchecker::loc_id_t loc_id : *vloc)
+    if (vm.run(system.invariant_bytecode(loc_id), *intval, invariant, throw_clkreset) == 0)
+      return tchecker::STATE_INTVARS_TGT_INVARIANT_VIOLATED;
+
+  return tchecker::STATE_OK;
+}
+
 tchecker::state_status_t next(tchecker::ta::system_t const & system,
                               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
                               tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
@@ -94,6 +137,110 @@ tchecker::state_status_t next(tchecker::ta::system_t const & system,
     if (vm.run(system.invariant_bytecode(loc_id), *intval, tgt_invariant, throw_clkreset) == 0)
       return tchecker::STATE_INTVARS_TGT_INVARIANT_VIOLATED;
 
+  return tchecker::STATE_OK;
+}
+
+tchecker::ta::incoming_edges_range_t
+incoming_edges(tchecker::ta::system_t const & system,
+               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc)
+{
+  tchecker::ta::incoming_edges_iterator_t it{
+      tchecker::syncprod::incoming_edges(system.as_syncprod_system(), vloc),
+      tchecker::flat_integer_variables_valuations_range(system.integer_variables().flattened())};
+  return tchecker::make_range(it, tchecker::past_the_end_iterator);
+}
+
+static void copy(std::vector<tchecker::loc_id_t> & copy, tchecker::vloc_t const & vloc)
+{
+  assert(copy.size() == vloc.capacity());
+  for (tchecker::loc_id_t i = 0; i < vloc.capacity(); ++i)
+    copy[i] = vloc[i];
+}
+
+static void copy(tchecker::vloc_t & vloc, std::vector<tchecker::loc_id_t> const & copy)
+{
+  assert(vloc.capacity() == copy.size());
+  for (tchecker::loc_id_t i = 0; i < copy.size(); ++i)
+    vloc[i] = copy[i];
+}
+
+static void copy(std::vector<tchecker::integer_t> & copy, tchecker::intvars_valuation_t const & intval)
+{
+  assert(copy.size() == intval.capacity());
+  for (tchecker::intvar_id_t i = 0; i < intval.capacity(); ++i)
+    copy[i] = intval[i];
+}
+
+static void copy(tchecker::intvars_valuation_t & intval, std::vector<tchecker::integer_t> const & copy)
+{
+  assert(intval.capacity() == copy.size());
+  for (tchecker::intvar_id_t i = 0; i < copy.size(); ++i)
+    intval[i] = copy[i];
+}
+
+static bool operator!=(tchecker::vloc_t const & vloc, std::vector<tchecker::loc_id_t> const & copy)
+{
+  assert(vloc.capacity() == copy.size());
+  for (tchecker::loc_id_t id = 0; id < vloc.capacity(); ++id)
+    if (vloc[id] != copy[id])
+      return true;
+  return false;
+}
+
+static bool operator!=(tchecker::intvars_valuation_t const & intval, std::vector<tchecker::integer_t> const & copy)
+{
+  assert(intval.capacity() == copy.size());
+  for (tchecker::intvar_id_t id = 0; id < intval.size(); ++id)
+    if (intval[id] != copy[id])
+      return true;
+  return false;
+}
+
+tchecker::state_status_t prev(tchecker::ta::system_t const & system,
+                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
+                              tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
+                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+                              tchecker::clock_constraint_container_t & src_invariant,
+                              tchecker::clock_constraint_container_t & guard, tchecker::clock_reset_container_t & reset,
+                              tchecker::clock_constraint_container_t & tgt_invariant,
+                              tchecker::ta::incoming_edges_value_t const & v)
+{
+  auto && [edges, valuation] = v;
+
+  // Make a copy of target vloc and intval
+  std::vector<tchecker::loc_id_t> vloc_tgt(vloc->capacity());
+  copy(vloc_tgt, *vloc);
+  std::vector<tchecker::integer_t> intval_tgt(intval->capacity());
+  copy(intval_tgt, *intval);
+
+  // Update vloc and intval to source according to v
+  for (tchecker::system::edge_const_shared_ptr_t const & e : edges)
+    (*vloc)[e->pid()] = e->src();
+  tchecker::intvar_id_t id = 0;
+  for (tchecker::integer_t i : valuation) {
+    (*intval)[id] = i;
+    ++id;
+  }
+
+  // Make a copy of source vloc and intval
+  std::vector<tchecker::loc_id_t> vloc_src(vloc->capacity());
+  copy(vloc_src, *vloc);
+  std::vector<tchecker::integer_t> intval_src(intval->capacity());
+  copy(intval_src, *intval);
+
+  // Apply transition
+  tchecker::state_status_t status =
+      tchecker::ta::next(system, vloc, intval, vedge, src_invariant, guard, reset, tgt_invariant, edges);
+  if (status != tchecker::STATE_OK)
+    return status;
+
+  // Check target vloc and intval are matched
+  if (*vloc != vloc_tgt || *intval != intval_tgt)
+    return tchecker::STATE_INCOMPATIBLE_EDGE;
+
+  // Update to source vloc and intval
+  copy(*vloc, vloc_src);
+  copy(*intval, intval_src);
   return tchecker::STATE_OK;
 }
 

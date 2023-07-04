@@ -562,6 +562,9 @@ incoming_edges(tchecker::syncprod::system_t const & system,
  */
 using incoming_edges_value_t = tchecker::range_t<tchecker::syncprod::edges_iterator_t>;
 
+static_assert(std::is_same<tchecker::syncprod::outgoing_edges_value_t, tchecker::syncprod::incoming_edges_value_t>::value,
+              "Outgoing and incoming edges values should be the same type");
+
 /*!
  \brief Compute previous tuples of locations and edges
  \param vloc : tuple of locations

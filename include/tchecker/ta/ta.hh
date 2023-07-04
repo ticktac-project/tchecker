@@ -20,6 +20,7 @@
 #include "tchecker/ta/state.hh"
 #include "tchecker/ta/system.hh"
 #include "tchecker/ta/transition.hh"
+#include "tchecker/utils/iterator.hh"
 #include "tchecker/utils/shared_objects.hh"
 #include "tchecker/variables/clocks.hh"
 #include "tchecker/variables/intvars.hh"
@@ -98,6 +99,74 @@ inline tchecker::state_status_t initial(tchecker::ta::system_t const & system, t
                                         tchecker::ta::transition_t & t, tchecker::ta::initial_value_t const & v)
 {
   return tchecker::ta::initial(system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), t.tgt_invariant_container(), v);
+}
+
+/*!
+ \brief Type of iterator over final states
+ */
+using final_iterator_t =
+    tchecker::cartesian_iterator2_t<tchecker::syncprod::final_range_t, tchecker::flat_integer_variables_valuations_range_t>;
+
+/*!
+\brief Type of range of iterators over final states
+*/
+using final_range_t = tchecker::range_t<tchecker::ta::final_iterator_t, tchecker::end_iterator_t>;
+
+/*!
+ \brief Accessor to final edges
+ \param system : a system
+ \param labels : a set of labels
+ \return range of final edges, i.e. edges to tuple of locations that match labels
+ */
+tchecker::ta::final_range_t final_edges(tchecker::ta::system_t const & system, boost::dynamic_bitset<> const & labels);
+
+/*!
+ \brief Dereference type for iterator over final edges
+ */
+using final_value_t = std::tuple<tchecker::syncprod::final_value_t, tchecker::flat_integer_variables_valuations_value_t>;
+
+/*!
+ \brief Compute final state
+ \param system : a system
+ \param vloc : tuple of locations
+ \param intval : valuation of bounded integer variables
+ \param vedge : tuple of edges
+ \param invariant : clock constraint container for final state invariant
+ \param final_value : range of final edges valuations
+ \pre the size of vloc and vedge is equal to the size of final edge range in final_value.
+ final_value has been obtained from system.
+ final_value yields the final location of all the processes ordered by increasing process identifier and
+ the valuation of every bounded integer flattened variable ordered by increasing variable identifier
+ \post vloc has been initialized to the tuple of final locations in final_value,
+ intval has been initialized to the final valuation of bounded integer variables,
+ vedge has been initialized to an empty tuple of edges.
+ clock constraints from final_range invariant have been aded to invariant
+ \return tchecker::STATE_OK if computation succeeded
+ STATE_TGT_INVARIANT_VIOLATED if the final valuation of integer variables does not satisfy invariant
+ \throw std::runtime_error : if evaluation of invariant throws an exception
+ */
+tchecker::state_status_t final(tchecker::ta::system_t const & system,
+                               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
+                               tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
+                               tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+                               tchecker::clock_constraint_container_t & invariant,
+                               tchecker::ta::final_value_t const & final_value);
+
+/*!
+\brief Compute final state and transition
+\param system : a system
+\param s : state
+\param t : transition
+\param v : final iterator value
+\post s has been initialized from v, and t is an empty transition
+\return tchecker::STATE_OK if computation succeeded
+ STATE_TGT_INVARIANT_VIOLATED if the final valuation of integer variables does not satisfy invariant
+\throw std::invalid_argument : if s and v have incompatible sizes
+*/
+inline tchecker::state_status_t final(tchecker::ta::system_t const & system, tchecker::ta::state_t & s,
+                                      tchecker::ta::transition_t & t, tchecker::ta::final_value_t const & v)
+{
+  return tchecker::ta::final(system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), t.tgt_invariant_container(), v);
 }
 
 /*!
@@ -183,6 +252,91 @@ inline tchecker::state_status_t next(tchecker::ta::system_t const & system, tche
                                      tchecker::ta::transition_t & t, tchecker::ta::outgoing_edges_value_t const & v)
 {
   return tchecker::ta::next(system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), t.src_invariant_container(),
+                            t.guard_container(), t.reset_container(), t.tgt_invariant_container(), v);
+}
+
+/*!
+ \brief Type of iterator over incoming edges
+ */
+using incoming_edges_iterator_t = tchecker::cartesian_iterator2_t<tchecker::syncprod::incoming_edges_range_t,
+                                                                  tchecker::flat_integer_variables_valuations_range_t>;
+
+/*!
+\brief Type of range of incoming edges
+*/
+using incoming_edges_range_t = tchecker::range_t<tchecker::ta::incoming_edges_iterator_t, tchecker::end_iterator_t>;
+
+/*!
+ \brief Accessor to incoming edges
+ \param system : a system
+ \param vloc : tuple of locations
+ \return range of incoming synchronized and asynchronous edges to vloc in system
+ */
+tchecker::ta::incoming_edges_range_t
+incoming_edges(tchecker::ta::system_t const & system,
+               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc);
+
+/*!
+ \brief Dereference type for iterator over incoming edges
+ */
+using incoming_edges_value_t =
+    std::tuple<tchecker::syncprod::incoming_edges_value_t, tchecker::flat_integer_variables_valuations_value_t>;
+
+/*!
+ \brief Compute previous state
+ \param system : a system
+ \param vloc : tuple of locations
+ \param intval : valuation of bounded integer variables
+ \param vedge : tuple of edges
+ \param src_invariant : clock constraint container for invariant in source state
+ \param guard : clock constraint container for guard of vedge
+ \param reset : clock resets container for clock resets of vedge
+ \param tgt_invariant : clock constaint container for invariant in target state
+ \param v : valeu of incoming edge to vloc (range of synchronized/asynchronous edges)
+ \pre the target location in edges match the locations in vloc.
+ No process has more than one edge in v.
+ The pid of every process in v is less than the size of vloc
+ \post the locations in vloc have been updated to source locations of the
+ processes involved in v, and they have been left unchanged for the other processes.
+ The values of variables in intval have been updated according to the statements in v.
+ Clock constraints from the invariants in source state have been pushed to src_invariant.
+ Clock constraints from the guards in v have been pushed into guard.
+ Clock resets from the statements in v have been pushed into reset.
+ And clock constraints from the invariants in target have been pushed into tgt_invariant
+ \return STATE_OK if state computation succeeded,
+ STATE_INCOMPATIBLE_EDGE if the target locations in v do not match vloc,
+ STATE_SRC_INVARIANT_VIOLATED if the new valuation intval does not satisfy the invariant in the source state
+ STATE_GUARD_VIOLATED if the new values in intval do not satisfy the guard of v,
+ STATE_STATEMENT_FAILED if statements in v cannot be applied to the new intval
+ STATE_TGT_INVARIANT_VIOLATED if the new intval does not satisfy the invariant of target state
+ \throw std::invalid_argument : if a pid in v is greater or equal to the size of vloc
+ \throw std::runtime_error : if the guard in v generates clock resets, or if the statements in v generate clock
+ constraints, or if the invariant in updated vloc generates clock resets
+ \throw std::runtime_error : if evaluation of invariants, guards or statements throws an exception
+ */
+tchecker::state_status_t prev(tchecker::ta::system_t const & system,
+                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
+                              tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
+                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+                              tchecker::clock_constraint_container_t & src_invariant,
+                              tchecker::clock_constraint_container_t & guard, tchecker::clock_reset_container_t & reset,
+                              tchecker::clock_constraint_container_t & tgt_invariant,
+                              tchecker::ta::incoming_edges_value_t const & v);
+
+/*!
+\brief Compute previous state and transition
+\param system : a system
+\param s : state
+\param t : transition
+\param v : incoming edge value
+\post s have been updated from v, and t is the set of edges in v
+\return status of state s after update
+\throw std::invalid_argument : if s and v have incompatible size
+*/
+inline tchecker::state_status_t prev(tchecker::ta::system_t const & system, tchecker::ta::state_t & s,
+                                     tchecker::ta::transition_t & t, tchecker::ta::incoming_edges_value_t const & v)
+{
+  return tchecker::ta::prev(system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), t.src_invariant_container(),
                             t.guard_container(), t.reset_container(), t.tgt_invariant_container(), v);
 }
 

@@ -44,7 +44,7 @@ tchecker::intvar_id_t integer_variables_t::declare(std::string const & name, tch
 
 /* flat_integer_variables_valuations_range  */
 
-tchecker::range_t<tchecker::flat_integer_variables_valuations_iterator_t, tchecker::end_iterator_t>
+tchecker::flat_integer_variables_valuations_range_t
 flat_integer_variables_valuations_range(tchecker::flat_integer_variables_t const & intvars)
 {
   tchecker::flat_integer_variables_valuations_iterator_t it;
