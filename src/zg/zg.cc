@@ -40,6 +40,31 @@ tchecker::state_status_t initial(tchecker::ta::system_t const & system,
   return tchecker::STATE_OK;
 }
 
+tchecker::state_status_t final(tchecker::ta::system_t const & system,
+                               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
+                               tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
+                               tchecker::intrusive_shared_ptr_t<tchecker::zg::shared_zone_t> const & zone,
+                               tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+                               tchecker::clock_constraint_container_t & invariant, tchecker::zg::semantics_t & semantics,
+                               tchecker::zg::extrapolation_t & extrapolation, tchecker::zg::final_value_t const & final_range)
+{
+  tchecker::state_status_t status = tchecker::ta::final(system, vloc, intval, vedge, invariant, final_range);
+  if (status != tchecker::STATE_OK)
+    return status;
+
+  tchecker::dbm::db_t * dbm = zone->dbm();
+  tchecker::clock_id_t dim = zone->dim();
+  bool delay_allowed = tchecker::ta::delay_allowed(system, *vloc);
+
+  status = semantics.final(dbm, dim, delay_allowed, invariant);
+  if (status != tchecker::STATE_OK)
+    return status;
+
+  extrapolation.extrapolate(dbm, dim, *vloc);
+
+  return tchecker::STATE_OK;
+}
+
 tchecker::state_status_t next(tchecker::ta::system_t const & system,
                               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
                               tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
@@ -60,6 +85,36 @@ tchecker::state_status_t next(tchecker::ta::system_t const & system,
   tchecker::dbm::db_t * dbm = zone->dbm();
   tchecker::clock_id_t dim = zone->dim();
   bool tgt_delay_allowed = tchecker::ta::delay_allowed(system, *vloc);
+
+  status = semantics.next(dbm, dim, src_delay_allowed, src_invariant, guard, reset, tgt_delay_allowed, tgt_invariant);
+  if (status != tchecker::STATE_OK)
+    return status;
+
+  extrapolation.extrapolate(dbm, dim, *vloc);
+
+  return tchecker::STATE_OK;
+}
+
+tchecker::state_status_t prev(tchecker::ta::system_t const & system,
+                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
+                              tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
+                              tchecker::intrusive_shared_ptr_t<tchecker::zg::shared_zone_t> const & zone,
+                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+                              tchecker::clock_constraint_container_t & src_invariant,
+                              tchecker::clock_constraint_container_t & guard, tchecker::clock_reset_container_t & reset,
+                              tchecker::clock_constraint_container_t & tgt_invariant, tchecker::zg::semantics_t & semantics,
+                              tchecker::zg::extrapolation_t & extrapolation, tchecker::zg::incoming_edges_value_t const & edges)
+{
+  bool tgt_delay_allowed = tchecker::ta::delay_allowed(system, *vloc);
+
+  tchecker::state_status_t status =
+      tchecker::ta::prev(system, vloc, intval, vedge, src_invariant, guard, reset, tgt_invariant, edges);
+  if (status != tchecker::STATE_OK)
+    return status;
+
+  tchecker::dbm::db_t * dbm = zone->dbm();
+  tchecker::clock_id_t dim = zone->dim();
+  bool src_delay_allowed = tchecker::ta::delay_allowed(system, *vloc);
 
   status = semantics.next(dbm, dim, src_delay_allowed, src_invariant, guard, reset, tgt_delay_allowed, tgt_invariant);
   if (status != tchecker::STATE_OK)
