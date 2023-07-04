@@ -41,6 +41,27 @@ tchecker::state_status_t initial(tchecker::ta::system_t const & system,
   return semantics.initial(rdbm, *r, delay_allowed, invariant, spread);
 }
 
+tchecker::state_status_t final(tchecker::ta::system_t const & system,
+                               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
+                               tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
+                               tchecker::intrusive_shared_ptr_t<tchecker::refzg::shared_zone_t> const & zone,
+                               tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+                               tchecker::clock_constraint_container_t & invariant, tchecker::refzg::semantics_t & semantics,
+                               tchecker::integer_t spread, tchecker::refzg::final_value_t const & final_range)
+{
+  tchecker::state_status_t status = tchecker::ta::final(system, vloc, intval, vedge, invariant, final_range);
+  if (status != tchecker::STATE_OK)
+    return status;
+
+  std::shared_ptr<tchecker::reference_clock_variables_t const> r = zone->reference_clock_variables();
+
+  boost::dynamic_bitset<> delay_allowed = tchecker::ta::delay_allowed(system, *r, *vloc);
+
+  tchecker::dbm::db_t * rdbm = zone->dbm();
+
+  return semantics.final(rdbm, *r, delay_allowed, invariant, spread);
+}
+
 tchecker::state_status_t next(tchecker::ta::system_t const & system,
                               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
                               tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
@@ -65,6 +86,33 @@ tchecker::state_status_t next(tchecker::ta::system_t const & system,
 
   tchecker::dbm::db_t * rdbm = zone->dbm();
   return semantics.next(rdbm, *r, src_delay_allowed, src_invariant, sync_refclocks, guard, reset, tgt_delay_allowed,
+                        tgt_invariant, spread);
+}
+
+tchecker::state_status_t prev(tchecker::ta::system_t const & system,
+                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
+                              tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
+                              tchecker::intrusive_shared_ptr_t<tchecker::refzg::shared_zone_t> const & zone,
+                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+                              tchecker::clock_constraint_container_t & src_invariant,
+                              tchecker::clock_constraint_container_t & guard, tchecker::clock_reset_container_t & reset,
+                              tchecker::clock_constraint_container_t & tgt_invariant, tchecker::refzg::semantics_t & semantics,
+                              tchecker::integer_t spread, tchecker::refzg::incoming_edges_value_t const & edges)
+{
+  std::shared_ptr<tchecker::reference_clock_variables_t const> r = zone->reference_clock_variables();
+
+  boost::dynamic_bitset<> const tgt_delay_allowed = tchecker::ta::delay_allowed(system, *r, *vloc);
+
+  tchecker::state_status_t status =
+      tchecker::ta::prev(system, vloc, intval, vedge, src_invariant, guard, reset, tgt_invariant, edges);
+  if (status != tchecker::STATE_OK)
+    return status;
+
+  boost::dynamic_bitset<> const src_delay_allowed = tchecker::ta::delay_allowed(system, *r, *vloc);
+  boost::dynamic_bitset<> const sync_refclocks = tchecker::ta::sync_refclocks(system, *r, *vedge);
+
+  tchecker::dbm::db_t * rdbm = zone->dbm();
+  return semantics.prev(rdbm, *r, src_delay_allowed, src_invariant, sync_refclocks, guard, reset, tgt_delay_allowed,
                         tgt_invariant, spread);
 }
 
