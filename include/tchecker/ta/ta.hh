@@ -17,6 +17,7 @@
 #include "tchecker/syncprod/vedge.hh"
 #include "tchecker/syncprod/vloc.hh"
 #include "tchecker/ta/allocators.hh"
+#include "tchecker/ta/edges_iterators.hh"
 #include "tchecker/ta/state.hh"
 #include "tchecker/ta/system.hh"
 #include "tchecker/ta/transition.hh"
@@ -101,11 +102,8 @@ inline tchecker::state_status_t initial(tchecker::ta::system_t const & system, t
   return tchecker::ta::initial(system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), t.tgt_invariant_container(), v);
 }
 
-/*!
- \brief Type of iterator over final states
- */
-using final_iterator_t =
-    tchecker::cartesian_iterator2_t<tchecker::syncprod::final_range_t, tchecker::flat_integer_variables_valuations_range_t>;
+using final_iterator_t = tchecker::ta::edges_valuations_iterator_t<tchecker::syncprod::final_range_t,
+                                                                   tchecker::flat_integer_variables_valuations_range_t>;
 
 /*!
 \brief Type of range of iterators over final states
@@ -258,8 +256,9 @@ inline tchecker::state_status_t next(tchecker::ta::system_t const & system, tche
 /*!
  \brief Type of iterator over incoming edges
  */
-using incoming_edges_iterator_t = tchecker::cartesian_iterator2_t<tchecker::syncprod::incoming_edges_range_t,
-                                                                  tchecker::flat_integer_variables_valuations_range_t>;
+using incoming_edges_iterator_t =
+    tchecker::ta::edges_valuations_iterator_t<tchecker::syncprod::incoming_edges_range_t,
+                                              tchecker::flat_integer_variables_valuations_range_t>;
 
 /*!
 \brief Type of range of incoming edges
