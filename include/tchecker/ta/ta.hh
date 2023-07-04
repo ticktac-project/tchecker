@@ -304,7 +304,8 @@ using incoming_edges_value_t =
  Clock resets from the statements in v have been pushed into reset.
  And clock constraints from the invariants in target have been pushed into tgt_invariant
  \return STATE_OK if state computation succeeded,
- STATE_INCOMPATIBLE_EDGE if the target locations in v do not match vloc,
+ STATE_INCOMPATIBLE_EDGE if the target locations in v do not match vloc or if the bounded integer
+ valuation in v does not transform into intval going through v,
  STATE_SRC_INVARIANT_VIOLATED if the new valuation intval does not satisfy the invariant in the source state
  STATE_GUARD_VIOLATED if the new values in intval do not satisfy the guard of v,
  STATE_STATEMENT_FAILED if statements in v cannot be applied to the new intval
