@@ -51,7 +51,7 @@ edge_t::edge_t(tchecker::zg::transition_t const & t) : tchecker::graph::edge_ved
 
 /* graph_t */
 
-graph_t::graph_t(std::shared_ptr<tchecker::zg::sharing_zg_t> const & zg, std::size_t block_size, std::size_t table_size)
+graph_t::graph_t(std::shared_ptr<tchecker::zg::zg_t> const & zg, std::size_t block_size, std::size_t table_size)
     : tchecker::graph::reachability::graph_t<
           tchecker::tck_liveness::zg_couvscc::node_t, tchecker::tck_liveness::zg_couvscc::edge_t,
           tchecker::tck_liveness::zg_couvscc::node_hash_t, tchecker::tck_liveness::zg_couvscc::node_equal_to_t>(
@@ -141,8 +141,8 @@ run(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl, st
   if (!tchecker::system::every_process_has_initial_location(system->as_system_system()))
     std::cerr << tchecker::log_warning << "system has no initial state" << std::endl;
 
-  std::shared_ptr<tchecker::zg::sharing_zg_t> zg{tchecker::zg::factory_sharing(
-      system, tchecker::zg::ELAPSED_SEMANTICS, tchecker::zg::EXTRA_LU_PLUS_LOCAL, block_size, table_size)};
+  std::shared_ptr<tchecker::zg::zg_t> zg{tchecker::zg::factory(system, tchecker::ts::SHARING, tchecker::zg::ELAPSED_SEMANTICS,
+                                                               tchecker::zg::EXTRA_LU_PLUS_LOCAL, block_size, table_size)};
 
   std::shared_ptr<tchecker::tck_liveness::zg_couvscc::graph_t> graph{
       new tchecker::tck_liveness::zg_couvscc::graph_t{zg, block_size, table_size}};

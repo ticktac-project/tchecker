@@ -61,8 +61,8 @@ template <class GRAPH> bool true_edge(typename GRAPH::edge_sptr_t const & e) { r
  */
 template <class GRAPH, class CEX> CEX * counter_example_zg(GRAPH const & g)
 {
-  std::shared_ptr<tchecker::zg::zg_t> zg{
-      tchecker::zg::factory(g.zg().system_ptr(), tchecker::zg::STANDARD_SEMANTICS, tchecker::zg::NO_EXTRAPOLATION, 128, 128)};
+  std::shared_ptr<tchecker::zg::zg_t> zg{tchecker::zg::factory(
+      g.zg().system_ptr(), g.zg().sharing_type(), tchecker::zg::STANDARD_SEMANTICS, tchecker::zg::NO_EXTRAPOLATION, 128, 128)};
 
   // compute sequence of edges from initial to final node in g
   tchecker::algorithms::path::finite::algorithm_t<GRAPH> algorithm;

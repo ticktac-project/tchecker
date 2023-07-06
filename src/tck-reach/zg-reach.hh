@@ -118,7 +118,7 @@ public:
    \param table_size : size of hash table
    \note this keeps a pointer on zg
   */
-  graph_t(std::shared_ptr<tchecker::zg::sharing_zg_t> const & zg, std::size_t block_size, std::size_t table_size);
+  graph_t(std::shared_ptr<tchecker::zg::zg_t> const & zg, std::size_t block_size, std::size_t table_size);
 
   /*!
    \brief Destructor
@@ -129,13 +129,13 @@ public:
    \brief Accessor
    \return pointer to internal zone graph
   */
-  inline std::shared_ptr<tchecker::zg::sharing_zg_t> zg_ptr() { return _zg; }
+  inline std::shared_ptr<tchecker::zg::zg_t> zg_ptr() { return _zg; }
 
   /*!
    \brief Accessor
    \return internal zone graph
   */
-  inline tchecker::zg::sharing_zg_t const & zg() const { return *_zg; }
+  inline tchecker::zg::zg_t const & zg() const { return *_zg; }
 
   using tchecker::graph::reachability::graph_t<tchecker::tck_reach::zg_reach::node_t, tchecker::tck_reach::zg_reach::edge_t,
                                                tchecker::tck_reach::zg_reach::node_hash_t,
@@ -159,7 +159,7 @@ protected:
   virtual void attributes(tchecker::tck_reach::zg_reach::edge_t const & e, std::map<std::string, std::string> & m) const;
 
 private:
-  std::shared_ptr<tchecker::zg::sharing_zg_t> _zg; /*!< Zone graph */
+  std::shared_ptr<tchecker::zg::zg_t> _zg; /*!< Zone graph */
 };
 
 /*!
@@ -208,10 +208,9 @@ std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::zg_reach::cex:
  \brief Reachability algorithm over the zone graph
 */
 class algorithm_t
-    : public tchecker::algorithms::reach::algorithm_t<tchecker::zg::sharing_zg_t, tchecker::tck_reach::zg_reach::graph_t> {
+    : public tchecker::algorithms::reach::algorithm_t<tchecker::zg::zg_t, tchecker::tck_reach::zg_reach::graph_t> {
 public:
-  using tchecker::algorithms::reach::algorithm_t<tchecker::zg::sharing_zg_t,
-                                                 tchecker::tck_reach::zg_reach::graph_t>::algorithm_t;
+  using tchecker::algorithms::reach::algorithm_t<tchecker::zg::zg_t, tchecker::tck_reach::zg_reach::graph_t>::algorithm_t;
 };
 
 /*!

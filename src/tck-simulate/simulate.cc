@@ -109,8 +109,9 @@ std::shared_ptr<tchecker::tck_simulate::graph_t> randomized_simulation(tchecker:
   std::size_t const table_size = 65536;
 
   std::shared_ptr<tchecker::ta::system_t const> system{new tchecker::ta::system_t{sysdecl}};
-  std::shared_ptr<tchecker::zg::zg_t> zg{
-      tchecker::zg::factory(system, tchecker::zg::STANDARD_SEMANTICS, tchecker::zg::NO_EXTRAPOLATION, block_size, table_size)};
+  std::shared_ptr<tchecker::zg::zg_t> zg{tchecker::zg::factory(system, tchecker::ts::NO_SHARING,
+                                                               tchecker::zg::STANDARD_SEMANTICS, tchecker::zg::NO_EXTRAPOLATION,
+                                                               block_size, table_size)};
   std::shared_ptr<tchecker::tck_simulate::graph_t> g{new tchecker::tck_simulate::graph_t{zg, block_size}};
   std::vector<tchecker::zg::zg_t::sst_t> v;
 
@@ -192,8 +193,9 @@ std::shared_ptr<tchecker::tck_simulate::graph_t> interactive_simulation(tchecker
   std::size_t const table_size = 65536;
 
   std::shared_ptr<tchecker::ta::system_t const> system{new tchecker::ta::system_t{sysdecl}};
-  std::shared_ptr<tchecker::zg::zg_t> zg{
-      tchecker::zg::factory(system, tchecker::zg::STANDARD_SEMANTICS, tchecker::zg::NO_EXTRAPOLATION, block_size, table_size)};
+  std::shared_ptr<tchecker::zg::zg_t> zg{tchecker::zg::factory(system, tchecker::ts::NO_SHARING,
+                                                               tchecker::zg::STANDARD_SEMANTICS, tchecker::zg::NO_EXTRAPOLATION,
+                                                               block_size, table_size)};
   std::shared_ptr<tchecker::tck_simulate::graph_t> g{new tchecker::tck_simulate::graph_t{zg, block_size}};
   std::vector<tchecker::zg::zg_t::sst_t> v;
 

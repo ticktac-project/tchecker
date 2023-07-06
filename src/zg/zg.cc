@@ -136,6 +136,19 @@ boost::dynamic_bitset<> labels(tchecker::ta::system_t const & system, tchecker::
 
 bool is_valid_final(tchecker::ta::system_t const & system, tchecker::zg::state_t const & s) { return !s.zone().is_empty(); }
 
+/* is_initial */
+
+bool is_initial(tchecker::ta::system_t const & system, tchecker::zg::zone_t const & zone)
+{
+  assert(zone.dim() == system.clocks_count(tchecker::VK_FLATTENED) + 1);
+  return tchecker::dbm::contains_zero(zone.dbm(), zone.dim());
+}
+
+bool is_initial(tchecker::ta::system_t const & system, tchecker::zg::state_t const & s)
+{
+  return tchecker::ta::is_initial(system, s) && tchecker::zg::is_initial(system, s.zone());
+}
+
 /* attributes */
 
 void attributes(tchecker::ta::system_t const & system, tchecker::zg::state_t const & s, std::map<std::string, std::string> & m)
@@ -150,13 +163,12 @@ void attributes(tchecker::ta::system_t const & system, tchecker::zg::transition_
   tchecker::ta::attributes(system, t, m);
 }
 
-/* zg_impl_t */
+/* zg_t */
 
-zg_impl_t::zg_impl_t(std::shared_ptr<tchecker::ta::system_t const> const & system,
-                     std::shared_ptr<tchecker::zg::semantics_t> const & semantics,
-                     std::shared_ptr<tchecker::zg::extrapolation_t> const & extrapolation, std::size_t block_size,
-                     std::size_t table_size)
-    : _system(system), _semantics(semantics), _extrapolation(extrapolation),
+zg_t::zg_t(std::shared_ptr<tchecker::ta::system_t const> const & system, enum tchecker::ts::sharing_type_t sharing_type,
+           std::shared_ptr<tchecker::zg::semantics_t> const & semantics,
+           std::shared_ptr<tchecker::zg::extrapolation_t> const & extrapolation, std::size_t block_size, std::size_t table_size)
+    : _system(system), _sharing_type(sharing_type), _semantics(semantics), _extrapolation(extrapolation),
       _state_allocator(block_size, block_size, _system->processes_count(), block_size,
                        _system->intvars_count(tchecker::VK_FLATTENED), block_size,
                        _system->clocks_count(tchecker::VK_FLATTENED) + 1, table_size),
@@ -164,142 +176,180 @@ zg_impl_t::zg_impl_t(std::shared_ptr<tchecker::ta::system_t const> const & syste
 {
 }
 
-tchecker::zg::initial_range_t zg_impl_t::initial_edges() { return tchecker::zg::initial_edges(*_system); }
+initial_range_t zg_t::initial_edges() { return tchecker::zg::initial_edges(*_system); }
 
-void zg_impl_t::initial(tchecker::zg::initial_value_t const & init_edge, std::vector<sst_t> & v)
+void zg_t::initial(tchecker::zg::initial_value_t const & init_edge, std::vector<sst_t> & v, tchecker::state_status_t mask)
 {
   tchecker::zg::state_sptr_t s = _state_allocator.construct();
   tchecker::zg::transition_sptr_t t = _transition_allocator.construct();
   tchecker::state_status_t status = tchecker::zg::initial(*_system, *s, *t, *_semantics, *_extrapolation, init_edge);
-  v.push_back(std::make_tuple(status, s, t));
+  if (status & mask) {
+    if (_sharing_type == tchecker::ts::SHARING) {
+      share(s);
+      share(t);
+    }
+    v.push_back(std::make_tuple(status, s, t));
+  }
 }
 
-tchecker::zg::outgoing_edges_range_t zg_impl_t::outgoing_edges(tchecker::zg::const_state_sptr_t const & s)
+void zg_t::initial(std::vector<sst_t> & v, tchecker::state_status_t mask) { tchecker::ts::initial(*this, v, mask); }
+
+tchecker::zg::outgoing_edges_range_t zg_t::outgoing_edges(tchecker::zg::const_state_sptr_t const & s)
 {
   return tchecker::zg::outgoing_edges(*_system, s->vloc_ptr());
 }
 
-void zg_impl_t::next(tchecker::zg::const_state_sptr_t const & s, tchecker::zg::outgoing_edges_value_t const & out_edge,
-                     std::vector<sst_t> & v)
+void zg_t::next(tchecker::zg::const_state_sptr_t const & s, tchecker::zg::outgoing_edges_value_t const & out_edge,
+                std::vector<sst_t> & v, tchecker::state_status_t mask)
 {
   tchecker::zg::state_sptr_t nexts = _state_allocator.clone(*s);
   tchecker::zg::transition_sptr_t t = _transition_allocator.construct();
   tchecker::state_status_t status = tchecker::zg::next(*_system, *nexts, *t, *_semantics, *_extrapolation, out_edge);
-  v.push_back(std::make_tuple(status, nexts, t));
+  if (status & mask) {
+    if (_sharing_type == tchecker::ts::SHARING) {
+      share(nexts);
+      share(t);
+    }
+    v.push_back(std::make_tuple(status, nexts, t));
+  }
 }
 
-boost::dynamic_bitset<> zg_impl_t::labels(tchecker::zg::const_state_sptr_t const & s) const
+void zg_t::next(tchecker::zg::const_state_sptr_t const & s, std::vector<sst_t> & v, tchecker::state_status_t mask)
+{
+  tchecker::ts::next(*this, s, v, mask);
+}
+
+// Backward
+
+final_range_t zg_t::final_edges(boost::dynamic_bitset<> const & labels) { return tchecker::zg::final_edges(*_system, labels); }
+
+void zg_t::final(final_value_t const & final_edge, std::vector<sst_t> & v, tchecker::state_status_t mask)
+{
+  tchecker::zg::state_sptr_t s = _state_allocator.construct();
+  tchecker::zg::transition_sptr_t t = _transition_allocator.construct();
+  tchecker::state_status_t status = tchecker::zg::final(*_system, *s, *t, *_semantics, *_extrapolation, final_edge);
+  if (status & mask) {
+    if (_sharing_type == tchecker::ts::SHARING) {
+      share(s);
+      share(t);
+    }
+    v.push_back(std::make_tuple(status, s, t));
+  }
+}
+
+void zg_t::final(boost::dynamic_bitset<> const & labels, std::vector<sst_t> & v, tchecker::state_status_t mask)
+{
+  tchecker::ts::final(*this, labels, v, mask);
+}
+
+incoming_edges_range_t zg_t::incoming_edges(tchecker::zg::const_state_sptr_t const & s)
+{
+  return tchecker::zg::incoming_edges(*_system, s->vloc_ptr());
+}
+
+void zg_t::prev(tchecker::zg::const_state_sptr_t const & s, incoming_edges_value_t const & in_edge, std::vector<sst_t> & v,
+                tchecker::state_status_t mask)
+{
+  tchecker::zg::state_sptr_t nexts = _state_allocator.clone(*s);
+  tchecker::zg::transition_sptr_t t = _transition_allocator.construct();
+  tchecker::state_status_t status = tchecker::zg::prev(*_system, *nexts, *t, *_semantics, *_extrapolation, in_edge);
+  if (status & mask) {
+    if (_sharing_type == tchecker::ts::SHARING) {
+      share(nexts);
+      share(t);
+    }
+    v.push_back(std::make_tuple(status, nexts, t));
+  }
+}
+
+void zg_t::prev(tchecker::zg::const_state_sptr_t const & s, std::vector<sst_t> & v, tchecker::state_status_t mask)
+{
+  tchecker::ts::prev(*this, s, v, mask);
+}
+
+// Inspector
+
+boost::dynamic_bitset<> zg_t::labels(tchecker::zg::const_state_sptr_t const & s) const
 {
   return tchecker::zg::labels(*_system, *s);
 }
 
-bool zg_impl_t::is_valid_final(tchecker::zg::const_state_sptr_t const & s) const
-{
-  return tchecker::zg::is_valid_final(*_system, *s);
-}
-
-void zg_impl_t::attributes(tchecker::zg::const_state_sptr_t const & s, std::map<std::string, std::string> & m) const
+void zg_t::attributes(tchecker::zg::const_state_sptr_t const & s, std::map<std::string, std::string> & m) const
 {
   tchecker::zg::attributes(*_system, *s, m);
 }
 
-void zg_impl_t::attributes(tchecker::zg::const_transition_sptr_t const & t, std::map<std::string, std::string> & m) const
+void zg_t::attributes(tchecker::zg::const_transition_sptr_t const & t, std::map<std::string, std::string> & m) const
 {
   tchecker::zg::attributes(*_system, *t, m);
 }
 
-void zg_impl_t::share(tchecker::zg::state_sptr_t & s) { _state_allocator.share(s); }
+bool zg_t::is_valid_final(tchecker::zg::const_state_sptr_t const & s) const
+{
+  return tchecker::zg::is_valid_final(*_system, *s);
+}
 
-void zg_impl_t::share(tchecker::zg::transition_sptr_t & t) { _transition_allocator.share(t); }
+bool zg_t::is_initial(tchecker::zg::const_state_sptr_t const & s) const { return tchecker::zg::is_initial(*_system, *s); }
 
-std::shared_ptr<tchecker::ta::system_t const> zg_impl_t::system_ptr() const { return _system; }
+// Sharing
 
-tchecker::ta::system_t const & zg_impl_t::system() const { return *_system; }
+void zg_t::share(tchecker::zg::state_sptr_t & s) { _state_allocator.share(s); }
 
-/* zg_t */
+void zg_t::share(tchecker::zg::transition_sptr_t & t) { _transition_allocator.share(t); }
 
-std::shared_ptr<tchecker::ta::system_t const> zg_t::system_ptr() const { return ts_impl().system_ptr(); }
+/* tools */
 
-tchecker::ta::system_t const & zg_t::system() const { return ts_impl().system(); }
+tchecker::zg::state_sptr_t initial(tchecker::zg::zg_t & zg, tchecker::vloc_t const & vloc, tchecker::state_status_t mask)
+{
+  std::vector<tchecker::zg::zg_t::sst_t> v;
+  zg.initial(v, mask);
+  for (auto && [status, s, t] : v) {
+    if (s->vloc() == vloc)
+      return s;
+  }
+  return nullptr;
+}
 
-/* sharing_zg_t */
-
-std::shared_ptr<tchecker::ta::system_t const> sharing_zg_t::system_ptr() const { return ts_impl().system_ptr(); }
-
-tchecker::ta::system_t const & sharing_zg_t::system() const { return ts_impl().system(); }
+std::tuple<tchecker::zg::state_sptr_t, tchecker::zg::transition_sptr_t> next(tchecker::zg::zg_t & zg,
+                                                                             tchecker::zg::const_state_sptr_t const & s,
+                                                                             tchecker::vedge_t const & vedge,
+                                                                             tchecker::state_status_t mask)
+{
+  std::vector<tchecker::zg::zg_t::sst_t> v;
+  zg.next(s, v, mask);
+  for (auto && [status, nexts, nextt] : v)
+    if (nextt->vedge() == vedge)
+      return std::make_tuple(nexts, nextt);
+  return std::make_tuple(nullptr, nullptr);
+}
 
 /* factory */
 
-/*!
- \brief Generic implementation of the factory (no clock bounds)
- \tparam ZG : type of zone graph
-*/
-template <class ZG>
-ZG * factory_generic(std::shared_ptr<tchecker::ta::system_t const> const & system,
-                     enum tchecker::zg::semantics_type_t semantics_type,
-                     enum tchecker::zg::extrapolation_type_t extrapolation_type, std::size_t block_size, std::size_t table_size)
+tchecker::zg::zg_t * factory(std::shared_ptr<tchecker::ta::system_t const> const & system,
+                             enum tchecker::ts::sharing_type_t sharing_type, enum tchecker::zg::semantics_type_t semantics_type,
+                             enum tchecker::zg::extrapolation_type_t extrapolation_type, std::size_t block_size,
+                             std::size_t table_size)
 {
   std::shared_ptr<tchecker::zg::extrapolation_t> extrapolation{
       tchecker::zg::extrapolation_factory(extrapolation_type, *system)};
   if (extrapolation.get() == nullptr)
     return nullptr;
   std::shared_ptr<tchecker::zg::semantics_t> semantics{tchecker::zg::semantics_factory(semantics_type)};
-  return new ZG(system, semantics, extrapolation, block_size, table_size);
+  return new tchecker::zg::zg_t(system, sharing_type, semantics, extrapolation, block_size, table_size);
 }
 
-/*!
- \brief Generic implementation of the factory (with clock bounds)
- \tparam ZG : type of zone graph
-*/
-template <class ZG>
-ZG * factory_generic(std::shared_ptr<tchecker::ta::system_t const> const & system,
-                     enum tchecker::zg::semantics_type_t semantics_type,
-                     enum tchecker::zg::extrapolation_type_t extrapolation_type,
-                     tchecker::clockbounds::clockbounds_t const & clock_bounds, std::size_t block_size, std::size_t table_size)
+tchecker::zg::zg_t * factory(std::shared_ptr<tchecker::ta::system_t const> const & system,
+                             enum tchecker::ts::sharing_type_t sharing_type, enum tchecker::zg::semantics_type_t semantics_type,
+                             enum tchecker::zg::extrapolation_type_t extrapolation_type,
+                             tchecker::clockbounds::clockbounds_t const & clock_bounds, std::size_t block_size,
+                             std::size_t table_size)
 {
   std::shared_ptr<tchecker::zg::extrapolation_t> extrapolation{
       tchecker::zg::extrapolation_factory(extrapolation_type, clock_bounds)};
   if (extrapolation.get() == nullptr)
     return nullptr;
   std::shared_ptr<tchecker::zg::semantics_t> semantics{tchecker::zg::semantics_factory(semantics_type)};
-  return new ZG(system, semantics, extrapolation, block_size, table_size);
-}
-
-tchecker::zg::zg_t * factory(std::shared_ptr<tchecker::ta::system_t const> const & system,
-                             enum tchecker::zg::semantics_type_t semantics_type,
-                             enum tchecker::zg::extrapolation_type_t extrapolation_type, std::size_t block_size,
-                             std::size_t table_size)
-{
-  return tchecker::zg::factory_generic<tchecker::zg::zg_t>(system, semantics_type, extrapolation_type, block_size, table_size);
-}
-
-tchecker::zg::zg_t * factory(std::shared_ptr<tchecker::ta::system_t const> const & system,
-                             enum tchecker::zg::semantics_type_t semantics_type,
-                             enum tchecker::zg::extrapolation_type_t extrapolation_type,
-                             tchecker::clockbounds::clockbounds_t const & clock_bounds, std::size_t block_size,
-                             std::size_t table_size)
-{
-  return tchecker::zg::factory_generic<tchecker::zg::zg_t>(system, semantics_type, extrapolation_type, clock_bounds, block_size,
-                                                           table_size);
-}
-
-tchecker::zg::sharing_zg_t * factory_sharing(std::shared_ptr<tchecker::ta::system_t const> const & system,
-                                             enum tchecker::zg::semantics_type_t semantics_type,
-                                             enum tchecker::zg::extrapolation_type_t extrapolation_type, std::size_t block_size,
-                                             std::size_t table_size)
-{
-  return tchecker::zg::factory_generic<tchecker::zg::sharing_zg_t>(system, semantics_type, extrapolation_type, block_size,
-                                                                   table_size);
-}
-
-tchecker::zg::sharing_zg_t * factory_sharing(std::shared_ptr<tchecker::ta::system_t const> const & system,
-                                             enum tchecker::zg::semantics_type_t semantics_type,
-                                             enum tchecker::zg::extrapolation_type_t extrapolation_type,
-                                             tchecker::clockbounds::clockbounds_t const & clock_bounds, std::size_t block_size,
-                                             std::size_t table_size)
-{
-  return tchecker::zg::factory_generic<tchecker::zg::sharing_zg_t>(system, semantics_type, extrapolation_type, clock_bounds,
-                                                                   block_size, table_size);
+  return new tchecker::zg::zg_t(system, sharing_type, semantics, extrapolation, block_size, table_size);
 }
 
 } // end of namespace zg
