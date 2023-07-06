@@ -133,6 +133,19 @@ bool is_universal_positive(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t
   return true;
 }
 
+bool contains_zero(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim)
+{
+  assert(dbm != nullptr);
+  assert(dim >= 1);
+  assert(is_consistent(dbm, dim));
+  assert(is_tight(dbm, dim));
+
+  for (tchecker::clock_id_t x = 0; x < dim; ++x)
+    if (DBM(0, x) != tchecker::dbm::LE_ZERO)
+      return false;
+  return true;
+}
+
 bool is_tight(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim)
 {
   assert(dbm != nullptr);

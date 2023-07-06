@@ -156,6 +156,20 @@ bool is_positive(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim);
 bool is_universal_positive(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim);
 
 /*!
+ \brief Check if a DBM contains the zero valuation
+ \param dbm : a DBM
+ \param dim : dimension of dbm
+ \pre dbm is not nullptr (checked by assertion)
+ dbm is a dim*dim array of difference bounds
+ dim >= 1 (checked by assertion)
+ dbm is consistent (checked by assertion)
+ dbm is tight (checked by assertion)
+ \return true if dbm contains the valuation where all clocks have value zero,
+ false otherwise
+*/
+bool contains_zero(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim);
+
+/*!
  \brief Tightness predicate
  \param dbm : a DBM
  \param dim : dimension of dbm

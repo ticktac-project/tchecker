@@ -285,6 +285,37 @@ TEST_CASE("is_empty_0, structural tests", "[dbm]")
   }
 }
 
+TEST_CASE("contains_zero, structural tests", "[dbm]")
+{
+
+  SECTION("DBM that contains zero, dim=1")
+  {
+    // Build negative diagonal dimension 1
+    tchecker::clock_id_t dim = 1;
+    tchecker::dbm::db_t dbm[dim * dim];
+    DBM(0, 0) = tchecker::dbm::LE_ZERO;
+
+    REQUIRE(tchecker::dbm::contains_zero(dbm, dim));
+  }
+
+  SECTION("DBM that contains zero, dim=3")
+  {
+    tchecker::clock_id_t dim = 3;
+    tchecker::dbm::db_t dbm[dim * dim];
+    tchecker::dbm::universal_positive(dbm, dim);
+    REQUIRE(tchecker::dbm::contains_zero(dbm, dim));
+  }
+
+  SECTION("DBM that does not contain zero, dim=2")
+  {
+    tchecker::clock_id_t dim = 2;
+    tchecker::dbm::db_t dbm[dim * dim];
+    tchecker::dbm::universal_positive(dbm, dim);
+    DBM(0, 1) = tchecker::dbm::db(tchecker::LT, 0);
+    REQUIRE_FALSE(tchecker::dbm::contains_zero(dbm, dim));
+  }
+}
+
 TEST_CASE("is_tight, structural tests", "[dbm]")
 {
 
