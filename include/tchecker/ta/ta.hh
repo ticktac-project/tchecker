@@ -21,6 +21,7 @@
 #include "tchecker/ta/state.hh"
 #include "tchecker/ta/system.hh"
 #include "tchecker/ta/transition.hh"
+#include "tchecker/ts/ts.hh"
 #include "tchecker/utils/iterator.hh"
 #include "tchecker/utils/shared_objects.hh"
 #include "tchecker/variables/clocks.hh"

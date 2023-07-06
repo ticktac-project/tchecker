@@ -22,6 +22,7 @@
 #include "tchecker/syncprod/vloc.hh"
 #include "tchecker/ta/system.hh"
 #include "tchecker/ta/ta.hh"
+#include "tchecker/ts/ts.hh"
 #include "tchecker/utils/shared_objects.hh"
 #include "tchecker/variables/clocks.hh"
 #include "tchecker/variables/intvars.hh"
