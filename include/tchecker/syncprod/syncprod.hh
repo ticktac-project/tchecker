@@ -988,6 +988,12 @@ public:
    */
   inline tchecker::syncprod::system_t const & system() const { return *_system; }
 
+  /*!
+   \brief Accessor
+   \return sharing type of this synchronized product
+  */
+  inline enum tchecker::ts::sharing_type_t sharing_type() const { return _sharing_type; }
+
 private:
   std::shared_ptr<tchecker::syncprod::system_t const> _system;           /*!< System of timed processes */
   enum tchecker::ts::sharing_type_t _sharing_type;                       /*!< Sharing of state/transition components */
