@@ -100,7 +100,7 @@ template <class GRAPH, class CEX> CEX * counter_example_zg(GRAPH const & g)
 template <class GRAPH, class CEX> CEX * counter_example_refzg(GRAPH const & g)
 {
   std::shared_ptr<tchecker::refzg::refzg_t> refzg{
-      tchecker::refzg::factory(g.refzg().system_ptr(), tchecker::refzg::PROCESS_REFERENCE_CLOCKS,
+      tchecker::refzg::factory(g.refzg().system_ptr(), g.refzg().sharing_type(), tchecker::refzg::PROCESS_REFERENCE_CLOCKS,
                                tchecker::refzg::STANDARD_SEMANTICS, g.refzg().spread(), 128, 128)};
 
   // compute sequence of edges from initial to final node in g

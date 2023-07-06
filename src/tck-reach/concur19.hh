@@ -174,7 +174,7 @@ public:
    \param table_size : size of hash table
    \note this keeps a shared pointer on refzg
   */
-  graph_t(std::shared_ptr<tchecker::refzg::sharing_refzg_t> const & refzg, std::size_t block_size, std::size_t table_size);
+  graph_t(std::shared_ptr<tchecker::refzg::refzg_t> const & refzg, std::size_t block_size, std::size_t table_size);
 
   /*!
    \brief Destructor
@@ -185,13 +185,13 @@ public:
    \brief Accessor
    \return Shared pointer to underlying zone graph with reference clocks
   */
-  inline std::shared_ptr<tchecker::refzg::sharing_refzg_t> const & refzg_ptr() const { return _refzg; }
+  inline std::shared_ptr<tchecker::refzg::refzg_t> const & refzg_ptr() const { return _refzg; }
 
   /*!
    \brief Accessor
    \return Underlying zone graph with reference clocks
   */
-  inline tchecker::refzg::sharing_refzg_t const & refzg() const { return *_refzg; }
+  inline tchecker::refzg::refzg_t const & refzg() const { return *_refzg; }
 
   using tchecker::graph::subsumption::graph_t<tchecker::tck_reach::concur19::node_t, tchecker::tck_reach::concur19::edge_t,
                                               tchecker::tck_reach::concur19::node_hash_t,
@@ -215,7 +215,7 @@ protected:
   virtual void attributes(tchecker::tck_reach::concur19::edge_t const & e, std::map<std::string, std::string> & m) const;
 
 private:
-  std::shared_ptr<tchecker::refzg::sharing_refzg_t> _refzg; /*!< Zone graph with reference clocks */
+  std::shared_ptr<tchecker::refzg::refzg_t> _refzg; /*!< Zone graph with reference clocks */
 };
 
 /*!
@@ -264,10 +264,10 @@ std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::concur19::cex:
  \class algorithm_t
  \brief Covering reachability algorithm over the local-time zone graph
 */
-class algorithm_t : public tchecker::algorithms::covreach::algorithm_t<tchecker::refzg::sharing_refzg_t,
-                                                                       tchecker::tck_reach::concur19::graph_t> {
+class algorithm_t
+    : public tchecker::algorithms::covreach::algorithm_t<tchecker::refzg::refzg_t, tchecker::tck_reach::concur19::graph_t> {
 public:
-  using tchecker::algorithms::covreach::algorithm_t<tchecker::refzg::sharing_refzg_t,
+  using tchecker::algorithms::covreach::algorithm_t<tchecker::refzg::refzg_t,
                                                     tchecker::tck_reach::concur19::graph_t>::algorithm_t;
 };
 

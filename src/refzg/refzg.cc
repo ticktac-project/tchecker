@@ -130,6 +130,18 @@ bool is_valid_final(tchecker::ta::system_t const & system, tchecker::refzg::stat
   return !s.zone().is_empty() && s.zone().is_synchronizable();
 }
 
+/* is_initial */
+
+bool is_initial(tchecker::ta::system_t const & system, tchecker::refzg::zone_t const & zone)
+{
+  return tchecker::refdbm::contains_zero(zone.dbm(), *zone.reference_clock_variables());
+}
+
+bool is_initial(tchecker::ta::system_t const & system, tchecker::refzg::state_t const & s)
+{
+  return tchecker::ta::is_initial(system, s) && tchecker::refzg::is_initial(system, s.zone());
+}
+
 /* attributes */
 
 void attributes(tchecker::ta::system_t const & system, tchecker::refzg::state_t const & s,
@@ -147,11 +159,11 @@ void attributes(tchecker::ta::system_t const & system, tchecker::refzg::transiti
 
 /* refzg_impl_t */
 
-refzg_impl_t::refzg_impl_t(std::shared_ptr<tchecker::ta::system_t const> const & system,
-                           std::shared_ptr<tchecker::reference_clock_variables_t const> const & r,
-                           std::shared_ptr<tchecker::refzg::semantics_t> const & semantics, tchecker::integer_t spread,
-                           std::size_t block_size, std::size_t table_size)
-    : _system(system), _r(r), _semantics(semantics), _spread(spread),
+refzg_t::refzg_t(std::shared_ptr<tchecker::ta::system_t const> const & system, enum tchecker::ts::sharing_type_t sharing_type,
+                 std::shared_ptr<tchecker::reference_clock_variables_t const> const & r,
+                 std::shared_ptr<tchecker::refzg::semantics_t> const & semantics, tchecker::integer_t spread,
+                 std::size_t block_size, std::size_t table_size)
+    : _system(system), _sharing_type(sharing_type), _r(r), _semantics(semantics), _spread(spread),
       _state_allocator(block_size, block_size, _system->processes_count(), block_size,
                        _system->intvars_count(tchecker::VK_FLATTENED), block_size, _r, table_size),
       _transition_allocator(block_size, block_size, _system->processes_count(), table_size)
@@ -161,75 +173,158 @@ refzg_impl_t::refzg_impl_t(std::shared_ptr<tchecker::ta::system_t const> const &
     throw std::invalid_argument("Zone graph with reference clocks is not sound for systems with shared variables");
 }
 
-tchecker::refzg::initial_range_t refzg_impl_t::initial_edges() { return tchecker::refzg::initial_edges(*_system); }
+initial_range_t refzg_t::initial_edges() { return tchecker::refzg::initial_edges(*_system); }
 
-void refzg_impl_t::initial(tchecker::refzg::initial_value_t const & init_edge, std::vector<sst_t> & v)
+void refzg_t::initial(tchecker::refzg::initial_value_t const & init_edge, std::vector<sst_t> & v, tchecker::state_status_t mask)
 {
   tchecker::refzg::state_sptr_t s = _state_allocator.construct();
   tchecker::refzg::transition_sptr_t t = _transition_allocator.construct();
   tchecker::state_status_t status = tchecker::refzg::initial(*_system, *s, *t, *_semantics, _spread, init_edge);
-  v.push_back(std::make_tuple(status, s, t));
+  if (status & mask) {
+    if (_sharing_type == tchecker::ts::SHARING) {
+      share(s);
+      share(t);
+    }
+    v.push_back(std::make_tuple(status, s, t));
+  }
 }
 
-tchecker::refzg::outgoing_edges_range_t refzg_impl_t::outgoing_edges(tchecker::refzg::const_state_sptr_t const & s)
+void refzg_t::initial(std::vector<sst_t> & v, tchecker::state_status_t mask) { tchecker::ts::initial(*this, v, mask); }
+
+outgoing_edges_range_t refzg_t::outgoing_edges(tchecker::refzg::const_state_sptr_t const & s)
 {
   return tchecker::refzg::outgoing_edges(*_system, s->vloc_ptr());
 }
 
-void refzg_impl_t::next(tchecker::refzg::const_state_sptr_t const & s, tchecker::refzg::outgoing_edges_value_t const & out_edge,
-                        std::vector<sst_t> & v)
+void refzg_t::next(tchecker::refzg::const_state_sptr_t const & s, outgoing_edges_value_t const & out_edge,
+                   std::vector<sst_t> & v, tchecker::state_status_t mask)
 {
   tchecker::refzg::state_sptr_t nexts = _state_allocator.clone(*s);
   tchecker::refzg::transition_sptr_t nextt = _transition_allocator.construct();
   tchecker::state_status_t status = tchecker::refzg::next(*_system, *nexts, *nextt, *_semantics, _spread, out_edge);
-  v.push_back(std::make_tuple(status, nexts, nextt));
+  if (status & mask) {
+    if (_sharing_type == tchecker::ts::SHARING) {
+      share(nexts);
+      share(nextt);
+    }
+    v.push_back(std::make_tuple(status, nexts, nextt));
+  }
 }
 
-boost::dynamic_bitset<> refzg_impl_t::labels(tchecker::refzg::const_state_sptr_t const & s) const
+void refzg_t::next(tchecker::refzg::const_state_sptr_t const & s, std::vector<sst_t> & v, tchecker::state_status_t mask)
+{
+  tchecker::ts::next(*this, s, v, mask);
+}
+
+// Backward
+
+final_range_t refzg_t::final_edges(boost::dynamic_bitset<> const & labels)
+{
+  return tchecker::refzg::final_edges(*_system, labels);
+}
+
+void refzg_t::final(final_value_t const & final_edge, std::vector<sst_t> & v, tchecker::state_status_t mask)
+{
+  tchecker::refzg::state_sptr_t s = _state_allocator.construct();
+  tchecker::refzg::transition_sptr_t t = _transition_allocator.construct();
+  tchecker::state_status_t status = tchecker::refzg::final(*_system, *s, *t, *_semantics, _spread, final_edge);
+  if (status & mask) {
+    if (_sharing_type == tchecker::ts::SHARING) {
+      share(s);
+      share(t);
+    }
+    v.push_back(std::make_tuple(status, s, t));
+  }
+}
+
+void refzg_t::final(boost::dynamic_bitset<> const & labels, std::vector<sst_t> & v, tchecker::state_status_t mask)
+{
+  tchecker::ts::final(*this, labels, v, mask);
+}
+
+incoming_edges_range_t refzg_t::incoming_edges(tchecker::refzg::const_state_sptr_t const & s)
+{
+  return tchecker::refzg::incoming_edges(*_system, s->vloc_ptr());
+}
+
+void refzg_t::prev(tchecker::refzg::const_state_sptr_t const & s, incoming_edges_value_t const & in_edge,
+                   std::vector<sst_t> & v, tchecker::state_status_t mask)
+{
+  tchecker::refzg::state_sptr_t prevs = _state_allocator.clone(*s);
+  tchecker::refzg::transition_sptr_t prevt = _transition_allocator.construct();
+  tchecker::state_status_t status = tchecker::refzg::prev(*_system, *prevs, *prevt, *_semantics, _spread, in_edge);
+  if (status & mask) {
+    if (_sharing_type == tchecker::ts::SHARING) {
+      share(prevs);
+      share(prevt);
+    }
+    v.push_back(std::make_tuple(status, prevs, prevt));
+  }
+}
+
+void refzg_t::prev(tchecker::refzg::const_state_sptr_t const & s, std::vector<sst_t> & v, tchecker::state_status_t mask)
+{
+  tchecker::ts::prev(*this, s, v, mask);
+}
+
+// Inspector
+
+boost::dynamic_bitset<> refzg_t::labels(tchecker::refzg::const_state_sptr_t const & s) const
 {
   return tchecker::refzg::labels(*_system, *s);
 }
 
-bool refzg_impl_t::is_valid_final(tchecker::refzg::const_state_sptr_t const & s) const
-{
-  return tchecker::refzg::is_valid_final(*_system, *s);
-}
-
-void refzg_impl_t::attributes(tchecker::refzg::const_state_sptr_t const & s, std::map<std::string, std::string> & m) const
+void refzg_t::attributes(tchecker::refzg::const_state_sptr_t const & s, std::map<std::string, std::string> & m) const
 {
   tchecker::refzg::attributes(*_system, *s, m);
 }
 
-void refzg_impl_t::attributes(tchecker::refzg::const_transition_sptr_t const & t, std::map<std::string, std::string> & m) const
+void refzg_t::attributes(tchecker::refzg::const_transition_sptr_t const & t, std::map<std::string, std::string> & m) const
 {
   tchecker::refzg::attributes(*_system, *t, m);
 }
 
-void refzg_impl_t::share(tchecker::refzg::state_sptr_t & s) { _state_allocator.share(s); }
+bool refzg_t::is_valid_final(tchecker::refzg::const_state_sptr_t const & s) const
+{
+  return tchecker::refzg::is_valid_final(*_system, *s);
+}
 
-void refzg_impl_t::share(tchecker::refzg::transition_sptr_t & t) { _transition_allocator.share(t); }
+bool refzg_t::is_initial(tchecker::refzg::const_state_sptr_t const & s) const
+{
+  return tchecker::refzg::is_initial(*_system, *s);
+}
 
-std::shared_ptr<tchecker::ta::system_t const> const & refzg_impl_t::system_ptr() const { return _system; }
+// Sharing
 
-tchecker::ta::system_t const & refzg_impl_t::system() const { return *_system; }
+void refzg_t::share(tchecker::refzg::state_sptr_t & s) { _state_allocator.share(s); }
 
-tchecker::integer_t refzg_impl_t::spread() const { return _spread; }
+void refzg_t::share(tchecker::refzg::transition_sptr_t & t) { _transition_allocator.share(t); }
 
-/* refzg_t */
+/* tools */
 
-std::shared_ptr<tchecker::ta::system_t const> const & refzg_t::system_ptr() const { return ts_impl().system_ptr(); }
+tchecker::refzg::state_sptr_t initial(tchecker::refzg::refzg_t & refzg, tchecker::vloc_t const & vloc,
+                                      tchecker::state_status_t mask)
+{
+  std::vector<tchecker::refzg::refzg_t::sst_t> v;
+  refzg.initial(v, mask);
+  for (auto && [status, s, t] : v) {
+    if (s->vloc() == vloc)
+      return s;
+  }
+  return nullptr;
+}
 
-tchecker::ta::system_t const & refzg_t::system() const { return ts_impl().system(); }
-
-tchecker::integer_t refzg_t::spread() const { return ts_impl().spread(); }
-
-/* sharing_refzg_t */
-
-std::shared_ptr<tchecker::ta::system_t const> const & sharing_refzg_t::system_ptr() const { return ts_impl().system_ptr(); }
-
-tchecker::ta::system_t const & sharing_refzg_t::system() const { return ts_impl().system(); }
-
-tchecker::integer_t sharing_refzg_t::spread() const { return ts_impl().spread(); }
+std::tuple<tchecker::refzg::state_sptr_t, tchecker::refzg::transition_sptr_t>
+next(tchecker::refzg::refzg_t & refzg, tchecker::refzg::const_state_sptr_t const & s, tchecker::vedge_t const & vedge,
+     tchecker::state_status_t mask)
+{
+  std::vector<tchecker::refzg::refzg_t::sst_t> v;
+  refzg.next(s, v, mask);
+  for (auto && [status, nexts, nextt] : v)
+    if (nextt->vedge() == vedge)
+      return std::make_tuple(nexts, nextt);
+  return std::make_tuple(nullptr, nullptr);
+}
 
 /* factory */
 
@@ -251,38 +346,16 @@ reference_clocks_factory(enum tchecker::refzg::reference_clock_variables_type_t 
   }
 }
 
-/*!
- \brief Generic implementation of the factory
- \tparam REFZG : type of reference zone graph
-*/
-template <class REFZG>
-REFZG * factory_generic(std::shared_ptr<tchecker::ta::system_t const> const & system,
-                        enum tchecker::refzg::reference_clock_variables_type_t refclocks_type,
-                        enum tchecker::refzg::semantics_type_t semantics_type, tchecker::integer_t spread,
-                        std::size_t block_size, std::size_t table_size)
-{
-  std::shared_ptr<tchecker::reference_clock_variables_t const> r(
-      tchecker::refzg::reference_clocks_factory(refclocks_type, *system));
-  std::shared_ptr<tchecker::refzg::semantics_t> semantics{tchecker::refzg::semantics_factory(semantics_type)};
-  return new REFZG(system, r, semantics, spread, block_size, table_size);
-}
-
 tchecker::refzg::refzg_t * factory(std::shared_ptr<tchecker::ta::system_t const> const & system,
+                                   enum tchecker::ts::sharing_type_t sharing_type,
                                    enum tchecker::refzg::reference_clock_variables_type_t refclocks_type,
                                    enum tchecker::refzg::semantics_type_t semantics_type, tchecker::integer_t spread,
                                    std::size_t block_size, std::size_t table_size)
 {
-  return tchecker::refzg::factory_generic<tchecker::refzg::refzg_t>(system, refclocks_type, semantics_type, spread, block_size,
-                                                                    table_size);
-}
-
-tchecker::refzg::sharing_refzg_t * factory_sharing(std::shared_ptr<tchecker::ta::system_t const> const & system,
-                                                   enum tchecker::refzg::reference_clock_variables_type_t refclocks_type,
-                                                   enum tchecker::refzg::semantics_type_t semantics_type,
-                                                   tchecker::integer_t spread, std::size_t block_size, std::size_t table_size)
-{
-  return tchecker::refzg::factory_generic<tchecker::refzg::sharing_refzg_t>(system, refclocks_type, semantics_type, spread,
-                                                                            block_size, table_size);
+  std::shared_ptr<tchecker::reference_clock_variables_t const> r(
+      tchecker::refzg::reference_clocks_factory(refclocks_type, *system));
+  std::shared_ptr<tchecker::refzg::semantics_t> semantics{tchecker::refzg::semantics_factory(semantics_type)};
+  return new tchecker::refzg::refzg_t(system, sharing_type, r, semantics, spread, block_size, table_size);
 }
 
 } // end of namespace refzg
