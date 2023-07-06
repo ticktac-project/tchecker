@@ -298,6 +298,7 @@ bool is_valid_final(tchecker::ta::system_t const & system, tchecker::ta::state_t
 
 bool is_initial(tchecker::ta::system_t const & system, tchecker::intvars_valuation_t const & v)
 {
+  assert(v.capacity() == system.integer_variables().flattened().size());
   tchecker::intvar_id_t const nvars = v.capacity();
   for (tchecker::intvar_id_t i = 0; i < nvars; ++i)
     if (v[i] != system.integer_variables().flattened().info(i).initial_value())

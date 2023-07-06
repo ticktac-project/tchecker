@@ -385,12 +385,32 @@ boost::dynamic_bitset<> sync_refclocks(tchecker::ta::system_t const & system, tc
 boost::dynamic_bitset<> labels(tchecker::ta::system_t const & system, tchecker::ta::state_t const & s);
 
 /*!
- \brief Checks is a state is a valid final state
+ \brief Checks if a state is a valid final state
  \param system : a system
  \param s : a state
  \return true
 */
 bool is_valid_final(tchecker::ta::system_t const & system, tchecker::ta::state_t const & s);
+
+/*!
+ \brief Checks if a bounded integer variables valuations is initial
+ \param system : a system
+ \param v : a valuation
+ \pre the size of v corresponds to the number of flattened integer variables in system (check
+ by assertion)
+ \return true if v is an initial valuation of the bounded integer variables in system,
+ false otherwise
+*/
+bool is_initial(tchecker::ta::system_t const & system, tchecker::intvars_valuation_t const & v);
+
+/*!
+ \brief Checks if a state is initial
+ \param system : a system
+ \param s : a state
+ \pre s is a state computed from system
+ \return true if s is an initial state in system, false otherwise
+*/
+bool is_initial(tchecker::ta::system_t const & system, tchecker::ta::state_t const & s);
 
 /*!
  \brief Accessor to state attributes as strings
@@ -554,8 +574,8 @@ public:
    \note states and transitions that are added to v are deallocated automatically
    \note states and transitions share their internal components if sharing_type is tchecker::ts::SHARING
    */
-  virtual void next(tchecker::ta::const_state_sptr_t const & s, tchecker::ta::outgoing_edges_value_t const & out_edge,
-                    std::vector<sst_t> & v, tchecker::state_status_t mask = tchecker::STATE_OK);
+  virtual void next(tchecker::ta::const_state_sptr_t const & s, outgoing_edges_value_t const & out_edge, std::vector<sst_t> & v,
+                    tchecker::state_status_t mask = tchecker::STATE_OK);
 
   /*!
   \brief Next states and transitions with selected status
@@ -702,6 +722,12 @@ public:
    \return Underlying system of timed processes
    */
   inline tchecker::ta::system_t const & system() const { return *_system; }
+
+  /*!
+   \brief Accessor
+   \return sharing type of this synchronized product
+  */
+  inline enum tchecker::ts::sharing_type_t sharing_type() const { return _sharing_type; }
 
 private:
   std::shared_ptr<tchecker::ta::system_t const> _system;           /*!< System of timed processes */
