@@ -348,7 +348,7 @@ private:
     tchecker::process_id_t pid = _product.process_id(_process_name);
 
     std::stack<tchecker::syncprod::state_sptr_t> waiting;
-    tchecker::syncprod::syncprod_t sp(_system, block_size, table_size);
+    tchecker::syncprod::syncprod_t sp(_system, tchecker::ts::NO_SHARING, block_size, table_size);
     std::vector<tchecker::syncprod::syncprod_t::sst_t> v;
 
     sp.initial(v);

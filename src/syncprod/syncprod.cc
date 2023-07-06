@@ -402,6 +402,11 @@ bool is_initial(tchecker::syncprod::system_t const & system, tchecker::vloc_t co
   return true;
 }
 
+bool is_initial(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t const & s)
+{
+  return tchecker::syncprod::is_initial(system, s.vloc());
+}
+
 /* attributes */
 
 void attributes(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t const & s,
@@ -417,73 +422,143 @@ void attributes(tchecker::syncprod::system_t const & system, tchecker::syncprod:
   m["vedge"] = tchecker::to_string(t.vedge(), system.as_system_system());
 }
 
-/* syncprod_impl_t */
+/* syncprod_t */
 
-syncprod_impl_t::syncprod_impl_t(std::shared_ptr<tchecker::syncprod::system_t const> const & system, std::size_t block_size,
-                                 std::size_t table_size)
-    : _system(system), _state_allocator(block_size, block_size, _system->processes_count(), table_size),
+syncprod_t::syncprod_t(std::shared_ptr<tchecker::syncprod::system_t const> const & system,
+                       enum tchecker::ts::sharing_type_t sharing_type, std::size_t block_size, std::size_t table_size)
+    : _system(system), _sharing_type(sharing_type),
+      _state_allocator(block_size, block_size, _system->processes_count(), table_size),
       _transition_allocator(block_size, block_size, _system->processes_count(), table_size)
 {
 }
 
-tchecker::syncprod::initial_range_t syncprod_impl_t::initial_edges() { return tchecker::syncprod::initial_edges(*_system); }
+// Forward
 
-void syncprod_impl_t::initial(tchecker::syncprod::initial_value_t const & init_edge, std::vector<sst_t> & v)
+tchecker::syncprod::initial_range_t syncprod_t::initial_edges() { return tchecker::syncprod::initial_edges(*_system); }
+
+void syncprod_t::initial(tchecker::syncprod::initial_value_t const & init_edge, std::vector<sst_t> & v,
+                         tchecker::state_status_t mask)
 {
   tchecker::syncprod::state_sptr_t s = _state_allocator.construct();
   tchecker::syncprod::transition_sptr_t t = _transition_allocator.construct();
   tchecker::state_status_t status = tchecker::syncprod::initial(*_system, *s, *t, init_edge);
-  v.push_back(std::make_tuple(status, s, t));
+  if (status & mask) {
+    if (_sharing_type == tchecker::ts::SHARING) {
+      share(s);
+      share(t);
+    }
+    v.push_back(std::make_tuple(status, s, t));
+  }
 }
 
-tchecker::syncprod::outgoing_edges_range_t syncprod_impl_t::outgoing_edges(tchecker::syncprod::const_state_sptr_t const & s)
+void syncprod_t::initial(std::vector<sst_t> & v, tchecker::state_status_t mask) { tchecker::ts::initial(*this, v, mask); }
+
+tchecker::syncprod::outgoing_edges_range_t syncprod_t::outgoing_edges(tchecker::syncprod::const_state_sptr_t const & s)
 {
   return tchecker::syncprod::outgoing_edges(*_system, s->vloc_ptr());
 }
 
-void syncprod_impl_t::next(tchecker::syncprod::const_state_sptr_t const & s,
-                           tchecker::syncprod::outgoing_edges_value_t const & out_edge, std::vector<sst_t> & v)
+void syncprod_t::next(tchecker::syncprod::const_state_sptr_t const & s,
+                      tchecker::syncprod::outgoing_edges_value_t const & out_edge, std::vector<sst_t> & v,
+                      tchecker::state_status_t mask)
 {
   tchecker::syncprod::state_sptr_t nexts = _state_allocator.clone(*s);
   tchecker::syncprod::transition_sptr_t t = _transition_allocator.construct();
   tchecker::state_status_t status = tchecker::syncprod::next(*_system, *nexts, *t, out_edge);
-  v.push_back(std::make_tuple(status, nexts, t));
+  if (status & mask) {
+    if (_sharing_type == tchecker::ts::SHARING) {
+      share(nexts);
+      share(t);
+    }
+    v.push_back(std::make_tuple(status, nexts, t));
+  }
 }
 
-boost::dynamic_bitset<> syncprod_impl_t::labels(tchecker::syncprod::const_state_sptr_t const & s) const
+void syncprod_t::next(const_state_t const & s, std::vector<sst_t> & v, tchecker::state_status_t mask)
+{
+  tchecker::ts::next(*this, s, v, mask);
+}
+
+// Backward
+
+final_range_t syncprod_t::final_edges(boost::dynamic_bitset<> const & labels)
+{
+  return tchecker::syncprod::final_edges(*_system, labels);
+}
+
+void syncprod_t::final(final_value_t const & final_edge, std::vector<sst_t> & v, tchecker::state_status_t mask)
+{
+  tchecker::syncprod::state_sptr_t s = _state_allocator.construct();
+  tchecker::syncprod::transition_sptr_t t = _transition_allocator.construct();
+  tchecker::state_status_t status = tchecker::syncprod::final(*_system, *s, *t, final_edge);
+  if (status & mask) {
+    if (_sharing_type == tchecker::ts::SHARING) {
+      share(s);
+      share(t);
+    }
+    v.push_back(std::make_tuple(status, s, t));
+  }
+}
+
+void syncprod_t::final(boost::dynamic_bitset<> const & labels, std::vector<sst_t> & v, tchecker::state_status_t mask)
+{
+  tchecker::ts::final(*this, labels, v, mask);
+}
+
+incoming_edges_range_t syncprod_t::incoming_edges(const_state_t const & s)
+{
+  return tchecker::syncprod::incoming_edges(*_system, s->vloc_ptr());
+}
+
+void syncprod_t::prev(const_state_t const & s, incoming_edges_value_t const & in_edge, std::vector<sst_t> & v,
+                      tchecker::state_status_t mask)
+{
+  tchecker::syncprod::state_sptr_t prevs = _state_allocator.clone(*s);
+  tchecker::syncprod::transition_sptr_t t = _transition_allocator.construct();
+  tchecker::state_status_t status = tchecker::syncprod::prev(*_system, *prevs, *t, in_edge);
+  if (status & mask) {
+    if (_sharing_type == tchecker::ts::SHARING) {
+      share(prevs);
+      share(t);
+    }
+    v.push_back(std::make_tuple(status, prevs, t));
+  }
+}
+
+void syncprod_t::prev(const_state_t const & s, std::vector<sst_t> & v, tchecker::state_status_t mask)
+{
+  tchecker::ts::prev(*this, s, v, mask);
+}
+
+// Inspector
+
+boost::dynamic_bitset<> syncprod_t::labels(tchecker::syncprod::const_state_sptr_t const & s) const
 {
   return tchecker::syncprod::labels(*_system, *s);
 }
 
-bool syncprod_impl_t::is_valid_final(tchecker::syncprod::const_state_sptr_t const & s) const
-{
-  return tchecker::syncprod::is_valid_final(*_system, *s);
-}
-
-void syncprod_impl_t::attributes(tchecker::syncprod::const_state_sptr_t const & s, std::map<std::string, std::string> & m) const
+void syncprod_t::attributes(tchecker::syncprod::const_state_sptr_t const & s, std::map<std::string, std::string> & m) const
 {
   tchecker::syncprod::attributes(*_system, *s, m);
 }
 
-void syncprod_impl_t::attributes(tchecker::syncprod::const_transition_sptr_t const & t,
-                                 std::map<std::string, std::string> & m) const
+void syncprod_t::attributes(tchecker::syncprod::const_transition_sptr_t const & t, std::map<std::string, std::string> & m) const
 {
   tchecker::syncprod::attributes(*_system, *t, m);
 }
 
-void syncprod_impl_t::share(tchecker::syncprod::state_sptr_t & s) { _state_allocator.share(s); }
+bool syncprod_t::is_valid_final(tchecker::syncprod::const_state_sptr_t const & s) const
+{
+  return tchecker::syncprod::is_valid_final(*_system, *s);
+}
 
-void syncprod_impl_t::share(tchecker::syncprod::transition_sptr_t & t) { _transition_allocator.share(t); }
+bool syncprod_t::is_initial(const_state_t const & s) const { return tchecker::syncprod::is_initial(*_system, *s); }
 
-tchecker::syncprod::system_t const & syncprod_impl_t::system() const { return *_system; }
+// Sharing
 
-/* syncprod_t */
+void syncprod_t::share(tchecker::syncprod::state_sptr_t & s) { _state_allocator.share(s); }
 
-tchecker::syncprod::system_t const & syncprod_t::system() const { return ts_impl().system(); }
-
-/* sharing_syncprod_t */
-
-tchecker::syncprod::system_t const & sharing_syncprod_t::system() const { return ts_impl().system(); }
+void syncprod_t::share(tchecker::syncprod::transition_sptr_t & t) { _transition_allocator.share(t); }
 
 } // end of namespace syncprod
 
