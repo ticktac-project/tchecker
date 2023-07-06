@@ -116,7 +116,7 @@ tchecker::state_status_t prev(tchecker::ta::system_t const & system,
   tchecker::clock_id_t dim = zone->dim();
   bool src_delay_allowed = tchecker::ta::delay_allowed(system, *vloc);
 
-  status = semantics.next(dbm, dim, src_delay_allowed, src_invariant, guard, reset, tgt_delay_allowed, tgt_invariant);
+  status = semantics.prev(dbm, dim, src_delay_allowed, src_invariant, guard, reset, tgt_delay_allowed, tgt_invariant);
   if (status != tchecker::STATE_OK)
     return status;
 
@@ -203,14 +203,14 @@ void zg_t::next(tchecker::zg::const_state_sptr_t const & s, tchecker::zg::outgoi
                 std::vector<sst_t> & v, tchecker::state_status_t mask)
 {
   tchecker::zg::state_sptr_t nexts = _state_allocator.clone(*s);
-  tchecker::zg::transition_sptr_t t = _transition_allocator.construct();
-  tchecker::state_status_t status = tchecker::zg::next(*_system, *nexts, *t, *_semantics, *_extrapolation, out_edge);
+  tchecker::zg::transition_sptr_t nextt = _transition_allocator.construct();
+  tchecker::state_status_t status = tchecker::zg::next(*_system, *nexts, *nextt, *_semantics, *_extrapolation, out_edge);
   if (status & mask) {
     if (_sharing_type == tchecker::ts::SHARING) {
       share(nexts);
-      share(t);
+      share(nextt);
     }
-    v.push_back(std::make_tuple(status, nexts, t));
+    v.push_back(std::make_tuple(status, nexts, nextt));
   }
 }
 
@@ -250,15 +250,15 @@ incoming_edges_range_t zg_t::incoming_edges(tchecker::zg::const_state_sptr_t con
 void zg_t::prev(tchecker::zg::const_state_sptr_t const & s, incoming_edges_value_t const & in_edge, std::vector<sst_t> & v,
                 tchecker::state_status_t mask)
 {
-  tchecker::zg::state_sptr_t nexts = _state_allocator.clone(*s);
-  tchecker::zg::transition_sptr_t t = _transition_allocator.construct();
-  tchecker::state_status_t status = tchecker::zg::prev(*_system, *nexts, *t, *_semantics, *_extrapolation, in_edge);
+  tchecker::zg::state_sptr_t prevs = _state_allocator.clone(*s);
+  tchecker::zg::transition_sptr_t prevt = _transition_allocator.construct();
+  tchecker::state_status_t status = tchecker::zg::prev(*_system, *prevs, *prevt, *_semantics, *_extrapolation, in_edge);
   if (status & mask) {
     if (_sharing_type == tchecker::ts::SHARING) {
-      share(nexts);
-      share(t);
+      share(prevs);
+      share(prevt);
     }
-    v.push_back(std::make_tuple(status, nexts, t));
+    v.push_back(std::make_tuple(status, prevs, prevt));
   }
 }
 

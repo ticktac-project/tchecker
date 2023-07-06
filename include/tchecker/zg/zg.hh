@@ -456,7 +456,7 @@ bool is_valid_final(tchecker::ta::system_t const & system, tchecker::zg::state_t
  \param zone : a DBM zone
  \pre the dimension of zone corresponds to the number of flattened clock variables
  in system plus one (checked by assertion)
- \return true if zone contains the initial valuations where all clocks are equal to zero,
+ \return true if zone contains the initial valuation where all clocks are equal to zero,
  false otherwise
 */
 bool is_initial(tchecker::ta::system_t const & system, tchecker::zg::zone_t const & zone);
@@ -492,7 +492,7 @@ void attributes(tchecker::ta::system_t const & system, tchecker::zg::transition_
 
 /*!
  \class zg_t
- \brief Transition system of the zone graph over of timed processes with
+ \brief Transition system of the zone graph over system of timed processes with
  state and transition allocation
  \note all returned states and transitions are deallocated automatically
  */
@@ -584,6 +584,8 @@ public:
   using fwd_t::state;
   using fwd_t::status;
   using fwd_t::transition;
+
+  // Forward
 
   /*!
    \brief Accessor
