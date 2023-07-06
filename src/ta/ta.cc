@@ -228,7 +228,7 @@ tchecker::state_status_t prev(tchecker::ta::system_t const & system,
   std::vector<tchecker::integer_t> intval_src(intval->capacity());
   copy(intval_src, *intval);
 
-  // Apply transition
+  // Apply transition forward to check enabledness and target state
   tchecker::state_status_t status =
       tchecker::ta::next(system, vloc, intval, vedge, src_invariant, guard, reset, tgt_invariant, edges);
   if (status != tchecker::STATE_OK)
