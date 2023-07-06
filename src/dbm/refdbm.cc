@@ -128,6 +128,26 @@ bool is_open_up(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_vari
   return true;
 }
 
+bool contains_zero(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r)
+{
+  assert(rdbm != nullptr);
+  assert(tchecker::refdbm::is_consistent(rdbm, r));
+  assert(tchecker::refdbm::is_tight(rdbm, r));
+  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const refcount = r.refcount();
+  std::vector<tchecker::clock_id_t> const & refmap = r.refmap();
+  // for every clock X, R(X)-X is (<=,0)
+  for (tchecker::clock_id_t x = refcount; x < rdim; ++x)
+    if (RDBM(refmap[x], x) != tchecker::dbm::LE_ZERO)
+      return false;
+  // for every reference clocks R1, R2 R1-R2 is at least (<=,0)
+  for (tchecker::clock_id_t r1 = 0; r1 < refcount; ++r1)
+    for (tchecker::clock_id_t r2 = 0; r2 < refcount; ++r2)
+      if (RDBM(r1, r2) < tchecker::dbm::LE_ZERO)
+        return false;
+  return true;
+}
+
 bool is_tight(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r)
 {
   assert(rdbm != nullptr);

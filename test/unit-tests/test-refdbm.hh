@@ -305,6 +305,76 @@ TEST_CASE("is_open_up", "[refdbm]")
   }
 }
 
+TEST_CASE("contains_zero", "[refdbm]")
+{
+  std::vector<std::string> refclocks{"$0", "$1", "$2"};
+  tchecker::reference_clock_variables_t r(refclocks);
+  r.declare("x1", "$0");
+  r.declare("x2", "$0");
+  r.declare("y1", "$1");
+  r.declare("y2", "$1");
+  r.declare("z1", "$2");
+
+  tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
+  tchecker::dbm::db_t rdbm[rdim * rdim];
+
+  tchecker::clock_id_t const x1 = r.id("x1");
+  tchecker::clock_id_t const tx1 = r.refmap()[x1];
+  tchecker::clock_id_t const y2 = r.id("y2");
+  tchecker::clock_id_t const ty2 = r.refmap()[y2];
+  tchecker::clock_id_t const z1 = r.id("z1");
+  tchecker::clock_id_t const tz1 = r.refmap()[z1];
+
+  SECTION("Universal positive DBM contains zero")
+  {
+    tchecker::refdbm::universal_positive(rdbm, r);
+    REQUIRE(tchecker::refdbm::contains_zero(rdbm, r));
+  }
+
+  SECTION("Zero DBM contains zero")
+  {
+    tchecker::refdbm::zero(rdbm, r);
+    REQUIRE(tchecker::refdbm::contains_zero(rdbm, r));
+  }
+
+  SECTION("DBM with lower bounds does not contain zero")
+  {
+    tchecker::refdbm::universal_positive(rdbm, r);
+    RDBM(tx1, x1) = tchecker::dbm::db(tchecker::LT, -1);
+    RDBM(ty2, y2) = tchecker::dbm::db(tchecker::LE, -6);
+    tchecker::refdbm::tighten(rdbm, r);
+
+    REQUIRE_FALSE(tchecker::refdbm::contains_zero(rdbm, r));
+  }
+
+  SECTION("DBM with upper bounds contains zero")
+  {
+    tchecker::refdbm::universal_positive(rdbm, r);
+    RDBM(y2, ty2) = tchecker::dbm::db(tchecker::LT, 4);
+    tchecker::refdbm::tighten(rdbm, r);
+
+    REQUIRE(tchecker::refdbm::contains_zero(rdbm, r));
+  }
+
+  SECTION("DBM with negative bounds on reference clocks does not contain zero")
+  {
+    tchecker::refdbm::universal_positive(rdbm, r);
+    RDBM(tz1, ty2) = tchecker::dbm::db(tchecker::LT, -1);
+    tchecker::refdbm::tighten(rdbm, r);
+
+    REQUIRE_FALSE(tchecker::refdbm::contains_zero(rdbm, r));
+  }
+
+  SECTION("DBM with positive bounds on reference clocks contains zero")
+  {
+    tchecker::refdbm::universal_positive(rdbm, r);
+    RDBM(tx1, tz1) = tchecker::dbm::db(tchecker::LT, 1);
+    tchecker::refdbm::tighten(rdbm, r);
+
+    REQUIRE(tchecker::refdbm::contains_zero(rdbm, r));
+  }
+}
+
 TEST_CASE("is_tight", "[refdbm]")
 {
   std::vector<std::string> refclocks{"$0", "$1", "$2"};

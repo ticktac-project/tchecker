@@ -158,6 +158,20 @@ bool is_universal_positive(tchecker::dbm::db_t const * rdbm, tchecker::reference
 bool is_open_up(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r);
 
 /*!
+ \brief Checks if a DBM with reference clocks contains the zero valuation
+ \param rdbm : a DBM
+ \param r : reference clocks for rdbm
+ \pre rdbm is not nullptr (checked by assertion)
+ rdbm is a r.size()*r.size() array of difference bounds
+ rdbm is tight (checked by assertion)
+ rdbm is consistent (checked by assertion)
+ rdbm is a DBM over reference clocks r
+ \return true if rdbm contains the zero valuation over r,
+ false otherwise
+*/
+bool contains_zero(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r);
+
+/*!
  \brief Tightness predicate on DBMs with reference clocks
  \param rdbm : a DBM
  \param r : reference clocks fr rdbm
