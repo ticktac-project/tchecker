@@ -21,7 +21,10 @@
 #include "tchecker/ta/state.hh"
 #include "tchecker/ta/system.hh"
 #include "tchecker/ta/transition.hh"
-#include "tchecker/ts/ts.hh"
+#include "tchecker/ts/bwd.hh"
+#include "tchecker/ts/fwd.hh"
+#include "tchecker/ts/inspector.hh"
+#include "tchecker/ts/sharing.hh"
 #include "tchecker/utils/iterator.hh"
 #include "tchecker/utils/shared_objects.hh"
 #include "tchecker/variables/clocks.hh"
@@ -410,104 +413,234 @@ void attributes(tchecker::ta::system_t const & system, tchecker::ta::transition_
                 std::map<std::string, std::string> & m);
 
 /*!
- \class ta_impl_t
- \brief Low-level transition system implementation of a timed automaton over a
- system of synchronized timed processes
+ \class ta_t
+ \brief Transition system of the timed automaton over of timed processes with
+ state and transition allocation
+ \note all returned states and transitions are deallocated automatically
  */
-class ta_impl_t final : public tchecker::ts::ts_impl_t<tchecker::ta::state_sptr_t, tchecker::ta::const_state_sptr_t,
-                                                       tchecker::ta::transition_sptr_t, tchecker::ta::const_transition_sptr_t,
-                                                       tchecker::ta::initial_range_t, tchecker::ta::outgoing_edges_range_t,
-                                                       tchecker::ta::initial_value_t, tchecker::ta::outgoing_edges_value_t> {
+class ta_t final : public tchecker::ts::fwd_t<tchecker::ta::state_sptr_t, tchecker::ta::const_state_sptr_t,
+                                              tchecker::ta::transition_sptr_t, tchecker::ta::const_transition_sptr_t>,
+                   public tchecker::ts::bwd_t<tchecker::ta::state_sptr_t, tchecker::ta::const_state_sptr_t,
+                                              tchecker::ta::transition_sptr_t, tchecker::ta::const_transition_sptr_t>,
+                   public tchecker::ts::fwd_impl_t<tchecker::ta::state_sptr_t, tchecker::ta::const_state_sptr_t,
+                                                   tchecker::ta::transition_sptr_t, tchecker::ta::const_transition_sptr_t,
+                                                   tchecker::ta::initial_range_t, tchecker::ta::outgoing_edges_range_t,
+                                                   tchecker::ta::initial_value_t, tchecker::ta::outgoing_edges_value_t>,
+                   public tchecker::ts::bwd_impl_t<tchecker::ta::state_sptr_t, tchecker::ta::const_state_sptr_t,
+                                                   tchecker::ta::transition_sptr_t, tchecker::ta::const_transition_sptr_t,
+                                                   tchecker::ta::final_range_t, tchecker::ta::incoming_edges_range_t,
+                                                   tchecker::ta::final_value_t, tchecker::ta::incoming_edges_value_t>,
+                   public tchecker::ts::inspector_t<tchecker::ta::const_state_sptr_t, tchecker::ta::const_transition_sptr_t>,
+                   public tchecker::ts::sharing_t<tchecker::ta::state_sptr_t, tchecker::ta::transition_sptr_t> {
 public:
   // Inherited types
-  using ts_t = tchecker::ts::ts_impl_t<tchecker::ta::state_sptr_t, tchecker::ta::const_state_sptr_t,
-                                       tchecker::ta::transition_sptr_t, tchecker::ta::const_transition_sptr_t,
-                                       tchecker::ta::initial_range_t, tchecker::ta::outgoing_edges_range_t,
-                                       tchecker::ta::initial_value_t, tchecker::ta::outgoing_edges_value_t>;
-  using sst_t = ts_impl_t::sst_t;
-  using state_t = ts_impl_t::state_t;
-  using const_state_t = ts_impl_t::const_state_t;
-  using transition_t = ts_impl_t::transition_t;
-  using const_transition_t = ts_impl_t::const_transition_t;
-  using initial_range_t = ts_impl_t::initial_range_t;
-  using initial_value_t = ts_impl_t::initial_value_t;
-  using outgoing_edges_range_t = ts_impl_t::outgoing_edges_range_t;
-  using outgoing_edges_value_t = ts_impl_t::outgoing_edges_value_t;
+  using fwd_t = tchecker::ts::fwd_t<tchecker::ta::state_sptr_t, tchecker::ta::const_state_sptr_t,
+                                    tchecker::ta::transition_sptr_t, tchecker::ta::const_transition_sptr_t>;
+  using bwd_t = tchecker::ts::bwd_t<tchecker::ta::state_sptr_t, tchecker::ta::const_state_sptr_t,
+                                    tchecker::ta::transition_sptr_t, tchecker::ta::const_transition_sptr_t>;
+  using fwd_impl_t = tchecker::ts::fwd_impl_t<tchecker::ta::state_sptr_t, tchecker::ta::const_state_sptr_t,
+                                              tchecker::ta::transition_sptr_t, tchecker::ta::const_transition_sptr_t,
+                                              tchecker::ta::initial_range_t, tchecker::ta::outgoing_edges_range_t,
+                                              tchecker::ta::initial_value_t, tchecker::ta::outgoing_edges_value_t>;
+  using bwd_impl_t = tchecker::ts::bwd_impl_t<tchecker::ta::state_sptr_t, tchecker::ta::const_state_sptr_t,
+                                              tchecker::ta::transition_sptr_t, tchecker::ta::const_transition_sptr_t,
+                                              tchecker::ta::final_range_t, tchecker::ta::incoming_edges_range_t,
+                                              tchecker::ta::final_value_t, tchecker::ta::incoming_edges_value_t>;
+  using inspector_t = tchecker::ts::inspector_t<tchecker::ta::const_state_sptr_t, tchecker::ta::const_transition_sptr_t>;
+  using sharing_t = tchecker::ts::sharing_t<tchecker::ta::state_sptr_t, tchecker::ta::transition_sptr_t>;
+
+  using sst_t = fwd_t::sst_t;
+  using state_t = fwd_t::state_t;
+  using const_state_t = fwd_t::const_state_t;
+  using transition_t = fwd_t::transition_t;
+  using const_transition_t = fwd_t::const_transition_t;
+  using initial_range_t = fwd_impl_t::initial_range_t;
+  using initial_value_t = fwd_impl_t::initial_value_t;
+  using outgoing_edges_range_t = fwd_impl_t::outgoing_edges_range_t;
+  using outgoing_edges_value_t = fwd_impl_t::outgoing_edges_value_t;
+  using final_range_t = bwd_impl_t::final_range_t;
+  using final_value_t = bwd_impl_t::final_value_t;
+  using incoming_edges_range_t = bwd_impl_t::incoming_edges_range_t;
+  using incoming_edges_value_t = bwd_impl_t::incoming_edges_value_t;
 
   /*!
    \brief Constructor
    \param system : a system of timed processes
+   \param sharing_type : type of state/transition sharing
    \param block_size : number of objects allocated in a block
-   \param table_size : size of hash tables
-   \note all states and transitions are pool allocated and deallocated automatically
+   \param table_size : size of hash tables\note all states and transitions are pool allocated and deallocated automatically.
+   Components within states and transitions are shared if sharing_type is tchecker::ts::SHARING
    */
-  ta_impl_t(std::shared_ptr<tchecker::ta::system_t const> const & system, std::size_t block_size, std::size_t table_size);
+  ta_t(std::shared_ptr<tchecker::ta::system_t const> const & system, enum tchecker::ts::sharing_type_t sharing_type,
+       std::size_t block_size, std::size_t table_size);
 
   /*!
    \brief Copy constructor (deleted)
    */
-  ta_impl_t(tchecker::ta::ta_impl_t const &) = delete;
+  ta_t(tchecker::ta::ta_t const &) = delete;
 
   /*!
    \brief Move constructor (deleted)
    */
-  ta_impl_t(tchecker::ta::ta_impl_t &&) = delete;
+  ta_t(tchecker::ta::ta_t &&) = delete;
 
   /*!
    \brief Destructor
    */
-  virtual ~ta_impl_t() = default;
+  virtual ~ta_t() = default;
 
   /*!
    \brief Assignment operator (deleted)
    */
-  tchecker::ta::ta_impl_t & operator=(tchecker::ta::ta_impl_t const &) = delete;
+  tchecker::ta::ta_t & operator=(tchecker::ta::ta_t const &) = delete;
 
   /*!
    \brief Move-assignment operator (deleted)
    */
-  tchecker::ta::ta_impl_t & operator=(tchecker::ta::ta_impl_t &&) = delete;
+  tchecker::ta::ta_t & operator=(tchecker::ta::ta_t &&) = delete;
 
-  using ts_impl_t::state;
-  using ts_impl_t::status;
-  using ts_impl_t::transition;
+  using fwd_t::state;
+  using fwd_t::status;
+  using fwd_t::transition;
+
+  // Forward
 
   /*!
    \brief Accessor
    \return range of initial edges
    */
-  virtual tchecker::ta::initial_range_t initial_edges();
+  virtual initial_range_t initial_edges();
 
   /*!
-   \brief Initial state and transition
+   \brief Initial state and transition from an initial edge
+   \param init_edge : initial edge valuation
+   \param v : container
+   \param mask : mask on next states
+   \post triples (status, s, t) have been added to v, for each initial state s
+   and initial transition t from init_edge, such that status matches mask (i.e. status & mask != 0)
+   \note states and transitions that are added to v are deallocated automatically
+   \note states and transitions share their internal components if sharing_type is tchecker::ts::SHARING
+   */
+  virtual void initial(initial_value_t const & init_edge, std::vector<sst_t> & v,
+                       tchecker::state_status_t mask = tchecker::STATE_OK);
+
+  /*!
+   \brief Initial state and transition with selected status
    \param init_edge : initial state valuation
    \param v : container
+   \param mask : mask on next states
    \post triples (status, s, t) have been added to v, for each initial state s
-   and initial transition t that are initialized from init_edge.
+   and initial transition t from init_edge, such that status matches mask (i.e. status & mask != 0)
+   \note states and transitions that are added to v are deallocated automatically
+   \note states and transitions share their internal components if sharing_type is tchecker::ts::SHARING
    */
-  virtual void initial(tchecker::ta::initial_value_t const & init_edge, std::vector<sst_t> & v);
-
-  using ts_impl_t::initial;
+  virtual void initial(std::vector<sst_t> & v, tchecker::state_status_t mask = tchecker::STATE_OK);
 
   /*!
    \brief Accessor
    \param s : state
    \return outgoing edges from state s
    */
-  virtual tchecker::ta::outgoing_edges_range_t outgoing_edges(tchecker::ta::const_state_sptr_t const & s);
+  virtual outgoing_edges_range_t outgoing_edges(tchecker::ta::const_state_sptr_t const & s);
 
   /*!
-   \brief Next state and transition
+   \brief Next state and transition from an outgoing edge
    \param s : state
    \param out_edge : outgoing edge value
    \param v : container
-   \post triples (status, s', t') have been added to v, for each successor state
-   s' and transition t from s to s' along outgoing edge out_edge
+   \param mask : mask on next states
+   \post triples (status, s', t') have been added to v, for each transition s -t'-> s' along outgoing
+   edge out_edge such that status matches mask (i.e. status & mask != 0)
+   \note states and transitions that are added to v are deallocated automatically
+   \note states and transitions share their internal components if sharing_type is tchecker::ts::SHARING
    */
   virtual void next(tchecker::ta::const_state_sptr_t const & s, tchecker::ta::outgoing_edges_value_t const & out_edge,
-                    std::vector<sst_t> & v);
+                    std::vector<sst_t> & v, tchecker::state_status_t mask = tchecker::STATE_OK);
 
-  using ts_impl_t::next;
+  /*!
+  \brief Next states and transitions with selected status
+  \param s : state
+  \param v : container
+  \param mask : mask on next states
+  \post all tuples (status, s', t) such that s -t-> s' is a transition and the
+  status of s' matches mask (i.e. status & mask != 0) have been pushed to v
+  \note states and transitions that are added to v are deallocated automatically
+  \note states and transitions share their internal components if sharing_type is tchecker::ts::SHARING
+  */
+  virtual void next(tchecker::ta::const_state_sptr_t const & s, std::vector<sst_t> & v,
+                    tchecker::state_status_t mask = tchecker::STATE_OK);
+
+  // Backward
+
+  /*!
+   \brief Accessor
+   \param labels : final states labels
+   \return Final edges
+   */
+  virtual final_range_t final_edges(boost::dynamic_bitset<> const & labels);
+
+  /*!
+   \brief Final states and transitions from a final edge
+   \param final_edge : final edge valuation
+   \param v : container
+   \param mask : mask on initial states
+   \post triples (status, s, t) have been added to v, for each final state s and transition t
+   such that status matches mask (i.e. status & mask != 0)
+   \note states and transitions that are added to v are deallocated automatically
+   \note states and transitions share their internal components if sharing_type is tchecker::ts::SHARING
+   */
+  virtual void final(final_value_t const & final_edge, std::vector<sst_t> & v,
+                     tchecker::state_status_t mask = tchecker::STATE_OK);
+
+  /*!
+  \brief Final states and transitions with selected status
+  \param labels : set of final labels
+  \param v : container
+  \param mask : mask on initial states
+  \post all tuples (status, s, t) of status, states and transitions that satisfy
+  labels, and such that status matches mask (i.e. status & mask != 0), have been
+  pushed back into v
+  \note states and transitions that are added to v are deallocated automatically
+  \note states and transitions share their internal components if sharing_type is tchecker::ts::SHARING
+  */
+  virtual void final(boost::dynamic_bitset<> const & labels, std::vector<sst_t> & v,
+                     tchecker::state_status_t mask = tchecker::STATE_OK);
+
+  /*!
+   \brief Accessor
+   \param s : state
+   \return incoming edges to state s
+   */
+  virtual incoming_edges_range_t incoming_edges(tchecker::ta::const_state_sptr_t const & s);
+
+  /*!
+   \brief Previous state and transition from an incoming edge
+   \param s : state
+   \param in_edge : incoming edge value
+   \param v : container
+   \param mask : mask on initial states
+   \post triples (status, s', t') have been added to v, for each incoming transition s'-t'->s
+   along in_edge such that status matches mask (i.e. status & mask != 0)
+   \note states and transitions that are added to v are deallocated automatically
+   \note states and transitions share their internal components if sharing_type is tchecker::ts::SHARING
+   */
+  virtual void prev(tchecker::ta::const_state_sptr_t const & s, incoming_edges_value_t const & in_edge, std::vector<sst_t> & v,
+                    tchecker::state_status_t mask = tchecker::STATE_OK);
+
+  /*!
+  \brief Previous states and transitions with selected status
+  \param s : state
+  \param v : container
+  \param mask : mask on next states
+  \post all tuples (status, s', t) such that s' -t-> s is a transition and the
+  status of s' matches mask (i.e. status & mask != 0) have been pushed to v
+  \note states and transitions that are added to v are deallocated automatically
+  \note states and transitions share their internal components if sharing_type is tchecker::ts::SHARING
+  */
+  virtual void prev(tchecker::ta::const_state_sptr_t const & s, std::vector<sst_t> & v,
+                    tchecker::state_status_t mask = tchecker::STATE_OK);
+
+  // Inspector
 
   /*!
    \brief Computes the set of labels of a state
@@ -515,13 +648,6 @@ public:
    \return the set of labels on state s
    */
   virtual boost::dynamic_bitset<> labels(tchecker::ta::const_state_sptr_t const & s) const;
-
-  /*!
-   \brief Checks if a state is a valid final state
-   \param s : a state
-   \return true if a run ending in s is a valid run, false otherwise
-  */
-  virtual bool is_valid_final(tchecker::ta::const_state_sptr_t const & s) const;
 
   /*!
    \brief Accessor to state attributes as strings
@@ -538,6 +664,22 @@ public:
    \post attributes of transition t have been added to map m
    */
   virtual void attributes(tchecker::ta::const_transition_sptr_t const & t, std::map<std::string, std::string> & m) const;
+
+  /*!
+   \brief Checks if a state is a valid final state
+   \param s : a state
+   \return true if a run ending in s is a valid run, false otherwise
+  */
+  virtual bool is_valid_final(tchecker::ta::const_state_sptr_t const & s) const;
+
+  /*!
+   \brief Checks if a state is initial
+   \param s : a state
+   \return true if s is an initial state, false otherwise
+  */
+  virtual bool is_initial(tchecker::ta::const_state_sptr_t const & s) const;
+
+  // Sharing
 
   /*!
    \brief Share state components
@@ -559,57 +701,13 @@ public:
    \brief Accessor
    \return Underlying system of timed processes
    */
-  tchecker::ta::system_t const & system() const;
+  inline tchecker::ta::system_t const & system() const { return *_system; }
 
 private:
   std::shared_ptr<tchecker::ta::system_t const> _system;           /*!< System of timed processes */
+  enum tchecker::ts::sharing_type_t _sharing_type;                 /*!< Sharing of state/transition components */
   tchecker::ta::state_pool_allocator_t _state_allocator;           /*!< Pool allocator of states */
   tchecker::ta::transition_pool_allocator_t _transition_allocator; /*! Pool allocator of transitions */
-};
-
-/*!
- \class ta_t
- \brief Transition system of timed automaton over a system of synchronized timed
- processes, with states and transitions allocation
- \note all returned states and transitions deallocated automatically
- */
-class ta_t final : public tchecker::ts::make_ts_from_impl_t<tchecker::ta::ta_impl_t> {
-public:
-  using tchecker::ts::make_ts_from_impl_t<tchecker::ta::ta_impl_t>::make_ts_from_impl_t;
-
-  /*!
-    \brief Destructor
-  */
-  virtual ~ta_t() = default;
-
-  /*!
-   \brief Accessor
-   \return Underlying system of timed processes
-  */
-  tchecker::ta::system_t const & system() const;
-};
-
-/*!
- \class sharing_ta_t
- \brief Transition system of timed automaton over a system of synchronized timed
- processes, states and transitions allocation, as well as states and
- transitions sharing
- \note all returned states and transitions deallocated automatically
- */
-class sharing_ta_t final : public tchecker::ts::make_sharing_ts_from_impl_t<tchecker::ta::ta_impl_t> {
-public:
-  using tchecker::ts::make_sharing_ts_from_impl_t<tchecker::ta::ta_impl_t>::make_sharing_ts_from_impl_t;
-
-  /*!
-    \brief Destructor
-  */
-  virtual ~sharing_ta_t() = default;
-
-  /*!
-   \brief Accessor
-   \return Underlying system of timed processes
-  */
-  tchecker::ta::system_t const & system() const;
 };
 
 } // end of namespace ta
