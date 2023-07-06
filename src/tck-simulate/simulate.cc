@@ -70,14 +70,14 @@ static void display(std::ostream & os, tchecker::zg::zg_t const & zg, tchecker::
   else
     os << "--- Initial states: " << std::endl;
 
-  for (std::size_t i = 0; i < v.size(); ++i) {
-    tchecker::zg::const_state_sptr_t nexts{zg.state(v[i])};
-    tchecker::zg::const_transition_sptr_t nextt{zg.transition(v[i])};
+  std::size_t i = 0;
+  for (auto && [status, nexts, nextt] : v) {
     os << i << ") ";
     if (s.ptr() != nullptr)
-      tchecker::tck_simulate::display(os, zg, nextt);
+      tchecker::tck_simulate::display(os, zg, tchecker::zg::const_transition_sptr_t{nextt});
     os << std::endl;
-    tchecker::tck_simulate::display(os, zg, nexts);
+    tchecker::tck_simulate::display(os, zg, tchecker::zg::const_state_sptr_t{nexts});
+    ++i;
   }
 }
 
