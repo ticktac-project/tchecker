@@ -806,7 +806,7 @@ public:
    \note states and transitions that are added to v are deallocated automatically
    \note states and transitions share their internal components if sharing_type is tchecker::ts::SHARING
    */
-  virtual void initial(tchecker::syncprod::initial_value_t const & init_edge, std::vector<sst_t> & v,
+  virtual void initial(initial_value_t const & init_edge, std::vector<sst_t> & v,
                        tchecker::state_status_t mask = tchecker::STATE_OK);
 
   /*!
@@ -839,9 +839,8 @@ public:
    \note states and transitions that are added to v are deallocated automatically
    \note states and transitions share their internal components if sharing_type is tchecker::ts::SHARING
    */
-  virtual void next(tchecker::syncprod::const_state_sptr_t const & s,
-                    tchecker::syncprod::outgoing_edges_value_t const & out_edge, std::vector<sst_t> & v,
-                    tchecker::state_status_t mask = tchecker::STATE_OK);
+  virtual void next(tchecker::syncprod::const_state_sptr_t const & s, outgoing_edges_value_t const & out_edge,
+                    std::vector<sst_t> & v, tchecker::state_status_t mask = tchecker::STATE_OK);
 
   /*!
   \brief Next states and transitions with selected status
@@ -853,7 +852,8 @@ public:
   \note states and transitions that are added to v are deallocated automatically
   \note states and transitions share their internal components if sharing_type is tchecker::ts::SHARING
   */
-  virtual void next(const_state_t const & s, std::vector<sst_t> & v, tchecker::state_status_t mask = tchecker::STATE_OK);
+  virtual void next(tchecker::syncprod::const_state_sptr_t const & s, std::vector<sst_t> & v,
+                    tchecker::state_status_t mask = tchecker::STATE_OK);
 
   // Backward
 
@@ -896,7 +896,7 @@ public:
    \param s : state
    \return incoming edges to state s
    */
-  virtual incoming_edges_range_t incoming_edges(const_state_t const & s);
+  virtual incoming_edges_range_t incoming_edges(tchecker::syncprod::const_state_sptr_t const & s);
 
   /*!
    \brief Previous state and transition from an incoming edge
@@ -909,8 +909,8 @@ public:
    \note states and transitions that are added to v are deallocated automatically
    \note states and transitions share their internal components if sharing_type is tchecker::ts::SHARING
    */
-  virtual void prev(const_state_t const & s, incoming_edges_value_t const & in_edge, std::vector<sst_t> & v,
-                    tchecker::state_status_t mask = tchecker::STATE_OK);
+  virtual void prev(tchecker::syncprod::const_state_sptr_t const & s, incoming_edges_value_t const & in_edge,
+                    std::vector<sst_t> & v, tchecker::state_status_t mask = tchecker::STATE_OK);
 
   /*!
   \brief Previous states and transitions with selected status
@@ -922,7 +922,8 @@ public:
   \note states and transitions that are added to v are deallocated automatically
   \note states and transitions share their internal components if sharing_type is tchecker::ts::SHARING
   */
-  virtual void prev(const_state_t const & s, std::vector<sst_t> & v, tchecker::state_status_t mask = tchecker::STATE_OK);
+  virtual void prev(tchecker::syncprod::const_state_sptr_t const & s, std::vector<sst_t> & v,
+                    tchecker::state_status_t mask = tchecker::STATE_OK);
 
   // Inspector
 
@@ -961,7 +962,7 @@ public:
    \param s : a state
    \return true if s is an initial state, false otherwise
   */
-  virtual bool is_initial(const_state_t const & s) const;
+  virtual bool is_initial(tchecker::syncprod::const_state_sptr_t const & s) const;
 
   // Sharing
 

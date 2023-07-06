@@ -474,7 +474,7 @@ void syncprod_t::next(tchecker::syncprod::const_state_sptr_t const & s,
   }
 }
 
-void syncprod_t::next(const_state_t const & s, std::vector<sst_t> & v, tchecker::state_status_t mask)
+void syncprod_t::next(tchecker::syncprod::const_state_sptr_t const & s, std::vector<sst_t> & v, tchecker::state_status_t mask)
 {
   tchecker::ts::next(*this, s, v, mask);
 }
@@ -505,13 +505,13 @@ void syncprod_t::final(boost::dynamic_bitset<> const & labels, std::vector<sst_t
   tchecker::ts::final(*this, labels, v, mask);
 }
 
-incoming_edges_range_t syncprod_t::incoming_edges(const_state_t const & s)
+incoming_edges_range_t syncprod_t::incoming_edges(tchecker::syncprod::const_state_sptr_t const & s)
 {
   return tchecker::syncprod::incoming_edges(*_system, s->vloc_ptr());
 }
 
-void syncprod_t::prev(const_state_t const & s, incoming_edges_value_t const & in_edge, std::vector<sst_t> & v,
-                      tchecker::state_status_t mask)
+void syncprod_t::prev(tchecker::syncprod::const_state_sptr_t const & s, incoming_edges_value_t const & in_edge,
+                      std::vector<sst_t> & v, tchecker::state_status_t mask)
 {
   tchecker::syncprod::state_sptr_t prevs = _state_allocator.clone(*s);
   tchecker::syncprod::transition_sptr_t t = _transition_allocator.construct();
@@ -525,7 +525,7 @@ void syncprod_t::prev(const_state_t const & s, incoming_edges_value_t const & in
   }
 }
 
-void syncprod_t::prev(const_state_t const & s, std::vector<sst_t> & v, tchecker::state_status_t mask)
+void syncprod_t::prev(tchecker::syncprod::const_state_sptr_t const & s, std::vector<sst_t> & v, tchecker::state_status_t mask)
 {
   tchecker::ts::prev(*this, s, v, mask);
 }
@@ -552,7 +552,10 @@ bool syncprod_t::is_valid_final(tchecker::syncprod::const_state_sptr_t const & s
   return tchecker::syncprod::is_valid_final(*_system, *s);
 }
 
-bool syncprod_t::is_initial(const_state_t const & s) const { return tchecker::syncprod::is_initial(*_system, *s); }
+bool syncprod_t::is_initial(tchecker::syncprod::const_state_sptr_t const & s) const
+{
+  return tchecker::syncprod::is_initial(*_system, *s);
+}
 
 // Sharing
 
