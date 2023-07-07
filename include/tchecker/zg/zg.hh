@@ -122,6 +122,9 @@ inline tchecker::state_status_t initial(tchecker::ta::system_t const & system, t
 
 /*!
  \brief Type of iterator over final edges
+ \note this iterator ranges over the set of tuples of process locations and bounded integer variables valuations
+ in the given system, the size of which is exponential in the number of locations and processes, as well as in the
+ domains of bounded integer variables
  */
 using final_iterator_t = tchecker::ta::final_iterator_t;
 
@@ -321,6 +324,9 @@ inline tchecker::state_status_t next(tchecker::ta::system_t const & system, tche
 
 /*!
  \brief Type of iterator over incoming edges
+ \note this iterator ranges over the set of tuple of process locations and bounded integer
+ variables valuations in the given system, the size of which is exponential in the number
+ of locations and processes, as well as in the domains of bounded integer variables
  */
 using incoming_edges_iterator_t = tchecker::ta::incoming_edges_iterator_t;
 
@@ -658,6 +664,9 @@ public:
    \brief Accessor
    \param labels : final states labels
    \return Final edges
+   \note the return range goes across all tuples of process locations and bounded integer variables
+   valuations in the given system. The number of such tuples is exponential in the number of locations
+   and processes, as well as in the domains of bounded integer variables
    */
   virtual final_range_t final_edges(boost::dynamic_bitset<> const & labels);
 
@@ -684,6 +693,8 @@ public:
   pushed back into v
   \note states and transitions that are added to v are deallocated automatically
   \note states and transitions share their internal components if sharing_type is tchecker::ts::SHARING
+  \note complexity is exponential in the number of locations and processes, as well as in the doamins of
+  bounded integer variables in the underlying system
   */
   virtual void final(boost::dynamic_bitset<> const & labels, std::vector<sst_t> & v,
                      tchecker::state_status_t mask = tchecker::STATE_OK);
@@ -692,6 +703,9 @@ public:
    \brief Accessor
    \param s : state
    \return incoming edges to state s
+   \note the return range goes across all tuples of process locations and bounded integer variabkes
+   valuations in the given system. The number of such tuples is exponential in the number of locations
+   and processes, as well as the domains of bounded integer variables
    */
   virtual incoming_edges_range_t incoming_edges(tchecker::zg::const_state_sptr_t const & s);
 
@@ -718,6 +732,8 @@ public:
   status of s' matches mask (i.e. status & mask != 0) have been pushed to v
   \note states and transitions that are added to v are deallocated automatically
   \note states and transitions share their internal components if sharing_type is tchecker::ts::SHARING
+  \note complexity is exponential in the number of locations and processes, as well as the domains of
+  bounded integer valuations in the underlying system
   */
   virtual void prev(tchecker::zg::const_state_sptr_t const & s, std::vector<sst_t> & v,
                     tchecker::state_status_t mask = tchecker::STATE_OK);
