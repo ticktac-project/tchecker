@@ -33,7 +33,8 @@ namespace ndfs {
 /*!
  \class algorithm_t
  \brief Nested DFS algorithm
- \tparam TS : type of transition system, should derive from tchecker::ts::ts_t
+ \tparam TS : type of transition system, should implement tchecker::ts::fwd_t
+ and tchecker::ts::inspector_t
  \tparam GRAPH : type of graph, should derive from
  tchecker::graph::reachability_graph_t, and nodes of type GRAPH::shared_node_t
  should derive from tchecker::algorithms::ndfs::node_t and have a method
