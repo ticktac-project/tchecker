@@ -22,13 +22,11 @@
  \brief Command-line simulator for TChecker timed automata models
  */
 
-static struct option long_options[] = {{"interactive", no_argument, 0, 'i'},
-                                       {"random", required_argument, 0, 'r'},
-                                       {"output", required_argument, 0, 'o'},
-                                       {"help", no_argument, 0, 'h'},
-                                       {0, 0, 0, 0}};
+static struct option long_options[] = {{"interactive", no_argument, 0, 'i'},  {"random", required_argument, 0, 'r'},
+                                       {"output", required_argument, 0, 'o'}, {"trace", no_argument, 0, 't'},
+                                       {"help", no_argument, 0, 'h'},         {0, 0, 0, 0}};
 
-static char * const options = (char *)"ir:ho:";
+static char * const options = (char *)"ir:ho:t";
 
 /*!
 \brief Print usage message for program progname
@@ -39,6 +37,7 @@ void usage(char * progname)
   std::cerr << "   -i          interactive simulation" << std::endl;
   std::cerr << "   -r N        randomized simulation, N steps" << std::endl;
   std::cerr << "   -o file     output file for simulation trace" << std::endl;
+  std::cerr << "   -t          output simulation trace (default: stdout)" << std::endl;
   std::cerr << "   -h          help" << std::endl;
   std::cerr << "reads from standard input if file is not provided" << std::endl;
 }
@@ -48,6 +47,7 @@ static bool randomized_simulation = false;
 static bool help = false;
 static std::size_t nsteps = 0;
 static std::string output_filename = "";
+static bool output_trace = false;
 
 /*!
 \brief Parse command line arguments
@@ -80,6 +80,9 @@ int parse_command_line(int argc, char * argv[])
       nsteps = l;
       break;
     }
+    case 't':
+      output_trace = true;
+      break;
     case 'h':
       help = true;
       break;
@@ -162,7 +165,8 @@ int main(int argc, char * argv[])
     else
       throw std::runtime_error("Select one of interactive or randomized simulation");
 
-    tchecker::tck_simulate::dot_output(*os, *g, sysdecl->name());
+    if (output_trace)
+      tchecker::tck_simulate::dot_output(*os, *g, sysdecl->name());
 
     if (os != &std::cout)
       delete os;

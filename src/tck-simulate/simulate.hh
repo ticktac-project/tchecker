@@ -24,19 +24,19 @@ namespace tchecker {
 namespace tck_simulate {
 
 /*!
-\brief Randomized simulation of timed automata
-\param sysdecl : system declaration
-\param nsteps : number of simulation steps
-\return the simulation tree built from nsteps randomized simulation steps of the
-system of timed processes sysdecl
+ \brief Randomized simulation of timed automata
+ \param sysdecl : system declaration
+ \param nsteps : number of simulation steps
+ \return the simulation tree built from nsteps randomized simulation steps of the
+ system of timed processes sysdecl
 */
 std::shared_ptr<tchecker::tck_simulate::graph_t> randomized_simulation(tchecker::parsing::system_declaration_t const & sysdecl,
                                                                        std::size_t nsteps);
 
 /*!
-\brief Interactive simulation of timed automata
-\param sysdecl : system declaration
-\return the simulation tree built from interactive of the system of timed processes sysdecl
+ \brief Interactive simulation of timed automata
+ \param sysdecl : system declaration
+ \return the simulation tree built from interactive of the system of timed processes sysdecl
 */
 std::shared_ptr<tchecker::tck_simulate::graph_t>
 interactive_simulation(tchecker::parsing::system_declaration_t const & sysdecl);
