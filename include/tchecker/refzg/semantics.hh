@@ -187,7 +187,7 @@ public:
   \note set spread to tchecker::refdbm::UNBOUNDED_SPREAD for unbounded spread
   */
   virtual tchecker::state_status_t initial(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
-                                           boost::dynamic_bitset<> const & delay_allowed,
+                                           [[maybe_unused]] boost::dynamic_bitset<> const & delay_allowed,
                                            tchecker::clock_constraint_container_t const & invariant, tchecker::integer_t spread)
   {
     tchecker::refdbm::zero(rdbm, r);
@@ -227,7 +227,7 @@ public:
   \note set spread to tchecker::refdbm::UNBOUNDED_SPREAD for unbounded spread
   */
   virtual tchecker::state_status_t final(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
-                                         boost::dynamic_bitset<> const & delay_allowed,
+                                         [[maybe_unused]] boost::dynamic_bitset<> const & delay_allowed,
                                          tchecker::clock_constraint_container_t const & invariant, tchecker::integer_t spread)
   {
     tchecker::refdbm::universal_positive(rdbm, r);
@@ -294,7 +294,7 @@ public:
   next(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
        boost::dynamic_bitset<> const & src_delay_allowed, tchecker::clock_constraint_container_t const & src_invariant,
        boost::dynamic_bitset<> const & sync_ref_clocks, tchecker::clock_constraint_container_t const & guard,
-       tchecker::clock_reset_container_t const & clkreset, boost::dynamic_bitset<> const & tgt_delay_allowed,
+       tchecker::clock_reset_container_t const & clkreset, [[maybe_unused]] boost::dynamic_bitset<> const & tgt_delay_allowed,
        tchecker::clock_constraint_container_t const & tgt_invariant, tchecker::integer_t spread)
   {
     if (tchecker::refdbm::constrain(rdbm, r, src_invariant) == tchecker::dbm::EMPTY)
@@ -377,7 +377,7 @@ public:
   prev(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
        boost::dynamic_bitset<> const & src_delay_allowed, tchecker::clock_constraint_container_t const & src_invariant,
        boost::dynamic_bitset<> const & sync_ref_clocks, tchecker::clock_constraint_container_t const & guard,
-       tchecker::clock_reset_container_t const & clkreset, boost::dynamic_bitset<> const & tgt_delay_allowed,
+       tchecker::clock_reset_container_t const & clkreset, [[maybe_unused]] boost::dynamic_bitset<> const & tgt_delay_allowed,
        tchecker::clock_constraint_container_t const & tgt_invariant, tchecker::integer_t spread)
   {
     if (tchecker::refdbm::constrain(rdbm, r, tgt_invariant) == tchecker::dbm::EMPTY)
@@ -501,7 +501,7 @@ public:
   \note set spread to tchecker::refdbm::UNBOUNDED_SPREAD for unbounded spread
   */
   virtual tchecker::state_status_t final(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
-                                         boost::dynamic_bitset<> const & delay_allowed,
+                                         [[maybe_unused]] boost::dynamic_bitset<> const & delay_allowed,
                                          tchecker::clock_constraint_container_t const & invariant, tchecker::integer_t spread)
   {
     tchecker::refdbm::universal_positive(rdbm, r);
@@ -567,10 +567,11 @@ public:
   */
   virtual tchecker::state_status_t
   next(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
-       boost::dynamic_bitset<> const & src_delay_allowed, tchecker::clock_constraint_container_t const & src_invariant,
-       boost::dynamic_bitset<> const & sync_ref_clocks, tchecker::clock_constraint_container_t const & guard,
-       tchecker::clock_reset_container_t const & clkreset, boost::dynamic_bitset<> const & tgt_delay_allowed,
-       tchecker::clock_constraint_container_t const & tgt_invariant, tchecker::integer_t spread)
+       [[maybe_unused]] boost::dynamic_bitset<> const & src_delay_allowed,
+       tchecker::clock_constraint_container_t const & src_invariant, boost::dynamic_bitset<> const & sync_ref_clocks,
+       tchecker::clock_constraint_container_t const & guard, tchecker::clock_reset_container_t const & clkreset,
+       boost::dynamic_bitset<> const & tgt_delay_allowed, tchecker::clock_constraint_container_t const & tgt_invariant,
+       tchecker::integer_t spread)
   {
     if (tchecker::refdbm::constrain(rdbm, r, src_invariant) == tchecker::dbm::EMPTY)
       return tchecker::STATE_CLOCKS_SRC_INVARIANT_VIOLATED;
@@ -650,10 +651,11 @@ public:
   */
   virtual tchecker::state_status_t
   prev(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
-       boost::dynamic_bitset<> const & src_delay_allowed, tchecker::clock_constraint_container_t const & src_invariant,
-       boost::dynamic_bitset<> const & sync_ref_clocks, tchecker::clock_constraint_container_t const & guard,
-       tchecker::clock_reset_container_t const & clkreset, boost::dynamic_bitset<> const & tgt_delay_allowed,
-       tchecker::clock_constraint_container_t const & tgt_invariant, tchecker::integer_t spread)
+       [[maybe_unused]] boost::dynamic_bitset<> const & src_delay_allowed,
+       tchecker::clock_constraint_container_t const & src_invariant, boost::dynamic_bitset<> const & sync_ref_clocks,
+       tchecker::clock_constraint_container_t const & guard, tchecker::clock_reset_container_t const & clkreset,
+       boost::dynamic_bitset<> const & tgt_delay_allowed, tchecker::clock_constraint_container_t const & tgt_invariant,
+       tchecker::integer_t spread)
   {
     if (tchecker::refdbm::constrain(rdbm, r, tgt_invariant) == tchecker::dbm::EMPTY)
       return tchecker::STATE_CLOCKS_TGT_INVARIANT_VIOLATED;

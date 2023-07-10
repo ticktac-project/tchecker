@@ -18,7 +18,7 @@
 #define DBM2(i, j)   dbm2[(i)*dim + (j)]
 #define ID_TO_DBM(i) (i + 1)
 
-#define OUTPUT_DEBUG(dbm, dbm2, dim)                                                                                           \
+#define DBM_OUTPUT_DEBUG(dbm, dbm2, dim)                                                                                       \
   do {                                                                                                                         \
     std::cout << "dbm:" << std::endl;                                                                                          \
     tchecker::dbm::output_matrix(std::cout, dbm, dim);                                                                         \

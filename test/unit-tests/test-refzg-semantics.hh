@@ -22,7 +22,7 @@
 #define RDBM2(i, j)   rdbm2[(i)*rdim + (j)]
 #define ID_TO_RDBM(i) ((i) + refcount)
 
-#define OUTPUT_DEBUG(rdbm, rdbm2, r)                                                                                           \
+#define RDBM_OUTPUT_DEBUG(rdbm, rdbm2, r)                                                                                      \
   do {                                                                                                                         \
     std::cout << "rdbm:" << std::endl;                                                                                         \
     tchecker::refdbm::output_matrix(std::cout, rdbm, r);                                                                       \
@@ -44,12 +44,7 @@ TEST_CASE("standard semantics: initial zone", "[refzg semantics]")
   r.declare("y2", "$1");
   r.declare("z", "$2");
 
-  tchecker::clock_id_t const t0 = r.id("$0");
-  tchecker::clock_id_t const t1 = r.id("$1");
-  tchecker::clock_id_t const t2 = r.id("$2");
   tchecker::clock_id_t const x1 = 0;
-  tchecker::clock_id_t const x2 = 1;
-  tchecker::clock_id_t const y1 = 2;
   tchecker::clock_id_t const y2 = 3;
   tchecker::clock_id_t const z = 4;
 
@@ -655,8 +650,6 @@ TEST_CASE("standard semantics: next zone, non synchronizable", "[refzg semantics
 
   tchecker::clock_id_t const t0 = r.id("$0");
   tchecker::clock_id_t const t1 = r.id("$1");
-  tchecker::clock_id_t const x = 0;
-  tchecker::clock_id_t const y = 1;
 
   tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
   tchecker::clock_id_t const refcount = r.refcount();
@@ -1022,8 +1015,6 @@ TEST_CASE("standard semantics: previous zone, non synchronizable", "[refzg seman
 
   tchecker::clock_id_t const t0 = r.id("$0");
   tchecker::clock_id_t const t1 = r.id("$1");
-  tchecker::clock_id_t const x = 0;
-  tchecker::clock_id_t const y = 1;
 
   tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
   tchecker::clock_id_t const refcount = r.refcount();
@@ -1703,8 +1694,6 @@ TEST_CASE("elapsed semantics: next zone, non synchronizable", "[refzg semantics]
 
   tchecker::clock_id_t const t0 = r.id("$0");
   tchecker::clock_id_t const t1 = r.id("$1");
-  tchecker::clock_id_t const x = 0;
-  tchecker::clock_id_t const y = 1;
 
   tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
   tchecker::clock_id_t const refcount = r.refcount();
@@ -2025,8 +2014,6 @@ TEST_CASE("elapsed semantics: previous zone, non synchronizable", "[refzg semant
 
   tchecker::clock_id_t const t0 = r.id("$0");
   tchecker::clock_id_t const t1 = r.id("$1");
-  tchecker::clock_id_t const x = 0;
-  tchecker::clock_id_t const y = 1;
 
   tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
   tchecker::clock_id_t const refcount = r.refcount();

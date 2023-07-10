@@ -1639,7 +1639,7 @@ TEST_CASE("free clock on DBMs with reference clocks", "[refdbm]")
   tchecker::clock_id_t const z2 = r.id("z2");
 
   tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
-  tchecker::clock_id_t const refcount = r.refcount();
+  [[maybe_unused]] tchecker::clock_id_t const refcount = r.refcount();
 
   SECTION("free clock from almost universal DBM with reference clocks")
   {
