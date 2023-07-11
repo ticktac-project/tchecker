@@ -40,19 +40,24 @@ const integer_t int_minval = INT16_MIN;
 #endif
 
 /*!
+ \brief Type of identifiers
+*/
+using id_t = uint32_t;
+
+/*!
  \brief Type of event identifiers
  */
-using event_id_t = uint32_t;
+using event_id_t = tchecker::id_t;
 
 /*!
  \brief Type of process identifiers
  */
-using process_id_t = uint32_t;
+using process_id_t = tchecker::id_t;
 
 /*!
  \brief Type of variable indentifiers
  */
-using variable_id_t = uint32_t;
+using variable_id_t = tchecker::id_t;
 
 /*!
  \brief Type of variable size
@@ -80,12 +85,19 @@ static_assert((std::numeric_limits<tchecker::clock_id_t>::min() >= std::numeric_
 /*!
 \brief Definition of reference clock ID
 */
-#if not defined(MIN)
-#define MIN(a, b) ((a) <= (b) ? (a) : (b))
+#if (INTEGER_T_SIZE == 64)
+tchecker::clock_id_t const REFCLOCK_ID(std::numeric_limits<tchecker::clock_id_t>::max());
+#elif (INTEGER_T_SIZE == 32)
+tchecker::clock_id_t const REFCLOCK_ID(std::numeric_limits<tchecker::integer_t>::max());
+#elif (INTEGER_T_SIZE == 16)
+tchecker::clock_id_t const REFCLOCK_ID(std::numeric_limits<tchecker::integer_t>::max());
+#else
+#error Only 64/32/16 int bit supported
 #endif
 
-tchecker::clock_id_t const REFCLOCK_ID(MIN(std::numeric_limits<tchecker::clock_id_t>::max(),
-                                           std::numeric_limits<tchecker::integer_t>::max())); // required by vm_t
+// required by vm_t
+static_assert(REFCLOCK_ID <= std::numeric_limits<tchecker::clock_id_t>::max());
+static_assert(REFCLOCK_ID <= std::numeric_limits<tchecker::integer_t>::max());
 
 /*!
 \brief Definition of reference clock name
@@ -93,14 +105,25 @@ tchecker::clock_id_t const REFCLOCK_ID(MIN(std::numeric_limits<tchecker::clock_i
 std::string const REFCLOCK_NAME("0");
 
 /*!
+ \brief Type inequality comparator
+ */
+enum ineq_cmp_t : unsigned {
+  LT = 0, /*!< less-than < */
+  LE = 1, /*!< less-than-or-equal-to, i.e. <= */
+};
+
+static_assert(tchecker::LT == 0, "Less-than should be 0");
+static_assert(tchecker::LE == 1, "Less-than should be 1");
+
+/*!
  \brief Type of label identifiers
  */
-using label_id_t = uint32_t;
+using label_id_t = tchecker::id_t;
 
 /*!
  \brief Type of location identifiers
  */
-using loc_id_t = uint32_t;
+using loc_id_t = tchecker::id_t;
 
 /*!
  \brief Location identifier representing absence of location
@@ -117,7 +140,7 @@ bool valid_loc_id(tchecker::loc_id_t id);
 /*!
  \brief Type of edge identifiers
  */
-using edge_id_t = uint32_t;
+using edge_id_t = tchecker::id_t;
 
 /*!
  \brief Edge identifier representing absence of edge
@@ -134,12 +157,12 @@ bool valid_edge_id(tchecker::edge_id_t id);
 /*!
  \brief Type of synchronization identifiers
  */
-using sync_id_t = uint32_t;
+using sync_id_t = tchecker::id_t;
 
 /*!
  \brief Type of node identifiers
  */
-using node_id_t = uint32_t;
+using node_id_t = tchecker::id_t; // should be large enough
 
 /*!
  \brief Strength of synchronization constraint
@@ -175,10 +198,11 @@ state_status_t const STATE_CLOCKS_SRC_INVARIANT_VIOLATED =
     128; /*!< state computation failed due to clocks source invariant violation */
 state_status_t const STATE_CLOCKS_TGT_INVARIANT_VIOLATED =
     256;                                               /*!< state computation failed due to clocks target invariant violation */
-state_status_t const STATE_CLOCKS_EMPTY_SYNC = 512;    /*!< state computation failed due to empty sync zone */
-state_status_t const STATE_CLOCKS_EMPTY_SPREAD = 1024; /*!< state computation failed due to empty bounded-spread zone */
-state_status_t const STATE_ZONE_EMPTY = 2048;          /*!< state computation result in an empty zone (no details provided) */
-state_status_t const STATE_ZONE_EMPTY_SYNC = 4096;     /*!< state computation result in a ref zone that has no sync valuation */
+state_status_t const STATE_CLOCKS_RESET_FAILED = 512;  /*!< state computation failed due to clock reset */
+state_status_t const STATE_CLOCKS_EMPTY_SYNC = 1024;   /*!< state computation failed due to empty sync zone */
+state_status_t const STATE_CLOCKS_EMPTY_SPREAD = 2048; /*!< state computation failed due to empty bounded-spread zone */
+state_status_t const STATE_ZONE_EMPTY = 4096;          /*!< state computation result in an empty zone (no details provided) */
+state_status_t const STATE_ZONE_EMPTY_SYNC = 8192;     /*!< state computation result in a ref zone that has no sync valuation */
 
 } // end of namespace tchecker
 

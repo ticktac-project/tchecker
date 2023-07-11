@@ -29,14 +29,23 @@ namespace algorithms {
 namespace covreach {
 
 /*!
+ \brief Type of covering for covreach algorithm
+ */
+enum covering_t {
+  COVERING_FULL,       /*!< Cover all non-maximal nodes */
+  COVERING_LEAF_NODES, /*!< Only cover non-maximal leaf nodes */
+};
+
+/*!
  \class algorithm_t
  \brief Covering reachability algorithm
- \tparam TS : type of transition system, should derive from tchecker::ts::ts_t
+ \tparam TS : type of transition system, should implment tchecker::ts::fwd_t
+ and tchecker::ts::inspector_t
  \tparam GRAPH : type of graph, should derive from
  tchecker::graph::subsumption::graph_t, and nodes of type GRAPH::shared_node_t
  should have a method state_ptr() that yields a pointer to the corresponding
  state in TS.
- For correctness of the algorithm, the covering relation over nodes in GRAPH
+ \note For correctness of the algorithm, the covering relation over nodes in GRAPH
  should be a trace inclusion, and it should be irreflexive: a node should not
  cover itself
 */
@@ -47,6 +56,8 @@ public:
   /*!
    \brief Build a covering reachability graph of a transition system from its
    initial states
+   \tparam COVERING : type of covering. Set to COVERING_LEAF_NODES to cover only
+   non-maximal leaf nodes. Set to COVERING_FULL to cover all non-maximal nodes.
    \param ts : a transition system
    \param graph : a graph
    \param labels : accepting labels
@@ -62,6 +73,7 @@ public:
    \return Statistics on the run
    \note if labels is empty, the algorithm explores the entire state-space
   */
+  template <enum tchecker::algorithms::covreach::covering_t COVERING = tchecker::algorithms::covreach::COVERING_FULL>
   tchecker::algorithms::covreach::stats_t run(TS & ts, GRAPH & graph, boost::dynamic_bitset<> const & labels,
                                               enum tchecker::waiting::policy_t policy)
   {
@@ -83,6 +95,7 @@ public:
       ++stats.visited_states();
 
       if (accepting(node, ts, labels)) {
+        node->final(true);
         stats.reachable() = true;
         break;
       }
@@ -91,10 +104,12 @@ public:
 
       for (node_sptr_t const & next_node : nodes) {
         waiting->insert(next_node);
-        remove_covered_nodes(graph, next_node, covered_nodes, stats);
-        for (node_sptr_t const & covered_node : covered_nodes)
-          waiting->remove(covered_node);
-        covered_nodes.clear();
+        if constexpr (COVERING == tchecker::algorithms::covreach::COVERING_FULL) {
+          remove_covered_nodes(graph, next_node, covered_nodes, stats);
+          for (node_sptr_t const & covered_node : covered_nodes)
+            waiting->remove(covered_node);
+          covered_nodes.clear();
+        }
       }
       nodes.clear();
     }
@@ -128,6 +143,7 @@ public:
     ts.initial(sst);
     for (auto && [status, s, t] : sst) {
       typename GRAPH::node_sptr_t n = graph.add_node(s);
+      n->initial(true);
       if (graph.is_covered(n, covering_node)) {
         graph.remove_node(n);
         ++stats.covered_states();
@@ -159,6 +175,7 @@ public:
 
     ts.next(node->state_ptr(), sst);
     for (auto && [status, s, t] : sst) {
+      ++stats.visited_transitions();
       typename GRAPH::node_sptr_t next_node = graph.add_node(s);
       if (graph.is_covered(next_node, covering_node)) {
         graph.add_edge(node, covering_node, tchecker::graph::subsumption::EDGE_SUBSUMPTION, *t);

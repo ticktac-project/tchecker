@@ -1,17 +1,19 @@
+// MEMORY_MAX_RSS  xxxx
 // REACHABLE false
 // RUNNING_TIME_SECONDS  xxxx
 // VISITED_STATES 10
+// VISITED_TRANSITIONS 10
 digraph bug045 {
-  0 [intval="count=0", vloc="<l0>", zone="()"]
-  1 [intval="count=1", vloc="<l0>", zone="()"]
-  2 [intval="count=2", vloc="<l0>", zone="()"]
-  3 [intval="count=3", vloc="<l0>", zone="()"]
-  4 [intval="count=4", vloc="<l0>", zone="()"]
-  5 [intval="count=5", vloc="<l0>", zone="()"]
-  6 [intval="count=6", vloc="<l0>", zone="()"]
-  7 [intval="count=7", vloc="<l0>", zone="()"]
-  8 [intval="count=8", vloc="<l0>", zone="()"]
-  9 [intval="count=9", vloc="<l0>", zone="()"]
+  0 [initial="true", intval="count=0", labels="", vloc="<l0>", zone="()"]
+  1 [intval="count=1", labels="", vloc="<l0>", zone="()"]
+  2 [intval="count=2", labels="", vloc="<l0>", zone="()"]
+  3 [intval="count=3", labels="", vloc="<l0>", zone="()"]
+  4 [intval="count=4", labels="", vloc="<l0>", zone="()"]
+  5 [intval="count=5", labels="", vloc="<l0>", zone="()"]
+  6 [intval="count=6", labels="", vloc="<l0>", zone="()"]
+  7 [intval="count=7", labels="", vloc="<l0>", zone="()"]
+  8 [intval="count=8", labels="", vloc="<l0>", zone="()"]
+  9 [intval="count=9", labels="", vloc="<l0>", zone="()"]
   0 -> 1 [vedge="<P@a>"]
   1 -> 2 [vedge="<P@a>"]
   2 -> 3 [vedge="<P@a>"]

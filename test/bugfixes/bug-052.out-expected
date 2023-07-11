@@ -1,0 +1,8 @@
+// MEMORY_MAX_RSS  xxxx
+// REACHABLE false
+// RUNNING_TIME_SECONDS  xxxx
+// VISITED_STATES 1
+// VISITED_TRANSITIONS 0
+digraph bug {
+  0 [initial="true", intval="", labels="", vloc="<l0>", zone="(0<=x & 0<=y)"]
+}

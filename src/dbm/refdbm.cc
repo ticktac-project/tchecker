@@ -128,6 +128,26 @@ bool is_open_up(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_vari
   return true;
 }
 
+bool contains_zero(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r)
+{
+  assert(rdbm != nullptr);
+  assert(tchecker::refdbm::is_consistent(rdbm, r));
+  assert(tchecker::refdbm::is_tight(rdbm, r));
+  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const refcount = r.refcount();
+  std::vector<tchecker::clock_id_t> const & refmap = r.refmap();
+  // for every clock X, R(X)-X is (<=,0)
+  for (tchecker::clock_id_t x = refcount; x < rdim; ++x)
+    if (RDBM(refmap[x], x) != tchecker::dbm::LE_ZERO)
+      return false;
+  // for every reference clocks R1, R2 R1-R2 is at least (<=,0)
+  for (tchecker::clock_id_t r1 = 0; r1 < refcount; ++r1)
+    for (tchecker::clock_id_t r2 = 0; r2 < refcount; ++r2)
+      if (RDBM(r1, r2) < tchecker::dbm::LE_ZERO)
+        return false;
+  return true;
+}
+
 bool is_tight(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r)
 {
   assert(rdbm != nullptr);
@@ -271,7 +291,7 @@ bool is_alu_star_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const
       // second condition (<=,Ux) + Z{r(x),x} >= (<=,0) if x is a clock (not a
       // reference clock)
       if (x >= refcount) {
-        tchecker::dbm::db_t const le_Ux = tchecker::dbm::db(tchecker::dbm::LE, Ux);
+        tchecker::dbm::db_t const le_Ux = tchecker::dbm::db(tchecker::LE, Ux);
         tchecker::clock_id_t const rx = refmap[x];
 
         if (tchecker::dbm::sum(le_Ux, RDBM1(rx, x)) < tchecker::dbm::LE_ZERO)
@@ -281,7 +301,7 @@ bool is_alu_star_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const
       // third condition (<,-Ly) + Z'{y,x} < Z{r(y),x} if y is a clock (not a
       // reference clock)
       if (y >= refcount) {
-        tchecker::dbm::db_t const lt_minus_Ly = tchecker::dbm::db(tchecker::dbm::LT, -Ly);
+        tchecker::dbm::db_t const lt_minus_Ly = tchecker::dbm::db(tchecker::LT, -Ly);
         tchecker::clock_id_t const ry = refmap[y];
 
         if (tchecker::dbm::sum(lt_minus_Ly, RDBM2(y, x)) >= RDBM1(ry, x))
@@ -351,7 +371,7 @@ bool is_time_elapse_alu_star_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm
         continue;
 
       // second condition (<=,Ux) + Z{r(x),x} >= (<=,0) for clock x
-      tchecker::dbm::db_t const le_Ux = tchecker::dbm::db(tchecker::dbm::LE, Ux);
+      tchecker::dbm::db_t const le_Ux = tchecker::dbm::db(tchecker::LE, Ux);
       tchecker::clock_id_t const rx = refmap[x];
 
       if (tchecker::dbm::sum(le_Ux, RDBM1(rx, x)) < tchecker::dbm::LE_ZERO)
@@ -360,7 +380,7 @@ bool is_time_elapse_alu_star_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm
       // third condition (<,-Ly) + Z'{y,x} < Z{r(y),x} if y is a clock (not a
       // reference clock)
       if (y >= refcount) {
-        tchecker::dbm::db_t const lt_minus_Ly = tchecker::dbm::db(tchecker::dbm::LT, -Ly);
+        tchecker::dbm::db_t const lt_minus_Ly = tchecker::dbm::db(tchecker::LT, -Ly);
         tchecker::clock_id_t const ry = refmap[y];
 
         if (tchecker::dbm::sum(lt_minus_Ly, RDBM2(y, x)) >= RDBM1(ry, x))
@@ -428,7 +448,7 @@ bool is_sync_alu_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const
       min_tx1 = tchecker::dbm::min(min_tx1, LTE_RDBM1(t, x));
 
     // Check 1st condition
-    if (min_tx1 < tchecker::dbm::db(tchecker::dbm::LE, -Ux))
+    if (min_tx1 < tchecker::dbm::db(tchecker::LE, -Ux))
       continue;
 
     // Compute min_tx2 = min {dbm2[t,x] | t ref clock}
@@ -453,7 +473,7 @@ bool is_sync_alu_le(tchecker::dbm::db_t const * rdbm1, tchecker::dbm::db_t const
 
       // Check 2nd and 3rd conditions (of second case above)
       if (LTE_RDBM2(y, x) < LTE_RDBM1(y, x) &&
-          tchecker::dbm::sum(LTE_RDBM2(y, x), tchecker::dbm::db(tchecker::dbm::LT, -Ly)) < min_tx1)
+          tchecker::dbm::sum(LTE_RDBM2(y, x), tchecker::dbm::db(tchecker::LT, -Ly)) < min_tx1)
         return false;
     }
   }
@@ -474,7 +494,7 @@ std::size_t hash(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_var
 }
 
 enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
-                                       tchecker::clock_id_t x, tchecker::clock_id_t y, tchecker::dbm::comparator_t cmp,
+                                       tchecker::clock_id_t x, tchecker::clock_id_t y, tchecker::ineq_cmp_t cmp,
                                        tchecker::integer_t value)
 {
   assert(rdbm != nullptr);
@@ -488,9 +508,7 @@ enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * rdbm, tchecker::ref
                                        tchecker::clock_constraint_t const & c)
 {
   tchecker::clock_constraint_t translated = r.translate(c);
-  tchecker::dbm::comparator_t cmp =
-      (translated.comparator() == tchecker::clock_constraint_t::LE ? tchecker::dbm::LE : tchecker::dbm::LT);
-  return tchecker::refdbm::constrain(rdbm, r, translated.id1(), translated.id2(), cmp, translated.value());
+  return tchecker::refdbm::constrain(rdbm, r, translated.id1(), translated.id2(), translated.comparator(), translated.value());
 }
 
 enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
@@ -536,7 +554,7 @@ enum tchecker::dbm::status_t bound_spread(tchecker::dbm::db_t * rdbm, tchecker::
   if (spread == tchecker::refdbm::UNBOUNDED_SPREAD)
     return tchecker::dbm::NON_EMPTY;
 
-  tchecker::dbm::db_t const le_spread = tchecker::dbm::db(tchecker::dbm::LE, spread);
+  tchecker::dbm::db_t const le_spread = tchecker::dbm::db(tchecker::LE, spread);
 
   tchecker::clock_id_t const rdim = r.size();
 
@@ -620,6 +638,53 @@ void reset(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t con
     tchecker::refdbm::reset(rdbm, r, reset);
 }
 
+void free_clock(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r, tchecker::clock_id_t x)
+{
+  tchecker::clock_id_t const rdim = r.size();
+  assert(rdbm != nullptr);
+  assert(tchecker::refdbm::is_consistent(rdbm, r));
+  assert(tchecker::refdbm::is_tight(rdbm, r));
+  assert(x < rdim);
+
+  tchecker::clock_id_t const tx = r.refmap()[x];
+  assert(RDBM(x, tx) == tchecker::dbm::LE_ZERO);
+  assert(RDBM(tx, x) == tchecker::dbm::LE_ZERO);
+
+  if (tx == x)
+    return;
+
+  // free x w.r.t all other variables
+  // since RDBM(tx, x) = (<=, 0), we get that:
+  // - the x column should be the tx column, i.e. RDBM(z, x) = RDBM(z, tx) for all z
+  // - the x line should be (<,inf)
+  for (tchecker::clock_id_t z = 0; z < rdim; ++z) {
+    RDBM(x, z) = tchecker::dbm::LT_INFINITY;
+    RDBM(z, x) = RDBM(z, tx);
+  }
+  RDBM(x, x) = tchecker::dbm::LE_ZERO;
+
+  assert(tchecker::refdbm::is_consistent(rdbm, r));
+  assert(tchecker::refdbm::is_tight(rdbm, r));
+}
+
+void free_clock(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
+                tchecker::clock_reset_t const & reset)
+{
+  assert(reset.left_id() < r.size() - r.refcount());
+  assert(reset.right_id() == tchecker::REFCLOCK_ID);
+  assert(reset.value() == 0);
+
+  tchecker::clock_reset_t translated = r.translate(reset);
+  return tchecker::refdbm::free_clock(rdbm, r, translated.left_id());
+}
+
+void free_clock(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
+                tchecker::clock_reset_container_t const & rc)
+{
+  for (tchecker::clock_reset_t const & reset : rc)
+    tchecker::refdbm::free_clock(rdbm, r, reset);
+}
+
 void asynchronous_open_up(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r)
 {
   assert(rdbm != nullptr);
@@ -662,6 +727,66 @@ void asynchronous_open_up(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_
       RDBM(x, t) = tchecker::dbm::LT_INFINITY;
     RDBM(t, t) = tchecker::dbm::LE_ZERO;
   }
+
+  assert(tchecker::refdbm::is_consistent(rdbm, r));
+  assert(tchecker::refdbm::is_tight(rdbm, r));
+}
+
+void asynchronous_open_down(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r)
+{
+  assert(rdbm != nullptr);
+  assert(tchecker::refdbm::is_consistent(rdbm, r));
+  assert(tchecker::refdbm::is_tight(rdbm, r));
+
+  // The new rdbm is obtained by setting:
+  // all DBM(t, x) to <=0 for any reference clock t and offset variable x such that
+  // t is the reference clock of x
+  // all DBM(t, y) to <inf for any other reference clock or offset variable y
+  // then tightening
+  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const refcount = r.refcount();
+  std::vector<tchecker::clock_id_t> const & refmap = r.refmap();
+
+  for (tchecker::clock_id_t t = 0; t < refcount; ++t) {
+    for (tchecker::clock_id_t x = 0; x < rdim; ++x)
+      RDBM(t, x) = (t == refmap[x] ? tchecker::dbm::LE_ZERO : tchecker::dbm::LT_INFINITY);
+    RDBM(t, t) = tchecker::dbm::LE_ZERO;
+  }
+  tchecker::refdbm::tighten(rdbm, r);
+
+  assert(tchecker::refdbm::is_consistent(rdbm, r));
+  assert(tchecker::refdbm::is_tight(rdbm, r));
+}
+
+void asynchronous_open_down(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
+                            boost::dynamic_bitset<> const & delay_allowed)
+{
+  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const refcount = r.refcount();
+
+  assert(rdbm != nullptr);
+  assert(tchecker::refdbm::is_consistent(rdbm, r));
+  assert(tchecker::refdbm::is_tight(rdbm, r));
+  assert(refcount == delay_allowed.size());
+
+  // The new rdbm is obtained by setting:
+  // all DBM(t, x) to <=0 for any reference clock t and offset variable x such that
+  // t is the reference clock of x, and delay is allowed for t
+  // all DBM(t, y) to <inf for any other reference clock or offset variable y, and delay
+  // is allowed for t
+  // DBM(t, x) is left unchanged if t is a reference clock s.t. delay is not allowed for t
+  // then tightening
+  std::vector<tchecker::clock_id_t> const & refmap = r.refmap();
+
+  for (tchecker::clock_id_t t = 0; t < refcount; ++t) {
+    if (!delay_allowed[t])
+      continue;
+
+    for (tchecker::clock_id_t x = 0; x < rdim; ++x)
+      RDBM(t, x) = (t == refmap[x] ? tchecker::dbm::LE_ZERO : tchecker::dbm::LT_INFINITY);
+    RDBM(t, t) = tchecker::dbm::LE_ZERO;
+  }
+  tchecker::refdbm::tighten(rdbm, r);
 
   assert(tchecker::refdbm::is_consistent(rdbm, r));
   assert(tchecker::refdbm::is_tight(rdbm, r));

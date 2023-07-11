@@ -102,8 +102,8 @@ TEST_CASE("Reference clock variables from system - no array", "[reference clock 
   tchecker::clock_id_t const x = system.clock_id("x");
   tchecker::clock_id_t const y = system.clock_id("y");
 
-  tchecker::reference_clock_variables_t const reference_clocks =
-      tchecker::process_reference_clocks(vaccess_map, system.clock_variables().flattened(), system.processes_count());
+  tchecker::reference_clock_variables_t const reference_clocks = tchecker::process_reference_clocks(
+      vaccess_map, system.clock_variables().flattened(), static_cast<tchecker::process_id_t>(system.processes_count()));
 
   SECTION("Check reference clocks")
   {
@@ -179,8 +179,8 @@ TEST_CASE("Offset clock variables from system - array", "[offset clock variables
   tchecker::clock_id_t const y1 = system.clock_variables().flattened().id("y[1]");
   tchecker::clock_id_t const z = system.clock_variables().flattened().id("z");
 
-  tchecker::reference_clock_variables_t const reference_clocks =
-      tchecker::process_reference_clocks(vaccess_map, system.clock_variables().flattened(), system.processes_count());
+  tchecker::reference_clock_variables_t const reference_clocks = tchecker::process_reference_clocks(
+      vaccess_map, system.clock_variables().flattened(), static_cast<tchecker::process_id_t>(system.processes_count()));
 
   SECTION("Check reference clocks")
   {
@@ -248,39 +248,37 @@ TEST_CASE("translation of clock constraints", "[clocks]")
 
   SECTION("Upper-bound constraint")
   {
-    tchecker::clock_constraint_t c =
-        r.translate(tchecker::clock_constraint_t(_x, tchecker::REFCLOCK_ID, tchecker::clock_constraint_t::LE, 1));
+    tchecker::clock_constraint_t c = r.translate(tchecker::clock_constraint_t(_x, tchecker::REFCLOCK_ID, tchecker::LE, 1));
     REQUIRE(c.id1() == x);
     REQUIRE(c.id2() == t0);
-    REQUIRE(c.comparator() == tchecker::clock_constraint_t::LE);
+    REQUIRE(c.comparator() == tchecker::LE);
     REQUIRE(c.value() == 1);
   }
 
   SECTION("Lower-bound constraint")
   {
-    tchecker::clock_constraint_t c =
-        r.translate(tchecker::clock_constraint_t(tchecker::REFCLOCK_ID, _z1, tchecker::clock_constraint_t::LE, -3));
+    tchecker::clock_constraint_t c = r.translate(tchecker::clock_constraint_t(tchecker::REFCLOCK_ID, _z1, tchecker::LE, -3));
     REQUIRE(c.id1() == t2);
     REQUIRE(c.id2() == z1);
-    REQUIRE(c.comparator() == tchecker::clock_constraint_t::LE);
+    REQUIRE(c.comparator() == tchecker::LE);
     REQUIRE(c.value() == -3);
   }
 
   SECTION("Diagonal constraint, same reference clock")
   {
-    tchecker::clock_constraint_t c = r.translate(tchecker::clock_constraint_t(_z1, _z2, tchecker::clock_constraint_t::LT, 19));
+    tchecker::clock_constraint_t c = r.translate(tchecker::clock_constraint_t(_z1, _z2, tchecker::LT, 19));
     REQUIRE(c.id1() == z1);
     REQUIRE(c.id2() == z2);
-    REQUIRE(c.comparator() == tchecker::clock_constraint_t::LT);
+    REQUIRE(c.comparator() == tchecker::LT);
     REQUIRE(c.value() == 19);
   }
 
   SECTION("Diagonal constraint, distinct reference clocks")
   {
-    tchecker::clock_constraint_t c = r.translate(tchecker::clock_constraint_t(_y, _x, tchecker::clock_constraint_t::LE, -5));
+    tchecker::clock_constraint_t c = r.translate(tchecker::clock_constraint_t(_y, _x, tchecker::LE, -5));
     REQUIRE(c.id1() == y);
     REQUIRE(c.id2() == x);
-    REQUIRE(c.comparator() == tchecker::clock_constraint_t::LE);
+    REQUIRE(c.comparator() == tchecker::LE);
     REQUIRE(c.value() == -5);
   }
 }

@@ -112,11 +112,28 @@ bool operator==(tchecker::syncprod::transition_t const & t1, tchecker::syncprod:
 bool operator!=(tchecker::syncprod::transition_t const & t1, tchecker::syncprod::transition_t const & t2);
 
 /*!
+ \brief Equality check for shared transitions
+ \param t1 : transition
+ \param t2 : transition
+ \return true if t1 and t2 have same tuple of edges, false otherwise
+ \note note this should only be used on transitions that have shared internal components
+*/
+bool shared_equal_to(tchecker::syncprod::transition_t const & t1, tchecker::syncprod::transition_t const & t2);
+
+/*!
  \brief Hash
  \param t : transition
  \return Hash value for transition t
  */
 std::size_t hash_value(tchecker::syncprod::transition_t const & t);
+
+/*!
+ \brief Hash for shared transitions
+ \param t : transition
+ \return Hash value for transition t
+ \note note this should only be used on transitions that have shared internal components
+ */
+std::size_t shared_hash_value(tchecker::syncprod::transition_t const & t);
 
 /*!
  \brief Lexical ordering on transitions of synchronized product of timed processes
@@ -155,7 +172,7 @@ public:
    \param args : arguments for a constructor of class tchecker::syncprod::transition_t
    \return allocation size for objects of class tchecker::syncprod::transition_t
    */
-  template <class... ARGS> static constexpr std::size_t alloc_size(ARGS &&... args)
+  template <class... ARGS> static constexpr std::size_t alloc_size(ARGS &&... /*args*/)
   {
     return sizeof(tchecker::syncprod::transition_t);
   }

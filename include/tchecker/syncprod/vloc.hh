@@ -14,6 +14,7 @@
 #include "tchecker/system/system.hh"
 #include "tchecker/utils/allocation_size.hh"
 #include "tchecker/utils/array.hh"
+#include "tchecker/utils/cache.hh"
 #include "tchecker/utils/shared_objects.hh"
 
 /*!
@@ -24,14 +25,25 @@
 namespace tchecker {
 
 /*!
+ \class vloc_base_t
+ \brief Base class for tuple of locations that extends array capacity with
+ cache object
+*/
+class vloc_base_t : public tchecker::array_capacity_t<unsigned int>, public tchecker::cached_object_t {
+public:
+  using tchecker::array_capacity_t<unsigned int>::array_capacity_t;
+};
+
+/*!
  \brief Type of fixed capacity array of locations
  */
-using loc_array_t =
-    tchecker::make_array_t<tchecker::loc_id_t, sizeof(tchecker::loc_id_t), tchecker::array_capacity_t<unsigned int>>;
+using loc_array_t = tchecker::make_array_t<tchecker::loc_id_t, sizeof(tchecker::loc_id_t), tchecker::vloc_base_t>;
 
 /*!
  \class vloc_t
  \brief Vector of locations
+ \note NO FIELD SHOULD BE ADDED TO THIS CLASS (either by definition or
+ inheritance). See tchecker::make_array_t for details
  */
 class vloc_t : public tchecker::loc_array_t {
 public:
@@ -166,6 +178,16 @@ int lexical_cmp(tchecker::vloc_t const & vloc1, tchecker::vloc_t const & vloc2);
  \brief Type of shared tuple of locations
  */
 using shared_vloc_t = tchecker::make_shared_t<tchecker::vloc_t>;
+
+/*!
+ \brief Type of shared pointer to a tuple of locations
+*/
+using vloc_sptr_t = tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t>;
+
+/*!
+ \brief Type of shared pointer to a const tuple of locations
+*/
+using const_vloc_sptr_t = tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const>;
 
 } // end of namespace tchecker
 

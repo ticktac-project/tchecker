@@ -14,7 +14,9 @@
 #include "tchecker/basictypes.hh"
 #include "tchecker/utils/allocation_size.hh"
 #include "tchecker/utils/array.hh"
+#include "tchecker/utils/cache.hh"
 #include "tchecker/utils/index.hh"
+#include "tchecker/utils/iterator.hh"
 #include "tchecker/variables/variables.hh"
 
 /*!
@@ -93,6 +95,18 @@ private:
 };
 
 /*!
+ \brief Type of range over values of a bounded integer variable
+*/
+using intvar_values_range_t = tchecker::range_t<tchecker::integer_iterator_t>;
+
+/*!
+ \brief Compute range of values of a bounded integer variable
+ \param intvar_info : informations on bounded integer variable
+ \return a range of values of the bounded integer variable described by intvar_info
+ */
+tchecker::intvar_values_range_t intvar_values_range(tchecker::intvar_info_t const & intvar_info);
+
+/*!
  \brief Index of bounded integer variables
  */
 using intvar_index_t = tchecker::index_t<tchecker::intvar_id_t, std::string>;
@@ -134,17 +148,52 @@ protected:
 using flat_integer_variables_t =
     tchecker::flat_variables_t<tchecker::intvar_id_t, tchecker::intvar_info_t, tchecker::intvar_index_t>;
 
+/*!
+ \brief Type of iterator over valuations of flat integer variables
+ */
+using flat_integer_variables_valuations_iterator_t = tchecker::cartesian_iterator_t<tchecker::intvar_values_range_t>;
+
+/*!
+ \brief Type of range over valuations of flat integer variables
+*/
+using flat_integer_variables_valuations_range_t =
+    tchecker::range_t<tchecker::flat_integer_variables_valuations_iterator_t, tchecker::end_iterator_t>;
+
+/*!
+ \brief Yype of values in a range over valuations of flat integer variables
+*/
+using flat_integer_variables_valuations_value_t =
+    std::iterator_traits<flat_integer_variables_valuations_iterator_t>::value_type;
+
+/*!
+ \brief Return the range of valuations of flat integer variables
+ \param intvars : flat bounded integer variables
+ \return the range of valuations of intvars
+ */
+tchecker::flat_integer_variables_valuations_range_t
+flat_integer_variables_valuations_range(tchecker::flat_integer_variables_t const & intvars);
+
 // Integer variables valuation
+
+/*!
+ \class intval_base_t
+ \brief Base class for integer variables valuations which can be stored in cache
+*/
+class intval_base_t : public tchecker::array_capacity_t<unsigned short>, public tchecker::cached_object_t {
+public:
+  using tchecker::array_capacity_t<unsigned short>::array_capacity_t;
+};
 
 /*!
  \brief Type of integer variables array
  */
-using intvars_array_t =
-    tchecker::make_array_t<tchecker::integer_t, sizeof(tchecker::integer_t), tchecker::array_capacity_t<unsigned short>>;
+using intvars_array_t = tchecker::make_array_t<tchecker::integer_t, sizeof(tchecker::integer_t), intval_base_t>;
 
 /*!
  \class intvars_valuation_t
  \brief Valuation of integer variables
+ \note NO FIELD SHOULD BE ADDED TO THIS CLASS (either by definition or
+ inheritance). See tchecker::make_array_t for details
  */
 class intvars_valuation_t : public tchecker::intvars_array_t {
 public:

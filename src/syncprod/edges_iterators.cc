@@ -33,6 +33,26 @@ outgoing_asynchronous_edges(tchecker::syncprod::system_t const & system,
   return tchecker::make_range(join_begin, tchecker::past_the_end_iterator);
 }
 
+/* Iterator over asynchronous edges to a tuple of locations */
+
+tchecker::range_t<tchecker::syncprod::vloc_asynchronous_edges_iterator_t, tchecker::end_iterator_t>
+incoming_asynchronous_edges(tchecker::syncprod::system_t const & system,
+                            tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc)
+{
+  // iterators over ranges of incoming asynchronous edges to vloc
+  auto loc_to_async_edges = [&system](tchecker::loc_id_t loc) { return system.asynchronous_incoming_edges(loc); };
+
+  tchecker::syncprod::vloc_asynchronous_edges_const_iterator_t vbegin(vloc->begin(), loc_to_async_edges);
+  tchecker::syncprod::vloc_asynchronous_edges_const_iterator_t vend(vloc->end(), loc_to_async_edges);
+
+  // join iterator
+  auto get_sub_range = [](tchecker::syncprod::vloc_asynchronous_edges_const_iterator_t const & it) { return *it; };
+
+  tchecker::syncprod::vloc_asynchronous_edges_iterator_t join_begin(vbegin, vend, get_sub_range);
+
+  return tchecker::make_range(join_begin, tchecker::past_the_end_iterator);
+}
+
 /* vloc_synchronized_edges_iterator_t */
 
 /*!
@@ -111,12 +131,26 @@ void tchecker::syncprod::vloc_synchronized_edges_iterator_t::advance_while_empty
   }
 }
 
+/* Range of outgoing synchronized edges */
+
 tchecker::range_t<tchecker::syncprod::vloc_synchronized_edges_iterator_t, tchecker::end_iterator_t>
 outgoing_synchronized_edges(tchecker::syncprod::system_t const & system,
                             tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc)
 {
   auto syncs = system.synchronizations();
   tchecker::syncprod::vloc_synchronized_edges_iterator_t begin(vloc, system.outgoing_edges_maps(), syncs.begin(), syncs.end());
+
+  return tchecker::make_range(begin, tchecker::past_the_end_iterator);
+}
+
+/* Range of incoming synchronized edges */
+
+tchecker::range_t<tchecker::syncprod::vloc_synchronized_edges_iterator_t, tchecker::end_iterator_t>
+incoming_synchronized_edges(tchecker::syncprod::system_t const & system,
+                            tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc)
+{
+  auto syncs = system.synchronizations();
+  tchecker::syncprod::vloc_synchronized_edges_iterator_t begin(vloc, system.incoming_edges_maps(), syncs.begin(), syncs.end());
 
   return tchecker::make_range(begin, tchecker::past_the_end_iterator);
 }

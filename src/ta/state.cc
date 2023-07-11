@@ -38,10 +38,22 @@ bool operator==(tchecker::ta::state_t const & s1, tchecker::ta::state_t const & 
 
 bool operator!=(tchecker::ta::state_t const & s1, tchecker::ta::state_t const & s2) { return !(s1 == s2); }
 
+bool shared_equal_to(tchecker::ta::state_t const & s1, tchecker::ta::state_t const & s2)
+{
+  return (tchecker::syncprod::shared_equal_to(s1, s2) && s1.intval_ptr() == s2.intval_ptr());
+}
+
 std::size_t hash_value(tchecker::ta::state_t const & s)
 {
   std::size_t h = tchecker::syncprod::hash_value(s);
   boost::hash_combine(h, s.intval());
+  return h;
+}
+
+std::size_t shared_hash_value(tchecker::ta::state_t const & s)
+{
+  std::size_t h = tchecker::syncprod::shared_hash_value(s);
+  boost::hash_combine(h, s.intval_ptr());
   return h;
 }
 

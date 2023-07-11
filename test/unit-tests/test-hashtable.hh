@@ -33,7 +33,7 @@ template <> class allocation_size_t<cto_t> {
 public:
   static constexpr std::size_t alloc_size() { return sizeof(cto_t); }
 
-  template <class... ARGS> static constexpr std::size_t alloc_size(ARGS &&... args) { return sizeof(cto_t); }
+  template <class... ARGS> static constexpr std::size_t alloc_size(ARGS &&... /*args*/) { return sizeof(cto_t); }
 };
 } // namespace tchecker
 
@@ -53,12 +53,129 @@ public:
 
 // Test cases
 
+TEST_CASE("Copy/move constructor and assignment of collection table object", "[cache]")
+{
+  cto_sptr_hash_t hash;
+  tchecker::collision_table_t<cto_sptr_t, cto_sptr_hash_t> t(1024, hash);
+
+  SECTION("Copy construction from an object not in cache")
+  {
+    shared_cto_t * o1 = shared_cto_t::allocate_and_construct(1, 1);
+    REQUIRE_FALSE(o1->is_stored());
+
+    shared_cto_t * o2 = shared_cto_t::allocate_and_construct(*o1);
+    REQUIRE_FALSE(o2->is_stored());
+
+    shared_cto_t::destruct_and_deallocate(o1);
+    shared_cto_t::destruct_and_deallocate(o2);
+  }
+
+  SECTION("Copy construction from an object in cache")
+  {
+    shared_cto_t * o1 = shared_cto_t::allocate_and_construct(1, 1);
+    tchecker::intrusive_shared_ptr_t<shared_cto_t> p1(o1);
+    t.add(p1);
+    REQUIRE(o1->is_stored());
+
+    shared_cto_t * o2 = shared_cto_t::allocate_and_construct(*o1);
+    REQUIRE_FALSE(o2->is_stored());
+
+    t.clear();
+    p1 = nullptr;
+    shared_cto_t::destruct_and_deallocate(o1);
+    shared_cto_t::destruct_and_deallocate(o2);
+  }
+
+  SECTION("Assignement to an object not in cache from an object not in cache")
+  {
+    shared_cto_t * o1 = shared_cto_t::allocate_and_construct(1, 1);
+    REQUIRE_FALSE(o1->is_stored());
+
+    shared_cto_t * o2 = shared_cto_t::allocate_and_construct(2, 3);
+    REQUIRE_FALSE(o2->is_stored());
+
+    *o2 = *o1;
+    REQUIRE_FALSE(o2->is_stored());
+
+    shared_cto_t::destruct_and_deallocate(o1);
+    shared_cto_t::destruct_and_deallocate(o2);
+  }
+
+  SECTION("Assignement to an object not in cache from an object in cache")
+  {
+    shared_cto_t * o1 = shared_cto_t::allocate_and_construct(1, 1);
+    tchecker::intrusive_shared_ptr_t<shared_cto_t> p1(o1);
+    t.add(p1);
+    REQUIRE(o1->is_stored());
+
+    shared_cto_t * o2 = shared_cto_t::allocate_and_construct(2, 3);
+    REQUIRE_FALSE(o2->is_stored());
+
+    *o2 = *o1;
+    REQUIRE_FALSE(o2->is_stored());
+
+    t.clear();
+    p1 = nullptr;
+    shared_cto_t::destruct_and_deallocate(o1);
+    shared_cto_t::destruct_and_deallocate(o2);
+  }
+
+  SECTION("Assignement to an object in cache from an object not in cache")
+  {
+    shared_cto_t * o1 = shared_cto_t::allocate_and_construct(1, 1);
+    REQUIRE_FALSE(o1->is_stored());
+
+    shared_cto_t * o2 = shared_cto_t::allocate_and_construct(2, 3);
+    tchecker::intrusive_shared_ptr_t<shared_cto_t> p2(o2);
+    t.add(p2);
+    REQUIRE(o2->is_stored());
+
+    REQUIRE_THROWS_AS(*o2 = *o1, std::runtime_error);
+    REQUIRE(o2->is_stored());
+
+    t.clear();
+    p2 = nullptr;
+    shared_cto_t::destruct_and_deallocate(o1);
+    shared_cto_t::destruct_and_deallocate(o2);
+  }
+
+  SECTION("Assignement to an object in cache from an object in cache")
+  {
+    shared_cto_t * o1 = shared_cto_t::allocate_and_construct(1, 1);
+    tchecker::intrusive_shared_ptr_t<shared_cto_t> p1(o1);
+    t.add(p1);
+    REQUIRE(o1->is_stored());
+
+    shared_cto_t * o2 = shared_cto_t::allocate_and_construct(2, 3);
+    tchecker::intrusive_shared_ptr_t<shared_cto_t> p2(o2);
+    t.add(p2);
+    REQUIRE(o2->is_stored());
+
+    REQUIRE_THROWS_AS(*o2 = *o1, std::runtime_error);
+    REQUIRE(o2->is_stored());
+
+    t.clear();
+    p1 = nullptr;
+    p2 = nullptr;
+    shared_cto_t::destruct_and_deallocate(o1);
+    shared_cto_t::destruct_and_deallocate(o2);
+  }
+}
+
 TEST_CASE("Empty collision table", "[hashtable]")
 {
   cto_sptr_hash_t hash;
   tchecker::collision_table_t<cto_sptr_t, cto_sptr_hash_t> t(1024, hash);
 
   SECTION("Empty collision table has size 0") { REQUIRE(t.size() == 0); }
+
+  SECTION("Empty collision table has empty range of objects")
+  {
+    REQUIRE(t.begin() == t.end());
+
+    auto r = t.range();
+    REQUIRE(r.begin() == r.end());
+  }
 }
 
 TEST_CASE("Collision table with one element", "[hashtable]")
@@ -152,6 +269,34 @@ TEST_CASE("Collision table with two elements no collision", "[hashtable]")
 
     auto it = r.begin();
     REQUIRE(*it == o2);
+  }
+
+  SECTION("Removing first object from an iterator")
+  {
+    std::vector<cto_sptr_t> v;
+    for (auto it = t.begin(); it != t.end(); ++it)
+      v.push_back(*it);
+    auto it = t.remove(t.begin());
+    REQUIRE(it != t.end());
+    REQUIRE(*it == v[1]);
+    ++it;
+    REQUIRE(it == t.end());
+  }
+
+  SECTION("Removing last object from an iterator")
+  {
+    std::vector<cto_sptr_t> v;
+    for (auto it = t.begin(); it != t.end(); ++it)
+      v.push_back(*it);
+
+    auto it = ++t.begin();
+    it = t.remove(it);
+    REQUIRE(it == t.end());
+
+    it = t.begin();
+    REQUIRE(*it == v[0]);
+    ++it;
+    REQUIRE(it == t.end());
   }
 
   t.clear();
@@ -344,6 +489,84 @@ TEST_CASE("Collision table with some collisions", "[hashtable]")
     REQUIRE(found[5]);
   }
 
+  SECTION("Removing objects that collide, using iterators")
+  {
+    // remove o[0] and o[2]
+    for (auto it = t.begin(); it != t.end();)
+      if (*it == o[0])
+        it = t.remove(it);
+      else if (*it == o[2])
+        it = t.remove(it);
+      else
+        ++it;
+
+    bool found[N] = {};
+    for (cto_sptr_t p : t) {
+      for (std::size_t i = 0; i < N; ++i)
+        if (p == o[i])
+          found[i] = true;
+    }
+    REQUIRE(N == 6);
+    REQUIRE(t.size() == N - 2);
+    REQUIRE_FALSE(found[0]);
+    REQUIRE(found[1]);
+    REQUIRE_FALSE(found[2]);
+    REQUIRE(found[3]);
+    REQUIRE(found[4]);
+    REQUIRE(found[5]);
+  }
+
+  SECTION("Removing objects that do not collide, using iterators")
+  {
+    // remove o[0], o[1] and o[5]
+    for (auto it = t.begin(); it != t.end();)
+      if (*it == o[0])
+        it = t.remove(it);
+      else if (*it == o[1])
+        it = t.remove(it);
+      else if (*it == o[5])
+        it = t.remove(it);
+      else
+        ++it;
+
+    bool found[N] = {};
+    for (cto_sptr_t p : t) {
+      for (std::size_t i = 0; i < N; ++i)
+        if (p == o[i])
+          found[i] = true;
+    }
+    REQUIRE(N == 6);
+    REQUIRE(t.size() == N - 3);
+    REQUIRE_FALSE(found[0]);
+    REQUIRE_FALSE(found[1]);
+    REQUIRE(found[2]);
+    REQUIRE(found[3]);
+    REQUIRE(found[4]);
+    REQUIRE_FALSE(found[5]);
+  }
+
+  SECTION("Removing all object, using iterators")
+  {
+    // remove o[0], o[1] and o[5]
+    for (auto it = t.begin(); it != t.end();)
+      it = t.remove(it);
+
+    bool found[N] = {};
+    for (cto_sptr_t p : t) {
+      for (std::size_t i = 0; i < N; ++i)
+        if (p == o[i])
+          found[i] = true;
+    }
+    REQUIRE(N == 6);
+    REQUIRE(t.size() == 0);
+    REQUIRE_FALSE(found[0]);
+    REQUIRE_FALSE(found[1]);
+    REQUIRE_FALSE(found[2]);
+    REQUIRE_FALSE(found[3]);
+    REQUIRE_FALSE(found[4]);
+    REQUIRE_FALSE(found[5]);
+  }
+
   t.clear();
   for (std::size_t i = 0; i < N; ++i) {
     shared_cto_t * p = o[i].ptr();
@@ -371,7 +594,7 @@ template <> class allocation_size_t<hto_t> {
 public:
   static constexpr std::size_t alloc_size() { return sizeof(hto_t); }
 
-  template <class... ARGS> static constexpr std::size_t alloc_size(ARGS &&... args) { return sizeof(hto_t); }
+  template <class... ARGS> static constexpr std::size_t alloc_size(ARGS &&... /*args*/) { return sizeof(hto_t); }
 };
 } // namespace tchecker
 

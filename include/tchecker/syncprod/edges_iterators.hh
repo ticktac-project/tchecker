@@ -62,6 +62,16 @@ tchecker::range_t<tchecker::syncprod::vloc_asynchronous_edges_iterator_t, tcheck
 outgoing_asynchronous_edges(tchecker::syncprod::system_t const & system,
                             tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc);
 
+/*!
+ \brief Accessor to asynchronous edges to a tuple of locations
+ \param system : a system
+ \param vloc : a tuple of locations
+ \return range of incoming asynchronous edges to vloc in system
+ */
+tchecker::range_t<tchecker::syncprod::vloc_asynchronous_edges_iterator_t, tchecker::end_iterator_t>
+incoming_asynchronous_edges(tchecker::syncprod::system_t const & system,
+                            tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc);
+
 /* Iterator over collection of synchronized edges from a tuple of locations */
 
 /*!
@@ -196,6 +206,16 @@ protected:
  */
 tchecker::range_t<tchecker::syncprod::vloc_synchronized_edges_iterator_t, tchecker::end_iterator_t>
 outgoing_synchronized_edges(tchecker::syncprod::system_t const & system,
+                            tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc);
+
+/*!
+ \brief Accessor to incoming synchronized edges to a tuple of locations
+ \param system : a system
+ \param vloc : a tuple of locations
+ \return range of incoming synchronized edges to vloc in system
+ */
+tchecker::range_t<tchecker::syncprod::vloc_synchronized_edges_iterator_t, tchecker::end_iterator_t>
+incoming_synchronized_edges(tchecker::syncprod::system_t const & system,
                             tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc);
 
 /* Iterator over edges */

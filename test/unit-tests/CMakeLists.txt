@@ -24,13 +24,16 @@ set(TEST_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/test-dbm.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-delay_allowed.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-extract_variables.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/test-finite-path.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-guard_weak_sync.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-hashtable.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-labels.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-ordering.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-refdbm.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-reference_clock_variables.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/test-refzg-semantics.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-variables-access.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/test-zg-semantics.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-waiting.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/unittest.cc
 )

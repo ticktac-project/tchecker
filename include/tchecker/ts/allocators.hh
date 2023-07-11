@@ -118,6 +118,15 @@ public:
   bool destruct(tchecker::intrusive_shared_ptr_t<STATE> & p) { return _state_pool.destruct(p); }
 
   /*!
+   \brief Share state components with other states
+   \param p : pointer to a state
+   \pre p has been constructed by this allocator
+   p is not nullptr
+   \post does nothing
+  */
+  inline void share(tchecker::intrusive_shared_ptr_t<STATE> const & /*p*/) {}
+
+  /*!
    \brief Collect unused states
    \post Unused states have been deleted
    */
@@ -246,6 +255,15 @@ public:
    \return true if the transition has been destructed, false otherwise
    */
   bool destruct(tchecker::intrusive_shared_ptr_t<TRANSITION> & p) { return _transition_pool.destruct(p); }
+
+  /*!
+   \brief Share transition components with other transitions
+   \param p : pointer to a transition
+   \pre p has been constructed by this allocator
+   p is not nullptr
+   \post does nothing
+  */
+  inline void share(tchecker::intrusive_shared_ptr_t<TRANSITION> const & /*p*/) {}
 
   /*!
    \brief Collect unused transitions

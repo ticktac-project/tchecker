@@ -15,17 +15,31 @@ namespace algorithms {
 
 namespace ndfs {
 
-stats_t::stats_t() : _visited_states_blue(0), _visited_states_red(0), _stored_states(0), _cycle(false) {}
+stats_t::stats_t()
+    : _visited_states_blue(0), _visited_states_red(0), _visited_transitions_blue(0), _visited_transitions_red(0),
+      _stored_states(0), _cycle(false)
+{
+}
 
 unsigned long & stats_t::visited_states_blue() { return _visited_states_blue; }
 
 unsigned long stats_t::visited_states_blue() const { return _visited_states_blue; }
 
+unsigned long & stats_t::visited_transitions_blue() { return _visited_transitions_blue; }
+
+unsigned long stats_t::visited_transitions_blue() const { return _visited_transitions_blue; }
+
 unsigned long & stats_t::visited_states_red() { return _visited_states_red; }
 
 unsigned long stats_t::visited_states_red() const { return _visited_states_red; }
 
+unsigned long & stats_t::visited_transitions_red() { return _visited_transitions_red; }
+
+unsigned long stats_t::visited_transitions_red() const { return _visited_transitions_red; }
+
 unsigned long stats_t::visited_states() const { return _visited_states_blue + _visited_states_red; }
+
+unsigned long stats_t::visited_transitions() const { return _visited_transitions_blue + _visited_transitions_red; }
 
 unsigned long & stats_t::stored_states() { return _stored_states; }
 
@@ -45,12 +59,24 @@ void stats_t::attributes(std::map<std::string, std::string> & m) const
   m["VISITED_STATES_BLUE"] = sstream.str();
 
   sstream.str("");
+  sstream << _visited_transitions_blue;
+  m["VISITED_TRANSITIONS_BLUE"] = sstream.str();
+
+  sstream.str("");
   sstream << _visited_states_red;
   m["VISITED_STATES_RED"] = sstream.str();
 
   sstream.str("");
+  sstream << _visited_transitions_red;
+  m["VISITED_TRANSITIONS_RED"] = sstream.str();
+
+  sstream.str("");
   sstream << visited_states();
   m["VISITED_STATES_TOTAL"] = sstream.str();
+
+  sstream.str("");
+  sstream << visited_transitions();
+  m["VISITED_TRANSITIONS_TOTAL"] = sstream.str();
 
   sstream.str("");
   sstream << _stored_states;

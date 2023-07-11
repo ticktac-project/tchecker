@@ -20,15 +20,21 @@ namespace zg_couvscc {
 
 /* node_t */
 
-node_t::node_t(tchecker::zg::state_sptr_t const & s) : _state(s) {}
+node_t::node_t(tchecker::zg::state_sptr_t const & s, bool initial, bool final)
+    : tchecker::graph::node_flags_t(initial, final), tchecker::graph::node_zg_state_t(s)
+{
+}
 
-node_t::node_t(tchecker::zg::const_state_sptr_t const & s) : _state(s) {}
+node_t::node_t(tchecker::zg::const_state_sptr_t const & s, bool initial, bool final)
+    : tchecker::graph::node_flags_t(initial, final), tchecker::graph::node_zg_state_t(s)
+{
+}
 
 /* node_hash_t */
 
 std::size_t node_hash_t::operator()(tchecker::tck_liveness::zg_couvscc::node_t const & n) const
 {
-  return hash_value(n.state());
+  return tchecker::zg::shared_hash_value(n.state());
 }
 
 /* node_equal_to_t */
@@ -36,12 +42,12 @@ std::size_t node_hash_t::operator()(tchecker::tck_liveness::zg_couvscc::node_t c
 bool node_equal_to_t::operator()(tchecker::tck_liveness::zg_couvscc::node_t const & n1,
                                  tchecker::tck_liveness::zg_couvscc::node_t const & n2) const
 {
-  return n1.state() == n2.state();
+  return tchecker::zg::shared_equal_to(n1.state(), n2.state());
 }
 
 /* edge_t */
 
-edge_t::edge_t(tchecker::zg::transition_t const & t) : _vedge(t.vedge_ptr()) {}
+edge_t::edge_t(tchecker::zg::transition_t const & t) : tchecker::graph::edge_vedge_t(t.vedge_ptr()) {}
 
 /* graph_t */
 
@@ -65,6 +71,7 @@ graph_t::~graph_t()
 void graph_t::attributes(tchecker::tck_liveness::zg_couvscc::node_t const & n, std::map<std::string, std::string> & m) const
 {
   _zg->attributes(n.state_ptr(), m);
+  tchecker::graph::attributes(static_cast<tchecker::graph::node_flags_t const &>(n), m);
 }
 
 void graph_t::attributes(tchecker::tck_liveness::zg_couvscc::edge_t const & e, std::map<std::string, std::string> & m) const
@@ -90,7 +97,11 @@ public:
   bool operator()(tchecker::tck_liveness::zg_couvscc::graph_t::node_sptr_t const & n1,
                   tchecker::tck_liveness::zg_couvscc::graph_t::node_sptr_t const & n2) const
   {
-    return tchecker::zg::lexical_cmp(n1->state(), n2->state()) < 0;
+    int state_cmp = tchecker::zg::lexical_cmp(n1->state(), n2->state());
+    if (state_cmp != 0)
+      return (state_cmp < 0);
+    return (tchecker::graph::lexical_cmp(static_cast<tchecker::graph::node_flags_t const &>(*n1),
+                                         static_cast<tchecker::graph::node_flags_t const &>(*n2)) < 0);
   }
 };
 
@@ -130,8 +141,8 @@ run(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl, st
   if (!tchecker::system::every_process_has_initial_location(system->as_system_system()))
     std::cerr << tchecker::log_warning << "system has no initial state" << std::endl;
 
-  std::shared_ptr<tchecker::zg::zg_t> zg{
-      tchecker::zg::factory(system, tchecker::zg::ELAPSED_SEMANTICS, tchecker::zg::EXTRA_LU_PLUS_LOCAL, block_size)};
+  std::shared_ptr<tchecker::zg::zg_t> zg{tchecker::zg::factory(system, tchecker::ts::SHARING, tchecker::zg::ELAPSED_SEMANTICS,
+                                                               tchecker::zg::EXTRA_LU_PLUS_LOCAL, block_size, table_size)};
 
   std::shared_ptr<tchecker::tck_liveness::zg_couvscc::graph_t> graph{
       new tchecker::tck_liveness::zg_couvscc::graph_t{zg, block_size, table_size}};

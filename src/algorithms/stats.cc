@@ -6,6 +6,7 @@
  */
 
 #include <sstream>
+#include <sys/resource.h>
 
 #include "tchecker/algorithms/stats.hh"
 
@@ -27,12 +28,25 @@ double stats_t::running_time() const
   return duration.count();
 }
 
+long stats_t::max_rss() const
+{
+  struct rusage usage;
+  int res = getrusage(RUSAGE_SELF, &usage);
+  if (res == -1)
+    return -1;
+  return usage.ru_maxrss;
+}
+
 void stats_t::attributes(std::map<std::string, std::string> & m) const
 {
   std::stringstream sstream;
 
   sstream << running_time();
   m["RUNNING_TIME_SECONDS"] = sstream.str();
+
+  sstream.str("");
+  sstream << max_rss();
+  m["MEMORY_MAX_RSS"] = sstream.str();
 }
 
 } // end of namespace algorithms

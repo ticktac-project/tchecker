@@ -133,6 +133,19 @@ bool is_universal_positive(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t
   return true;
 }
 
+bool contains_zero(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim)
+{
+  assert(dbm != nullptr);
+  assert(dim >= 1);
+  assert(is_consistent(dbm, dim));
+  assert(is_tight(dbm, dim));
+
+  for (tchecker::clock_id_t x = 0; x < dim; ++x)
+    if (DBM(0, x) != tchecker::dbm::LE_ZERO)
+      return false;
+  return true;
+}
+
 bool is_tight(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim)
 {
   assert(dbm != nullptr);
@@ -198,7 +211,7 @@ enum tchecker::dbm::status_t tighten(tchecker::dbm::db_t * dbm, tchecker::clock_
 }
 
 enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x,
-                                       tchecker::clock_id_t y, tchecker::dbm::comparator_t cmp, tchecker::integer_t value)
+                                       tchecker::clock_id_t y, tchecker::ineq_cmp_t cmp, tchecker::integer_t value)
 {
   assert(dbm != nullptr);
   assert(dim >= 1);
@@ -235,8 +248,7 @@ enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * dbm, tchecker::cloc
   for (tchecker::clock_constraint_t const & c : constraints) {
     tchecker::clock_id_t id1 = (c.id1() == tchecker::REFCLOCK_ID ? 0 : c.id1() + 1);
     tchecker::clock_id_t id2 = (c.id2() == tchecker::REFCLOCK_ID ? 0 : c.id2() + 1);
-    auto cmp = (c.comparator() == tchecker::clock_constraint_t::LT ? tchecker::dbm::LT : tchecker::dbm::LE);
-    if (tchecker::dbm::constrain(dbm, dim, id1, id2, cmp, c.value()) == tchecker::dbm::EMPTY)
+    if (tchecker::dbm::constrain(dbm, dim, id1, id2, c.comparator(), c.value()) == tchecker::dbm::EMPTY)
       return tchecker::dbm::EMPTY;
   }
   return tchecker::dbm::NON_EMPTY;
@@ -302,8 +314,8 @@ void reset_to_value(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecke
   assert(0 <= value);
 
   // set x == value
-  DBM(x, 0) = tchecker::dbm::db(tchecker::dbm::LE, value);
-  DBM(0, x) = tchecker::dbm::db(tchecker::dbm::LE, -value);
+  DBM(x, 0) = tchecker::dbm::db(tchecker::LE, value);
+  DBM(0, x) = tchecker::dbm::db(tchecker::LE, -value);
 
   // tighten: x->y is set to x->0->y and y->x to y->0->x for all y!=0
   for (tchecker::clock_id_t y = 1; y < dim; ++y) {
@@ -370,6 +382,40 @@ void reset_to_sum(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker:
   assert(tchecker::dbm::is_tight(dbm, dim));
 }
 
+void free_clock(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x)
+{
+  assert(dbm != nullptr);
+  assert(dim >= 1);
+  assert(tchecker::dbm::is_consistent(dbm, dim));
+  assert(tchecker::dbm::is_tight(dbm, dim));
+  assert(x < dim);
+
+  // The naive algorithm consists in setting all constraint involving x to <=inf, then tighten
+  // Observe that the new bound for y-x can be obtained as the sum of bounds for y-0 and 0-x.
+  // But 0-x is <=0 (due to unreset), so the bound for y-x is simply the same as for y-0
+  for (tchecker::clock_id_t y = 0; y < dim; ++y) {
+    DBM(x, y) = tchecker::dbm::LT_INFINITY;
+    DBM(y, x) = DBM(y, 0);
+  }
+  DBM(x, x) = tchecker::dbm::LE_ZERO;
+
+  assert(tchecker::dbm::is_consistent(dbm, dim));
+  assert(tchecker::dbm::is_tight(dbm, dim));
+}
+
+void free_clock(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_reset_t const & reset)
+{
+  assert(reset.left_id() != tchecker::REFCLOCK_ID);
+  tchecker::clock_id_t const x = reset.left_id() + 1; // translation of clock id from system to dbm
+  tchecker::dbm::free_clock(dbm, dim, x);
+}
+
+void free_clock(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_reset_container_t const & resets)
+{
+  for (tchecker::clock_reset_t const & reset : resets)
+    free_clock(dbm, dim, reset);
+}
+
 void open_up(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim)
 {
   assert(dbm != nullptr);
@@ -379,6 +425,26 @@ void open_up(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim)
 
   for (tchecker::clock_id_t i = 1; i < dim; ++i)
     DBM(i, 0) = tchecker::dbm::LT_INFINITY;
+
+  assert(tchecker::dbm::is_consistent(dbm, dim));
+  assert(tchecker::dbm::is_tight(dbm, dim));
+}
+
+void open_down(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim)
+{
+  assert(dbm != nullptr);
+  assert(dim >= 1);
+  assert(tchecker::dbm::is_consistent(dbm, dim));
+  assert(tchecker::dbm::is_tight(dbm, dim));
+
+  // The new dbm is obtained by setting all DBM(0, i) to <=0, then tightening
+  // This is equivalent to setting DBM(0,i) to the min of all DBM(j,i)
+  for (tchecker::clock_id_t i = 1; i < dim; ++i) {
+    tchecker::dbm::db_t min = tchecker::dbm::LT_INFINITY;
+    for (tchecker::clock_id_t j = 1; j < dim; ++j)
+      min = tchecker::dbm::min(min, DBM(j, i));
+    DBM(0, i) = min;
+  }
 
   assert(tchecker::dbm::is_consistent(dbm, dim));
   assert(tchecker::dbm::is_tight(dbm, dim));
@@ -426,7 +492,7 @@ void extra_m(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::inte
       continue;
     tchecker::integer_t c0j = tchecker::dbm::value(DBM(0, j));
     if (-c0j > Mj) {
-      DBM(0, j) = (Mj == -tchecker::dbm::INF_VALUE ? tchecker::dbm::LE_ZERO : tchecker::dbm::db(tchecker::dbm::LT, -Mj));
+      DBM(0, j) = (Mj == -tchecker::dbm::INF_VALUE ? tchecker::dbm::LE_ZERO : tchecker::dbm::db(tchecker::LT, -Mj));
       modified = true;
     }
   }
@@ -451,7 +517,7 @@ void extra_m(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::inte
         modified = true;
       }
       else if (-cij > Mj) {
-        DBM(i, j) = (Mj == -tchecker::dbm::INF_VALUE ? tchecker::dbm::LT_INFINITY : tchecker::dbm::db(tchecker::dbm::LT, -Mj));
+        DBM(i, j) = (Mj == -tchecker::dbm::INF_VALUE ? tchecker::dbm::LT_INFINITY : tchecker::dbm::db(tchecker::LT, -Mj));
         modified = true;
       }
     }
@@ -532,7 +598,7 @@ void extra_m_plus(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker:
 
     tchecker::integer_t c0j = tchecker::dbm::value(DBM(0, j));
     if (-c0j > Mj) {
-      DBM(0, j) = (Mj == -tchecker::dbm::INF_VALUE ? tchecker::dbm::LE_ZERO : tchecker::dbm::db(tchecker::dbm::LT, -Mj));
+      DBM(0, j) = (Mj == -tchecker::dbm::INF_VALUE ? tchecker::dbm::LE_ZERO : tchecker::dbm::db(tchecker::LT, -Mj));
       modified = true;
     }
   }
@@ -568,7 +634,7 @@ void extra_lu(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::int
       continue;
     tchecker::integer_t c0j = tchecker::dbm::value(DBM(0, j));
     if (-c0j > Uj) {
-      DBM(0, j) = (Uj == -tchecker::dbm::INF_VALUE ? tchecker::dbm::LE_ZERO : tchecker::dbm::db(tchecker::dbm::LT, -Uj));
+      DBM(0, j) = (Uj == -tchecker::dbm::INF_VALUE ? tchecker::dbm::LE_ZERO : tchecker::dbm::db(tchecker::LT, -Uj));
       modified = true;
     }
   }
@@ -595,7 +661,7 @@ void extra_lu(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::int
         modified = true;
       }
       else if (-cij > Uj) {
-        DBM(i, j) = (Uj == -tchecker::dbm::INF_VALUE ? tchecker::dbm::LT_INFINITY : tchecker::dbm::db(tchecker::dbm::LT, -Uj));
+        DBM(i, j) = (Uj == -tchecker::dbm::INF_VALUE ? tchecker::dbm::LT_INFINITY : tchecker::dbm::db(tchecker::LT, -Uj));
         modified = true;
       }
     }
@@ -682,7 +748,7 @@ void extra_lu_plus(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker
 
     tchecker::integer_t c0j = tchecker::dbm::value(DBM(0, j));
     if (-c0j > Uj) {
-      DBM(0, j) = (Uj == -tchecker::dbm::INF_VALUE ? tchecker::dbm::LE_ZERO : tchecker::dbm::db(tchecker::dbm::LT, -Uj));
+      DBM(0, j) = (Uj == -tchecker::dbm::INF_VALUE ? tchecker::dbm::LE_ZERO : tchecker::dbm::db(tchecker::LT, -Uj));
       modified = true;
     }
   }
@@ -722,7 +788,7 @@ bool is_alu_le(tchecker::dbm::db_t const * dbm1, tchecker::dbm::db_t const * dbm
       continue;
 
     // Check 1st condition
-    if (DBM1(0, x) < tchecker::dbm::db(tchecker::dbm::LE, -Ux))
+    if (DBM1(0, x) < tchecker::dbm::db(tchecker::LE, -Ux))
       continue;
 
     for (tchecker::clock_id_t y = 0; y < dim; ++y) {
@@ -737,7 +803,7 @@ bool is_alu_le(tchecker::dbm::db_t const * dbm1, tchecker::dbm::db_t const * dbm
         continue;
 
       // Check 2nd and 3rd conditions
-      if (DBM2(y, x) < DBM1(y, x) && tchecker::dbm::sum(DBM2(y, x), tchecker::dbm::db(tchecker::dbm::LT, -Ly)) < DBM1(0, x))
+      if (DBM2(y, x) < DBM1(y, x) && tchecker::dbm::sum(DBM2(y, x), tchecker::dbm::db(tchecker::LT, -Ly)) < DBM1(0, x))
         return false;
     }
   }

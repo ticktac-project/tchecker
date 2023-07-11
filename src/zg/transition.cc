@@ -22,7 +22,14 @@ bool operator==(tchecker::zg::transition_t const & t1, tchecker::zg::transition_
   return tchecker::ta::operator==(t1, t2);
 }
 
+bool shared_equal_to(tchecker::zg::transition_t const & t1, tchecker::zg::transition_t const & t2)
+{
+  return tchecker::ta::shared_equal_to(t1, t2);
+}
+
 std::size_t hash_value(tchecker::zg::transition_t const & t) { return tchecker::ta::hash_value(t); }
+
+std::size_t shared_hash_value(tchecker::zg::transition_t const & t) { return tchecker::ta::shared_hash_value(t); }
 
 int lexical_cmp(tchecker::zg::transition_t const & t1, tchecker::zg::transition_t const & t2)
 {

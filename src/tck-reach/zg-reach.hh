@@ -15,11 +15,14 @@
 
 #include "tchecker/algorithms/reach/algorithm.hh"
 #include "tchecker/algorithms/reach/stats.hh"
+#include "tchecker/graph/edge.hh"
+#include "tchecker/graph/node.hh"
 #include "tchecker/graph/reachability_graph.hh"
 #include "tchecker/parsing/declaration.hh"
 #include "tchecker/syncprod/vedge.hh"
 #include "tchecker/utils/shared_objects.hh"
 #include "tchecker/waiting/waiting.hh"
+#include "tchecker/zg/path.hh"
 #include "tchecker/zg/state.hh"
 #include "tchecker/zg/transition.hh"
 #include "tchecker/zg/zg.hh"
@@ -34,36 +37,27 @@ namespace zg_reach {
  \class node_t
  \brief Node of the reachability graph of a zone graph
  */
-class node_t : public tchecker::waiting::element_t {
+class node_t : public tchecker::waiting::element_t,
+               public tchecker::graph::node_flags_t,
+               public tchecker::graph::node_zg_state_t {
 public:
   /*!
+  \brief Constructor
+  \param s : a zone graph state
+  \param initial : initial node flag
+  \param final : final node flag
+  \post this node keeps a shared pointer to s, and has initial/final node flags as specified
+  */
+  node_t(tchecker::zg::state_sptr_t const & s, bool initial = false, bool final = false);
+
+  /*!
    \brief Constructor
    \param s : a zone graph state
-   \post this node keeps a shared pointer to s
+   \param initial : initial node flag
+   \param final : final node flag
+   \post this node keeps a shared pointer to s, and has initial/final node flags as specified
    */
-  node_t(tchecker::zg::state_sptr_t const & s);
-
-  /*!
-   \brief Constructor
-   \param s : a zone graph state
-   \post this node keeps a shared pointer to s
-   */
-  node_t(tchecker::zg::const_state_sptr_t const & s);
-
-  /*!
-  \brief Accessor
-  \return shared pointer to zone graph state in this node
-  */
-  inline tchecker::zg::const_state_sptr_t state_ptr() const { return _state; }
-
-  /*!
-  \brief Accessor
-  \return zone graph state in this node
-  */
-  inline tchecker::zg::state_t const & state() const { return *_state; }
-
-private:
-  tchecker::zg::const_state_sptr_t _state; /*!< State of the zone graph */
+  node_t(tchecker::zg::const_state_sptr_t const & s, bool initial = false, bool final = false);
 };
 
 /*!
@@ -99,7 +93,7 @@ public:
  \class edge_t
  \brief Edge of the reachability graph of a zone graph
 */
-class edge_t {
+class edge_t : public tchecker::graph::edge_vedge_t {
 public:
   /*!
    \brief Constructor
@@ -107,21 +101,6 @@ public:
    \post this node keeps a shared pointer on the vedge in t
   */
   edge_t(tchecker::zg::transition_t const & t);
-
-  /*!
-   \brief Accessor
-   \return zone graph vedge in this edge
-  */
-  inline tchecker::vedge_t const & vedge() const { return *_vedge; }
-
-  /*!
-   \brief Accessor
-   \return shared pointer to the zone graph vedge in this edge
-  */
-  inline tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t const> vedge_ptr() const { return _vedge; }
-
-private:
-  tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t const> _vedge; /*!< Tuple of edges */
 };
 
 /*!
@@ -145,6 +124,18 @@ public:
    \brief Destructor
   */
   virtual ~graph_t();
+
+  /*!
+   \brief Accessor
+   \return pointer to internal zone graph
+  */
+  inline std::shared_ptr<tchecker::zg::zg_t> zg_ptr() { return _zg; }
+
+  /*!
+   \brief Accessor
+   \return internal zone graph
+  */
+  inline tchecker::zg::zg_t const & zg() const { return *_zg; }
 
   using tchecker::graph::reachability::graph_t<tchecker::tck_reach::zg_reach::node_t, tchecker::tck_reach::zg_reach::edge_t,
                                                tchecker::tck_reach::zg_reach::node_hash_t,
@@ -179,6 +170,38 @@ private:
  \post graph g with name has been output to os
 */
 std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::zg_reach::graph_t const & g, std::string const & name);
+
+namespace cex {
+
+namespace symbolic {
+
+/*!
+ \brief Type of symbolic reachability counter-example
+*/
+using cex_t = tchecker::zg::path::finite_path_t<tchecker::zg::zg_t>;
+
+/*!
+ \brief Compute a counter-example from a reachability graph of a zone graph
+ \param g : reachability graph on a zone graph
+ \return a finite path from an initial node to a final node in g if any, nullptr otherwise
+ \note the returned pointer shall be deleted
+*/
+tchecker::tck_reach::zg_reach::cex::symbolic::cex_t * counter_example(tchecker::tck_reach::zg_reach::graph_t const & g);
+
+/*!
+ \brief Counter-example output
+ \param os : output stream
+ \param cex : counter example
+ \param name : counter example name
+ \post cex has been output to os
+ \return os after output
+ */
+std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::zg_reach::cex::symbolic::cex_t const & cex,
+                          std::string const & name);
+
+} // namespace symbolic
+
+} // namespace cex
 
 /*!
  \class algorithm_t

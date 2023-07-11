@@ -7,6 +7,7 @@
 
 #include <functional>
 #include <limits>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -37,8 +38,8 @@ tchecker::clock_id_t clock_variables_t::declare(std::string const & name, tcheck
 
 /* clock_constraint_t */
 
-clock_constraint_t::clock_constraint_t(tchecker::clock_id_t id1, tchecker::clock_id_t id2,
-                                       enum tchecker::clock_constraint_t::comparator_t cmp, tchecker::integer_t value)
+clock_constraint_t::clock_constraint_t(tchecker::clock_id_t id1, tchecker::clock_id_t id2, enum tchecker::ineq_cmp_t cmp,
+                                       tchecker::integer_t value)
     : _id1(id1), _id2(id2), _cmp(cmp), _value(value)
 {
   if (_id1 == tchecker::REFCLOCK_ID && _id2 == tchecker::REFCLOCK_ID)
@@ -64,7 +65,7 @@ std::size_t hash_value(tchecker::clock_constraint_t const & c)
 
 std::ostream & operator<<(std::ostream & os, tchecker::clock_constraint_t const & c)
 {
-  os << c._id1 << "-" << c._id2 << (c._cmp == tchecker::clock_constraint_t::LT ? "<" : "<=") << c._value;
+  os << c._id1 << "-" << c._id2 << (c._cmp == tchecker::LT ? "<" : "<=") << c._value;
   return os;
 }
 
@@ -79,11 +80,18 @@ std::ostream & output(std::ostream & os, tchecker::clock_constraint_t const & c,
     os << index.value(id2);
   }
   if (id1 != tchecker::REFCLOCK_ID)
-    os << (c.comparator() == tchecker::clock_constraint_t::LT ? "<" : "<=");
+    os << (c.comparator() == tchecker::LT ? "<" : "<=");
   else
-    os << (c.comparator() == tchecker::clock_constraint_t::LT ? ">" : ">=");
+    os << (c.comparator() == tchecker::LT ? ">" : ">=");
   os << (id1 != tchecker::REFCLOCK_ID ? c.value() : -c.value());
   return os;
+}
+
+std::string to_string(tchecker::clock_constraint_t const & c, tchecker::clock_index_t const & index)
+{
+  std::stringstream ss;
+  tchecker::output(ss, c, index);
+  return ss.str();
 }
 
 int lexical_cmp(tchecker::clock_constraint_t const & c1, tchecker::clock_constraint_t const & c2)
@@ -93,7 +101,7 @@ int lexical_cmp(tchecker::clock_constraint_t const & c1, tchecker::clock_constra
   if (c1.id2() != c2.id2())
     return (c1.id2() < c2.id2() ? -1 : 1);
   if (c1.comparator() != c2.comparator())
-    return (c1.comparator() == tchecker::clock_constraint_t::LT ? -1 : 1);
+    return (c1.comparator() == tchecker::LT ? -1 : 1);
   return (c1.value() == c2.value() ? 0 : (c1.value() < c2.value() ? -1 : 1));
 }
 
@@ -103,6 +111,13 @@ int lexical_cmp(tchecker::clock_constraint_container_t const & c1, tchecker::clo
                                tchecker::clock_constraint_container_const_iterator_t,
                                int (*)(tchecker::clock_constraint_t const &, tchecker::clock_constraint_t const &)>(
       c1.begin(), c1.end(), c2.begin(), c2.end(), tchecker::lexical_cmp);
+}
+
+std::string to_string(tchecker::clock_constraint_container_t const & c, tchecker::clock_index_t const & index)
+{
+  std::stringstream ss;
+  tchecker::output_clock_constraints(ss, tchecker::make_range(c.begin(), c.end()), index);
+  return ss.str();
 }
 
 /* clock_reset_t */
@@ -155,6 +170,13 @@ std::ostream & output(std::ostream & os, tchecker::clock_reset_t const & r, tche
   return os;
 }
 
+std::string to_string(tchecker::clock_reset_t const & r, tchecker::clock_index_t const & index)
+{
+  std::stringstream ss;
+  tchecker::output(ss, r, index);
+  return ss.str();
+}
+
 int lexical_cmp(tchecker::clock_reset_t const & r1, tchecker::clock_reset_t const & r2)
 {
   if (r1.left_id() != r2.left_id())
@@ -170,6 +192,25 @@ int lexical_cmp(tchecker::clock_reset_container_t const & c1, tchecker::clock_re
                                tchecker::clock_reset_container_const_iterator_t,
                                int (*)(tchecker::clock_reset_t const &, tchecker::clock_reset_t const &)>(
       c1.begin(), c1.end(), c2.begin(), c2.end(), tchecker::lexical_cmp);
+}
+
+std::string to_string(tchecker::clock_reset_container_t const & c, tchecker::clock_index_t const & index)
+{
+  std::stringstream ss;
+  tchecker::output_clock_resets(ss, tchecker::make_range(c.begin(), c.end()), index);
+  return ss.str();
+}
+
+void clock_reset_to_constraints(tchecker::clock_reset_t const & r, tchecker::clock_constraint_container_t & cc)
+{
+  cc.push_back(tchecker::clock_constraint_t{r.left_id(), r.right_id(), tchecker::LE, r.value()});
+  cc.push_back(tchecker::clock_constraint_t{r.right_id(), r.left_id(), tchecker::LE, -r.value()});
+}
+
+void clock_resets_to_constraints(tchecker::clock_reset_container_t const & rc, tchecker::clock_constraint_container_t & cc)
+{
+  for (tchecker::clock_reset_t const & r : rc)
+    tchecker::clock_reset_to_constraints(r, cc);
 }
 
 /* reference_clock_variables_t */

@@ -40,10 +40,22 @@ bool operator==(tchecker::syncprod::state_t const & s1, tchecker::syncprod::stat
 
 bool operator!=(tchecker::syncprod::state_t const & s1, tchecker::syncprod::state_t const & s2) { return (!(s1 == s2)); }
 
+bool shared_equal_to(tchecker::syncprod::state_t const & s1, tchecker::syncprod::state_t const & s2)
+{
+  return (tchecker::ts::shared_equal_to(s1, s2) && s1.vloc_ptr() == s2.vloc_ptr());
+}
+
 std::size_t hash_value(tchecker::syncprod::state_t const & s)
 {
   std::size_t h = hash_value(static_cast<tchecker::ts::state_t const &>(s));
   boost::hash_combine(h, s.vloc());
+  return h;
+}
+
+std::size_t shared_hash_value(tchecker::syncprod::state_t const & s)
+{
+  std::size_t h = tchecker::ts::shared_hash_value(s);
+  boost::hash_combine(h, s.vloc_ptr());
   return h;
 }
 

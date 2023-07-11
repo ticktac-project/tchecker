@@ -444,16 +444,16 @@ private:
 
     // write bytecode
     if (instruction == tchecker::VM_LT)
-      compile_clock_constraint(clock1, clock2, tchecker::clock_constraint_t::LT, bound);
+      compile_clock_constraint(clock1, clock2, tchecker::LT, bound);
     else if (instruction == tchecker::VM_LE)
-      compile_clock_constraint(clock1, clock2, tchecker::clock_constraint_t::LE, bound);
+      compile_clock_constraint(clock1, clock2, tchecker::LE, bound);
     else if (instruction == tchecker::VM_GE)
-      compile_clock_constraint(clock2, clock1, tchecker::clock_constraint_t::LE, neg_bound);
+      compile_clock_constraint(clock2, clock1, tchecker::LE, neg_bound);
     else if (instruction == tchecker::VM_GT)
-      compile_clock_constraint(clock2, clock1, tchecker::clock_constraint_t::LT, neg_bound);
+      compile_clock_constraint(clock2, clock1, tchecker::LT, neg_bound);
     else if (instruction == tchecker::VM_EQ) {
-      compile_clock_constraint(clock1, clock2, tchecker::clock_constraint_t::LE, bound);
-      compile_clock_constraint(clock2, clock1, tchecker::clock_constraint_t::LE, neg_bound);
+      compile_clock_constraint(clock1, clock2, tchecker::LE, bound);
+      compile_clock_constraint(clock2, clock1, tchecker::LE, neg_bound);
       _bytecode_back_inserter = tchecker::VM_LAND;
     }
     else
@@ -470,7 +470,7 @@ private:
    VM_PUSH 1              // abstraction of constraint at syntax level
    */
   void compile_clock_constraint(tchecker::typed_expression_t const & first, tchecker::typed_expression_t const & second,
-                                enum tchecker::clock_constraint_t::comparator_t cmp, tchecker::typed_expression_t const & bound)
+                                enum tchecker::ineq_cmp_t cmp, tchecker::typed_expression_t const & bound)
   {
     tchecker::details::lvalue_expression_compiler_t<BYTECODE_BACK_INSERTER> clocks_compiler(_bytecode_back_inserter);
 

@@ -52,7 +52,9 @@ TEST_CASE("Labels in tuple of locations", "[labels]")
   tchecker::label_id_t const c = system.label_id("c");
   tchecker::label_id_t const d = system.label_id("d");
 
-  tchecker::vloc_t * vloc = tchecker::vloc_allocate_and_construct(system.processes_count(), system.processes_count());
+  tchecker::vloc_t * vloc =
+      tchecker::vloc_allocate_and_construct(static_cast<tchecker::process_id_t>(system.processes_count()),
+                                            static_cast<tchecker::process_id_t>(system.processes_count()));
 
   SECTION("No label")
   {

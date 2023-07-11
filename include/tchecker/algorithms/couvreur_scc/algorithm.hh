@@ -31,7 +31,8 @@ namespace couvscc {
 /*!
  \class algorithm_t
  \brief Couvreur's SCC-decomposition-based liveness algorithm
- \tparam TS : type of transition system, should derive from tchecker::ts::ts_t
+ \tparam TS : type of transition system, should implement tchecker::ts::fwd_t
+ and tchecker::ts::inspector_t
  \tparam GRAPH : type of graph, should derive from
  tchecker::graph::reachability_graph_t, and nodes of type GRAPH::shared_node_t
  should derive from tchecker::algorithms::couvscc::node_t and have a method
@@ -122,6 +123,7 @@ public:
     ts.initial(sst);
     for (auto && [status, s, t] : sst) {
       auto && [is_new_node, initial_node] = graph.add_node(s);
+      initial_node->initial(true);
       couv_dfs(initial_node, ts, graph, labels, stats);
       if (stats.cycle())
         break;
@@ -229,7 +231,7 @@ private:
     ++_count;
     n->dfsnum() = _count;
     n->current() = true;
-    _todo.push(todo_stack_entry_t{n, expand_node(n, ts, graph)});
+    _todo.push(todo_stack_entry_t{n, expand_node(n, ts, graph, stats)});
     _roots.push(roots_stack_entry_t{n, ts.labels(n->state_ptr())});
     _active.push(n);
     ++stats.visited_states();
@@ -240,16 +242,19 @@ private:
    \param n : a node
    \param ts : a transition system
    \param graph : a graph
+   \param stats : statistics
    \post all successor nodes of n in ts have been added to graph (if not yet in)
    with corresponding edges
+   visited transitions have been added to stats
    \return all successor nodes of n
   */
-  std::deque<node_sptr_t> expand_node(node_sptr_t & n, TS & ts, GRAPH & graph)
+  std::deque<node_sptr_t> expand_node(node_sptr_t & n, TS & ts, GRAPH & graph, tchecker::algorithms::couvscc::stats_t & stats)
   {
     std::deque<node_sptr_t> next_nodes;
     std::vector<typename TS::sst_t> v;
     ts.next(n->state_ptr(), v);
     for (auto && [status, s, t] : v) {
+      ++stats.visited_transitions();
       auto && [new_node, nextn] = graph.add_node(s);
       graph.add_edge(n, nextn, *t);
       next_nodes.push_back(nextn);

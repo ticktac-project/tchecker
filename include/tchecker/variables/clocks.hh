@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "tchecker/basictypes.hh"
+#include "tchecker/dbm/db.hh"
 #include "tchecker/utils/index.hh"
 #include "tchecker/utils/iterator.hh"
 #include "tchecker/variables/access.hh"
@@ -85,14 +86,6 @@ using flat_clock_variables_t =
 class clock_constraint_t {
 public:
   /*!
-   \brief Type of comparator
-   */
-  enum comparator_t {
-    LT = 0, /*!< less-than < */
-    LE = 1, /*!< less-than-or-equal-to <= */
-  };
-
-  /*!
    \brief Constructor
    \param id1 : index of 1st clock
    \param id2 : index of 2nd clock
@@ -102,7 +95,7 @@ public:
    \post this represents id1 - id2 # value where # is < or <= depending on cmp
    \throw std::invalid_argument : if both id1 and id2 are tchecker::REFCLOCK_ID
    */
-  clock_constraint_t(tchecker::clock_id_t id1, tchecker::clock_id_t id2, enum tchecker::clock_constraint_t::comparator_t cmp,
+  clock_constraint_t(tchecker::clock_id_t id1, tchecker::clock_id_t id2, enum tchecker::ineq_cmp_t cmp,
                      tchecker::integer_t value);
 
   /*!
@@ -158,13 +151,13 @@ public:
    \brief Accessor
    \return comparator (< or <=)
    */
-  inline constexpr enum tchecker::clock_constraint_t::comparator_t comparator() const { return _cmp; }
+  inline constexpr enum tchecker::ineq_cmp_t comparator() const { return _cmp; }
 
   /*!
    \brief Accessor
    \return comparator (< or <=)
    */
-  inline constexpr enum tchecker::clock_constraint_t::comparator_t & comparator() { return _cmp; }
+  inline constexpr enum tchecker::ineq_cmp_t & comparator() { return _cmp; }
 
   /*!
    \brief Accessor
@@ -195,10 +188,10 @@ public:
 protected:
   friend std::ostream & operator<<(std::ostream & os, tchecker::clock_constraint_t const & c);
 
-  tchecker::clock_id_t _id1;                            /*!< ID of 1st clock */
-  tchecker::clock_id_t _id2;                            /*!< ID of 2nd clock */
-  enum tchecker::clock_constraint_t::comparator_t _cmp; /*!< Comparator < or <= */
-  tchecker::integer_t _value;                           /*!< Value */
+  tchecker::clock_id_t _id1;      /*!< ID of 1st clock */
+  tchecker::clock_id_t _id2;      /*!< ID of 2nd clock */
+  enum tchecker::ineq_cmp_t _cmp; /*!< Comparator < or <= */
+  tchecker::integer_t _value;     /*!< Value */
 };
 
 /*!
@@ -244,6 +237,14 @@ std::ostream & operator<<(std::ostream & os, tchecker::clock_constraint_t const 
  \return os after c has been output
  */
 std::ostream & output(std::ostream & os, tchecker::clock_constraint_t const & c, tchecker::clock_index_t const & index);
+
+/*!
+ \brief String conversion
+ \param c : clock constraint
+ \param index : clock index
+ \return a string representation of c using index
+*/
+std::string to_string(tchecker::clock_constraint_t const & c, tchecker::clock_index_t const & index);
 
 /*!
  \brief Output a range of clock constraints
@@ -294,6 +295,14 @@ using clock_constraint_container_const_iterator_t = tchecker::clock_constraint_c
  w.r.t. lexical ordering, a positive value otherwise
  */
 int lexical_cmp(tchecker::clock_constraint_container_t const & c1, tchecker::clock_constraint_container_t const & c2);
+
+/*!
+ \brief String conversion
+ \param c : clock constraint container
+ \param index : clock index
+ \return a string representation of c using index
+*/
+std::string to_string(tchecker::clock_constraint_container_t const & c, tchecker::clock_index_t const & index);
 
 /*!
  \class clock_reset_t
@@ -454,6 +463,14 @@ std::ostream & operator<<(std::ostream & os, tchecker::clock_reset_t const & r);
 std::ostream & output(std::ostream & os, tchecker::clock_reset_t const & r, tchecker::clock_index_t const & index);
 
 /*!
+ \brief String conversion
+ \param r : clock reset
+ \param index : clock index
+ \return a string representation of r using index
+*/
+std::string to_string(tchecker::clock_reset_t const & r, tchecker::clock_index_t const & index);
+
+/*!
  \brief Output a range of clock resets
  \param os : output stream
  \param range : range of clock resets
@@ -502,6 +519,32 @@ using clock_reset_container_const_iterator_t = tchecker::clock_reset_container_t
  w.r.t. lexical ordering, a positive value otherwise
  */
 int lexical_cmp(tchecker::clock_reset_container_t const & c1, tchecker::clock_reset_container_t const & c2);
+
+/*!
+ \brief String conversion
+ \param c : clock reset container
+ \param index : clock index
+ \return a string representation of c using index
+*/
+std::string to_string(tchecker::clock_reset_container_t const & c, tchecker::clock_index_t const & index);
+
+/*!
+ \brief Convert clock reset into corresponding clock constraints
+ \param r : clock reset
+ \param cc : clock constraint container
+ \post the constraints (x - y <= c) && (y - x <= -c) corresponding to reset r
+ as x := y + c have been added to cc
+*/
+void clock_reset_to_constraints(tchecker::clock_reset_t const & r, tchecker::clock_constraint_container_t & cc);
+
+/*!
+ \brief Convert a set of clock resets into corresonding clock constraints
+ \param rc : clock reset container
+ \param cc : clock constraint container
+ \post constraints corresponding to all resets in rc have been added to cc. See
+ clock_reset_to_constraints for details
+*/
+void clock_resets_to_constraints(tchecker::clock_reset_container_t const & rc, tchecker::clock_constraint_container_t & cc);
 
 /*!
  \class reference_clock_variables_t

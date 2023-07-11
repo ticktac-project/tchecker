@@ -11,32 +11,48 @@ namespace tchecker {
 
 namespace system {
 
+/* attr_parsing_position_t */
+
+attr_parsing_position_t::attr_parsing_position_t(tchecker::parsing::attr_parsing_position_t const & parsing_position)
+    : tchecker::parsing::attr_parsing_position_t(parsing_position)
+{
+}
+
+/* attr_t */
+
+attr_t::attr_t(tchecker::parsing::attr_t const & attr) : tchecker::parsing::attr_t(attr) {}
+
+/* attributes_t */
+
 attributes_t::attributes_t(tchecker::parsing::attributes_t const & attributes)
 {
   for (tchecker::parsing::attr_t const & attr : attributes)
-    add_attribute(attr.key(), attr.value());
+    add_attribute(attr.key(), attr.value(), tchecker::system::attr_parsing_position_t{attr.parsing_position()});
 }
 
-void attributes_t::add_attribute(std::string const & key, std::string const & value)
+void attributes_t::add_attribute(std::string const & key, std::string const & value,
+                                 tchecker::system::attr_parsing_position_t const & parsing_position)
 {
-  _attr.insert(std::make_pair(key, value));
+  _map.insert(std::make_pair(key, tchecker::system::attr_t{key, value, parsing_position}));
 }
 
 void attributes_t::add_attributes(tchecker::system::attributes_t const & attr)
 {
-  for (auto && [key, value] : attr.attributes())
-    add_attribute(key, value);
+  for (auto && attr : attr.range())
+    add_attribute(attr.key(), attr.value(), attr.parsing_position());
 }
 
-tchecker::range_t<tchecker::system::attributes_t::const_iterator_t> attributes_t::values(std::string const & key) const
+attributes_t::const_iterator_t::const_iterator_t(map_t::const_iterator const & it) : map_t::const_iterator(it) {}
+
+tchecker::range_t<tchecker::system::attributes_t::const_iterator_t> attributes_t::range(std::string const & key) const
 {
-  auto range = _attr.equal_range(key);
-  return tchecker::make_range(range.first, range.second);
+  auto range = _map.equal_range(key);
+  return tchecker::make_range<tchecker::system::attributes_t::const_iterator_t>(range.first, range.second);
 }
 
-tchecker::range_t<tchecker::system::attributes_t::const_iterator_t> attributes_t::attributes() const
+tchecker::range_t<tchecker::system::attributes_t::const_iterator_t> attributes_t::range() const
 {
-  return tchecker::make_range(_attr.begin(), _attr.end());
+  return tchecker::make_range<tchecker::system::attributes_t::const_iterator_t>(_map.begin(), _map.end());
 }
 
 } // end of namespace system

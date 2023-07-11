@@ -49,6 +49,18 @@ public:
 
   /*!
    \brief Accessor
+   \return A reference to the number of visited transitions on the blue DFS
+   */
+  unsigned long & visited_transitions_blue();
+
+  /*!
+   \brief Accessor
+   \return the number of visited transitions on the blue DFS
+   */
+  unsigned long visited_transitions_blue() const;
+
+  /*!
+   \brief Accessor
    \return A reference to the number of visited states on the red DFS
    */
   unsigned long & visited_states_red();
@@ -61,9 +73,27 @@ public:
 
   /*!
    \brief Accessor
+   \return A reference to the number of visited transitions on the red DFS
+   */
+  unsigned long & visited_transitions_red();
+
+  /*!
+   \brief Accessor
+   \return the number of visited transitions on the red DFS
+   */
+  unsigned long visited_transitions_red() const;
+
+  /*!
+   \brief Accessor
    \return the number of visited states (both blue and red DFS)
    */
   unsigned long visited_states() const;
+
+  /*!
+   \brief Accessor
+   \return the number of visited transitions (both blue and red DFS)
+   */
+  unsigned long visited_transitions() const;
 
   /*!
    \brief Accessor
@@ -97,10 +127,12 @@ public:
   void attributes(std::map<std::string, std::string> & m) const;
 
 private:
-  unsigned long _visited_states_blue; /*!< Number of visited states on the blue DFS */
-  unsigned long _visited_states_red;  /*!< Number of visited states on the red DFS */
-  unsigned long _stored_states;       /*!< Number of stored states */
-  bool _cycle;                        /*!< Reachability of satisfying cycle */
+  unsigned long _visited_states_blue;      /*!< Number of visited states on the blue DFS */
+  unsigned long _visited_states_red;       /*!< Number of visited states on the red DFS */
+  unsigned long _visited_transitions_blue; /*!< Number of visited transitions on the blue DFS */
+  unsigned long _visited_transitions_red;  /*!< Number of visited transitions on the red DFS */
+  unsigned long _stored_states;            /*!< Number of stored states */
+  bool _cycle;                             /*!< Reachability of satisfying cycle */
 };
 
 } // end of namespace ndfs

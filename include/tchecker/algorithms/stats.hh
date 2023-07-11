@@ -56,6 +56,13 @@ public:
   double running_time() const;
 
   /*!
+   \brief Accessor
+   \return maximum resident set size, -1 if an error occurred
+   \note Unit depends on the operating system
+  */
+  long max_rss() const;
+
+  /*!
    \brief Extract statistics as attributes (key, value)
    \param m : attributes map
    \post Starting time, ending time and running time have been added to m

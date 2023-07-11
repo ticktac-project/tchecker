@@ -4,6 +4,7 @@
 
 set(UTILS_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/hashtable.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/iterator.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/log.cc
     ${TCHECKER_INCLUDE_DIR}/tchecker/utils/allocation_size.hh
     ${TCHECKER_INCLUDE_DIR}/tchecker/utils/array.hh

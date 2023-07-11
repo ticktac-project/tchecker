@@ -9,6 +9,7 @@ ${CMAKE_CURRENT_SOURCE_DIR}/system.cc
 ${CMAKE_CURRENT_SOURCE_DIR}/ta.cc
 ${CMAKE_CURRENT_SOURCE_DIR}/transition.cc
 ${TCHECKER_INCLUDE_DIR}/tchecker/ta/allocators.hh
+${TCHECKER_INCLUDE_DIR}/tchecker/ta/edges_iterators.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/ta/state.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/ta/static_analysis.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/ta/system.hh

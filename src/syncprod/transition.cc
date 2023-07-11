@@ -44,10 +44,22 @@ bool operator!=(tchecker::syncprod::transition_t const & t1, tchecker::syncprod:
   return !(t1 == t2);
 }
 
+bool shared_equal_to(tchecker::syncprod::transition_t const & t1, tchecker::syncprod::transition_t const & t2)
+{
+  return (tchecker::ts::shared_equal_to(t1, t2) && t1.vedge_ptr() == t2.vedge_ptr());
+}
+
 std::size_t hash_value(tchecker::syncprod::transition_t const & t)
 {
   std::size_t h = hash_value(static_cast<tchecker::ts::transition_t const &>(t));
   boost::hash_combine(h, t.vedge());
+  return h;
+}
+
+std::size_t shared_hash_value(tchecker::syncprod::transition_t const & t)
+{
+  std::size_t h = tchecker::ts::shared_hash_value(t);
+  boost::hash_combine(h, t.vedge_ptr());
   return h;
 }
 

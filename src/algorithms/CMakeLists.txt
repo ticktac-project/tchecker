@@ -5,6 +5,7 @@
 add_subdirectory(couvreur_scc)
 add_subdirectory(covreach)
 add_subdirectory(ndfs)
+add_subdirectory(path)
 add_subdirectory(reach)
 
 set(ALGORITHMS_SRC

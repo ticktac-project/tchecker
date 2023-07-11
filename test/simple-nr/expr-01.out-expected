@@ -1,6 +1,8 @@
+// MEMORY_MAX_RSS  xxxx
 // REACHABLE false
 // RUNNING_TIME_SECONDS  xxxx
 // VISITED_STATES 1
+// VISITED_TRANSITIONS 0
 digraph expr_01 {
-  0 [intval="count=0", vloc="<l0>", zone="()"]
+  0 [initial="true", intval="count=0", labels="", vloc="<l0>", zone="()"]
 }

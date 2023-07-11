@@ -34,13 +34,13 @@ then
     then
         COMMAND="${COMMAND} -l \"${LABELS}\""
     fi
-    COMMAND="${COMMAND} -C \"${TMPDOTFILE}\" \"${INPUTFILE}\""
+    COMMAND="${COMMAND} -C graph -o \"${TMPDOTFILE}\" \"${INPUTFILE}\""
 else
     echo 1>&2 "missing input file '${INPUTFILE}'"
     exit 1
 fi
 
-eval ${COMMAND} | sed -e 's/\(^RUNNING_TIME_SECONDS \).*$/\1 xxxx/g' -e 's@^@// @g'
+eval ${COMMAND} | sed -e 's/\(^MEMORY_MAX_RSS \).*$/\1 xxxx/g' -e 's/\(^RUNNING_TIME_SECONDS \).*$/\1 xxxx/g' -e 's@^@// @g'
 
 if test -f ${TMPDOTFILE};
 then

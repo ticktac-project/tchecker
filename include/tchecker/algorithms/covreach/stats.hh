@@ -49,6 +49,18 @@ public:
 
   /*!
    \brief Accessor
+   \return A reference to the number of visited transitions
+  */
+  unsigned long & visited_transitions();
+
+  /*!
+   \brief Accessor
+   \return the number of visited transitions
+   */
+  unsigned long visited_transitions() const;
+
+  /*!
+   \brief Accessor
    \return A reference to the numer of covered states
    */
   unsigned long & covered_states();
@@ -91,10 +103,11 @@ public:
   void attributes(std::map<std::string, std::string> & m) const;
 
 private:
-  unsigned long _visited_states; /*!< Number of visited states */
-  unsigned long _covered_states; /*!< Number of covered states */
-  unsigned long _stored_states;  /*!< Number of stored states */
-  bool _reachable;               /*!< Reachability of satisfying state */
+  unsigned long _visited_states;      /*!< Number of visited states */
+  unsigned long _visited_transitions; /*!< Number of visited transitions */
+  unsigned long _covered_states;      /*!< Number of covered states */
+  unsigned long _stored_states;       /*!< Number of stored states */
+  bool _reachable;                    /*!< Reachability of satisfying state */
 };
 
 } // end of namespace covreach

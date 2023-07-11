@@ -33,18 +33,19 @@ public:
   /*!
    \brief Add a process
    \param name : process name
-   \param attr : process attributes
+   \param attributes : process attributes
    \pre process name is not declared yet
    \post process name has been added with attributes attr
    \throw std::invalid_argument : if process name is already declared
    */
-  void add_process(std::string const & name, tchecker::system::attributes_t const & attr = tchecker::system::attributes_t());
+  void add_process(std::string const & name,
+                   tchecker::system::attributes_t const & attrbutes = tchecker::system::attributes_t());
 
   /*!
    \brief Accessor
    \return number of processes
    */
-  inline tchecker::process_id_t processes_count() const { return _procs_attr.size(); }
+  inline std::size_t processes_count() const { return _procs_attributes.size(); }
 
   /*!
    \brief Accessor
@@ -101,7 +102,7 @@ public:
   bool is_process(std::string const & name) const;
 
 private:
-  std::vector<tchecker::system::attributes_t> _procs_attr;             /*!< Processes attributes */
+  std::vector<tchecker::system::attributes_t> _procs_attributes;       /*!< Processes attributes */
   tchecker::index_t<std::string, tchecker::process_id_t> _procs_index; /*!< Map process name <-> process identifier */
 };
 

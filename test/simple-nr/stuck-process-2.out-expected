@@ -1,7 +1,9 @@
+// MEMORY_MAX_RSS  xxxx
 // REACHABLE false
 // RUNNING_TIME_SECONDS  xxxx
 // VISITED_STATES 2
+// VISITED_TRANSITIONS 0
 digraph S {
-  0 [intval="", vloc="<A,sink>", zone="()"]
-  1 [intval="", vloc="<B,sink>", zone="()"]
+  0 [initial="true", intval="", labels="", vloc="<A,sink>", zone="()"]
+  1 [initial="true", intval="", labels="", vloc="<B,sink>", zone="()"]
 }

@@ -49,11 +49,28 @@ inline bool operator!=(tchecker::refzg::transition_t const & t1, tchecker::refzg
 }
 
 /*!
+ \brief Equality check for shared transitions
+ \param t1 : transition
+ \param t2 : transition
+ \return see tchecker::ta::operator== on transitions
+ \note note this should only be used on transitions that have shared internal components
+ */
+bool shared_equal_to(tchecker::refzg::transition_t const & t1, tchecker::refzg::transition_t const & t2);
+
+/*!
  \brief Hash
  \param t : transition
  \return Hash value for transition t
  */
 std::size_t hash_value(tchecker::refzg::transition_t const & t);
+
+/*!
+ \brief Hash for shared transitions
+ \param t : transition
+ \return Hash value for transition t
+ \note note this should only be used on transitions that have shared internal components
+ */
+std::size_t shared_hash_value(tchecker::refzg::transition_t const & t);
 
 /*!
  \brief Lexical ordering on transitions of the local-time zone graph

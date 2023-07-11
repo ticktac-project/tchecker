@@ -16,6 +16,8 @@
 
 #include <boost/iterator/transform_iterator.hpp>
 
+#include "tchecker/basictypes.hh"
+
 /*!
  \file iterator.hh
  \brief Iterators
@@ -185,10 +187,25 @@ template <class C> decltype(auto) make_range(C & c) { return tchecker::make_rang
 \note used to represent past-the-end iterators in ranges, and define dedicated
 past-the-end checks that can be faster than equality checks on some iterators.
 */
-class end_iterator_t {
-};
+class end_iterator_t {};
 
 static end_iterator_t const past_the_end_iterator; /*!< Past-the-end iterator */
+
+/*!
+ \brief Equality predicate on past-the-end iterators
+ \param it1 : past-the-end iterator
+ \param it2 : past-the-end iterator
+ \return true if it1 and it2 have the same address, false otherwise
+*/
+bool operator==(tchecker::end_iterator_t const & it1, tchecker::end_iterator_t const & it2);
+
+/*!
+ \brief Disequality predicate on past-the-end iterators
+ \param it1 : past-the-end iterator
+ \param it2 : past-the-end iterator
+ \return true if it1 and it2 have distinct addresses, false otherwise
+*/
+bool operator!=(tchecker::end_iterator_t const & it1, tchecker::end_iterator_t const & it2);
 
 /*!
  \class join_iterator_t
@@ -197,6 +214,7 @@ static end_iterator_t const past_the_end_iterator; /*!< Past-the-end iterator */
  (x11,...,x1N,...,xK1,...,xKM), skipping empty sub-ranges
  \tparam R : type of range of sub-ranges, should be a tchecker::range_t
  \tparam SUBR : type of sub-range, should be a tchecker::range_t
+ \note All ranges must be constant ranges
  */
 template <class R, class SUBR> class join_iterator_t {
 public:
@@ -215,7 +233,7 @@ public:
    \note required by C++ concept ForwardIterator
    */
   join_iterator_t()
-      : _get_sub_range([](typename R::begin_iterator_t const & it) {
+      : _get_sub_range([](typename R::begin_iterator_t const & /*it*/) {
           return tchecker::make_range(typename SUBR::begin_iterator_t{}, typename SUBR::end_iterator_t{});
         })
   {
@@ -306,7 +324,7 @@ public:
   \param end : past-the-end iterator
   \return see at_end()
   */
-  inline bool operator==(tchecker::end_iterator_t const & end) const { return at_end(); }
+  inline bool operator==(tchecker::end_iterator_t const & /*end*/) const { return at_end(); }
 
   /*!
   \brief Disequality check w.r.t. past-the-end iterator
@@ -320,7 +338,7 @@ public:
    \pre this is not past-the-end (checked by assertion)
    \return current value
    */
-  inline decltype(auto) operator*()
+  inline decltype(auto) operator*() const
   {
     assert((_it != _end) && (_range_it != _range_end));
     return (*_range_it);
@@ -409,7 +427,7 @@ namespace tchecker {
 
 /*!
  \class cartesian_iterator_t
- \brief Iterator over a cartesian product of ranges
+ \brief Iterator over a cartesian product of ranges of the same type
  \tparam R : type of ranges, should have type tchecker::range_t<...>
  */
 template <class R> class cartesian_iterator_t {
@@ -535,7 +553,7 @@ public:
   \param end : past-the-end iterator
   \return see at_end()
   */
-  inline bool operator==(tchecker::end_iterator_t const & end) const { return at_end(); }
+  inline bool operator==(tchecker::end_iterator_t const & /*end*/) const { return at_end(); }
 
   /*!
   \brief Disequality check w.r.t. past-the-end iterator
@@ -632,7 +650,6 @@ public:
    */
   tchecker::range_t<tchecker::cartesian_iterator_t<R>::values_iterator_t> operator*()
   {
-    assert(_nranges != 0);
     values_iterator_t begin(_its.begin()), end(_its.end());
     return tchecker::make_range(begin, end);
   }
@@ -684,6 +701,142 @@ private:
   std::vector<typename R::begin_iterator_t> _its;    /*!< Iterators on current elements */
 };
 
+/*!
+ \class cartesian_iterator2_t
+ \brief Iterator over a cartesian product of two ranges of potentially distinct types
+ \tparam R1 : type of first range, should have type tchecker::range_t<...>
+ \tparam R2 : type of second range, should have type tchecker::range_t<...>
+ */
+template <typename R1, typename R2> class cartesian_iterator2_t {
+public:
+  /*!
+   \brief Constructor
+   \param r1 : first range
+   \param r2 : second range
+   \post this is an iterator over r1 * r2
+   */
+  cartesian_iterator2_t(R1 const & r1, R2 const & r2) : _r1(r1), _r2(r2), _it1(r1.begin()), _it2(r2.begin()), _empty(false)
+  {
+    if (r1.begin() == r1.end() || r2.begin() == r2.end())
+      _empty = true;
+  }
+
+  /*!
+   \brief Copy constructor
+   \param it : cartesian iterator
+   \post this is a copy of it
+   */
+  cartesian_iterator2_t(tchecker::cartesian_iterator2_t<R1, R2> const & it) = default;
+
+  /*!
+   \brief Move constructor
+   \param it : cartesian iterator
+   \post it has been moved to this
+   */
+  cartesian_iterator2_t(tchecker::cartesian_iterator2_t<R1, R2> && it) = default;
+
+  /*!
+   \brief Destructor
+   */
+  ~cartesian_iterator2_t() = default;
+
+  /*!
+   \brief Assignment operator
+   \param it : cartesian iterator
+   \post this is a copy of it
+   \return this after assignment
+   */
+  tchecker::cartesian_iterator2_t<R1, R2> & operator=(tchecker::cartesian_iterator2_t<R1, R2> const & it) = default;
+
+  /*!
+   \brief Move assignment operator
+   \param it : cartesian iterator
+   \post it has been moved to this
+   \return this after assignment
+   */
+  tchecker::cartesian_iterator2_t<R1, R2> & operator=(tchecker::cartesian_iterator2_t<R1, R2> && it) = default;
+
+  /*!
+   \brief Equality check
+   \param it : iterator
+   \return true if it and this are equal, false otherwise
+   */
+  bool operator==(tchecker::cartesian_iterator2_t<R1, R2> const & it) const
+  {
+    return (_r1 == it._r1 && _r2 == it._r2 && _it1 == it._it1 && _it2 == it._it2 && _empty == it._empty);
+  }
+
+  /*!
+   \brief Disequality check
+   \param it : iterator
+   \return true if it and this differ, false otherwise
+   */
+  bool operator!=(tchecker::cartesian_iterator2_t<R1, R2> const & it) const { return !(it == *this); }
+
+  /*!
+  \brief Equality check w.r.t. past-the-end iterator
+  \param end : past-the-end iterator
+  \return see at_end()
+  */
+  inline bool operator==(tchecker::end_iterator_t const & /*end*/) const { return at_end(); }
+
+  /*!
+  \brief Disequality check w.r.t. past-the-end iterator
+  \param end : past-the-end iterator
+  \return negation of operator==
+  */
+  inline bool operator!=(tchecker::end_iterator_t const & end) const { return !(*this == end); }
+
+  /*!
+   \brief Accessor
+   \pre not at_end() (checked by assertion)
+   \return pair <v1, v2> in ranges r1 and r2 pointed to by this iterator
+   */
+  decltype(auto) operator*()
+  {
+    assert(!at_end());
+    return std::make_tuple(*_it1, *_it2);
+  }
+
+  /*!
+   \brief Increment operator
+   \pre not at_end() (checked by assertion)
+   \post this points to next element or past-the-end
+   */
+  tchecker::cartesian_iterator2_t<R1, R2> & operator++()
+  {
+    assert(!at_end());
+
+    // increment _it2 if not at end
+    ++_it2;
+    if (_it2 != _r2.end())
+      return *this;
+
+    // else increment _it1
+    ++_it1;
+    if (_it1 == _r1.end())
+      return *this;
+
+    // if _it1 not at end, put back _it2 at beginning
+    _it2 = _r2.begin();
+    return *this;
+  }
+
+private:
+  /*!
+   \brief Accessor
+   \return true if current element is past-the-end cartesian product, false
+   otherwise
+   */
+  inline bool at_end() const { return (_empty || (_it1 == _r1.end() && _it2 == _r2.end())); }
+
+  R1 _r1;                             /*!< First range */
+  R2 _r2;                             /*!< Second range */
+  typename R1::begin_iterator_t _it1; /*!< Current iterator in first range */
+  typename R2::begin_iterator_t _it2; /*!< Current iterator in second range */
+  bool _empty;                        /*!< True if this iterator is empty */
+};
+
 } // end of namespace tchecker
 
 /*!
@@ -693,6 +846,129 @@ template <class R> struct std::iterator_traits<tchecker::cartesian_iterator_t<R>
   using difference_type = typename std::iterator_traits<typename R::begin_iterator_t>::difference_type;
 
   using value_type = tchecker::range_t<typename tchecker::cartesian_iterator_t<R>::values_iterator_t>;
+
+  using pointer = value_type *;
+
+  using reference = value_type &;
+
+  using iterator_category = std::forward_iterator_tag;
+};
+
+/*!
+ \brief Iterator traits for cartesian_iterator2_t
+ */
+template <typename R1, typename R2> struct std::iterator_traits<tchecker::cartesian_iterator2_t<R1, R2>> {
+  using difference_type = nullptr_t;
+
+  using value_type = std::tuple<typename std::iterator_traits<typename R1::begin_iterator_t>::value_type,
+                                typename std::iterator_traits<typename R2::begin_iterator_t>::value_type>;
+
+  using pointer = value_type *;
+
+  using reference = value_type &;
+
+  using iterator_category = std::forward_iterator_tag;
+};
+
+namespace tchecker {
+
+/*!
+ \class integer_iterator_t
+ \brief Iterator over integer values
+*/
+class integer_iterator_t {
+public:
+  /*!
+   \brief Constructor
+   \param value : initial value
+  */
+  integer_iterator_t(tchecker::integer_t value = 0);
+
+  /*!
+   \brief Copy constructor
+  */
+  integer_iterator_t(tchecker::integer_iterator_t const &) = default;
+
+  /*!
+   \brief Move constructor
+  */
+  integer_iterator_t(tchecker::integer_iterator_t &&) = default;
+
+  /*!
+   \brief Destructor
+  */
+  ~integer_iterator_t() = default;
+
+  /*!
+   \brief Assignment operator
+  */
+  tchecker::integer_iterator_t & operator=(tchecker::integer_iterator_t const &) = default;
+
+  /*!
+   \brief Assignment operator
+  */
+  tchecker::integer_iterator_t & operator=(tchecker::integer_t const &);
+
+  /*!
+   \brief Move-ssignment operator
+  */
+  tchecker::integer_iterator_t & operator=(tchecker::integer_iterator_t &&) = default;
+
+  /*!
+   \brief Equality check
+   \param it : iterator
+   \return true if this iterator and it have the same current value, false otherwise
+  */
+  bool operator==(tchecker::integer_iterator_t const & it) const;
+
+  /*!
+   \brief Equality check
+   \param value : integer value
+   \return true if this current value is equal to value, false otherwise
+  */
+  bool operator==(tchecker::integer_t value) const;
+
+  /*!
+   \brief Disequality check
+  */
+  bool operator!=(tchecker::integer_iterator_t const & it) const;
+
+  /*!
+   \brief Disequality check
+  */
+  bool operator!=(tchecker::integer_t value) const;
+
+  /*!
+   \brief Dereference operator
+   \return current value of this iterator
+  */
+  tchecker::integer_t operator*() const;
+
+  /*!
+   \brief Increment operator
+   \post this iterator points to the next integer according to modular arithmetic
+  */
+  tchecker::integer_iterator_t & operator++();
+
+  /*!
+   \brief Decrement operator
+   \post this iterator points to the previous integer according to modular arithmetic
+  */
+  tchecker::integer_iterator_t & operator--();
+
+private:
+  tchecker::integer_t _current; /*!< Current integer value */
+};
+
+} // namespace tchecker
+
+/*!
+ \brief Iterator traits for integer_iterator_t
+ */
+template <> struct std::iterator_traits<tchecker::integer_iterator_t> {
+  using difference_type = tchecker::integer_t;
+
+  using value_type = tchecker::integer_t;
 
   using pointer = value_type *;
 

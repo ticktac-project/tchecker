@@ -1,2 +1,3 @@
+ERROR: 31.27-234 local variable already exists as a global one: tmp
 ERROR: local variable already exists as a global one: tmp
-ERROR: In process P, edge from A to A with event revertArray, do compiling statement local i = 0; local tmp[5]; i=0; while (i<n) do tmp[i]=Array[n-i-1]; i=i+1 done; i=0; while (i<n) do Array[i]=tmp[i]; i=i+1 done, invalid statement
+ERROR: compiling statement local i = 0; local tmp[5]; i=0; while (i<n) do tmp[i]=Array[n-i-1]; i=i+1 done; i=0; while (i<n) do Array[i]=tmp[i]; i=i+1 done, invalid statement

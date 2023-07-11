@@ -45,9 +45,10 @@ namespace tchecker {
  to represent other states of this object. The default value, 1, is the number
  of states needed by tchecker::pool_t
  */
-template <class T, class REFCOUNT = unsigned int, std::size_t RESERVED = 1> class make_shared_t final : public T {
+template <class T, class REFCOUNT = std::size_t, std::size_t RESERVED = 1> class make_shared_t final : public T {
 
   static_assert(std::is_unsigned<REFCOUNT>::value, "REFCOUNT must be an unsigned type");
+  static_assert(sizeof(REFCOUNT) % alignof(T *) == 0, "REFCOUNT size must be a multiple of pointer alignment");
 
 public:
   /*!
@@ -96,7 +97,14 @@ public:
     char * ptr = new char[alloc_size];
     ptr += sizeof(refcount_t); // shared object starts after refcount
 
-    construct(ptr, args...);
+    try {
+      construct(ptr, args...);
+    }
+    catch (...) {
+      ptr -= sizeof(refcount_t);
+      delete[] ptr;
+      throw;
+    }
 
     return reinterpret_cast<tchecker::make_shared_t<T, REFCOUNT, RESERVED> *>(ptr);
   }
@@ -318,12 +326,11 @@ public:
    \brief Constructor
    \param y : shared pointer to copy from
    \tparam Y : type of object pointed to by y
-   \pre dynamic cast of Y* into T* should be allowed
    \post this object holds a reference to the object pointed by y
    */
   template <class Y> explicit intrusive_shared_ptr_t(tchecker::intrusive_shared_ptr_t<Y> const & y) : _t(nullptr)
   {
-    reset(dynamic_cast<T *>(y._t));
+    reset(y._t); // DO NOT dynamic_cast<T *>(y._t) AS IT BREAKS REFERENCE COUNTER
   }
 
   /*!
@@ -342,13 +349,12 @@ public:
    \brief Move constructor
    \param y : shared pointer to move from
    \tparam Y : type of object pointed to by y
-   \pre dynamic cast of Y* into T* should be allowed
    \post this object holds a reference to the object pointed by y, and y
    has been reset to nullptr
    */
   template <class Y> explicit intrusive_shared_ptr_t(tchecker::intrusive_shared_ptr_t<Y> && y) : _t(nullptr)
   {
-    reset(dynamic_cast<T *>(y._t));
+    reset(y._t); // DO NOT dynamic_cast<T *>(y._t) AS IT BREAKS REFERENCE COUNTER
     y.reset(nullptr);
   }
 
@@ -374,13 +380,12 @@ public:
    \brief Assignment operator
    \param y : shared pointer to assign from
    \tparam Y : type of object pointed to by y
-   \pre dynamic cast of Y* into T* should be allowed
    \post this object holds a reference to the object pointed by y
    */
   template <class Y> tchecker::intrusive_shared_ptr_t<T> & operator=(tchecker::intrusive_shared_ptr_t<Y> const & y)
   {
     if (this != &y)
-      reset(dynamic_cast<T *>(y._t));
+      reset(y._t); // DO NOT dynamic_cast<T *>(y._t) AS IT BREAKS REFERENCE COUNTER
     return *this;
   }
 
@@ -403,15 +408,14 @@ public:
    \brief Move assignment operator
    \param y : shared pointer to assign from
    \tparam Y : type of object pointed to by y
-   \pre dynamic cast of Y* into T* should be allowed
    \post this object holds a reference to the object pointed by y, and y
    has been reset to nullptr
    */
   template <class Y> tchecker::intrusive_shared_ptr_t<T> & operator=(tchecker::intrusive_shared_ptr_t<Y> && y)
   {
     if (this != &y) {
-      reset(dynamic_cast<T *>(y._t));
-      y.reset(nullptr);
+      reset(y._t);
+      y.reset(nullptr); // DO NOT dynamic_cast<T *>(y._t) AS IT BREAKS REFERENCE COUNTER
     }
     return *this;
   }

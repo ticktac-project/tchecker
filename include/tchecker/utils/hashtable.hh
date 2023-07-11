@@ -13,6 +13,7 @@
  \brief Hashtable of shared objects
  */
 
+#include <unordered_set>
 #include <vector>
 
 #include "tchecker/utils/iterator.hh"
@@ -49,14 +50,21 @@ public:
 
   /*!
    \brief Copy constructor
-   \throw std::invalid_argument if object is stored
+   \post this object is not stored (i.e. positions are not copied as this would
+   be invalid). This constructor is provided to allow copy-construction of
+   objects that can be stored in a collision table
    */
   collision_table_object_t(tchecker::collision_table_object_t const &);
 
   /*!
    \brief Move constructor
+   \throw std::invalid_argument : if the object to move is stored in a
+   collision table
+   \post this object is not stored (i.e. positions are not moved as this would
+   be invalid). This constructor is provided to allow move-construction of
+   objects that can be stored in a collisition table
    */
-  collision_table_object_t(tchecker::collision_table_object_t &&) = default;
+  collision_table_object_t(tchecker::collision_table_object_t &&);
 
   /*!
    \brief Destructor
@@ -66,15 +74,29 @@ public:
   /*!
    \brief Assignment operator
    \throw std::runtime_error : if this object is stored in a collision table
-   \throw std::invalid_argument : if parameter object is stored
+   \post this object has kept its positions (i.e. positions are not copied as
+   this would be invalid). This operator is provided to allow assignment to
+   objects that can be stored in a collision table but which are not stored yet
    */
-  tchecker::collision_table_object_t & operator=(tchecker::collision_table_object_t &);
+  tchecker::collision_table_object_t & operator=(tchecker::collision_table_object_t const &);
 
   /*!
    \brief Move-assignment operator
    \throw std::runtime_error : if this object is stored in a collision table
+   \throw std::invalid_argument : if the object to move is stored in a
+   collisition table
+   \post this object has kept its positions (i.e. positions are not moved as
+   this would be invalid). This operator is provided to allow move assignment
+   between objects that can be stored in a collisition table but which are not
+   stored yet
    */
   tchecker::collision_table_object_t & operator=(tchecker::collision_table_object_t &&);
+
+  /*!
+     \brief Check if this object is stored in a collision table based on its positions
+     \return true if this object is stored in a collision table, false otherwise
+     */
+  bool is_stored() const;
 
 private:
   template <class SPTR, class HASH> friend class tchecker::collision_table_t;
@@ -111,12 +133,6 @@ private:
    \post this object position has been cleared
    */
   void clear_position();
-
-  /*!
-   \brief Check if this object is stored in a collision table based on its positions
-   \return true if this object is stored in a collision table, false otherwise
-   */
-  bool is_stored() const;
 
   tchecker::collision_table_position_t _position_in_table;          /*!< Position in the table */
   tchecker::collision_table_position_t _position_in_collision_list; /*!< Position in the collision list */
@@ -224,12 +240,7 @@ public:
   {
     if (!o->is_stored())
       throw std::invalid_argument("Removing an object that is not stored");
-    tchecker::collision_table_position_t position_in_table = o->position_in_table();
-    if (position_in_table >= _table.size())
-      throw std::invalid_argument("Removing an object which is not stored in this collision table");
-    remove(o, _table[position_in_table]);
-    o->clear_position();
-    --_size;
+    remove(o->position_in_table(), o->position_in_collision_list());
   }
 
   /*!
@@ -239,30 +250,204 @@ public:
   inline std::size_t size() const { return _size; }
 
   /*!
-   \brief Type of iterator over the object in the table
+   \class iterator_t
+   \brief Type of iterator over the objects in the table
+  */
+  class iterator_t {
+  public:
+    /*!
+     \brief Constructor
+     \param table : pointer to iterated collision table
+     \param position_in_table : position in table
+     \pre position_in_table <= table->size() (checked by assertion)
+     \post this keeps a pointer to table
+     */
+    iterator_t(std::vector<collision_list_t> * table, tchecker::collision_table_position_t position_in_table)
+        : _table(table), _position_in_table(position_in_table), _position_in_collision_list(0)
+    {
+      assert(position_in_table <= table->size());
+      advance_to_next_non_empty_collision_list();
+    }
+
+    /*!
+     \brief Copy constructor
+    */
+    iterator_t(typename tchecker::collision_table_t<SPTR, HASH>::iterator_t const & it) = default;
+
+    /*!
+    \brief Move constructor
+     */
+    iterator_t(typename tchecker::collision_table_t<SPTR, HASH>::iterator_t && it) = default;
+
+    /*!
+     \brief Destructor
+     */
+    ~iterator_t() = default;
+
+    /*!
+     \brief Assignment operator
+    */
+    typename tchecker::collision_table_t<SPTR, HASH>::iterator_t &
+    operator=(typename tchecker::collision_table_t<SPTR, HASH>::iterator_t const & it) = default;
+
+    /*!
+     \brief Move assignment operator
+    */
+    typename tchecker::collision_table_t<SPTR, HASH>::iterator_t &
+    operator=(typename tchecker::collision_table_t<SPTR, HASH>::iterator_t && it) = default;
+
+    /*!
+     \brief Equality predicate
+     \param it : an iterator
+     \return true if this iterator is equal to it, false otherwise
+     */
+    bool operator==(typename tchecker::collision_table_t<SPTR, HASH>::iterator_t const & it) const
+    {
+      return (_table == it._table && _position_in_table == it._position_in_table &&
+              _position_in_collision_list == it._position_in_collision_list);
+    }
+
+    /*!
+     \brief Disequality predicate
+     \param it : an iterator
+     \return true if this iterator is different of it, false otherwise
+     */
+    bool operator!=(typename tchecker::collision_table_t<SPTR, HASH>::iterator_t const & it) const { return !(it == *this); }
+
+    /*!
+     \brief Dereference operator
+     \return SPTR pointed by this iterator
+     \pre this iterator is not be past-the-end (checked by assertion)
+     */
+    SPTR const & operator*() const
+    {
+      assert(dereferenceable());
+      return (*_table)[_position_in_table][_position_in_collision_list];
+    }
+
+    /*!
+     \brief Dereference operator
+     \return SPTR pointed by this iterator
+     \pre this iterator is not be past-the-end (checked by assertion)
+     */
+    SPTR & operator*()
+    {
+      assert(dereferenceable());
+      return (*_table)[_position_in_table][_position_in_collision_list];
+    }
+
+    /*!
+     \brief Moves iterator to next object in table
+     \pre this iterator is not be past-the-end (checked by assertion)
+     */
+    typename tchecker::collision_table_t<SPTR, HASH>::iterator_t & operator++()
+    {
+      assert(_position_in_table < _table->size());
+
+      ++_position_in_collision_list;
+      if (_position_in_collision_list < (*_table)[_position_in_table].size())
+        return *this;
+
+      ++_position_in_table;
+      advance_to_next_non_empty_collision_list();
+
+      return *this;
+    }
+
+  private:
+    template <class SP, class H> friend class collision_table_t;
+
+    /*!
+     \brief Moves iterator to the next non-empty collision list if any
+    */
+    void advance_to_next_non_empty_collision_list()
+    {
+      for (; _position_in_table < _table->size(); ++_position_in_table)
+        if (!(*_table)[_position_in_table].empty())
+          break;
+      _position_in_collision_list = 0;
+    }
+
+    /*!
+     \brief Checks if an iterator can be dereferenced
+    */
+    bool dereferenceable() const
+    {
+      return (_position_in_table < _table->size() && _position_in_collision_list < (*_table)[_position_in_table].size());
+    }
+
+    std::vector<collision_list_t> * _table;                           /*!< Pointer to iterated collision table */
+    tchecker::collision_table_position_t _position_in_table;          /*!< Position in _table */
+    tchecker::collision_table_position_t _position_in_collision_list; /*!< Position in _table[_position_in_table] */
+    /* NB: implementation based on vector iterators would be more elegant,
+     * however, iterators could be invalidated by the remove operation below (if
+     * iterators are implemented as pointers and the vector gets reallocated for
+     * instance)
+     */
+  };
+
+  /*!
+   \brief Accessor
+   \return iterator pointing to the first object in the table, or past-the-end
+   if the table is empty
+   */
+  tchecker::collision_table_t<SPTR, HASH>::iterator_t begin()
+  {
+    return tchecker::collision_table_t<SPTR, HASH>::iterator_t(&_table, 0);
+  }
+
+  /*!
+   \brief Accessor
+   \return const past-the-end iterator
+   */
+  tchecker::collision_table_t<SPTR, HASH>::iterator_t end()
+  {
+    assert(_table.size() < std::numeric_limits<tchecker::collision_table_position_t>::max());
+    return tchecker::collision_table_t<SPTR, HASH>::iterator_t(
+        &_table, static_cast<tchecker::collision_table_position_t>(_table.size()));
+  }
+
+  /*!
+   \brief Remove object pointed by an iterator
+   \param it : iterator
+   \return iterator to the next object in this table
+   \pre it can be dereferenced
+   \note invalidates iterators
+  */
+  tchecker::collision_table_t<SPTR, HASH>::iterator_t remove(tchecker::collision_table_t<SPTR, HASH>::iterator_t const & it)
+  {
+    tchecker::collision_table_t<SPTR, HASH>::iterator_t it2(it);
+    remove(*it2);
+    if (!it2.dereferenceable())
+      ++it2;
+    return it2;
+  }
+
+  /*!
+   \brief Type of const iterator over the object in the table
    */
   using const_iterator_t = tchecker::join_iterator_t<tchecker::range_t<typename std::vector<collision_list_t>::const_iterator>,
                                                      tchecker::range_t<typename collision_list_t::const_iterator>>;
 
   /*!
    \brief Accessor
-   \return Iterator pointing to the first object in the table, or past-the-end
+   \return const iterator pointing to the first object in the table, or past-the-end
    if the table is empty
    */
   tchecker::collision_table_t<SPTR, HASH>::const_iterator_t begin() const
   {
     return tchecker::collision_table_t<SPTR, HASH>::const_iterator_t(
-        _table.begin(), _table.end(), tchecker::collision_table_t<SPTR, HASH>::extract_collision_list_range);
+        _table.begin(), _table.end(), tchecker::collision_table_t<SPTR, HASH>::extract_collision_list_const_range);
   }
 
   /*!
    \brief Accessor
-   \return Past-the-end iterator
+   \return const past-the-end iterator
    */
   tchecker::collision_table_t<SPTR, HASH>::const_iterator_t end() const
   {
     return tchecker::collision_table_t<SPTR, HASH>::const_iterator_t(
-        _table.end(), _table.end(), tchecker::collision_table_t<SPTR, HASH>::extract_collision_list_range);
+        _table.end(), _table.end(), tchecker::collision_table_t<SPTR, HASH>::extract_collision_list_const_range);
   }
 
   /*!
@@ -294,7 +479,7 @@ protected:
   */
   inline tchecker::collision_table_position_t compute_position_in_table(SPTR const & o) const
   {
-    return _hash(o) % _table.size();
+    return static_cast<tchecker::collision_table_position_t>(_hash(o) % _table.size());
   }
 
   /*!
@@ -340,40 +525,55 @@ protected:
   tchecker::collision_table_position_t add(SPTR const & o, collision_list_t & c)
   {
     assert(!o->is_stored());
+    assert(c.size() < std::numeric_limits<tchecker::collision_table_position_t>::max());
     c.push_back(o);
-    return c.size() - 1;
+    return static_cast<tchecker::collision_table_position_t>(c.size() - 1);
   }
 
   /*!
-   \brief Remove an object from a collision list
-   \param o : an object
-   \param c : a collision list
-   \pre o is stored in c
-   \post o has been removed from c
-   \throw std::invalid_argument : if o is not stored in c
+   \brief Remove an object
+   \param position_in_table : position in this table
+   \param position_in_collision_list : position in the collision list at position_in_table
+   \pre (position_in_table, position_in_collision_list) is a valid position on
+   this table
+   \post the object at (position_in_table, position_in_collision_list) has been
+   removed from this table
+   \throw std::invalid_argument : if (position_in_table,
+   position_in_collision_list) is not a valid position in this table
   */
-  void remove(SPTR const & o, collision_list_t & c)
+  void remove(tchecker::collision_table_position_t position_in_table,
+              tchecker::collision_table_position_t position_in_collision_list)
   {
-    tchecker::collision_table_position_t position_in_table = o->position_in_table();
-    tchecker::collision_table_position_t position_in_collision_list = o->position_in_collision_list();
-    if (position_in_collision_list >= c.size() || c[position_in_collision_list] != o)
+    if (position_in_table >= _table.size())
+      throw std::invalid_argument("Removing an object which is not stored in this collision table");
+
+    collision_list_t & c = _table[position_in_table];
+
+    if (position_in_collision_list >= c.size())
       throw std::invalid_argument("Removing an object that is not stored in this collision list");
-    SPTR back_object = c.back();
-    back_object->clear_position();
-    back_object->set_position(position_in_table, position_in_collision_list);
-    c[position_in_collision_list] = back_object;
+
+    c[position_in_collision_list]->clear_position();
+
+    if (position_in_collision_list < c.size() - 1) {
+      SPTR back_object = c.back();
+      back_object->clear_position();
+      back_object->set_position(position_in_table, position_in_collision_list);
+      c[position_in_collision_list] = back_object;
+    }
+
     c.pop_back();
+    --_size;
   }
 
   /*!
-   \brief Accessor to range of objects in a collision list from a iterator to a
+   \brief Accessor to range of objects in a collision list from a const iterator to a
    collision list
-   \param it : an iterator to a collision list
+   \param it : a const iterator to a collision list
    \pre it can be dereferenced
    \return A range (begin, end) of objects in the collision list pointed by it
    */
   static tchecker::range_t<typename collision_list_t::const_iterator>
-  extract_collision_list_range(typename std::vector<collision_list_t>::const_iterator const & it)
+  extract_collision_list_const_range(typename std::vector<collision_list_t>::const_iterator const & it)
   {
     return tchecker::make_range(it->begin(), it->end());
   }
@@ -387,41 +587,34 @@ protected:
  \class hashtable_object_t
  \brief Objects that can be stored in a hashtable
 */
-class hashtable_object_t : public tchecker::collision_table_object_t {
-public:
-  using tchecker::collision_table_object_t::collision_table_object_t;
-};
+class hashtable_object_t {};
 
 /*!
  \class hashtable_t
- \brief Hashtable with collision lists and fast removal
+ \brief Hashtable
  \tparam SPTR : type of pointer to stored objects. Must be a shared
   pointer, e.g. tchecker::intrusive_shared_ptr_t<...> or std::shared_ptr<...>
  \tparam HASH : hash function over shared pointers of type SPTR
- \tparam EQUAL : equality predicate over chared pointers of type SPTR
+ \tparam EQUAL : equality predicate over shared pointers of type SPTR
  \note stored objects should derive from tchecker::hashtable_object_t
- \note if EQUAL is transitive, the hashtable never contains two objects that are
- equal
 */
-template <class SPTR, class HASH, class EQUAL> class hashtable_t : public tchecker::collision_table_t<SPTR, HASH> {
+template <class SPTR, class HASH, class EQUAL> class hashtable_t {
 public:
   /*!
    \brief Constructor
-   \param table_size : size of the table (number of collision lists)
+   \param table_size : capacity of the table
    \param hash : hash function
    \param equal : equality predicate
    \pre table_size != tchecker::COLLISION_TABLE_NOT_STORED
    \throw std::invalid_argument : if the precondition is violated
+   \note the capacity of the table may grow when too many collisions occur
    */
-  hashtable_t(std::size_t table_size, HASH const & hash, EQUAL const & equal)
-      : tchecker::collision_table_t<SPTR, HASH>(table_size, hash), _equal(equal)
-  {
-  }
+  hashtable_t(std::size_t table_size, HASH const & hash, EQUAL const & equal) : _table(table_size, hash, equal) {}
 
   /*!
-   \brief Copy constructor (deleted)
+   \brief Copy constructor
   */
-  hashtable_t(tchecker::hashtable_t<SPTR, HASH, EQUAL> const &) = delete;
+  hashtable_t(tchecker::hashtable_t<SPTR, HASH, EQUAL> const &) = default;
 
   /*!
    \brief Move constructor
@@ -434,9 +627,9 @@ public:
   ~hashtable_t() = default;
 
   /*!
-   \brief Assignment operator (deleted)
+   \brief Assignment operator
    */
-  tchecker::hashtable_t<SPTR, HASH, EQUAL> & operator=(tchecker::hashtable_t<SPTR, HASH, EQUAL> const &) = delete;
+  tchecker::hashtable_t<SPTR, HASH, EQUAL> & operator=(tchecker::hashtable_t<SPTR, HASH, EQUAL> const &) = default;
 
   /*!
    \brief Move-assignment operator
@@ -444,26 +637,25 @@ public:
   tchecker::hashtable_t<SPTR, HASH, EQUAL> & operator=(tchecker::hashtable_t<SPTR, HASH, EQUAL> &&) = default;
 
   /*!
+   \brief Clear
+   \post The hash table is empty
+   \note Destructor called on shared pointers
+   \note Invalidates iterators
+   */
+  void clear() { _table.clear(); }
+
+  /*!
    \brief Add object to the hashtable
    \param o : an object
-   \pre o is not stored in a hash table
    \post o has been added to this hashtable if it does not contain any element
    equal to o w.r.t. EQUAL
    \return true if o has been added to this hashtable, false otherwise
-   \throw std::invalid_argument : if o is already stored in a hashtable
-   \note Complexity : computation of the hash value of object o
    \note Invalidates iterators
    */
   bool add(SPTR const & o)
   {
-    if (o->is_stored())
-      throw std::invalid_argument("Adding an object that is already stored in a hashtable is not allowed");
-    tchecker::collision_table_position_t position_in_table = this->compute_position_in_table(o);
-    auto && [found, p] = find(o, this->_table[position_in_table]);
-    if (found)
-      return false;
-    tchecker::collision_table_t<SPTR, HASH>::add(o, position_in_table);
-    return true;
+    auto && [it, inserted] = _table.insert(o);
+    return inserted;
   }
 
   /*!
@@ -474,8 +666,10 @@ public:
   */
   std::tuple<bool, SPTR const> find(SPTR const & o) const
   {
-    tchecker::collision_table_position_t position_in_table = this->compute_position_in_table(o);
-    return find(o, this->_table[position_in_table]);
+    auto it = _table.find(o);
+    if (it == _table.end())
+      return std::make_tuple(false, o);
+    return std::make_tuple(true, *it);
   }
 
   /*!
@@ -488,32 +682,59 @@ public:
   */
   SPTR find_else_add(SPTR const & o)
   {
-    tchecker::collision_table_position_t position_in_table = this->compute_position_in_table(o);
-    auto && [found, p] = find(o, this->_table[position_in_table]);
-    if (found)
-      return p;
-    tchecker::collision_table_t<SPTR, HASH>::add(o, position_in_table);
-    return o;
+    auto && [it, inserted] = _table.insert(o);
+    if (inserted)
+      return o;
+    return *it;
   }
+
+  /*!
+   \brief Accessor
+   \return Number of objects in this hash table
+   */
+  inline std::size_t size() const { return _table.size(); }
+
+  /*!
+   \brief Type of iterator
+  */
+  using iterator_t = typename std::unordered_set<SPTR, HASH, EQUAL>::iterator;
+
+  /*!
+   \brief Iterator on first element (if any)
+  */
+  iterator_t begin() { return _table.begin(); }
+
+  /*!
+    \brief Past-the-end iterator
+  */
+  iterator_t end() { return _table.end(); }
+
+  /*!
+    \brief Type of const iterator
+  */
+  using const_iterator_t = typename std::unordered_set<SPTR, HASH, EQUAL>::const_iterator;
+
+  /*!
+    \brief Const iterator on first element (if any)
+  */
+  const_iterator_t begin() const { return _table.cbegin(); }
+
+  /*!
+    \brief Const past-the-end iterator
+  */
+  const_iterator_t end() const { return _table.cend(); }
+
+  /*!
+    \brief Remove an element
+    \param it : iterator
+    \pre it can be dereferenced
+    \post the element pointed by it has been removed from this hash table
+    \return iterator to the next object in the table
+  */
+  iterator_t remove(iterator_t const & it) { return _table.erase(it); }
 
 protected:
-  /*!
-   \brief Check if an object belongs to a collision list
-   \param o : an object
-   \param c : a collision list
-   \return a pair (found, p) where p is true if an object p equal to o has been
-   found in this hashtable, otherwise found is false and p == o
-  */
-  std::tuple<bool, SPTR const> find(SPTR const & o,
-                                    typename tchecker::collision_table_t<SPTR, HASH>::collision_list_t const & c) const
-  {
-    for (SPTR const & p : c)
-      if (_equal(p, o))
-        return std::make_tuple(true, p);
-    return std::make_tuple(false, o);
-  }
-
-  EQUAL _equal; /*!< Equality predicate */
+  std::unordered_set<SPTR, HASH, EQUAL> _table; /*!< Container */
 };
 
 } // end of namespace tchecker

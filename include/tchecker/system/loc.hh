@@ -39,12 +39,12 @@ public:
    \param pid : process identifier
    \param id : location identifier
    \param name : location name
-   \param attr : location attributes
+   \param attributes : location attributes
    \pre name is not empty
    \throw std::invalid_argument : if the precondition is violated
    */
   loc_t(tchecker::process_id_t pid, tchecker::loc_id_t id, std::string const & name,
-        tchecker::system::attributes_t const & attr);
+        tchecker::system::attributes_t const & attributes);
 
   /*!
    \brief Copy constructor
@@ -93,13 +93,13 @@ public:
    \brief Accessor
    \return Attributes
    */
-  inline tchecker::system::attributes_t const & attributes() const { return _attr; }
+  inline tchecker::system::attributes_t const & attributes() const { return _attributes; }
 
 private:
-  tchecker::process_id_t _pid;          /*!< Process ID */
-  tchecker::loc_id_t _id;               /*!< Identifier */
-  std::string _name;                    /*!< Name */
-  tchecker::system::attributes_t _attr; /*!< Attributes */
+  tchecker::process_id_t _pid;                /*!< Process ID */
+  tchecker::loc_id_t _id;                     /*!< Identifier */
+  std::string _name;                          /*!< Name */
+  tchecker::system::attributes_t _attributes; /*!< Attributes */
 };
 
 /*!
@@ -158,19 +158,19 @@ public:
    \brief Add a location
    \param pid : process identifier
    \param name : location name
-   \param attr : location attributes
+   \param attributes : location attributes
    \pre name is not already declared in process pid
    \throw std::invalid_argument : if name is a declared location of process pid
    \throw std::runtime_error : if location identifiers have been exhausted
    \note if attribute `initial` is in attr, then the location is added as an initial location of process pid
    */
-  void add_location(tchecker::process_id_t pid, std::string const & name, tchecker::system::attributes_t const & attr);
+  void add_location(tchecker::process_id_t pid, std::string const & name, tchecker::system::attributes_t const & attributes);
 
   /*!
    \brief Accessor
    \return number of locations
    */
-  inline tchecker::loc_id_t locations_count() const { return _locs.size(); }
+  inline std::size_t locations_count() const { return _locs.size(); }
 
   /*!
    \brief Accessor
@@ -201,6 +201,11 @@ public:
   class const_iterator_t : public std::vector<tchecker::system::loc_shared_ptr_t>::const_iterator {
   public:
     /*!
+     \brief Default constructor
+    */
+    const_iterator_t() = default;
+
+    /*!
      \brief Constructor
      */
     const_iterator_t(std::vector<tchecker::system::loc_shared_ptr_t>::const_iterator const & it);
@@ -220,6 +225,14 @@ public:
    \return range of locations
    */
   tchecker::range_t<tchecker::system::locs_t::const_iterator_t> locations() const;
+
+  /*!
+   \brief Accessor
+   \param pid : process identifier
+   \return rangle of locations of process pid
+   \throw std::invalid_argument : if pid is not a valid process identifier
+  */
+  tchecker::range_t<tchecker::system::locs_t::const_iterator_t> locations(tchecker::process_id_t pid) const;
 
   /*!
    \brief Accessor
@@ -262,12 +275,19 @@ private:
 
   /*!< Locations */
   std::vector<tchecker::system::loc_shared_ptr_t> _locs;
+  /*!< Map pid -> locations */
+  std::vector<std::vector<tchecker::system::loc_shared_ptr_t>> _process_locs;
   /*!< Map pid -> initial locations */
   std::vector<std::vector<tchecker::system::loc_shared_ptr_t>> _initial_locs;
   /*!< Map (pid, loc name) -> location */
   std::vector<tchecker::index_t<std::string, tchecker::system::loc_shared_ptr_t>> _locs_index;
   /*!< Empty set of locations */
   static std::vector<tchecker::system::loc_shared_ptr_t> const _empty_locs;
+  /* IMPLEMENTATION NOTE
+    _process_locs could be obtained by filtering _locs using a filter iterator for instance. However
+    we need to use it in our own cartesian_iterator_t which is not good enough to be combied with
+    filter iterators. This will be resolved once std::range is implemented as part as c++20 in compilers
+  */
 };
 
 } // end of namespace system

@@ -8,6 +8,7 @@
 #include <boost/dynamic_bitset.hpp>
 
 #include "concur19.hh"
+#include "counter_example.hh"
 #include "tchecker/algorithms/search_order.hh"
 #include "tchecker/system/static_analysis.hh"
 #include "tchecker/ta/state.hh"
@@ -21,9 +22,15 @@ namespace concur19 {
 
 /* node_t */
 
-node_t::node_t(tchecker::refzg::state_sptr_t const & s) : _state(s) {}
+node_t::node_t(tchecker::refzg::state_sptr_t const & s, bool initial, bool final)
+    : tchecker::graph::node_flags_t(initial, final), tchecker::graph::node_refzg_state_t(s)
+{
+}
 
-node_t::node_t(tchecker::refzg::const_state_sptr_t const & s) : _state(s) {}
+node_t::node_t(tchecker::refzg::const_state_sptr_t const & s, bool initial, bool final)
+    : tchecker::graph::node_flags_t(initial, final), tchecker::graph::node_refzg_state_t(s)
+{
+}
 
 /* node_hash_t */
 
@@ -31,7 +38,7 @@ std::size_t node_hash_t::operator()(tchecker::tck_reach::concur19::node_t const 
 {
   // NB: we hash on the discrete part of the state in n to check all nodes
   // with same discrete part for covering
-  return tchecker::ta::hash_value(n.state());
+  return tchecker::ta::shared_hash_value(n.state());
 }
 
 /* node_le_t */
@@ -94,12 +101,12 @@ bool node_le_t::operator()(tchecker::tck_reach::concur19::node_t const & n1,
                            tchecker::tck_reach::concur19::node_t const & n2) const
 {
   _clockbounds->local_lu(n2.state().vloc(), *_l, *_u);
-  return tchecker::refzg::is_sync_alu_le(n1.state(), n2.state(), *_l, *_u);
+  return tchecker::refzg::shared_is_sync_alu_le(n1.state(), n2.state(), *_l, *_u);
 }
 
 /* edge_t */
 
-edge_t::edge_t(tchecker::refzg::transition_t const & t) : _vedge(t.vedge_ptr()) {}
+edge_t::edge_t(tchecker::refzg::transition_t const & t) : tchecker::graph::edge_vedge_t(t.vedge_ptr()) {}
 
 /* graph_t */
 
@@ -123,6 +130,7 @@ graph_t::~graph_t()
 void graph_t::attributes(tchecker::tck_reach::concur19::node_t const & n, std::map<std::string, std::string> & m) const
 {
   _refzg->attributes(n.state_ptr(), m);
+  tchecker::graph::attributes(static_cast<tchecker::graph::node_flags_t const &>(n), m);
 }
 
 void graph_t::attributes(tchecker::tck_reach::concur19::edge_t const & e, std::map<std::string, std::string> & m) const
@@ -148,7 +156,11 @@ public:
   bool operator()(tchecker::tck_reach::concur19::graph_t::node_sptr_t const & n1,
                   tchecker::tck_reach::concur19::graph_t::node_sptr_t const & n2) const
   {
-    return tchecker::refzg::lexical_cmp(n1->state(), n2->state()) < 0;
+    int state_cmp = tchecker::refzg::lexical_cmp(n1->state(), n2->state());
+    if (state_cmp != 0)
+      return (state_cmp < 0);
+    return (tchecker::graph::lexical_cmp(static_cast<tchecker::graph::node_flags_t const &>(*n1),
+                                         static_cast<tchecker::graph::node_flags_t const &>(*n2)) < 0);
   }
 };
 
@@ -178,30 +190,58 @@ std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::concur19::grap
                                                   tchecker::tck_reach::concur19::edge_lexical_less_t>(os, g, name);
 }
 
+/* counter example */
+namespace cex {
+
+namespace symbolic {
+
+tchecker::tck_reach::concur19::cex::symbolic::cex_t * counter_example(tchecker::tck_reach::concur19::graph_t const & g)
+{
+  return tchecker::tck_reach::counter_example_refzg<tchecker::tck_reach::concur19::graph_t,
+                                                    tchecker::tck_reach::concur19::cex::symbolic::cex_t>(g);
+}
+
+std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::concur19::cex::symbolic::cex_t const & cex,
+                          std::string const & name)
+{
+  return tchecker::refzg::path::dot_output(os, cex, name);
+}
+
+} // namespace symbolic
+
+} // namespace cex
+
 /* run */
 
 std::tuple<tchecker::algorithms::covreach::stats_t, std::shared_ptr<tchecker::tck_reach::concur19::graph_t>>
 run(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl, std::string const & labels,
-    std::string const & search_order, std::size_t block_size, std::size_t table_size)
+    std::string const & search_order, tchecker::algorithms::covreach::covering_t covering, std::size_t block_size,
+    std::size_t table_size)
 {
   std::shared_ptr<tchecker::ta::system_t const> system{new tchecker::ta::system_t{*sysdecl}};
   if (!tchecker::system::every_process_has_initial_location(system->as_system_system()))
     std::cerr << tchecker::log_warning << "system has no initial state" << std::endl;
 
-  std::shared_ptr<tchecker::refzg::refzg_t> refzg{tchecker::refzg::factory(system, tchecker::refzg::PROCESS_REFERENCE_CLOCKS,
-                                                                           tchecker::refzg::SYNC_ELAPSED_SEMANTICS,
-                                                                           tchecker::refdbm::UNBOUNDED_SPREAD, block_size)};
+  std::shared_ptr<tchecker::refzg::refzg_t> refzg{tchecker::refzg::factory(
+      system, tchecker::ts::SHARING, tchecker::refzg::PROCESS_REFERENCE_CLOCKS, tchecker::refzg::SYNC_ELAPSED_SEMANTICS,
+      tchecker::refdbm::UNBOUNDED_SPREAD, block_size, table_size)};
 
   std ::shared_ptr<tchecker::tck_reach::concur19::graph_t> graph{
       new tchecker::tck_reach::concur19::graph_t{refzg, block_size, table_size}};
 
   boost::dynamic_bitset<> accepting_labels = system->as_syncprod_system().labels(labels);
 
-  tchecker::tck_reach::concur19::algorithm_t algorithm;
-
   enum tchecker::waiting::policy_t policy = tchecker::algorithms::fast_remove_waiting_policy(search_order);
 
-  tchecker::algorithms::covreach::stats_t stats = algorithm.run(*refzg, *graph, accepting_labels, policy);
+  tchecker::algorithms::covreach::stats_t stats;
+  tchecker::tck_reach::concur19::algorithm_t algorithm;
+
+  if (covering == tchecker::algorithms::covreach::COVERING_FULL)
+    stats = algorithm.run<tchecker::algorithms::covreach::COVERING_FULL>(*refzg, *graph, accepting_labels, policy);
+  else if (covering == tchecker::algorithms::covreach::COVERING_LEAF_NODES)
+    stats = algorithm.run<tchecker::algorithms::covreach::COVERING_LEAF_NODES>(*refzg, *graph, accepting_labels, policy);
+  else
+    throw std::invalid_argument("Unknown covering policy for covreach algorithm");
 
   return std::make_tuple(stats, graph);
 }

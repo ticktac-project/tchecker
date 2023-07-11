@@ -15,8 +15,11 @@
 #include "tchecker/algorithms/covreach/stats.hh"
 #include "tchecker/clockbounds/clockbounds.hh"
 #include "tchecker/clockbounds/solver.hh"
+#include "tchecker/graph/edge.hh"
+#include "tchecker/graph/node.hh"
 #include "tchecker/graph/output.hh"
 #include "tchecker/graph/subsumption_graph.hh"
+#include "tchecker/refzg/path.hh"
 #include "tchecker/refzg/refzg.hh"
 #include "tchecker/refzg/state.hh"
 #include "tchecker/refzg/transition.hh"
@@ -42,37 +45,27 @@ namespace concur19 {
  \class node_t
  \brief Node of the subsumption graph over the local-time zone graph
  */
-class node_t : public tchecker::waiting::element_t {
+class node_t : public tchecker::waiting::element_t,
+               public tchecker::graph::node_flags_t,
+               public tchecker::graph::node_refzg_state_t {
 public:
   /*!
    \brief Constructor
    \param s : a state of the local-time zone graph
-   \post this node keeps a shared pointer to s
+   \param initial : initial node flag
+   \param final : final node flag
+   \post this node keeps a shared pointer to s, and has initial/final node flags as specified
    */
-  node_t(tchecker::refzg::state_sptr_t const & s);
+  node_t(tchecker::refzg::state_sptr_t const & s, bool initial = false, bool final = false);
 
   /*!
    \brief Constructor
    \param s : a state of the local-time zone graph
-   \post this node keeps a shared pointer to s
+   \param initial : initial node flag
+   \param final : final node flag
+   \post this node keeps a shared pointer to s, and has initial/final node flags as specified
    */
-  node_t(tchecker::refzg::const_state_sptr_t const & s);
-
-  /*!
-  \brief Accessor
-  \return shared pointer to the state of the lcoal-time zone graph  in
-  this node
-  */
-  inline tchecker::refzg::const_state_sptr_t state_ptr() const { return _state; }
-
-  /*!
-  \brief Accessor
-  \return state of the local-time zone graph in this node
-  */
-  inline tchecker::refzg::state_t const & state() const { return *_state; }
-
-private:
-  tchecker::refzg::const_state_sptr_t _state; /*!< State of the local-time zone graph */
+  node_t(tchecker::refzg::const_state_sptr_t const & s, bool initial = false, bool final = false);
 };
 
 /*!
@@ -155,7 +148,7 @@ private:
  \class edge_t
  \brief Edge of the subsumption graph of a local-time zone graph
 */
-class edge_t {
+class edge_t : public tchecker::graph::edge_vedge_t {
 public:
   /*!
    \brief Constructor
@@ -163,21 +156,6 @@ public:
    \post this node keeps a shared pointer on the vedge in t
   */
   edge_t(tchecker::refzg::transition_t const & t);
-
-  /*!
-   \brief Accessor
-   \return zone graph vedge in this edge
-  */
-  inline tchecker::vedge_t const & vedge() const { return *_vedge; }
-
-  /*!
-   \brief Accessor
-   \return shared pointer to the zone graph vedge in this edge
-  */
-  inline tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t const> vedge_ptr() const { return _vedge; }
-
-private:
-  tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t const> _vedge; /*!< Tuple of edges */
 };
 
 /*!
@@ -202,6 +180,18 @@ public:
    \brief Destructor
   */
   virtual ~graph_t();
+
+  /*!
+   \brief Accessor
+   \return Shared pointer to underlying zone graph with reference clocks
+  */
+  inline std::shared_ptr<tchecker::refzg::refzg_t> const & refzg_ptr() const { return _refzg; }
+
+  /*!
+   \brief Accessor
+   \return Underlying zone graph with reference clocks
+  */
+  inline tchecker::refzg::refzg_t const & refzg() const { return *_refzg; }
 
   using tchecker::graph::subsumption::graph_t<tchecker::tck_reach::concur19::node_t, tchecker::tck_reach::concur19::edge_t,
                                               tchecker::tck_reach::concur19::node_hash_t,
@@ -237,6 +227,39 @@ private:
 */
 std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::concur19::graph_t const & g, std::string const & name);
 
+namespace cex {
+
+namespace symbolic {
+
+/*!
+ \brief Type of symbolic reachability counter-example
+*/
+using cex_t = tchecker::refzg::path::finite_path_t<tchecker::refzg::refzg_t>;
+
+/*!
+ \brief Compute a counter-example from a covering reachability graph of a zone graph with
+ reference clocks
+ \param g : subsumption graph on a zone graph with reference clocks
+ \return a finite path from an initial node to a final node in g if any, nullptr otherwise
+ \note the returned pointer shall be deleted
+*/
+tchecker::tck_reach::concur19::cex::symbolic::cex_t * counter_example(tchecker::tck_reach::concur19::graph_t const & g);
+
+/*!
+ \brief Counter-example output
+ \param os : output stream
+ \param cex : counter example
+ \param name : counter example name
+ \post cex has been output to os
+ \return os after output
+ */
+std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::concur19::cex::symbolic::cex_t const & cex,
+                          std::string const & name);
+
+} // namespace symbolic
+
+} // namespace cex
+
 /*!
  \class algorithm_t
  \brief Covering reachability algorithm over the local-time zone graph
@@ -254,6 +277,7 @@ public:
  \param sysdecl : system declaration
  \param labels : comma-separated string of labels
  \param search_order : search order
+ \param covering : covering policy
  \param block_size : number of elements allocated in one block
  \param table_size : size of hash tables
  \pre labels must appear as node attributes in sysdecl
@@ -262,7 +286,9 @@ public:
  */
 std::tuple<tchecker::algorithms::covreach::stats_t, std::shared_ptr<tchecker::tck_reach::concur19::graph_t>>
 run(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl, std::string const & labels = "",
-    std::string const & search_order = "bfs", std::size_t block_size = 10000, std::size_t table_size = 65536);
+    std::string const & search_order = "bfs",
+    tchecker::algorithms::covreach::covering_t covering = tchecker::algorithms::covreach::COVERING_FULL,
+    std::size_t block_size = 10000, std::size_t table_size = 65536);
 
 } // end of namespace concur19
 

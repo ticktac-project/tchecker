@@ -27,10 +27,52 @@ namespace tchecker {
 namespace system {
 
 /*!
+ \class attr_parsing_position_t
+ \brief Parsing position of attributes
+*/
+class attr_parsing_position_t : public tchecker::parsing::attr_parsing_position_t {
+public:
+  /*!
+   \brief Default constructor
+  */
+  attr_parsing_position_t() = default;
+
+  /*!
+   \brief Constructor
+   \param parsing_position : parsing position of attribute
+  */
+  attr_parsing_position_t(tchecker::parsing::attr_parsing_position_t const & parsing_position);
+
+  using tchecker::parsing::attr_parsing_position_t::attr_parsing_position_t;
+};
+
+/*!
+ \class attr_t
+ \brief Representation of an attribute
+ \note We provide parsing position to allow precise error reporting when attributes are parsed
+*/
+class attr_t : public tchecker::parsing::attr_t {
+public:
+  /*!
+   \brief Constructor
+   \param attr : attribute
+  */
+  attr_t(tchecker::parsing::attr_t const & attr);
+
+  using tchecker::parsing::attr_t::attr_t;
+};
+
+/*!
  \class attributes_t
- \brief Attributes map key -> values for system components
+ \brief Collection of attributes as a map key -> attribute to allow iteration
+ on keys
  */
 class attributes_t {
+  /*!
+   \brief Type of map key -> attribute
+  */
+  using map_t = std::unordered_multimap<std::string, tchecker::system::attr_t>;
+
 public:
   /*!
    \brief Default contructor
@@ -73,9 +115,11 @@ public:
    \brief Add attribute
    \param key : attribute key
    \param value : attribute value
-   \post the pair (key, value) has been added to the map
+   \param parsing_position : parsing position of the attribute
+   \post attribute (key, value, parsing_position) has been added to the map
    */
-  void add_attribute(std::string const & key, std::string const & value);
+  void add_attribute(std::string const & key, std::string const & value,
+                     tchecker::system::attr_parsing_position_t const & parsing_position);
 
   /*!
    \brief Merge attributes
@@ -85,10 +129,24 @@ public:
   void add_attributes(tchecker::system::attributes_t const & attr);
 
   /*!
-   \brief Type of attribute iterator
-   \note attributes are pairs (key, value)
+   \class const_iterator_t
+   \brief Const iterator on attributes, that dereferences to tchecker::system::attr_t
    */
-  using const_iterator_t = std::unordered_multimap<std::string, std::string>::const_iterator;
+  class const_iterator_t : public map_t::const_iterator {
+  public:
+    /*!
+     \brief Constructor
+     \param it : map iterator
+     \post this iterator point to it
+     */
+    const_iterator_t(map_t::const_iterator const & it);
+
+    /*!
+     \brief Accessor
+     \return attribute at pointed map entry
+     */
+    inline tchecker::system::attr_t const & operator*() const { return (*this)->second; }
+  };
 
   /*!
    \brief Accessor
@@ -97,17 +155,17 @@ public:
    \return range (begin,end) of values associated to key
    \note the returned range is empty (i.e. begin=end) if there is no attribute key in this map
    */
-  tchecker::range_t<tchecker::system::attributes_t::const_iterator_t> values(std::string const & key) const;
+  tchecker::range_t<tchecker::system::attributes_t::const_iterator_t> range(std::string const & key) const;
 
   /*!
    \brief Accessor
    \return range of attributes
    \note the returned range is empty (i.e. begin=end) is there is no attribute in this map
    */
-  tchecker::range_t<tchecker::system::attributes_t::const_iterator_t> attributes() const;
+  tchecker::range_t<tchecker::system::attributes_t::const_iterator_t> range() const;
 
 private:
-  std::unordered_multimap<std::string, std::string> _attr; /*!< Map : key -> values of attributes */
+  map_t _map; /*!< Map : key -> attribute */
 };
 
 /*!

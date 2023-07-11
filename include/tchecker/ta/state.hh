@@ -25,6 +25,11 @@ namespace tchecker {
  */
 using shared_intval_t = tchecker::make_shared_t<tchecker::intvars_valuation_t>;
 
+/*!
+ \brief Type of shared pointer to integer variables valuation
+*/
+using intval_sptr_t = tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t>;
+
 namespace ta {
 
 /*!
@@ -122,11 +127,28 @@ bool operator==(tchecker::ta::state_t const & s1, tchecker::ta::state_t const & 
 bool operator!=(tchecker::ta::state_t const & s1, tchecker::ta::state_t const & s2);
 
 /*!
+ \brief Equality check for shared states
+ \param s1 : state
+ \param s2 : state
+ \return true if s1 and s2 have same tuple of locations and same valuation of
+ bounded integer variables, false otherwise
+ \note this should only be used on states that have shared internal components
+ */
+bool shared_equal_to(tchecker::ta::state_t const & s1, tchecker::ta::state_t const & s2);
+
+/*!
  \brief Hash
  \param s : state
  \return Hash value for state s
  */
 std::size_t hash_value(tchecker::ta::state_t const & s);
+
+/*!
+ \brief Hash for shared states
+ \param s : state
+ \return Hash value for state s
+ */
+std::size_t shared_hash_value(tchecker::ta::state_t const & s);
 
 /*!
  \brief Lexical ordering on states of timed automata
@@ -165,7 +187,10 @@ public:
    \param args : arguments for a constructor of class tchecker::ta::state_t
    \return allocation size for objects of class tchecker::ta::state_t
    */
-  template <class... ARGS> static constexpr std::size_t alloc_size(ARGS &&... args) { return sizeof(tchecker::ta::state_t); }
+  template <class... ARGS> static constexpr std::size_t alloc_size(ARGS &&... /*args*/)
+  {
+    return sizeof(tchecker::ta::state_t);
+  }
 };
 
 } // end of namespace tchecker

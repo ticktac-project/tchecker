@@ -14,11 +14,15 @@ namespace tchecker {
 namespace algorithms {
 namespace covreach {
 
-stats_t::stats_t() : _visited_states(0), _covered_states(0), _reachable(false) {}
+stats_t::stats_t() : _visited_states(0), _visited_transitions(0), _covered_states(0), _reachable(false) {}
 
 unsigned long & stats_t::visited_states() { return _visited_states; }
 
 unsigned long stats_t::visited_states() const { return _visited_states; }
+
+unsigned long & stats_t::visited_transitions() { return _visited_transitions; }
+
+unsigned long stats_t::visited_transitions() const { return _visited_transitions; }
 
 unsigned long & stats_t::covered_states() { return _covered_states; }
 
@@ -40,6 +44,10 @@ void stats_t::attributes(std::map<std::string, std::string> & m) const
 
   sstream << _visited_states;
   m["VISITED_STATES"] = sstream.str();
+
+  sstream.str("");
+  sstream << _visited_transitions;
+  m["VISITED_TRANSITIONS"] = sstream.str();
 
   sstream.str("");
   sstream << _covered_states;

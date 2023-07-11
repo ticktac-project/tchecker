@@ -30,7 +30,8 @@ namespace reach {
 /*!
  \class algorithm_t
  \brief Reachability algorithm
- \tparam TS : type of transition system, should derive from tchecker::ts::ts_t
+ \tparam TS : type of transition system, should implement tchecker::ts::fwd_t
+ and tchecker::ts::inspector_t
  \tparam GRAPH : type of graph, should derive from
  tchecker::graph::reachability_graph_t, and nodes of type GRAPH::shared_node_t
  should have a method state_ptr() that yields a pointer to the corresponding
@@ -68,6 +69,7 @@ public:
     ts.initial(sst);
     for (auto && [status, s, t] : sst) {
       auto && [is_new_node, initial_node] = graph.add_node(s);
+      initial_node->initial(true);
       if (is_new_node)
         waiting->insert(initial_node);
     }
@@ -137,6 +139,7 @@ private:
       ++stats.visited_states();
 
       if (accepting(node, ts, labels)) {
+        node->final(true);
         stats.reachable() = true;
         break;
       }
@@ -147,6 +150,8 @@ private:
         if (is_new_node)
           waiting.insert(next_node);
         graph.add_edge(node, next_node, *t);
+
+        ++stats.visited_transitions();
       }
       sst.clear();
     }

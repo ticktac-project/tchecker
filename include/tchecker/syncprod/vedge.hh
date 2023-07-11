@@ -17,6 +17,7 @@
 #include "tchecker/system/system.hh"
 #include "tchecker/utils/allocation_size.hh"
 #include "tchecker/utils/array.hh"
+#include "tchecker/utils/cache.hh"
 #include "tchecker/utils/shared_objects.hh"
 
 /*!
@@ -27,10 +28,18 @@
 namespace tchecker {
 
 /*!
+ \class vedge_base_t
+ \brief Base class for tuple of edges that extends array capacity with cache object
+*/
+class vedge_base_t : public tchecker::array_capacity_t<unsigned int>, public tchecker::cached_object_t {
+public:
+  using tchecker::array_capacity_t<unsigned int>::array_capacity_t;
+};
+
+/*!
  \brief Type of fixed capacity array of edges
  */
-using edge_array_t =
-    tchecker::make_array_t<tchecker::edge_id_t, sizeof(tchecker::edge_id_t), tchecker::array_capacity_t<unsigned int>>;
+using edge_array_t = tchecker::make_array_t<tchecker::edge_id_t, sizeof(tchecker::edge_id_t), tchecker::vedge_base_t>;
 
 /*!
  \class vedge_t
@@ -39,6 +48,8 @@ using edge_array_t =
  the identifier of the edge taken by P, or tchecker::NO_EDGE if P is not involved in this vector of edges. Hence, direct
  accesses to the array may give value tchecker::NO_EDGE which is not a valid edge identifier. On the other hand, iterators
  returned by methods begin() and end() range over valid edge identifiers.
+ \note NO FIELD SHOULD BE ADDED TO THIS CLASS (either by definition or
+ inheritance). See tchecker::make_array_t for details
  */
 class vedge_t : public tchecker::edge_array_t {
 public:
@@ -245,6 +256,16 @@ int lexical_cmp(tchecker::vedge_t const & vedge1, tchecker::vedge_t const & vedg
  \brief Type of shared tuple of edges
  */
 using shared_vedge_t = tchecker::make_shared_t<tchecker::vedge_t>;
+
+/*!
+ \brief Type of shared pointer to a tuple of edges
+*/
+using vedge_sptr_t = tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t>;
+
+/*!
+ \brief Type of shared pointer to a const tuple of edges
+*/
+using const_vedge_sptr_t = tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t const>;
 
 } // end of namespace tchecker
 

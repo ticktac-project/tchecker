@@ -28,11 +28,7 @@ set(TCK_EXAMPLES_DIR "${CMAKE_SOURCE_DIR}/examples")
 find_package(Boost REQUIRED)
 find_package(Catch2 QUIET)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
-
-if (${CMAKE_HOST_SYSTEM_NAME} MATCHES "Linux")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-endif ()
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wconversion")
 
 tck_check_cxx_flags("-ferror-limit=150" ERROR_LIMIT)
 tck_check_cxx_flags("-fstrict-vtable-pointers" STRICT_VTABLE_POINTERS)

@@ -148,7 +148,7 @@ void df_solver_t::add_lower_bound_guard(tchecker::loc_id_t l, tchecker::clock_id
   assert(l < _loc_number);
   assert(x < _clock_number);
   // L_{l, x} >= c  (i.e. 0 - L_{l, x} <= -c)
-  _has_solution &= (tchecker::dbm::constrain(_L, _dim, 0, index(l, x), tchecker::dbm::LE, -c) != tchecker::dbm::EMPTY);
+  _has_solution &= (tchecker::dbm::constrain(_L, _dim, 0, index(l, x), tchecker::LE, -c) != tchecker::dbm::EMPTY);
 }
 
 void df_solver_t::add_upper_bound_guard(tchecker::loc_id_t l, tchecker::clock_id_t x, tchecker::integer_t c)
@@ -156,7 +156,7 @@ void df_solver_t::add_upper_bound_guard(tchecker::loc_id_t l, tchecker::clock_id
   assert(l < _loc_number);
   assert(x < _clock_number);
   // U_{l, x} >= c  (i.e. 0 - U_{l ,x} <= -c)
-  _has_solution &= (tchecker::dbm::constrain(_U, _dim, 0, index(l, x), tchecker::dbm::LE, -c) != tchecker::dbm::EMPTY);
+  _has_solution &= (tchecker::dbm::constrain(_U, _dim, 0, index(l, x), tchecker::LE, -c) != tchecker::dbm::EMPTY);
 }
 
 void df_solver_t::add_assignment(tchecker::loc_id_t l1, tchecker::loc_id_t l2, tchecker::clock_id_t x, tchecker::clock_id_t y,
@@ -167,19 +167,15 @@ void df_solver_t::add_assignment(tchecker::loc_id_t l1, tchecker::loc_id_t l2, t
   assert(x < _clock_number);
   assert(y < _clock_number);
   // Propagation over the edge: L_{l2,x} - L_{l1,y} <= c / U_{l2,x} - U_{l1,xy} <= c
-  _has_solution &=
-      (tchecker::dbm::constrain(_L, _dim, index(l2, x), index(l1, y), tchecker::dbm::LE, c) != tchecker::dbm::EMPTY);
-  _has_solution &=
-      (tchecker::dbm::constrain(_U, _dim, index(l2, x), index(l1, y), tchecker::dbm::LE, c) != tchecker::dbm::EMPTY);
+  _has_solution &= (tchecker::dbm::constrain(_L, _dim, index(l2, x), index(l1, y), tchecker::LE, c) != tchecker::dbm::EMPTY);
+  _has_solution &= (tchecker::dbm::constrain(_U, _dim, index(l2, x), index(l1, y), tchecker::LE, c) != tchecker::dbm::EMPTY);
 
   // Propagation across processes: L_{m,x} - L_{l1,y} <= c / U_{m,x} - U_{l1,y} <= c
   // for every location m in another process
   for (tchecker::loc_id_t m = 0; m < _loc_number; ++m)
     if (_loc_pid[m] != _loc_pid[l1]) {
-      _has_solution &=
-          (tchecker::dbm::constrain(_L, _dim, index(m, x), index(l1, y), tchecker::dbm::LE, c) != tchecker::dbm::EMPTY);
-      _has_solution &=
-          (tchecker::dbm::constrain(_U, _dim, index(m, x), index(l1, y), tchecker::dbm::LE, c) != tchecker::dbm::EMPTY);
+      _has_solution &= (tchecker::dbm::constrain(_L, _dim, index(m, x), index(l1, y), tchecker::LE, c) != tchecker::dbm::EMPTY);
+      _has_solution &= (tchecker::dbm::constrain(_U, _dim, index(m, x), index(l1, y), tchecker::LE, c) != tchecker::dbm::EMPTY);
     }
 }
 
@@ -189,11 +185,9 @@ void df_solver_t::add_no_assignement(tchecker::loc_id_t l1, tchecker::loc_id_t l
   assert(l2 < _loc_number);
   assert(x < _clock_number);
   // L_{l2,x} - L_{l1,x} <= 0
-  _has_solution &=
-      (tchecker::dbm::constrain(_L, _dim, index(l2, x), index(l1, x), tchecker::dbm::LE, 0) != tchecker::dbm::EMPTY);
+  _has_solution &= (tchecker::dbm::constrain(_L, _dim, index(l2, x), index(l1, x), tchecker::LE, 0) != tchecker::dbm::EMPTY);
   // U_{l2,x} - U_{l1,x} <= 0
-  _has_solution &=
-      (tchecker::dbm::constrain(_U, _dim, index(l2, x), index(l1, x), tchecker::dbm::LE, 0) != tchecker::dbm::EMPTY);
+  _has_solution &= (tchecker::dbm::constrain(_U, _dim, index(l2, x), index(l1, x), tchecker::LE, 0) != tchecker::dbm::EMPTY);
 }
 
 std::size_t df_solver_t::index(tchecker::loc_id_t l, tchecker::clock_id_t x) const
@@ -389,13 +383,13 @@ public:
 
     for (tchecker::clock_id_t lclock = lclocks.begin(); lclock != lclocks.end(); ++lclock)
       for (tchecker::clock_id_t rclock = rclocks.begin(); rclock != rclocks.end(); ++rclock)
-        _solver->add_assignment(_src, lclock, _tgt, rclock, 0);
+        _solver->add_assignment(_src, _tgt, lclock, rclock, 0);
   }
 
   /*!
   \brief Visitor
   \post For assignment x:=y+c, a constraint for every clock x (x could be an array) and every clock y (y could be
-  an array) using value c has been added to _solver using method add_assignment
+  an array) using value c has been added to _solver using method add_assignment
   */
   virtual void visit(tchecker::typed_sum_to_clock_assign_statement_t const & stmt)
   {
@@ -670,7 +664,8 @@ bool compute_clockbounds(tchecker::ta::system_t const & system, tchecker::clockb
 tchecker::clockbounds::clockbounds_t * compute_clockbounds(tchecker::ta::system_t const & system)
 {
   tchecker::clockbounds::clockbounds_t * clockbounds =
-      new tchecker::clockbounds::clockbounds_t{system.locations_count(), system.clocks_count(tchecker::VK_FLATTENED)};
+      new tchecker::clockbounds::clockbounds_t{static_cast<tchecker::loc_id_t>(system.locations_count()),
+                                               static_cast<tchecker::clock_id_t>(system.clocks_count(tchecker::VK_FLATTENED))};
 
   if (tchecker::clockbounds::compute_clockbounds(system, *clockbounds))
     return clockbounds;

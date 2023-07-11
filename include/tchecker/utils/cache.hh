@@ -13,253 +13,205 @@
  \brief Cache of shared objects
  */
 
+#include <limits>
 #include <vector>
 
-#include "tchecker/utils/shared_objects.hh"
-#include "tchecker/utils/spinlock.hh"
+#include "tchecker/utils/hashtable.hh"
+#include "tchecker/utils/pool.hh"
 
 namespace tchecker {
 
-namespace details {
-
 /*!
- \class thread_safe_collection_t
- \brief Collection of shared objects with thread-safe access
- \param T : type of object, should be tchecker::make_shared_t<>
- \param EQUAL : equality predicate on T values, should be default constructible
+ \brief Type of cached objects
  */
-template <class T, class EQUAL> class thread_safe_collection_t {
-public:
-  /*!
-   \brief Constructor
-   */
-  thread_safe_collection_t() = default;
-
-  /*!
-   \brief Copy-construction (deleted)
-   */
-  thread_safe_collection_t(tchecker::details::thread_safe_collection_t<T, EQUAL> const &) = delete;
-
-  /*!
-   \brief Move-construction (deleted)
-   */
-  thread_safe_collection_t(tchecker::details::thread_safe_collection_t<T, EQUAL> &&) = delete;
-
-  /*!
-   \brief Destructor
-   */
-  ~thread_safe_collection_t() = default;
-
-  /*!
-   \brief Assignment operator (deleted)
-   */
-  tchecker::details::thread_safe_collection_t<T, EQUAL> &
-  operator=(tchecker::details::thread_safe_collection_t<T, EQUAL> const &) = delete;
-
-  /*!
-   \brief Move-assignment operator (deleted)
-   */
-  tchecker::details::thread_safe_collection_t<T, EQUAL> &
-  operator=(tchecker::details::thread_safe_collection_t<T, EQUAL> &&) = delete;
-
-  /*!
-   \brief Object caching
-   \param t : object
-   \return The object equal to t in this collection, which is t itself if no objec equal to t is already in the collection
-   \post If no object equal to t was in the collection, t has been inserted into the collection
-   \note Compelxity is linear in the size of the collection
-   */
-  tchecker::intrusive_shared_ptr_t<T> find_else_insert(tchecker::intrusive_shared_ptr_t<T> const & t)
-  {
-    _lock.lock();
-    for (tchecker::intrusive_shared_ptr_t<T> const & u : _values)
-      if (_equal(*t, *u)) {
-        tchecker::intrusive_shared_ptr_t<T> uu(u); // ensures at least 2 references to the object
-        _lock.unlock();
-        return uu;
-      }
-    _values.push_back(t);
-    _lock.unlock();
-    return t;
-  }
-
-  /*!
-   \brief Membership predicate
-   \param t : object
-   \return true if the collection contains an object equal to t, false otherwise
-   \note Complexity is linear in the size of the collection
-   */
-  bool find(tchecker::intrusive_shared_ptr_t<T> const & t)
-  {
-    _lock.lock();
-    for (tchecker::intrusive_shared_ptr_t<T> const & u : _values)
-      if (_equal(*t, *u)) {
-        _lock.unlock();
-        return true;
-      }
-    _lock.unlock();
-    return false;
-  }
-
-  /*!
-   \brief Clear
-   \post The collection is empty
-   */
-  void clear()
-  {
-    _lock.lock();
-    _values.clear();
-    _lock.unlock();
-  }
-
-  /*!
-   \brief Garbage collection
-   \post All  objects with reference counter 1 (i.e. objects that are only referenced by this collection) have been
-   removed from this collection
-   */
-  void collect()
-  {
-    _lock.lock();
-    for (std::size_t i = 0; i < _values.size();) {
-      if (_values[i]->refcount() == 1) {
-        _values[i] = _values.back();
-        _values.pop_back();
-      }
-      else
-        ++i;
-    }
-    _lock.unlock();
-  }
-
-  /*!
-   \brief Accessor
-   \return Number of objects in the collection
-   */
-  std::size_t size() const
-  {
-    _lock.lock();
-    std::size_t size = _values.size();
-    _lock.unlock();
-    return size;
-  }
-
-private:
-  std::vector<tchecker::intrusive_shared_ptr_t<T>> _values; /*!< Collection */
-  mutable tchecker::spinlock_t _lock;                       /*!< Lock for thread-safe access */
-  EQUAL _equal;                                             /*!< Equality predicate on T values */
-};
-
-} // end of namespace details
+using cached_object_t = tchecker::hashtable_object_t;
 
 /*!
  \class cache_t
- \brief Cache of shared objects
- \param T : type of objects, should be tchecker::make_shared_t<>
- \param HASH : type of hash function on T, should be default constructible
- \param EQUAL : type of equality predicate on T, should be default constructible
+ \brief Cache of shared objects with collection of unused objects
+ \tparam SPTR : type of pointer to stored objects. Must be a shared
+ pointer tchecker::intrusive_shared_ptr_t<...> to an object that derives from
+ tchecker::cached_object_t
+ \tparam HASH : hash function over shared pointers of type SPTR, must be default
+ constructible
+ \tparam EQUAL : equality predicate over shared pointers of type SPTR, must be
+ default constructible
+ \note stored objects should derive from tchecker::cached_object_t
  */
-template <class T, class HASH, class EQUAL> class cache_t {
+template <class SPTR, class HASH, class EQUAL> class cache_t : public tchecker::collectable_t {
 public:
   /*!
    \brief Constructor
    \param table_size : size of the hash table
-   \note The size of the hash table is fixed. The hash table maps hash codes to collection of objects.
    */
-  cache_t(std::size_t table_size = 65536) : _table_size(table_size)
-  {
-    _table = new tchecker::details::thread_safe_collection_t<T, EQUAL>[_table_size];
-  }
+  cache_t(std::size_t table_size = 65536) : _hashtable(table_size, _hash, _equal) {}
 
   /*!
-   \brief Copy-construction (deleted)
+   \brief Copy-construction
    */
-  cache_t(tchecker::cache_t<T, HASH, EQUAL> const &) = delete;
+  cache_t(tchecker::cache_t<SPTR, HASH, EQUAL> const &) = default;
 
   /*!
-   \brief Move-construction (deleted)
+   \brief Move-construction
    */
-  cache_t(tchecker::cache_t<T, HASH, EQUAL> &&) = delete;
+  cache_t(tchecker::cache_t<SPTR, HASH, EQUAL> &&) = default;
 
   /*!
    \brief Destructor
    */
-  ~cache_t()
-  {
-    clear();
-    delete[] _table;
-  }
+  virtual ~cache_t() = default;
 
   /*!
-   \brief Assignment operator (deleted)
+   \brief Assignment operator
    */
-  tchecker::cache_t<T, HASH, EQUAL> & operator=(tchecker::cache_t<T, HASH, EQUAL> const &) = delete;
+  tchecker::cache_t<SPTR, HASH, EQUAL> & operator=(tchecker::cache_t<SPTR, HASH, EQUAL> const &) = default;
 
   /*!
-   \brief Move-assignment operator (deleted)
+   \brief Move-assignment operator
    */
-  tchecker::cache_t<T, HASH, EQUAL> & operator=(tchecker::cache_t<T, HASH, EQUAL> &&) = delete;
+  tchecker::cache_t<SPTR, HASH, EQUAL> & operator=(tchecker::cache_t<SPTR, HASH, EQUAL> &&) = default;
 
   /*!
    \brief Object caching
-   \param t : object
-   \return object equivalent to t (w.r.t. HASH and EQUAL) in this cache, t itself if no equivalent object was in the cache
-   before \post t has been inserted in the cache if no equivalent object (w.r.t. HASH and EQUAL) was in the cache before
+   \param o : object
+   \return object equivalent to o (w.r.t. HASH and EQUAL) in this cache if any,
+   o itself if no equivalent object was in the cache before
+   \post o has been inserted in this cache if no equivalent object (w.r.t. HASH
+   and EQUAL) was in the cache before
    */
-  tchecker::intrusive_shared_ptr_t<T> find_else_insert(tchecker::intrusive_shared_ptr_t<T> const & t)
-  {
-    std::size_t i = _hash(*t) % _table_size;
-    return _table[i].find_else_insert(t);
-  }
+  inline SPTR find_else_add(SPTR const & o) { return _hashtable.find_else_add(o); }
 
   /*!
    \brief Membership predicate
-   \param t : object
-   \return true if this cache constains an object equivalent to t (w.r.t. HASH and EQUAL), false otherwise
+   \param o : object
+   \return true if this cache constains an object equivalent to o (w.r.t. HASH
+   and EQUAL), false otherwise
    */
-  bool find(tchecker::intrusive_shared_ptr_t<T> const & t)
+  inline bool find(SPTR const & o)
   {
-    std::size_t i = _hash(*t) % _table_size;
-    return _table[i].find(t);
+    auto && [found, p] = _hashtable.find(o);
+    return found;
   }
 
   /*!
-   \brief Clear
-   \post The cache is empty
+   \brief Clear the cache
+   \post This cache is empty
    */
-  void clear()
-  {
-    for (std::size_t i = 0; i < _table_size; ++i)
-      _table[i].clear();
-  }
+  inline void clear() { _hashtable.clear(); }
 
   /*!
    \brief Garbage collection
-   \post All objects with reference counter 1 (i.e. objects with no reference outisde of the cache) have been removed from the
-   cache
+   \post All objects with reference counter 1 (i.e. objects with no reference
+   outside of this cache) have been removed from this cache
+   \return number of collected objects
    */
-  void collect()
+  virtual std::size_t collect()
   {
-    for (std::size_t i = 0; i < _table_size; ++i)
-      _table[i].collect();
+    std::size_t const previous_size = _hashtable.size();
+    typename tchecker::hashtable_t<SPTR, HASH, EQUAL>::iterator_t it = _hashtable.begin();
+    while (it != _hashtable.end()) {
+      if ((*it)->refcount() == 1)
+        it = _hashtable.remove(it);
+      else
+        ++it;
+    }
+    return previous_size - _hashtable.size();
   }
 
   /*!
    \brief Accessor
    \return Number of objects in the cache
-   \note Complexity linear in the size of the hash table
    */
-  std::size_t size() const
+  inline std::size_t size() const { return _hashtable.size(); }
+
+private:
+  HASH _hash;                                          /*! Hash function */
+  EQUAL _equal;                                        /*!< Equality predicate */
+  tchecker::hashtable_t<SPTR, HASH, EQUAL> _hashtable; /*!< Table of stored objects */
+};
+
+/*!
+ \class periodic_collectable_cache_t
+ \brief Cache of shared objects with collection of unused objects. When
+ collection is run and no object is collected, the period between two
+ collections grows exponentially
+ \tparam SPTR : type of pointer to stored objects. Must be a shared
+ pointer tchecker::intrusive_shared_ptr_t<...> to an object that derives from
+ tchecker::cached_object_t
+ \tparam HASH : hash function over shared pointers of type SPTR, must be default
+ constructible
+ \tparam EQUAL : equality predicate over shared pointers of type SPTR, must be
+ default constructible
+ \note stored objects should derive from tchecker::cached_object_t
+ */
+template <class SPTR, class HASH, class EQUAL>
+class periodic_collectable_cache_t : public tchecker::cache_t<SPTR, HASH, EQUAL> {
+public:
+  /*!
+   \brief Constructor
+   \param table_size : size of the hash table
+   */
+  periodic_collectable_cache_t(std::size_t table_size = 65536)
+      : tchecker::cache_t<SPTR, HASH, EQUAL>(table_size), _period(1), _count(1)
   {
-    std::size_t size = 0;
-    for (std::size_t i = 0; i < _table_size; ++i)
-      size += _table[i].size();
-    return size;
+  }
+
+  /*!
+   \brief Copy-construction
+   */
+  periodic_collectable_cache_t(tchecker::periodic_collectable_cache_t<SPTR, HASH, EQUAL> const &) = default;
+
+  /*!
+   \brief Move-construction
+   */
+  periodic_collectable_cache_t(tchecker::periodic_collectable_cache_t<SPTR, HASH, EQUAL> &&) = default;
+
+  /*!
+   \brief Destructor
+   */
+  virtual ~periodic_collectable_cache_t() = default;
+
+  /*!
+   \brief Assignment operator
+   */
+  tchecker::periodic_collectable_cache_t<SPTR, HASH, EQUAL> &
+  operator=(tchecker::periodic_collectable_cache_t<SPTR, HASH, EQUAL> const &) = default;
+
+  /*!
+   \brief Move-assignment operator
+   */
+  tchecker::periodic_collectable_cache_t<SPTR, HASH, EQUAL> &
+  operator=(tchecker::periodic_collectable_cache_t<SPTR, HASH, EQUAL> &&) = default;
+
+  /*!
+   \brief Garbage collection
+   \post If period between last collection has been reached, then
+   all objects with reference counter 1 (i.e. objects with no reference
+   outside of this cache) have been removed from this cache
+   Otherwise no collection occured
+   \post If collection occurred and collected no object, then period has
+   been doubled
+   \return number of collected objects
+   */
+  virtual std::size_t collect()
+  {
+    if (_count >= _period) {
+      std::size_t n = tchecker::cache_t<SPTR, HASH, EQUAL>::collect();
+      if (n > 0)
+        _period = 1;
+      else if (_period < std::numeric_limits<std::size_t>::max() / 2)
+        _period *= 2;
+      _count = 1;
+      return n;
+    }
+
+    ++_count;
+    return 0;
   }
 
 private:
-  std::size_t _table_size;                                        /*!< Number of collections in the map */
-  tchecker::details::thread_safe_collection_t<T, EQUAL> * _table; /*!< Map : hash code -> objects collection */
-  HASH _hash;                                                     /*!< Hash function on T values */
+  std::size_t _period; /*!< Period between two collections */
+  std::size_t _count;  /*!< Time from last collection */
 };
 
 } // end of namespace tchecker

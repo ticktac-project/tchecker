@@ -106,11 +106,8 @@ boost::dynamic_bitset<> system_t::labels(std::string const & labels) const
   std::vector<std::string> v;
   boost::split(v, labels, boost::is_any_of(","));
   for (std::string const & l : v) {
-    if (!this->is_label(l)) {
-      std::ostringstream ostr;
-      ostr << "Unknown label '" << l << "'";
-      throw std::invalid_argument(ostr.str());
-    }
+    if (!this->is_label(l))
+      throw std::invalid_argument("Unknown label '" + l + "'");
     s.set(this->label_id(l));
   }
   return s;
@@ -121,6 +118,8 @@ bool system_t::is_committed(tchecker::loc_id_t id) const
   assert(is_location(id));
   return _committed[id] == 1;
 }
+
+boost::dynamic_bitset<> const & system_t::committed_locations() const { return _committed; }
 
 void system_t::extract_asynchronous_edges()
 {
@@ -136,7 +135,7 @@ void system_t::compute_committed_locations()
 
   for (tchecker::loc_id_t id = 0; id < locations_count; ++id) {
     auto const & attr = tchecker::syncprod::system_t::location(id)->attributes();
-    set_committed(id, attr.values("committed"));
+    set_committed(id, attr.range("committed"));
   }
 }
 
@@ -144,8 +143,8 @@ static void labels_from_attrs(tchecker::range_t<tchecker::system::attributes_t::
                               std::vector<std::string> & labels)
 {
   std::vector<std::string> splitted_labels;
-  for (auto && [key, value] : attrs) {
-    boost::split(splitted_labels, value, boost::is_any_of(","));
+  for (auto && attr : attrs) {
+    boost::split(splitted_labels, attr.value(), boost::is_any_of(","));
     labels.insert(labels.end(), splitted_labels.begin(), splitted_labels.end());
   }
 }
@@ -158,7 +157,7 @@ void system_t::compute_labels()
   std::vector<std::string> labels;
   for (tchecker::loc_id_t loc_id = 0; loc_id < locations_count; ++loc_id) {
     auto const & attr = tchecker::syncprod::system_t::location(loc_id)->attributes();
-    labels_from_attrs(attr.values("labels"), labels);
+    labels_from_attrs(attr.range("labels"), labels);
   }
 
   for (std::string const & l : labels) {
@@ -177,7 +176,7 @@ void system_t::compute_labels()
     _labels[loc_id].reset();
     auto const & attr = tchecker::syncprod::system_t::location(loc_id)->attributes();
     labels.clear();
-    labels_from_attrs(attr.values("labels"), labels);
+    labels_from_attrs(attr.range("labels"), labels);
     for (std::string const & l : labels)
       _labels[loc_id].set(this->label_id(l));
   }
@@ -270,17 +269,17 @@ private:
   tchecker::system::attributes_t attributes(tchecker::syncprod::state_t const & state)
   {
     tchecker::process_id_t count_initial = 0;
-    tchecker::system::attributes_t attr;
+    tchecker::system::attributes_t attributes;
     for (tchecker::loc_id_t id : state.vloc())
-      for (auto && [key, value] : _system->location(id)->attributes().attributes()) {
-        if (key == "initial")
+      for (auto && attr : _system->location(id)->attributes().range()) {
+        if (attr.key() == "initial")
           ++count_initial;
         else
-          attr.add_attribute(key, value);
+          attributes.add_attribute(attr.key(), attr.value(), attr.parsing_position());
       }
     if (count_initial == state.vloc().size()) // all processes initial
-      attr.add_attribute("initial", "");
-    return attr;
+      attributes.add_attribute("initial", "", tchecker::system::attr_parsing_position_t{});
+    return attributes;
   }
 
   /*!
@@ -343,13 +342,16 @@ private:
    */
   void locations_edges_events()
   {
+    std::size_t const block_size = 10000;
+    std::size_t const table_size = 65536;
+
     tchecker::process_id_t pid = _product.process_id(_process_name);
 
     std::stack<tchecker::syncprod::state_sptr_t> waiting;
-    tchecker::syncprod::syncprod_t sp(_system, 10000);
+    tchecker::syncprod::syncprod_t sp(_system, tchecker::ts::NO_SHARING, block_size, table_size);
     std::vector<tchecker::syncprod::syncprod_t::sst_t> v;
 
-    sp.initial(v, tchecker::STATE_OK);
+    sp.initial(v);
     for (auto && [status, state, transition] : v) {
       std::string state_name = namify(*state);
       if (!_product.is_location(pid, state_name)) {
@@ -360,12 +362,12 @@ private:
     v.clear();
 
     while (!waiting.empty()) {
-      tchecker::syncprod::state_sptr_t src = waiting.top();
+      tchecker::syncprod::const_state_sptr_t src = static_cast<tchecker::syncprod::const_state_sptr_t>(waiting.top());
       waiting.pop();
 
       tchecker::loc_id_t src_id = _product.location(pid, namify(*src))->id();
 
-      sp.next(static_cast<tchecker::syncprod::const_state_sptr_t>(src), v, tchecker::STATE_OK);
+      sp.next(src, v);
       for (auto && [status, tgt, transition] : v) {
         std::string tgt_name = namify(*tgt);
         if (!_product.is_location(pid, tgt_name)) {

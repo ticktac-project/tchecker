@@ -204,6 +204,12 @@ public:
    */
   bool is_committed(tchecker::loc_id_t id) const;
 
+  /*!
+   \brief Accessor
+   \return the set of committed location ids
+  */
+  boost::dynamic_bitset<> const & committed_locations() const;
+
   // Processes
   using tchecker::system::system_t::is_process;
   using tchecker::system::system_t::process_attributes;
@@ -222,7 +228,7 @@ public:
    \brief Cast
    \return this as a tchecker::system::system_t instance
    */
-  constexpr inline tchecker::system::system_t const & as_system_system() const { return *this; }
+  inline tchecker::system::system_t const & as_system_system() const { return *this; }
 
 private:
   // Hidden modifiers

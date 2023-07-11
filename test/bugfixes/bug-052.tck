@@ -1,0 +1,16 @@
+# This file is a part of the TChecker project.
+#
+# See files AUTHORS and LICENSE for copyright details.
+
+system:bug
+
+clock:1:x
+clock:1:y
+
+event:tau
+
+process:P
+location:P:l0{initial:}
+location:P:l1{}
+location:P:l2{}
+edge:P:l1:l2:tau{do : x = y}

@@ -46,9 +46,26 @@ bool operator==(tchecker::ta::transition_t const & t1, tchecker::ta::transition_
           t1.tgt_invariant_container() == t2.tgt_invariant_container());
 }
 
+bool shared_equal_to(tchecker::ta::transition_t const & t1, tchecker::ta::transition_t const & t2)
+{
+  return (tchecker::syncprod::shared_equal_to(t1, t2) && t1.src_invariant_container() == t2.src_invariant_container() &&
+          t1.guard_container() == t2.guard_container() && t1.reset_container() == t2.reset_container() &&
+          t1.tgt_invariant_container() == t2.tgt_invariant_container());
+}
+
 std::size_t hash_value(tchecker::ta::transition_t const & t)
 {
   std::size_t h = tchecker::syncprod::hash_value(t);
+  boost::hash_combine(h, t.src_invariant_container());
+  boost::hash_combine(h, t.guard_container());
+  boost::hash_combine(h, t.reset_container());
+  boost::hash_combine(h, t.tgt_invariant_container());
+  return h;
+}
+
+std::size_t shared_hash_value(tchecker::ta::transition_t const & t)
+{
+  std::size_t h = tchecker::syncprod::shared_hash_value(t);
   boost::hash_combine(h, t.src_invariant_container());
   boost::hash_combine(h, t.guard_container());
   boost::hash_combine(h, t.reset_container());

@@ -34,7 +34,7 @@ public:
    However, this default implementation throws std::runtime_error to force
    specialization and avoid bugs difficult to detect
    */
-  template <class... ARGS> static std::size_t alloc_size(ARGS &&... args)
+  template <class... ARGS> static std::size_t alloc_size(ARGS &&... /*args*/)
   {
     throw std::runtime_error("default allocation_size_t should not be used");
   }

@@ -156,6 +156,20 @@ bool is_positive(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim);
 bool is_universal_positive(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim);
 
 /*!
+ \brief Check if a DBM contains the zero valuation
+ \param dbm : a DBM
+ \param dim : dimension of dbm
+ \pre dbm is not nullptr (checked by assertion)
+ dbm is a dim*dim array of difference bounds
+ dim >= 1 (checked by assertion)
+ dbm is consistent (checked by assertion)
+ dbm is tight (checked by assertion)
+ \return true if dbm contains the valuation where all clocks have value zero,
+ false otherwise
+*/
+bool contains_zero(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim);
+
+/*!
  \brief Tightness predicate
  \param dbm : a DBM
  \param dim : dimension of dbm
@@ -229,7 +243,7 @@ enum tchecker::dbm::status_t tighten(tchecker::dbm::db_t * dbm, tchecker::clock_
  DBM_UNSAFE is not set)
  */
 enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x,
-                                       tchecker::clock_id_t y, tchecker::dbm::comparator_t cmp, tchecker::integer_t value);
+                                       tchecker::clock_id_t y, tchecker::ineq_cmp_t cmp, tchecker::integer_t value);
 
 /*!
  \brief Constrain a DBM w.r.t. clock constraints container
@@ -385,6 +399,60 @@ void reset_to_sum(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker:
                   tchecker::integer_t value);
 
 /*!
+ \brief Free clock value (reverse reset)
+ \param dbm : a dbm
+ \param dim : dimension of dbm
+ \param x : clock
+ \pre dbm is not nullptr (checked by assertion)
+ dbm is a dim*dim array of difference bounds
+ dbm is consistent (checked by assertion)
+ dbm is tight (checked by assertion)
+ dim >= 1 (checked by assertion).
+ 0 <= x < dim (checked by assertion)
+ \post dbm represents the set of clock valuations v such that v[x:=d] belongs to
+ the original dbm for some real value d
+ dbm is consistent (checked by assertion)
+ dbm is tight (checked by assertion)
+*/
+void free_clock(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x);
+
+/*!
+ \brief Free clock value (reverse reset)
+ \param dbm : a dbm
+ \param dim : dimension of dbm
+ \param reset : a clock reset
+ \pre dbm is not nullptr (checked by assertion)
+ dbm is a dim*dim array of difference bounds
+ dbm is consistent (checked by assertion)
+ dbm is tight (checked by assertion)
+ dim >= 1 (checked by assertion)
+ reset.left_id() is not tchecker::REFCLOCK_ID (checked by assertion)
+ \post dbm represents the set of clock valuations v such that v[reset] belongs to
+ the original dbm for some real value d
+ dbm is consistent (checked by assertion)
+ dbm is tight (checked by assertion)
+*/
+void free_clock(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_reset_t const & reset);
+
+/*!
+ \brief Free clock value (reverse reset)
+ \param dbm : a dbm
+ \param dim : dimension of dbm
+ \param resets : a sequence of clock resets
+ \pre dbm is not nullptr (checked by assertion)
+ dbm is a dim*dim array of difference bounds
+ dbm is consistent (checked by assertion)
+ dbm is tight (checked by assertion)
+ dim >= 1 (checked by assertion)
+ for every reset in resets, reset.left_id() is not tchecker::REFCLOCK_ID (checked by assertion)
+ \post dbm represents the set of clock valuations v such that v[resets] belongs to
+ the original dbm for some real value d
+ dbm is consistent (checked by assertion)
+ dbm is tight (checked by assertion)
+*/
+void free_clock(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::clock_reset_container_t const & resets);
+
+/*!
  \brief Open up (delay)
  \param dbm : a dbm
  \param dim : dimension of dbm
@@ -397,6 +465,21 @@ void reset_to_sum(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker:
  dbm is tight.
  */
 void open_up(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim);
+
+/*!
+ \brief Open down (reverse delay)
+ \param dbm : a dbm
+ \param dim : dimension of dbm
+ \pre dbm is not nullptr (checked by assertion)
+ dbm is a dim*dim array of difference bounds
+ dbm is consistent (checked by assertion)
+ dbm is tight (checked by assertion)
+ dim >= 1 (checked by assertion).
+ \post dbm represents the set of clock valuations v s.t.
+ v+d belongs to the original dbm for some delay d
+ dbm is tight.
+*/
+void open_down(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim);
 
 /*!
  \brief Intersection

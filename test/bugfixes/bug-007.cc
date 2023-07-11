@@ -4,7 +4,7 @@
 #include "tchecker/parsing/declaration.hh"
 #include "utils.hh"
 
-int main(int argc, char ** argv)
+int main(int /*argc*/, char ** /*argv*/)
 {
   std::string model = "system:foo\n";
 
