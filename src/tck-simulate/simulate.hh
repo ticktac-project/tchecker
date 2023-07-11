@@ -15,6 +15,7 @@
 
 #include <memory>
 
+#include "display.hh"
 #include "graph.hh"
 #include "tchecker/parsing/parsing.hh"
 #include "tchecker/zg/zg.hh"
@@ -36,10 +37,12 @@ std::shared_ptr<tchecker::tck_simulate::graph_t> randomized_simulation(tchecker:
 /*!
  \brief Interactive simulation of timed automata
  \param sysdecl : system declaration
+ \param display_type : type of display
  \return the simulation tree built from interactive of the system of timed processes sysdecl
 */
 std::shared_ptr<tchecker::tck_simulate::graph_t>
-interactive_simulation(tchecker::parsing::system_declaration_t const & sysdecl);
+interactive_simulation(tchecker::parsing::system_declaration_t const & sysdecl,
+                       enum tchecker::tck_simulate::display_type_t display_type);
 
 } // namespace tck_simulate
 

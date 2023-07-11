@@ -2,7 +2,12 @@
 #
 # See files AUTHORS and LICENSE for copyright details.
 
-find_package(Boost REQUIRED)
+set(Boost_USE_STATIC_LIBS        ON)  # only find static libs
+set(Boost_USE_DEBUG_LIBS        OFF)  # ignore debug libs and
+set(Boost_USE_RELEASE_LIBS       ON)  # only find release libs
+set(Boost_USE_MULTITHREADED     OFF)
+set(Boost_USE_STATIC_RUNTIME    OFF)
+find_package(Boost REQUIRED COMPONENTS json)
 
 option(LIBTCHECKER_ENABLE_SHARED "Build TChecker shared library" OFF)
 
@@ -28,6 +33,7 @@ set(TCHECKER_BINARY_INCLUDE_DIR "${CMAKE_CURRENT_BINARY_DIR}/../include")
 include_directories(${TCHECKER_INCLUDE_DIR})
 include_directories(${TCHECKER_BINARY_INCLUDE_DIR})
 include_directories(${Boost_INCLUDE_DIRS})
+link_directories(${Boost_LIBRARY_DIRS})
 
 add_subdirectory(algorithms)
 add_subdirectory(clockbounds)
@@ -101,7 +107,7 @@ add_executable(tck-liveness
   ${CMAKE_CURRENT_SOURCE_DIR}/tck-liveness/zg-couvscc.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/tck-liveness/zg-ndfs.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/tck-liveness/zg-ndfs.cc)
-target_link_libraries(tck-liveness libtchecker_static)
+target_link_libraries(tck-liveness libtchecker_static ${Boost_LIBRARIES})
 set_property(TARGET tck-liveness PROPERTY CXX_STANDARD 17)
 set_property(TARGET tck-liveness PROPERTY CXX_STANDARD_REQUIRED ON)
 
@@ -114,7 +120,7 @@ add_executable(tck-reach
   ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/zg-covreach.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/zg-reach.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/zg-reach.hh)
-target_link_libraries(tck-reach libtchecker_static)
+target_link_libraries(tck-reach libtchecker_static ${Boost_LIBRARIES})
 set_property(TARGET tck-reach PROPERTY CXX_STANDARD 17)
 set_property(TARGET tck-reach PROPERTY CXX_STANDARD_REQUIRED ON)
 
@@ -123,18 +129,20 @@ add_executable(tck-syntax
   ${CMAKE_CURRENT_SOURCE_DIR}/tck-syntax/syntax-check.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/tck-syntax/syntax-check.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/tck-syntax/tck-syntax.cc)
-target_link_libraries(tck-syntax libtchecker_static)
+target_link_libraries(tck-syntax libtchecker_static ${Boost_LIBRARIES})
 set_property(TARGET tck-syntax PROPERTY CXX_STANDARD 17)
 set_property(TARGET tck-syntax PROPERTY CXX_STANDARD_REQUIRED ON)
 
 # Build tck-simulate executable
 add_executable(tck-simulate
+  ${CMAKE_CURRENT_SOURCE_DIR}/tck-simulate/display.hh
+  ${CMAKE_CURRENT_SOURCE_DIR}/tck-simulate/display.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/tck-simulate/graph.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/tck-simulate/graph.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/tck-simulate/simulate.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/tck-simulate/simulate.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/tck-simulate/tck-simulate.cc)
-target_link_libraries(tck-simulate libtchecker_static)
+target_link_libraries(tck-simulate libtchecker_static ${Boost_LIBRARIES})
 set_property(TARGET tck-simulate PROPERTY CXX_STANDARD 17)
 set_property(TARGET tck-simulate PROPERTY CXX_STANDARD_REQUIRED ON)
 
