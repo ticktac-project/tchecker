@@ -164,6 +164,8 @@ bool predicate(enum tchecker::binary_operator_t op)
           (op == tchecker::EXPR_OP_NEQ) || (op == tchecker::EXPR_OP_GE) || (op == tchecker::EXPR_OP_GT));
 }
 
+bool is_less(enum tchecker::binary_operator_t op) { return (op == tchecker::EXPR_OP_LE) || (op == tchecker::EXPR_OP_LT); }
+
 // binary_expression_t
 
 binary_expression_t::binary_expression_t(enum binary_operator_t op, tchecker::expression_t const * left,
