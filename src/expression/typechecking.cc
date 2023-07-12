@@ -199,22 +199,22 @@ public:
     expr.right_operand().visit(*this);
     tchecker::typed_expression_t * typed_right_operand = this->release();
 
+    enum tchecker::binary_operator_t op = expr.binary_operator();
+
+    normalize_clock_comparison(&op, &typed_left_operand, &typed_right_operand, expr);
+
     // Typed expression
-    enum tchecker::expression_type_t expr_type =
-        type_binary(expr.binary_operator(), typed_left_operand->type(), typed_right_operand->type());
+    enum tchecker::expression_type_t expr_type = type_binary(op, typed_left_operand->type(), typed_right_operand->type());
 
     switch (expr_type) {
     case tchecker::EXPR_TYPE_CLKCONSTR_SIMPLE:
-      _typed_expr = new tchecker::typed_simple_clkconstr_expression_t(expr_type, expr.binary_operator(), typed_left_operand,
-                                                                      typed_right_operand);
+      _typed_expr = new tchecker::typed_simple_clkconstr_expression_t(expr_type, op, typed_left_operand, typed_right_operand);
       break;
     case tchecker::EXPR_TYPE_CLKCONSTR_DIAGONAL:
-      _typed_expr = new tchecker::typed_diagonal_clkconstr_expression_t(expr_type, expr.binary_operator(), typed_left_operand,
-                                                                        typed_right_operand);
+      _typed_expr = new tchecker::typed_diagonal_clkconstr_expression_t(expr_type, op, typed_left_operand, typed_right_operand);
       break;
     default:
-      _typed_expr =
-          new tchecker::typed_binary_expression_t(expr_type, expr.binary_operator(), typed_left_operand, typed_right_operand);
+      _typed_expr = new tchecker::typed_binary_expression_t(expr_type, op, typed_left_operand, typed_right_operand);
       break;
     }
 
@@ -340,6 +340,45 @@ protected:
 
     // Not a variable name
     return std::make_tuple(tchecker::EXPR_TYPE_BAD, std::numeric_limits<tchecker::variable_id_t>::max(), 1);
+  }
+
+  /*!
+   \brief Normalize clock comparison expressions
+   \param op : operator
+   \param left : left hand-side typed expression
+   \param right : right hand-side typed expression
+   \param expr : the untyped expression `left op right`
+   \post if `left op right` is a clock comparison expression, left and right have been updated to
+   put the expression in normal form where all clocks are on the left hand-side (if possible)
+   \note There are two situations where left and right expressions will be modified:
+   - if op is a comparison operator and clocks appear on the right (but not on the left): swap left and
+   right and reverse op (e.g. 1<x is rewritten x>1)
+   - if op is a comparison operator and clocks appear on both sides, and both left and right are single
+   clocks, then rewrite as left - right op 0 (e.g. x==y is rewritten as x-y==0)
+   - in all other cases, either `left op right` is already in normal form (e.g. x<4), or op is not a comparison
+   operator (e.g. i+1 or x-y), or the expression is not well typed (e.g. x==y-z)
+  */
+  void normalize_clock_comparison(enum tchecker::binary_operator_t * op, tchecker::typed_expression_t ** left,
+                                  tchecker::typed_expression_t ** right, tchecker::binary_expression_t const & expr)
+  {
+    // do not do anything if `op` is not a comparator or if not clock is involved on the right-hand side
+    if (!tchecker::predicate(*op) || !tchecker::clock_involved((*right)->type()))
+      return;
+
+    // `op` is a comparator and clocks appear on `right` but not on `left`: swap left/right and reverse op
+    if (!tchecker::clock_involved((*left)->type())) {
+      std::swap(*left, *right);
+      *op = tchecker::reverse_cmp(*op);
+    }
+    // `op` is a comparator and clocks appear both on `left` and `right`: rewrite as left-right op 0
+    else {
+      enum tchecker::expression_type_t new_left_type = type_binary(tchecker::EXPR_OP_MINUS, (*left)->type(), (*right)->type());
+      *left = new tchecker::typed_binary_expression_t(new_left_type, tchecker::EXPR_OP_MINUS, *left, *right);
+      *right = new tchecker::typed_int_expression_t(tchecker::EXPR_TYPE_INTTERM, 0);
+      if ((*left)->type() == tchecker::EXPR_TYPE_BAD)
+        _error("in expression " + expr.to_string() + ", invalid comparison of clock expressions " +
+               expr.left_operand().to_string() + " and " + expr.right_operand().to_string());
+    }
   }
 
   tchecker::typed_expression_t * _typed_expr;       /*!< Typed expression */

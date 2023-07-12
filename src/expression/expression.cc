@@ -166,6 +166,26 @@ bool predicate(enum tchecker::binary_operator_t op)
 
 bool is_less(enum tchecker::binary_operator_t op) { return (op == tchecker::EXPR_OP_LE) || (op == tchecker::EXPR_OP_LT); }
 
+enum tchecker::binary_operator_t reverse_cmp(enum tchecker::binary_operator_t op)
+{
+  switch (op) {
+  case tchecker::EXPR_OP_EQ:
+    return tchecker::EXPR_OP_EQ;
+  case tchecker::EXPR_OP_GE:
+    return tchecker::EXPR_OP_LE;
+  case tchecker::EXPR_OP_GT:
+    return tchecker::EXPR_OP_LT;
+  case tchecker::EXPR_OP_LE:
+    return tchecker::EXPR_OP_GE;
+  case tchecker::EXPR_OP_LT:
+    return tchecker::EXPR_OP_GT;
+  case tchecker::EXPR_OP_NEQ:
+    return tchecker::EXPR_OP_NEQ;
+  default:
+    throw std::invalid_argument("Cannot reverse non-comparison binary operator");
+  }
+}
+
 // binary_expression_t
 
 binary_expression_t::binary_expression_t(enum binary_operator_t op, tchecker::expression_t const * left,
