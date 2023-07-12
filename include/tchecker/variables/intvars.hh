@@ -103,6 +103,7 @@ using intvar_values_range_t = tchecker::range_t<tchecker::integer_iterator_t>;
  \brief Compute range of values of a bounded integer variable
  \param intvar_info : informations on bounded integer variable
  \return a range of values of the bounded integer variable described by intvar_info
+ \throw std::overflow_error : if intvar_info.max() + 1 cannot be represented as an tchecker::integer_t
  */
 tchecker::intvar_values_range_t intvar_values_range(tchecker::intvar_info_t const & intvar_info);
 

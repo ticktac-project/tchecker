@@ -534,6 +534,7 @@ std::string to_string(tchecker::clock_reset_container_t const & c, tchecker::clo
  \param cc : clock constraint container
  \post the constraints (x - y <= c) && (y - x <= -c) corresponding to reset r
  as x := y + c have been added to cc
+ \throw std::overflow_error : if -c cannot be represented as a tchecker::integer_t
 */
 void clock_reset_to_constraints(tchecker::clock_reset_t const & r, tchecker::clock_constraint_container_t & cc);
 

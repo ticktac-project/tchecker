@@ -203,8 +203,11 @@ std::string to_string(tchecker::clock_reset_container_t const & c, tchecker::clo
 
 void clock_reset_to_constraints(tchecker::clock_reset_t const & r, tchecker::clock_constraint_container_t & cc)
 {
+  if (r.value() == std::numeric_limits<tchecker::integer_t>::min())
+    throw std::overflow_error("tchecker::clock_reset_to_constraints: overflow");
   cc.push_back(tchecker::clock_constraint_t{r.left_id(), r.right_id(), tchecker::LE, r.value()});
-  cc.push_back(tchecker::clock_constraint_t{r.right_id(), r.left_id(), tchecker::LE, -r.value()});
+  cc.push_back(
+      tchecker::clock_constraint_t{r.right_id(), r.left_id(), tchecker::LE, static_cast<tchecker::integer_t>(-r.value())});
 }
 
 void clock_resets_to_constraints(tchecker::clock_reset_container_t const & rc, tchecker::clock_constraint_container_t & cc)
