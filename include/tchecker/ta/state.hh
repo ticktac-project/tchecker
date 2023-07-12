@@ -20,16 +20,6 @@
 
 namespace tchecker {
 
-/*!
- \brief Type of shared integer variables valuation
- */
-using shared_intval_t = tchecker::make_shared_t<tchecker::intvars_valuation_t>;
-
-/*!
- \brief Type of shared pointer to integer variables valuation
-*/
-using intval_sptr_t = tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t>;
-
 namespace ta {
 
 /*!
@@ -41,7 +31,7 @@ public:
   /*!
    \brief Constructor
    \param vloc : tuple of locations
-   \param intval : integer variables valuation
+   \param intval : bounded integer variables valuation
    \pre vloc and intval must not point to nullptr (checked by assertion)
    */
   explicit state_t(tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
@@ -51,7 +41,7 @@ public:
    \brief Partial copy constructor
    \param state : a state
    \param vloc : tuple of locations
-   \param intval : integer variables valuation
+   \param intval : bounded integer variables valuation
    \pre vloc and intval must not point to nullptr (checked by assertion)
    \note the state is copied from s, except the tuple of locations which is initialized from vloc, and the valuation of bounded
    integer variables which is initialized from intval
@@ -88,7 +78,7 @@ public:
    \brief Accessor
    \return valuation of bounded integer variables
    */
-  constexpr inline tchecker::intvars_valuation_t const & intval() const { return *_intval; }
+  constexpr inline tchecker::intval_t const & intval() const { return *_intval; }
 
   /*!
    \brief Accessor

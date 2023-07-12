@@ -164,14 +164,14 @@ static void copy(tchecker::vloc_t & vloc, std::vector<tchecker::loc_id_t> const 
     vloc[i] = copy[i];
 }
 
-static void copy(std::vector<tchecker::integer_t> & copy, tchecker::intvars_valuation_t const & intval)
+static void copy(std::vector<tchecker::integer_t> & copy, tchecker::intval_t const & intval)
 {
   assert(copy.size() == intval.capacity());
   for (tchecker::intvar_id_t i = 0; i < intval.capacity(); ++i)
     copy[i] = intval[i];
 }
 
-static void copy(tchecker::intvars_valuation_t & intval, std::vector<tchecker::integer_t> const & copy)
+static void copy(tchecker::intval_t & intval, std::vector<tchecker::integer_t> const & copy)
 {
   assert(intval.capacity() == copy.size());
   for (tchecker::intvar_id_t i = 0; i < copy.size(); ++i)
@@ -187,7 +187,7 @@ static bool operator!=(tchecker::vloc_t const & vloc, std::vector<tchecker::loc_
   return false;
 }
 
-static bool operator!=(tchecker::intvars_valuation_t const & intval, std::vector<tchecker::integer_t> const & copy)
+static bool operator!=(tchecker::intval_t const & intval, std::vector<tchecker::integer_t> const & copy)
 {
   assert(intval.capacity() == copy.size());
   for (tchecker::intvar_id_t id = 0; id < intval.size(); ++id)
@@ -296,7 +296,7 @@ bool is_valid_final(tchecker::ta::system_t const & system, tchecker::ta::state_t
 
 /* is_initial */
 
-bool is_initial(tchecker::ta::system_t const & system, tchecker::intvars_valuation_t const & v)
+bool is_initial(tchecker::ta::system_t const & system, tchecker::intval_t const & v)
 {
   assert(v.capacity() == system.integer_variables().flattened().size());
   tchecker::intvar_id_t const nvars = v.capacity();

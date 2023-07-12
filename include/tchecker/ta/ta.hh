@@ -410,7 +410,7 @@ bool is_valid_final(tchecker::ta::system_t const & system, tchecker::ta::state_t
  \return true if v is an initial valuation of the bounded integer variables in system,
  false otherwise
 */
-bool is_initial(tchecker::ta::system_t const & system, tchecker::intvars_valuation_t const & v);
+bool is_initial(tchecker::ta::system_t const & system, tchecker::intval_t const & v);
 
 /*!
  \brief Checks if a state is initial

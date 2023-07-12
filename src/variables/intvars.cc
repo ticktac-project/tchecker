@@ -53,38 +53,37 @@ flat_integer_variables_valuations_range(tchecker::flat_integer_variables_t const
   return tchecker::make_range(it, tchecker::past_the_end_iterator);
 }
 
-/* intvars_valuation_t */
+/* intval_t */
 
-void intvars_valuation_destruct_and_deallocate(tchecker::intvars_valuation_t * v)
+void intval_destruct_and_deallocate(tchecker::intval_t * v)
 {
-  tchecker::intvars_valuation_t::destruct(v);
+  tchecker::intval_t::destruct(v);
   delete[] reinterpret_cast<char *>(v);
 }
 
-std::ostream & output(std::ostream & os, tchecker::intvars_valuation_t const & intvars_val,
-                      tchecker::intvar_index_t const & index)
+std::ostream & output(std::ostream & os, tchecker::intval_t const & intval, tchecker::intvar_index_t const & index)
 {
   auto const size = index.size();
 
   for (tchecker::intvar_id_t id = 0; id < size; ++id) {
     if (id > 0)
       os << ",";
-    os << index.value(id) << "=" << intvars_val[id];
+    os << index.value(id) << "=" << intval[id];
   }
   return os;
 }
 
-std::string to_string(tchecker::intvars_valuation_t const & intvars_val, tchecker::intvar_index_t const & index)
+std::string to_string(tchecker::intval_t const & intval, tchecker::intvar_index_t const & index)
 {
   std::stringstream sstream;
-  output(sstream, intvars_val, index);
+  output(sstream, intval, index);
   return sstream.str();
 }
 
-int lexical_cmp(tchecker::intvars_valuation_t const & intvars_val1, tchecker::intvars_valuation_t const & intvars_val2)
+int lexical_cmp(tchecker::intval_t const & intval1, tchecker::intval_t const & intval2)
 {
   return tchecker::lexical_cmp(
-      intvars_val1.begin(), intvars_val1.end(), intvars_val2.begin(), intvars_val2.end(),
+      intval1.begin(), intval1.end(), intval2.begin(), intval2.end(),
       [](tchecker::integer_t i1, tchecker::integer_t i2) -> int { return (i1 < i2 ? -1 : (i1 == i2 ? 0 : 1)); });
 }
 
