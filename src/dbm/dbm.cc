@@ -850,10 +850,10 @@ std::ostream & output(std::ostream & os, tchecker::dbm::db_t const * dbm, tcheck
   for (tchecker::clock_id_t j = 1; j < dim; ++j) {
     tchecker::dbm::db_t c0j = DBM(0, j), cj0 = DBM(j, 0);
     if (j > 1)
-      os << " & ";
+      os << " && ";
     // xj = k
     if (tchecker::dbm::sum(c0j, cj0) == tchecker::dbm::LE_ZERO)
-      os << clock_name(j) << "=" << tchecker::dbm::value(cj0);
+      os << clock_name(j) << "==" << tchecker::dbm::value(cj0);
     // k1 <= xj <= k2
     else {
       os << -tchecker::dbm::value(c0j) << tchecker::dbm::comparator_str(c0j) << clock_name(j);
@@ -868,8 +868,8 @@ std::ostream & output(std::ostream & os, tchecker::dbm::db_t const * dbm, tcheck
       tchecker::dbm::db_t cij = DBM(i, j), cji = DBM(j, i);
       // xi == xj + k
       if (tchecker::dbm::sum(cij, cji) == tchecker::dbm::LE_ZERO) {
-        os << " & ";
-        os << clock_name(i) << "=" << clock_name(j);
+        os << " && ";
+        os << clock_name(i) << "==" << clock_name(j);
         tchecker::integer_t vij = tchecker::dbm::value(cij);
         if (vij > 0)
           os << "+" << tchecker::dbm::value(cij);
@@ -878,7 +878,7 @@ std::ostream & output(std::ostream & os, tchecker::dbm::db_t const * dbm, tcheck
       }
       // k1 <= xi - xj <= k2
       else if ((cij != tchecker::dbm::LT_INFINITY) || (cji != tchecker::dbm::LT_INFINITY)) {
-        os << " & ";
+        os << " && ";
 
         if (cji != tchecker::dbm::LT_INFINITY)
           os << -tchecker::dbm::value(cji) << tchecker::dbm::comparator_str(cji);
