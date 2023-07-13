@@ -9,14 +9,8 @@ fi
 
 set -euv
 
-
-docker build --build-arg IMAGE=debian:stable --build-arg DEBPKG="gcc g++" \
-       --build-arg CXX=g++\
-       -t ${REPOSITORY}:gcc-${TAG}  .
+docker build --target gcc-image -t ${REPOSITORY}:gcc-${TAG}  .
+docker build --target clang-image -t ${REPOSITORY}:clang-${TAG}  .
 docker push ${REPOSITORY}:gcc-${TAG}
-
-docker build --build-arg IMAGE=debian:stable --build-arg DEBPKG=clang \
-       --build-arg CXX=clang++\
-       -t ${REPOSITORY}:clang-${TAG}  .
 docker push ${REPOSITORY}:clang-${TAG}
 
