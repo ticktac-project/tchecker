@@ -844,6 +844,9 @@ std::ostream & output_matrix(std::ostream & os, tchecker::dbm::db_t const * dbm,
 std::ostream & output(std::ostream & os, tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim,
                       std::function<std::string(tchecker::clock_id_t)> clock_name)
 {
+  assert(dbm != nullptr);
+  assert(dim >= 1);
+
   os << "(";
 
   // output: x # c (first row/column)
