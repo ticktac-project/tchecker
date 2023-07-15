@@ -192,7 +192,7 @@ public:
    \return location name from process pid
    \throw std::invalid_argument : if name is not a location of process pid
    */
-  tchecker::system::loc_const_shared_ptr_t location(tchecker::process_id_t pid, std::string const & name);
+  tchecker::system::loc_const_shared_ptr_t location(tchecker::process_id_t pid, std::string const & name) const;
 
   /*!
    \class const_iterator_t

@@ -334,6 +334,22 @@ std::ostream & output(std::ostream & os, tchecker::intval_t const & intval, tche
 std::string to_string(tchecker::intval_t const & intval, tchecker::intvar_index_t const & index);
 
 /*!
+ \brief Initialize a bounded integer variables valuation from a string
+ \param intval : ounded integer variables valuation
+ \param variables : flat bounded integer variables
+ \param str : a string
+ \pre str is a comma-separated list assignments.
+ The lhs of each assignment is the name of a flattened bounded integer variable in variables
+ The rhs of each assignment is an integer that can be represented as tchecker::integer_t
+ The value assigned to each variable fits within the domain of the variable according to variables
+ The list contains one assignment for each flattened bounded integer variables in variables
+ \post the values in intval have been updated according to str
+ \throw std::invalid_argument : if str is not syntactically correct,
+ or if str does not match the precondition
+ */
+void from_string(tchecker::intval_t & intval, tchecker::flat_integer_variables_t const & variables, std::string const & str);
+
+/*!
  \brief Lexical ordering on bounded integer variables valuations
  \param intval1 : first valuation
  \param intval2 : second valuation
