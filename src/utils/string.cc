@@ -7,6 +7,8 @@
 
 #include <sstream>
 
+#include "tchecker/utils/string.hh"
+
 namespace tchecker {
 
 /*!
