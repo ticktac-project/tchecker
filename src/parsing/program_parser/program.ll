@@ -45,7 +45,7 @@ using namespace tchecker::parsing;
 %option noyywrap nounput batch noinput
 /*%option debug*/
 
-id         [[:alpha:]_][[:alnum:]_]*
+id         [[:alpha:]_$][[:alnum:]_]*
 integer    [0-9]+
 blankspace [ \t\r]
 newline    [\n]
