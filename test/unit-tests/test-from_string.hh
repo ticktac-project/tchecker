@@ -5,7 +5,9 @@
  *
  */
 
+#include <iostream>
 #include <memory>
+#include <sstream>
 
 #include "tchecker/parsing/declaration.hh"
 #include "tchecker/syncprod/vloc.hh"
@@ -202,4 +204,156 @@ TEST_CASE("intval from string", "[from_string]")
   }
 
   tchecker::intval_destruct_and_deallocate(intval);
+}
+
+TEST_CASE("clock constraints from string", "[from_string]")
+{
+  std::string model = "system:from_string \n\
+  event:a1 \n\
+  event:a2 \n\
+  event:a3 \n\
+  \n\
+  int:1:0:5:1:i \n\
+  int:1:-2:2:0:j \n\
+  \n\
+  clock:1:x \n\
+  clock:2:y \n\
+  \n\
+  process:P1 \n\
+  location:P1:l0{initial:} \n\
+  location:P1:l1 \n\
+  edge:P1:l0:l1:a1{provided: x>0} \n\
+  \n\
+  process:P2 \n\
+  location:P2:l0{initial:} \n\
+  location:P2:l1 \n\
+  edge:P2:l0:l1:a2{provided: y[0]==1} \n\
+  \n\
+  process:P3 \n\
+  location:P3:l0{initial:} \n\
+  location:P3:l1 \n\
+  edge:P3:l0:l1:a3{provided: y[1]<3} \n\
+  \n\
+  sync:P1@a1:P2@a2\n";
+
+  std::unique_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model)};
+
+  REQUIRE(sysdecl.get() != nullptr);
+
+  tchecker::system::system_t system{*sysdecl};
+  tchecker::clock_constraint_container_t c;
+
+  // redirect std::cerr to local stream to hide parsing messages
+  std::ostringstream dev_null;
+  auto cerr_buff = std::cerr.rdbuf();
+  std::cerr.rdbuf(dev_null.rdbuf());
+
+  SECTION("Initialize container from a valid string")
+  {
+    REQUIRE_NOTHROW(tchecker::from_string(c, system.clock_variables(), "x==1 && y[0]>=3 && 4>y[1] && x-y[1]==7"));
+
+    tchecker::clock_id_t const x = system.clock_variables().flattened().id("x");
+    tchecker::clock_id_t const y0 = system.clock_variables().flattened().id("y[0]");
+    tchecker::clock_id_t const y1 = system.clock_variables().flattened().id("y[1]");
+
+    tchecker::clock_constraint_container_t expected_c;
+    expected_c.emplace_back(x, tchecker::REFCLOCK_ID, tchecker::LE, 1);
+    expected_c.emplace_back(tchecker::REFCLOCK_ID, x, tchecker::LE, -1);
+    expected_c.emplace_back(tchecker::REFCLOCK_ID, y0, tchecker::LE, -3);
+    expected_c.emplace_back(y1, tchecker::REFCLOCK_ID, tchecker::LT, 4);
+    expected_c.emplace_back(x, y1, tchecker::LE, 7);
+    expected_c.emplace_back(y1, x, tchecker::LE, -7);
+
+    REQUIRE(c == expected_c);
+  }
+
+  SECTION("Initialize container from erroneous string (unknown clock)")
+  {
+    REQUIRE_THROWS_AS(tchecker::from_string(c, system.clock_variables(), "x==1 && z<2"), std::invalid_argument);
+  }
+
+  SECTION("Initialize container from erroneous string (array clock without index)")
+  {
+    REQUIRE_THROWS_AS(tchecker::from_string(c, system.clock_variables(), "x==1 && y<2"), std::invalid_argument);
+  }
+
+  SECTION("Initialize container from erroneous string (non constant array index)")
+  {
+    REQUIRE_THROWS_AS(tchecker::from_string(c, system.clock_variables(), "y[i]>9 && x==0"), std::invalid_argument);
+  }
+
+  SECTION("Initialize container from erroneous string (non constant bound)")
+  {
+    REQUIRE_THROWS_AS(tchecker::from_string(c, system.clock_variables(), "y[0]>j*8 && x==0"), std::invalid_argument);
+  }
+
+  SECTION("Initialize container from erroneous string (invalid clock constraint, TChecker syntax limitation)")
+  {
+    REQUIRE_THROWS_AS(tchecker::from_string(c, system.clock_variables(), "y[0]>x+5"), std::invalid_argument);
+  }
+
+  SECTION("Initialize container from erroneous string (non constant bound, involving 3 clocks)")
+  {
+    REQUIRE_THROWS_AS(tchecker::from_string(c, system.clock_variables(), "y[0]-x>y[1] && x==0"), std::invalid_argument);
+  }
+
+  SECTION("Initialize container from erroneous string (constraints on integer variables)")
+  {
+    REQUIRE_THROWS_AS(tchecker::from_string(c, system.clock_variables(), "y[0]>0 && i<j-6"), std::invalid_argument);
+  }
+
+  SECTION("Initialize container from a valid string, index with single reference clock")
+  {
+    tchecker::reference_clock_variables_t const refclocks = tchecker::single_reference_clocks(
+        system.clock_variables().flattened(), static_cast<tchecker::process_id_t>(system.processes_count()));
+    tchecker::clock_variables_t const clockvars{tchecker::clock_variables(refclocks, system.clock_variables())};
+
+    REQUIRE_NOTHROW(tchecker::from_string(c, clockvars, "x==1 && y[0]>=3 && 4>y[1] && x-y[1]==7 && y[0]<$0"));
+
+    tchecker::clock_id_t const t0 = clockvars.flattened().id("$0");
+    tchecker::clock_id_t const x = clockvars.flattened().id("x");
+    tchecker::clock_id_t const y0 = clockvars.flattened().id("y[0]");
+    tchecker::clock_id_t const y1 = clockvars.flattened().id("y[1]");
+
+    tchecker::clock_constraint_container_t expected_c;
+    expected_c.emplace_back(x, tchecker::REFCLOCK_ID, tchecker::LE, 1);
+    expected_c.emplace_back(tchecker::REFCLOCK_ID, x, tchecker::LE, -1);
+    expected_c.emplace_back(tchecker::REFCLOCK_ID, y0, tchecker::LE, -3);
+    expected_c.emplace_back(y1, tchecker::REFCLOCK_ID, tchecker::LT, 4);
+    expected_c.emplace_back(x, y1, tchecker::LE, 7);
+    expected_c.emplace_back(y1, x, tchecker::LE, -7);
+    expected_c.emplace_back(y0, t0, tchecker::LT, 0);
+
+    REQUIRE(c == expected_c);
+  }
+
+  SECTION("Initialize container from a valid string, index with process reference clock")
+  {
+    tchecker::variable_access_map_t const va_map{tchecker::variable_access(system)};
+    tchecker::reference_clock_variables_t const refclocks = tchecker::process_reference_clocks(
+        va_map, system.clock_variables().flattened(), static_cast<tchecker::process_id_t>(system.processes_count()));
+    tchecker::clock_variables_t const clockvars{tchecker::clock_variables(refclocks, system.clock_variables())};
+
+    REQUIRE_NOTHROW(tchecker::from_string(c, clockvars, "$0-x==4 && $1-$2<1 && y[0]<y[1] && $0>y[1] && y[0]-x>=5"));
+
+    tchecker::clock_id_t const t0 = clockvars.flattened().id("$0");
+    tchecker::clock_id_t const t1 = clockvars.flattened().id("$1");
+    tchecker::clock_id_t const t2 = clockvars.flattened().id("$2");
+    tchecker::clock_id_t const x = clockvars.flattened().id("x");
+    tchecker::clock_id_t const y0 = clockvars.flattened().id("y[0]");
+    tchecker::clock_id_t const y1 = clockvars.flattened().id("y[1]");
+
+    tchecker::clock_constraint_container_t expected_c;
+    expected_c.emplace_back(t0, x, tchecker::LE, 4);
+    expected_c.emplace_back(x, t0, tchecker::LE, -4);
+    expected_c.emplace_back(t1, t2, tchecker::LT, 1);
+    expected_c.emplace_back(y0, y1, tchecker::LT, 0);
+    expected_c.emplace_back(y1, t0, tchecker::LT, 0);
+    expected_c.emplace_back(x, y0, tchecker::LE, -5);
+
+    REQUIRE(c == expected_c);
+  }
+
+  // restore std::cerr buffer
+  std::cerr.rdbuf(cerr_buff);
 }
