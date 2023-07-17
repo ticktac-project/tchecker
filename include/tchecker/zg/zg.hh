@@ -16,6 +16,7 @@
 #include "tchecker/syncprod/vloc.hh"
 #include "tchecker/ta/system.hh"
 #include "tchecker/ta/ta.hh"
+#include "tchecker/ts/builder.hh"
 #include "tchecker/ts/bwd.hh"
 #include "tchecker/ts/fwd.hh"
 #include "tchecker/ts/inspector.hh"
@@ -38,6 +39,8 @@
 namespace tchecker {
 
 namespace zg {
+
+// Initial edges
 
 /*!
  \brief Type of iterator over initial states
@@ -63,6 +66,8 @@ inline tchecker::zg::initial_range_t initial_edges(tchecker::ta::system_t const 
  \brief Dereference type for iterator over initial states
  */
 using initial_value_t = tchecker::ta::initial_value_t;
+
+// Initial states
 
 /*!
  \brief Compute initial state
@@ -120,6 +125,8 @@ inline tchecker::state_status_t initial(tchecker::ta::system_t const & system, t
                                semantics, extrapolation, v);
 }
 
+// Final edges
+
 /*!
  \brief Type of iterator over final edges
  \note this iterator ranges over the set of tuples of process locations and bounded integer variables valuations
@@ -148,6 +155,8 @@ inline tchecker::zg::final_range_t final_edges(tchecker::ta::system_t const & sy
  \brief Dereference type for iterator over final edges
  */
 using final_value_t = tchecker::ta::final_value_t;
+
+// Final states
 
 /*!
  \brief Compute final state
@@ -204,6 +213,8 @@ inline tchecker::state_status_t final(tchecker::ta::system_t const & system, tch
                              semantics, extrapolation, v);
 }
 
+// Outgoing edges
+
 /*!
  \brief Type of iterator over outgoing edges
  */
@@ -231,6 +242,8 @@ outgoing_edges(tchecker::ta::system_t const & system,
  \brief Type of outgoing vedge (range of synchronized/asynchronous edges)
  */
 using outgoing_edges_value_t = tchecker::ta::outgoing_edges_value_t;
+
+// Next states
 
 /*!
  \brief Compute next state
@@ -322,6 +335,8 @@ inline tchecker::state_status_t next(tchecker::ta::system_t const & system, tche
                             t.guard_container(), t.reset_container(), t.tgt_invariant_container(), semantics, extrapolation, v);
 }
 
+// Incoming edges
+
 /*!
  \brief Type of iterator over incoming edges
  \note this iterator ranges over the set of tuple of process locations and bounded integer
@@ -352,6 +367,8 @@ incoming_edges(tchecker::ta::system_t const & system,
  \brief Type of incoming tuple of edges (range of synchronized/asynchronous edges)
  */
 using incoming_edges_value_t = tchecker::ta::incoming_edges_value_t;
+
+// Previous states
 
 /*!
  \brief Compute previous state
@@ -440,6 +457,8 @@ inline tchecker::state_status_t prev(tchecker::ta::system_t const & system, tche
                             t.guard_container(), t.reset_container(), t.tgt_invariant_container(), semantics, extrapolation, v);
 }
 
+// Inspector
+
 /*!
  \brief Computes the set of labels of a state
  \param system : a system
@@ -476,6 +495,8 @@ bool is_initial(tchecker::ta::system_t const & system, tchecker::zg::zone_t cons
 */
 bool is_initial(tchecker::ta::system_t const & system, tchecker::zg::state_t const & s);
 
+// Attributes
+
 /*!
  \brief Accessor to state attributes as strings
  \param system : a system
@@ -496,6 +517,69 @@ void attributes(tchecker::ta::system_t const & system, tchecker::zg::state_t con
 void attributes(tchecker::ta::system_t const & system, tchecker::zg::transition_t const & t,
                 std::map<std::string, std::string> & m);
 
+// Initialize
+
+/*!
+ \brief Initialization from attributes
+ \param system : a system
+ \param vloc : a vector of locations
+ \param intval : valuation of bounded integer variables
+ \param zone : a DBM zone
+ \param vedge : a vector of edges
+ \param invariant : clock constraint container for state invariant
+ \param attributes : map of attributes
+ \pre attributes["vloc"] is defined and follows the syntax required by function
+ tchecker::from_string(tchecker::vloc_t &, tchecker::system::system_t const &, std::string const &);
+ attributes["inval"] is defined and follows the syntax required by function
+ tchecker::from_string(tchecker::intval_t &, tchecker::system::system_t const &, std::string const &);
+ attributes["zone"] is defined and follows the syntax required by function
+ tchecker::from_string(tchecker::clock_constraint_container_t &, tchecker::clock_variables_t const &,
+ std::string const &);
+ \post vloc has been initialized from attributes["vloc"]
+ intval has been initialized from attributes["intval"]
+ zone has been initialized from attributes["zone"] and invariant
+ vedge has been initialized to the empty vector of edges
+ and invariant contains the invariant in vloc
+ \return tchecker::STATE_OK if initialization succeeded
+ tchecker::STATE_BAD if initialization failed
+ tchecker::STATE_INTVARS_SRC_INVARIANT_VIOLATED if attributes["intval"] does not satisfy the invariant in
+ vloc
+ tchecker::STATE_CLOCKS_SRC_INVARIANT_VIOLATED if attributes["zone"] intersected with the invariant in
+ vloc is empty
+ */
+tchecker::state_status_t initialize(tchecker::ta::system_t const & system,
+                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
+                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
+                                    tchecker::intrusive_shared_ptr_t<tchecker::zg::shared_zone_t> const & zone,
+                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+                                    tchecker::clock_constraint_container_t & invariant,
+                                    std::map<std::string, std::string> const & attributes);
+
+/*!
+ \brief Initialization from attributes
+ \param system : a system
+ \param s : state
+ \param t : transition
+ \param attributes : map of attributes
+ \post s and t have been initialized from attributes["vloc"], attributes["intval"] and attributes["zone"]
+ the src invariant container in t contains the invariant of state s
+ \return tchecker::STATE_OK if initialization succeeded
+ tchecker::STATE_BAD otherwise
+ tchecker::STATE_INTVARS_SRC_INVARIANT_VIOLATED if attributes["intval"] does not satisfy the invariant in
+ attributes["vloc"]
+ tchecker::STATE_CLOCKS_SRC_INVARIANT_VIOLATED if attributes["zone"] intersected with the invariant in
+ vloc is empty
+*/
+inline tchecker::state_status_t initialize(tchecker::ta::system_t const & system, tchecker::zg::state_t & s,
+                                           tchecker::zg::transition_t & t,
+                                           std::map<std::string, std::string> const & attributes)
+{
+  return tchecker::zg::initialize(system, s.vloc_ptr(), s.intval_ptr(), s.zone_ptr(), t.vedge_ptr(),
+                                  t.src_invariant_container(), attributes);
+}
+
+// zg_t
+
 /*!
  \class zg_t
  \brief Transition system of the zone graph over system of timed processes with
@@ -514,6 +598,7 @@ class zg_t final : public tchecker::ts::fwd_t<tchecker::zg::state_sptr_t, tcheck
                                                    tchecker::zg::transition_sptr_t, tchecker::zg::const_transition_sptr_t,
                                                    tchecker::zg::final_range_t, tchecker::zg::incoming_edges_range_t,
                                                    tchecker::zg::final_value_t, tchecker::zg::incoming_edges_value_t>,
+                   public tchecker::ts::builder_t<tchecker::zg::state_sptr_t, tchecker::zg::transition_sptr_t>,
                    public tchecker::ts::inspector_t<tchecker::zg::const_state_sptr_t, tchecker::zg::const_transition_sptr_t>,
                    public tchecker::ts::sharing_t<tchecker::zg::state_sptr_t, tchecker::zg::transition_sptr_t> {
 
@@ -531,6 +616,7 @@ public:
                                               tchecker::zg::transition_sptr_t, tchecker::zg::const_transition_sptr_t,
                                               tchecker::zg::final_range_t, tchecker::zg::incoming_edges_range_t,
                                               tchecker::zg::final_value_t, tchecker::zg::incoming_edges_value_t>;
+  using builder_t = tchecker::ts::builder_t<tchecker::zg::state_sptr_t, tchecker::zg::transition_sptr_t>;
   using inspector_t = tchecker::ts::inspector_t<tchecker::zg::const_state_sptr_t, tchecker::zg::const_transition_sptr_t>;
   using sharing_t = tchecker::ts::sharing_t<tchecker::zg::state_sptr_t, tchecker::zg::transition_sptr_t>;
 
@@ -737,6 +823,25 @@ public:
   */
   virtual void prev(tchecker::zg::const_state_sptr_t const & s, std::vector<sst_t> & v,
                     tchecker::state_status_t mask = tchecker::STATE_OK);
+
+  // Builder
+
+  /*!
+   \brief State/transition building from attributes
+   \param attributes : a map of attributes
+   \param v : container
+   \param mask : mask on states
+   \post all tuples (status, s, t) where s and t have been initialized from attributes,
+   and status matches mask (i.e. status & mask != 0) have been pushed to v
+   \pre see tchecker::zg::initialize
+   \post a triple <status, s, t> has been pushed to v (if status matches mask), where the vector of
+   locations in s has been initialized from attributes["vloc"], the integer valuation in s has been
+   initialized from attributes["intval"], the zone in s has been initialized from attributes["zone"]
+   and the invariant in the vector of locations in s, the vector of edges in t is empty and the source
+   invariant in t has been initialized to the invariant in vloc
+  */
+  virtual void build(std::map<std::string, std::string> const & attributes, std::vector<sst_t> & v,
+                     tchecker::state_status_t mask = tchecker::STATE_OK);
 
   // Inspector
 

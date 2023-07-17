@@ -163,6 +163,45 @@ void attributes(tchecker::ta::system_t const & system, tchecker::zg::transition_
   tchecker::ta::attributes(system, t, m);
 }
 
+/* initialize */
+
+tchecker::state_status_t initialize(tchecker::ta::system_t const & system,
+                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
+                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
+                                    tchecker::intrusive_shared_ptr_t<tchecker::zg::shared_zone_t> const & zone,
+                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+                                    tchecker::clock_constraint_container_t & invariant,
+                                    std::map<std::string, std::string> const & attributes)
+{
+  // initialize vloc, intval and vedge from ta
+  auto state_status = tchecker::ta::initialize(system, vloc, intval, vedge, invariant, attributes);
+  if (state_status != STATE_OK)
+    return state_status;
+
+  // initialize zone from attributes["zone"]
+  tchecker::clock_constraint_container_t clk_constraints;
+  try {
+    tchecker::from_string(clk_constraints, system.clock_variables(), attributes.at("zone"));
+  }
+  catch (...) {
+    return tchecker::STATE_BAD;
+  }
+
+  tchecker::dbm::db_t * dbm = zone->dbm();
+  tchecker::clock_id_t const dim = zone->dim();
+  tchecker::dbm::universal_positive(dbm, dim);
+  tchecker::dbm::status_t zone_status = tchecker::dbm::constrain(dbm, dim, clk_constraints);
+  if (zone_status == tchecker::dbm::EMPTY)
+    return tchecker::STATE_BAD;
+
+  // Apply invariant
+  zone_status = tchecker::dbm::constrain(dbm, dim, invariant);
+  if (zone_status == tchecker::dbm::EMPTY)
+    return tchecker::STATE_CLOCKS_SRC_INVARIANT_VIOLATED;
+
+  return tchecker::STATE_OK;
+}
+
 /* zg_t */
 
 zg_t::zg_t(std::shared_ptr<tchecker::ta::system_t const> const & system, enum tchecker::ts::sharing_type_t sharing_type,
@@ -265,6 +304,22 @@ void zg_t::prev(tchecker::zg::const_state_sptr_t const & s, incoming_edges_value
 void zg_t::prev(tchecker::zg::const_state_sptr_t const & s, std::vector<sst_t> & v, tchecker::state_status_t mask)
 {
   tchecker::ts::prev(*this, s, v, mask);
+}
+
+// Builder
+
+void zg_t::build(std::map<std::string, std::string> const & attributes, std::vector<sst_t> & v, tchecker::state_status_t mask)
+{
+  tchecker::zg::state_sptr_t s = _state_allocator.construct();
+  tchecker::zg::transition_sptr_t t = _transition_allocator.construct();
+  tchecker::state_status_t status = tchecker::zg::initialize(*_system, *s, *t, attributes);
+  if (status & mask) {
+    if (_sharing_type == tchecker::ts::SHARING) {
+      share(s);
+      share(t);
+    }
+    v.push_back(std::make_tuple(status, s, t));
+  }
 }
 
 // Inspector
