@@ -21,6 +21,7 @@
 #include "tchecker/syncprod/transition.hh"
 #include "tchecker/syncprod/vedge.hh"
 #include "tchecker/syncprod/vloc.hh"
+#include "tchecker/ts/builder.hh"
 #include "tchecker/ts/bwd.hh"
 #include "tchecker/ts/fwd.hh"
 #include "tchecker/ts/inspector.hh"
@@ -36,6 +37,8 @@
 namespace tchecker {
 
 namespace syncprod {
+
+/* Initial edges */
 
 /*!
  \brief Type of iterator over initial states
@@ -58,6 +61,8 @@ initial_range_t initial_edges(tchecker::syncprod::system_t const & system);
  \brief Dereference type for iterator over initial states
  */
 using initial_value_t = std::iterator_traits<tchecker::syncprod::initial_iterator_t>::value_type;
+
+/* Initial state */
 
 /*!
  \brief Compute initial state
@@ -93,6 +98,8 @@ inline tchecker::state_status_t initial(tchecker::syncprod::system_t const & sys
 {
   return tchecker::syncprod::initial(system, s.vloc_ptr(), t.vedge_ptr(), v);
 }
+
+/* Final edges */
 
 /*!
  \class final_iterator_t
@@ -208,6 +215,8 @@ tchecker::syncprod::final_range_t final_edges(tchecker::syncprod::system_t const
  */
 using final_value_t = tchecker::syncprod::final_iterator_t::value_type_t;
 
+/* Final states */
+
 /*!
  \brief Compute final state
  \param system : a system
@@ -242,6 +251,8 @@ inline tchecker::state_status_t final(tchecker::syncprod::system_t const & syste
 {
   return tchecker::syncprod::final(system, s.vloc_ptr(), t.vedge_ptr(), v);
 }
+
+/* Outgoing edges */
 
 /*!
 \class outgoing_edges_iterator_t
@@ -384,6 +395,8 @@ outgoing_edges(tchecker::syncprod::system_t const & system,
  */
 using outgoing_edges_value_t = tchecker::range_t<tchecker::syncprod::edges_iterator_t>;
 
+/* Next states */
+
 /*!
  \brief Compute next tuples of locations and edges
  \param vloc : tuple of locations
@@ -419,6 +432,8 @@ inline tchecker::state_status_t next(tchecker::syncprod::system_t const & system
 {
   return tchecker::syncprod::next(system, s.vloc_ptr(), t.vedge_ptr(), v);
 }
+
+/* Incoming edges */
 
 /*!
 \class incoming_edges_iterator_t
@@ -572,6 +587,8 @@ using incoming_edges_value_t = tchecker::range_t<tchecker::syncprod::edges_itera
 static_assert(std::is_same<tchecker::syncprod::outgoing_edges_value_t, tchecker::syncprod::incoming_edges_value_t>::value,
               "Outgoing and incoming edges values should be the same type");
 
+/* Previous state */
+
 /*!
  \brief Compute previous tuples of locations and edges
  \param vloc : tuple of locations
@@ -608,6 +625,8 @@ inline tchecker::state_status_t prev(tchecker::syncprod::system_t const & system
   return tchecker::syncprod::prev(system, s.vloc_ptr(), t.vedge_ptr(), v);
 }
 
+/* Labels */
+
 /*!
  \brief Compute set of committed processes in a vloc
  \param system : a system
@@ -643,6 +662,8 @@ boost::dynamic_bitset<> labels(tchecker::syncprod::system_t const & system, tche
 */
 std::string labels_str(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t const & s);
 
+/* Inspector */
+
 /*!
  \brief Checks is a tuple of locations is a valid final state
  \param system : a system
@@ -675,6 +696,8 @@ bool is_initial(tchecker::syncprod::system_t const & system, tchecker::vloc_t co
  */
 bool is_initial(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t const & s);
 
+/* Attributes */
+
 /*!
  \brief Accessor to state attributes as strings
  \param system : a system
@@ -695,6 +718,44 @@ void attributes(tchecker::syncprod::system_t const & system, tchecker::syncprod:
 void attributes(tchecker::syncprod::system_t const & system, tchecker::syncprod::transition_t const & t,
                 std::map<std::string, std::string> & m);
 
+/* Initialize */
+
+/*!
+ \brief Initialization from attributes
+ \param system : a system
+ \param vloc : a vector of locations
+ \param vedge : a vectofr of edges
+ \param attributes : map of attributes
+ \pre attributes["vloc"] is defined and follows the syntax required by function
+ tchecker::from_string(tchecker::vloc_t &, tchecker::system::system_t const &, std::string const &);
+ \post vloc has been initialized from attributes["vloc"] and vedge is the empty vector of edges
+ \return tchecker::STATE_OK if initialization succeeded
+ tchecker::STATE_BAD if initialization failed
+ */
+tchecker::state_status_t initialize(tchecker::syncprod::system_t const & system,
+                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
+                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+                                    std::map<std::string, std::string> const & attributes);
+
+/*!
+ \brief Initialization from attributes
+ \param system : a system
+ \param s : state
+ \param t : transition
+ \param attributes : map of attributes
+ \post s and t have been initialized from attributes["vloc"]
+ \return tchecker::STATE_OK if initialization succeeded
+ tchecker::STATE_BAD otherwise
+*/
+inline tchecker::state_status_t initialize(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t & s,
+                                           tchecker::syncprod::transition_t & t,
+                                           std::map<std::string, std::string> const & attributes)
+{
+  return tchecker::syncprod::initialize(system, s.vloc_ptr(), t.vedge_ptr(), attributes);
+}
+
+/* syncprod_t */
+
 /*!
  \class syncprod_t
  \brief Transition system of the synchronized product of timed processes with
@@ -714,6 +775,7 @@ class syncprod_t final
                                       tchecker::syncprod::transition_sptr_t, tchecker::syncprod::const_transition_sptr_t,
                                       tchecker::syncprod::final_range_t, tchecker::syncprod::incoming_edges_range_t,
                                       tchecker::syncprod::final_value_t, tchecker::syncprod::incoming_edges_value_t>,
+      public tchecker::ts::builder_t<tchecker::syncprod::state_sptr_t, tchecker::syncprod::transition_sptr_t>,
       public tchecker::ts::inspector_t<tchecker::syncprod::const_state_sptr_t, tchecker::syncprod::const_transition_sptr_t>,
       public tchecker::ts::sharing_t<tchecker::syncprod::state_sptr_t, tchecker::syncprod::transition_sptr_t> {
 public:
@@ -733,6 +795,7 @@ public:
                                tchecker::syncprod::transition_sptr_t, tchecker::syncprod::const_transition_sptr_t,
                                tchecker::syncprod::final_range_t, tchecker::syncprod::incoming_edges_range_t,
                                tchecker::syncprod::final_value_t, tchecker::syncprod::incoming_edges_value_t>;
+  using builder_t = tchecker::ts::builder_t<tchecker::syncprod::state_sptr_t, tchecker::syncprod::transition_sptr_t>;
   using inspector_t =
       tchecker::ts::inspector_t<tchecker::syncprod::const_state_sptr_t, tchecker::syncprod::const_transition_sptr_t>;
   using sharing_t = tchecker::ts::sharing_t<tchecker::syncprod::state_sptr_t, tchecker::syncprod::transition_sptr_t>;
@@ -936,6 +999,23 @@ public:
   */
   virtual void prev(tchecker::syncprod::const_state_sptr_t const & s, std::vector<sst_t> & v,
                     tchecker::state_status_t mask = tchecker::STATE_OK);
+
+  // Builder
+
+  /*!
+   \brief State/transition building from attributes
+   \param attributes : a map of attributes
+   \param v : container
+   \param mask : mask on states
+   \post all tuples (status, s, t) where s and t have been initialized from attributes,
+   and status matches mask (i.e. status & mask != 0) have been pushed to v
+   \pre see tchecker::syncprod::initialize
+   \post a triple <status, s, t> where the vector of locations in s has been initialized
+   from attributes["vloc"] and the vector of edges in t is empty, has been pushed to v
+   if status matched mask
+  */
+  virtual void build(std::map<std::string, std::string> const & attributes, std::vector<sst_t> & v,
+                     tchecker::state_status_t mask = tchecker::STATE_OK);
 
   // Inspector
 
