@@ -329,6 +329,37 @@ void attributes(tchecker::ta::system_t const & system, tchecker::ta::transition_
   m["tgt_invariant"] = tchecker::to_string(t.tgt_invariant_container(), system.clock_variables().index());
 }
 
+/* initialize */
+
+tchecker::state_status_t initialize(tchecker::ta::system_t const & system,
+                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
+                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
+                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+                                    tchecker::clock_constraint_container_t & invariant,
+                                    std::map<std::string, std::string> const & attributes)
+{
+  // intialize vloc and vedge from syncprod
+  auto status = tchecker::syncprod::initialize(system.as_syncprod_system(), vloc, vedge, attributes);
+  if (status != STATE_OK)
+    return status;
+
+  // initialize intval
+  try {
+    tchecker::from_string(*intval, system.integer_variables().flattened(), attributes.at("intval"));
+  }
+  catch (...) {
+    return tchecker::STATE_BAD;
+  }
+
+  // check invariant
+  tchecker::vm_t & vm = system.vm();
+  for (tchecker::loc_id_t loc_id : *vloc)
+    if (vm.run(system.invariant_bytecode(loc_id), *intval, invariant, throw_clkreset) == 0)
+      return tchecker::STATE_INTVARS_TGT_INVARIANT_VIOLATED;
+
+  return tchecker::STATE_OK;
+}
+
 /* ta_t */
 
 ta_t::ta_t(std::shared_ptr<tchecker::ta::system_t const> const & system, enum tchecker::ts::sharing_type_t sharing_type,
@@ -431,6 +462,22 @@ void ta_t::prev(tchecker::ta::const_state_sptr_t const & s, incoming_edges_value
 void ta_t::prev(tchecker::ta::const_state_sptr_t const & s, std::vector<sst_t> & v, tchecker::state_status_t mask)
 {
   tchecker::ts::prev(*this, s, v, mask);
+}
+
+// Builder
+
+void ta_t::build(std::map<std::string, std::string> const & attributes, std::vector<sst_t> & v, tchecker::state_status_t mask)
+{
+  tchecker::ta::state_sptr_t s = _state_allocator.construct();
+  tchecker::ta::transition_sptr_t t = _transition_allocator.construct();
+  tchecker::state_status_t status = tchecker::ta::initialize(*_system, *s, *t, attributes);
+  if (status & mask) {
+    if (_sharing_type == tchecker::ts::SHARING) {
+      share(s);
+      share(t);
+    }
+    v.push_back(std::make_tuple(status, s, t));
+  }
 }
 
 // Inspector
