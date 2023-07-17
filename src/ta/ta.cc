@@ -355,7 +355,7 @@ tchecker::state_status_t initialize(tchecker::ta::system_t const & system,
   tchecker::vm_t & vm = system.vm();
   for (tchecker::loc_id_t loc_id : *vloc)
     if (vm.run(system.invariant_bytecode(loc_id), *intval, invariant, throw_clkreset) == 0)
-      return tchecker::STATE_INTVARS_TGT_INVARIANT_VIOLATED;
+      return tchecker::STATE_INTVARS_SRC_INVARIANT_VIOLATED;
 
   return tchecker::STATE_OK;
 }

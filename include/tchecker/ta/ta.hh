@@ -463,7 +463,7 @@ void attributes(tchecker::ta::system_t const & system, tchecker::ta::state_t con
 void attributes(tchecker::ta::system_t const & system, tchecker::ta::transition_t const & t,
                 std::map<std::string, std::string> & m);
 
-/* Initialize */
+// Initialize
 
 /*!
  \brief Initialization from attributes
@@ -483,7 +483,7 @@ void attributes(tchecker::ta::system_t const & system, tchecker::ta::transition_
  and invariant contains the invariant in vloc
  \return tchecker::STATE_OK if initialization succeeded
  tchecker::STATE_BAD if initialization failed
- tchecker::STATE_INTVARS_TGT_INVARIANT_VIOLATED if attributes["intval"] does not satisfy the invariant in
+ tchecker::STATE_INTVARS_SRC_INVARIANT_VIOLATED if attributes["intval"] does not satisfy the invariant in
  attributes["vloc"]
  */
 tchecker::state_status_t initialize(tchecker::ta::system_t const & system,
@@ -500,16 +500,20 @@ tchecker::state_status_t initialize(tchecker::ta::system_t const & system,
  \param t : transition
  \param attributes : map of attributes
  \post s and t have been initialized from attributes["vloc"] and attributes["intval"]
- the target invariant container in t contains the invariant of state s
+ the src invariant container in t contains the invariant of state s
  \return tchecker::STATE_OK if initialization succeeded
  tchecker::STATE_BAD otherwise
+ tchecker::STATE_INTVARS_SRC_INVARIANT_VIOLATED if attributes["intval"] does not satisfy the invariant in
+ attributes["vloc"]
 */
 inline tchecker::state_status_t initialize(tchecker::ta::system_t const & system, tchecker::ta::state_t & s,
                                            tchecker::ta::transition_t & t,
                                            std::map<std::string, std::string> const & attributes)
 {
-  return tchecker::ta::initialize(system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), t.tgt_invariant_container(), attributes);
+  return tchecker::ta::initialize(system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), t.src_invariant_container(), attributes);
 }
+
+// ta_t
 
 /*!
  \class ta_t
@@ -763,7 +767,7 @@ public:
    \pre see tchecker::ta::initialize
    \post a triple <status, s, t> has been pushed to v (if status matches mask), where the vector of
    locations in s has been initialized from attributes["vloc"], the integer valuation in s has been
-   initialized from attributes["intval"], the vector of edges in t is empty and the target invariant
+   initialized from attributes["intval"], the vector of edges in t is empty and the src invariant
    in t has been initialized to the invariant in vloc
   */
   virtual void build(std::map<std::string, std::string> const & attributes, std::vector<sst_t> & v,
