@@ -62,6 +62,13 @@ bool clock_valued(enum tchecker::expression_type_t type);
 bool clock_assignable(enum tchecker::expression_type_t type);
 
 /*!
+ \brief Check if an expression type involves clocks
+ \param type : type to check
+ \return true if an expression of type `type` involves clocks, false otherwise
+*/
+bool clock_involved(enum tchecker::expression_type_t type);
+
+/*!
  \brief Type inference
  \param type : type to check
  \return true if type represents a boolean value, false otherwise

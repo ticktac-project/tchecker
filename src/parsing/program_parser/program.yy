@@ -178,6 +178,7 @@
 %type <tchecker::expression_t *>            atomic_formula
                                             conjunctive_formula
                                             non_atomic_conjunctive_formula
+                                            binary_formula
                                             predicate_formula
                                             term
 %type <tchecker::lvalue_expression_t *>			lvalue_term
@@ -362,7 +363,33 @@ predicate_formula:
     $$ = new fake_expression_t();
   }
 }
-| term predicate_operator term
+| binary_formula predicate_operator term
+{
+  try {
+    tchecker::binary_expression_t * left = dynamic_cast<tchecker::binary_expression_t *>($1);
+    if (! tchecker::is_less(left->binary_operator()) || ! tchecker::is_less($2)) {
+      tchecker::parsing::program::parser_t::error(@$, "Only < and <= are allowed in combined expressions");
+      delete $1;
+      delete $3;
+      $$ = new fake_expression_t();
+    }
+    else {
+      tchecker::binary_expression_t * right = new tchecker::binary_expression_t{$2, left->right_operand().clone(), $3};
+      $$ = new tchecker::binary_expression_t(tchecker::EXPR_OP_LAND, left, right);
+    }
+  } 
+  catch (std::exception const & e) {
+    std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
+    $$ = new fake_expression_t();
+  }
+}
+| binary_formula
+{ $$ = $1; }
+;
+
+
+binary_formula:
+term predicate_operator term
 {
   try {
     $$ = new tchecker::binary_expression_t($2, $1, $3);

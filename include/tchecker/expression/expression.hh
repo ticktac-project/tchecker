@@ -425,6 +425,22 @@ std::ostream & operator<<(std::ostream & os, enum binary_operator_t op);
 bool predicate(enum tchecker::binary_operator_t op);
 
 /*!
+ \brief Check if binary operator is LE or LT
+ \param op : operator
+ \return true if op is LE or LT, false otherwise
+*/
+bool is_less(enum tchecker::binary_operator_t op);
+
+/*!
+ \brief Reverse comparison operator
+ \param op : comparison operator
+ \return revered op: < becomes >, <= becomes >=, == stays ==, != stays !=,
+ >= becomes <= and > becomes <
+ \throw std::invalid_argument : if op is not a comparison operator
+*/
+enum tchecker::binary_operator_t reverse_cmp(enum tchecker::binary_operator_t op);
+
+/*!
  \class binary_expression_t
  \brief Application of a binary operator to expressions
  */

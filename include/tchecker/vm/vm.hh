@@ -185,7 +185,7 @@ public:
    \note Evaluating a bytecode from a statement always returns 1. It throws an
    exception if evaluation failed.
    */
-  tchecker::integer_t run(tchecker::bytecode_t const * bytecode, tchecker::intvars_valuation_t & intval,
+  tchecker::integer_t run(tchecker::bytecode_t const * bytecode, tchecker::intval_t & intval,
                           tchecker::clock_constraint_container_t & clkconstr, tchecker::clock_reset_container_t & clkreset)
   {
     assert(size() == 0); // stack should be empty
@@ -214,7 +214,7 @@ protected:
   /*!
    \brief Single instruction interpreter
    \param bytecode : tchecker bytecode
-   \param intval : valuation of integer variables
+   \param intval : valuation of bounded integer variables
    \param clkconstr : container of clock constraints
    \param clkreset : container of clock resets
    \return computed value
@@ -225,8 +225,7 @@ protected:
    \throw std::runtime_error : if bytecode interpretation fails
    \throw std::out_of_range : if out-of-bound array access
    */
-  inline tchecker::integer_t interpret_instruction(tchecker::bytecode_t const *& bytecode,
-                                                   tchecker::intvars_valuation_t & intval,
+  inline tchecker::integer_t interpret_instruction(tchecker::bytecode_t const *& bytecode, tchecker::intval_t & intval,
                                                    tchecker::clock_constraint_container_t & clkconstr,
                                                    tchecker::clock_reset_container_t & clkreset)
   {

@@ -44,6 +44,12 @@ bool clock_assignable(enum tchecker::expression_type_t type)
   return ((type == tchecker::EXPR_TYPE_CLKVAR) || (type == tchecker::EXPR_TYPE_CLKLVALUE));
 }
 
+bool clock_involved(enum tchecker::expression_type_t type)
+{
+  return clock_valued(type) || (type == tchecker::EXPR_TYPE_CLKDIFF) || (type == tchecker::EXPR_TYPE_CLKCONSTR_SIMPLE) ||
+         (type == tchecker::EXPR_TYPE_CLKCONSTR_DIAGONAL) || (type == tchecker::EXPR_TYPE_INTCLKSUM);
+}
+
 bool bool_valued(enum tchecker::expression_type_t type)
 {
   return (integer_valued(type) || (type == tchecker::EXPR_TYPE_CLKCONSTR_SIMPLE) ||

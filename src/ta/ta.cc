@@ -164,14 +164,14 @@ static void copy(tchecker::vloc_t & vloc, std::vector<tchecker::loc_id_t> const 
     vloc[i] = copy[i];
 }
 
-static void copy(std::vector<tchecker::integer_t> & copy, tchecker::intvars_valuation_t const & intval)
+static void copy(std::vector<tchecker::integer_t> & copy, tchecker::intval_t const & intval)
 {
   assert(copy.size() == intval.capacity());
   for (tchecker::intvar_id_t i = 0; i < intval.capacity(); ++i)
     copy[i] = intval[i];
 }
 
-static void copy(tchecker::intvars_valuation_t & intval, std::vector<tchecker::integer_t> const & copy)
+static void copy(tchecker::intval_t & intval, std::vector<tchecker::integer_t> const & copy)
 {
   assert(intval.capacity() == copy.size());
   for (tchecker::intvar_id_t i = 0; i < copy.size(); ++i)
@@ -187,7 +187,7 @@ static bool operator!=(tchecker::vloc_t const & vloc, std::vector<tchecker::loc_
   return false;
 }
 
-static bool operator!=(tchecker::intvars_valuation_t const & intval, std::vector<tchecker::integer_t> const & copy)
+static bool operator!=(tchecker::intval_t const & intval, std::vector<tchecker::integer_t> const & copy)
 {
   assert(intval.capacity() == copy.size());
   for (tchecker::intvar_id_t id = 0; id < intval.size(); ++id)
@@ -296,7 +296,7 @@ bool is_valid_final(tchecker::ta::system_t const & system, tchecker::ta::state_t
 
 /* is_initial */
 
-bool is_initial(tchecker::ta::system_t const & system, tchecker::intvars_valuation_t const & v)
+bool is_initial(tchecker::ta::system_t const & system, tchecker::intval_t const & v)
 {
   assert(v.capacity() == system.integer_variables().flattened().size());
   tchecker::intvar_id_t const nvars = v.capacity();
@@ -327,6 +327,37 @@ void attributes(tchecker::ta::system_t const & system, tchecker::ta::transition_
   m["guard"] = tchecker::to_string(t.guard_container(), system.clock_variables().index());
   m["reset"] = tchecker::to_string(t.reset_container(), system.clock_variables().index());
   m["tgt_invariant"] = tchecker::to_string(t.tgt_invariant_container(), system.clock_variables().index());
+}
+
+/* initialize */
+
+tchecker::state_status_t initialize(tchecker::ta::system_t const & system,
+                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
+                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
+                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+                                    tchecker::clock_constraint_container_t & invariant,
+                                    std::map<std::string, std::string> const & attributes)
+{
+  // intialize vloc and vedge from syncprod
+  auto status = tchecker::syncprod::initialize(system.as_syncprod_system(), vloc, vedge, attributes);
+  if (status != STATE_OK)
+    return status;
+
+  // initialize intval
+  try {
+    tchecker::from_string(*intval, system.integer_variables().flattened(), attributes.at("intval"));
+  }
+  catch (...) {
+    return tchecker::STATE_BAD;
+  }
+
+  // check invariant
+  tchecker::vm_t & vm = system.vm();
+  for (tchecker::loc_id_t loc_id : *vloc)
+    if (vm.run(system.invariant_bytecode(loc_id), *intval, invariant, throw_clkreset) == 0)
+      return tchecker::STATE_INTVARS_SRC_INVARIANT_VIOLATED;
+
+  return tchecker::STATE_OK;
 }
 
 /* ta_t */
@@ -431,6 +462,22 @@ void ta_t::prev(tchecker::ta::const_state_sptr_t const & s, incoming_edges_value
 void ta_t::prev(tchecker::ta::const_state_sptr_t const & s, std::vector<sst_t> & v, tchecker::state_status_t mask)
 {
   tchecker::ts::prev(*this, s, v, mask);
+}
+
+// Builder
+
+void ta_t::build(std::map<std::string, std::string> const & attributes, std::vector<sst_t> & v, tchecker::state_status_t mask)
+{
+  tchecker::ta::state_sptr_t s = _state_allocator.construct();
+  tchecker::ta::transition_sptr_t t = _transition_allocator.construct();
+  tchecker::state_status_t status = tchecker::ta::initialize(*_system, *s, *t, attributes);
+  if (status & mask) {
+    if (_sharing_type == tchecker::ts::SHARING) {
+      share(s);
+      share(t);
+    }
+    v.push_back(std::make_tuple(status, s, t));
+  }
 }
 
 // Inspector

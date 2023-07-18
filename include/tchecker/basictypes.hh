@@ -203,6 +203,7 @@ state_status_t const STATE_CLOCKS_EMPTY_SYNC = 1024;   /*!< state computation fa
 state_status_t const STATE_CLOCKS_EMPTY_SPREAD = 2048; /*!< state computation failed due to empty bounded-spread zone */
 state_status_t const STATE_ZONE_EMPTY = 4096;          /*!< state computation result in an empty zone (no details provided) */
 state_status_t const STATE_ZONE_EMPTY_SYNC = 8192;     /*!< state computation result in a ref zone that has no sync valuation */
+state_status_t const STATE_BAD = 16384;                /*!< state computation failed (unspecified reason) */
 
 } // end of namespace tchecker
 

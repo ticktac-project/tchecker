@@ -7,6 +7,7 @@
 
 #include <functional>
 #include <limits>
+#include <memory>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -19,6 +20,11 @@
 #endif
 
 #include "tchecker/basictypes.hh"
+#include "tchecker/expression/expression.hh"
+#include "tchecker/expression/static_analysis.hh"
+#include "tchecker/expression/typechecking.hh"
+#include "tchecker/expression/typed_expression.hh"
+#include "tchecker/parsing/parsing.hh"
 #include "tchecker/utils/ordering.hh"
 #include "tchecker/variables/clocks.hh"
 
@@ -120,6 +126,174 @@ std::string to_string(tchecker::clock_constraint_container_t const & c, tchecker
   return ss.str();
 }
 
+/*!
+ \class clock_constraints_visitor_t
+ \brief Visitor of typed expression that put every clock constraint expression in a
+ clock constraints container, and fails if the expression contains other constraints,
+ or if clock identifiers or constants cannot be evaluated statically
+ \throw std::runtime_error : if expressions other than clock constraints, conjunctions
+ and parenthesis are found
+ */
+class clock_constraints_visitor_t : public tchecker::typed_expression_visitor_t {
+public:
+  /*!
+   \brief Constructor
+   \param c : clock constraint containter
+   \post all clock constraints expressions are added to c
+   */
+  clock_constraints_visitor_t(tchecker::clock_constraint_container_t & c) : _c(c) {}
+
+  /*!
+   \brief Destructor
+   */
+  virtual ~clock_constraints_visitor_t() = default;
+
+  /*!
+   \brief Add clock constraints from a simple expression clock # bound
+  */
+  virtual void visit(tchecker::typed_simple_clkconstr_expression_t const & e)
+  {
+    try {
+      tchecker::clock_id_t clock = clock_id(e.clock());
+      tchecker::integer_t value = tchecker::const_evaluate(e.bound());
+      add_constraints(clock, tchecker::REFCLOCK_ID, e.binary_operator(), value);
+    }
+    catch (...) {
+      throw std::runtime_error("Syntax error in simple clock constraint: cannot compute clock IDs or constant");
+    }
+  }
+
+  /*!
+   \brief Add clock constraints from diagonal expression first - second # bound
+  */
+  virtual void visit(tchecker::typed_diagonal_clkconstr_expression_t const & e)
+  {
+    try {
+      tchecker::clock_id_t first = clock_id(e.first_clock());
+      tchecker::clock_id_t second = clock_id(e.second_clock());
+      tchecker::integer_t value = tchecker::const_evaluate(e.bound());
+      add_constraints(first, second, e.binary_operator(), value);
+    }
+    catch (...) {
+      throw std::runtime_error("Syntax error in diagonal clock constraint: cannot compute clock IDs or constant");
+    }
+  }
+
+  /*!
+   \brief Visit expr1 and expr2 within expr1 && expr2, fail if e is not &&
+  */
+  virtual void visit(tchecker::typed_binary_expression_t const & e)
+  {
+    if (e.binary_operator() != tchecker::EXPR_OP_LAND)
+      throw std::runtime_error("Unexpected binary operator, expecting &&");
+    e.left_operand().visit(*this);
+    e.right_operand().visit(*this);
+  }
+
+  /*!
+   \brief Visit expr within (expr)
+  */
+  virtual void visit(tchecker::typed_par_expression_t const & e) { e.expr().visit(*this); }
+
+  /*!
+   \brief Other visitors throw
+   */
+  virtual void visit(tchecker::typed_int_expression_t const &) { throw std::runtime_error("Unexpected expression"); }
+  virtual void visit(tchecker::typed_var_expression_t const &) { throw std::runtime_error("Unexpected expression"); }
+  virtual void visit(tchecker::typed_bounded_var_expression_t const &) { throw std::runtime_error("Unexpected expression"); }
+  virtual void visit(tchecker::typed_array_expression_t const &) { throw std::runtime_error("Unexpected expression"); }
+  virtual void visit(tchecker::typed_unary_expression_t const &) { throw std::runtime_error("Unexpected expression"); }
+  virtual void visit(tchecker::typed_ite_expression_t const &) { throw std::runtime_error("Unexpected expression"); }
+
+private:
+  /*!
+   \brief Compute identifier of clock lvalue represented by an expression
+   \param e : expression
+   \return the identifier of lvalue represented by e according to _clocks
+   \throw std::invalid_argument : if e is not a clock lvalue expression, or if the id
+   cannot be computed
+  */
+  tchecker::clock_id_t clock_id(tchecker::typed_expression_t const & e)
+  {
+    tchecker::typed_lvalue_expression_t const & typed_e = dynamic_cast<tchecker::typed_lvalue_expression_t const &>(e);
+    tchecker::range_t<tchecker::variable_id_t> ids_range = tchecker::extract_lvalue_variable_ids(typed_e);
+    if (ids_range.empty())
+      throw std::invalid_argument("Cannot determine clock ID");
+    auto it = ids_range.begin();
+    if (++it != ids_range.end())
+      throw std::invalid_argument("Cannot determine clock ID");
+    return ids_range.begin();
+  }
+
+  /*!
+   \brief Add constraints to container from first - second # value
+   \param first : first clock ID
+   \param second : second clock ID
+   \param op : comparator
+   \param value : bound
+   \post clock constraints corresponding to first - second # value have been added to _c
+   \throw std::invalid_argument : if op is not one of EQ, GE, GT, LE and LT
+  */
+  void add_constraints(tchecker::clock_id_t first, tchecker::clock_id_t second, enum tchecker::binary_operator_t op,
+                       tchecker::integer_t value)
+  {
+    switch (op) {
+    case tchecker::EXPR_OP_EQ:
+      add_constraints(first, second, tchecker::EXPR_OP_LE, value);
+      add_constraints(first, second, tchecker::EXPR_OP_GE, value);
+      break;
+    case tchecker::EXPR_OP_GE: {
+      tchecker::integer_t neg_value = static_cast<tchecker::integer_t>(-value);
+      _c.emplace_back(second, first, tchecker::LE, neg_value);
+      break;
+    }
+    case tchecker::EXPR_OP_GT: {
+      tchecker::integer_t neg_value = static_cast<tchecker::integer_t>(-value);
+      _c.emplace_back(second, first, tchecker::LT, neg_value);
+      break;
+    }
+    case tchecker::EXPR_OP_LE:
+      _c.emplace_back(first, second, tchecker::LE, value);
+      break;
+    case tchecker::EXPR_OP_LT:
+      _c.emplace_back(first, second, tchecker::LT, value);
+      break;
+    default:
+      throw std::invalid_argument("Unexpected expression operator in clock constraint");
+    }
+  }
+
+  tchecker::clock_constraint_container_t & _c; /*!< Clock constraints container */
+};
+
+void from_string(tchecker::clock_constraint_container_t & c, tchecker::clock_variables_t const & clocks,
+                 std::string const & str)
+{
+  if (str == "")
+    return;
+
+  // parse str as a typed expression
+  std::unique_ptr<tchecker::expression_t> expr{tchecker::parsing::parse_expression("", str)};
+  if (expr.get() == nullptr)
+    throw std::invalid_argument("syntax error in " + str);
+
+  tchecker::integer_variables_t no_integer_variables;
+  std::unique_ptr<tchecker::typed_expression_t> typed_expr{
+      tchecker::typecheck(*expr, no_integer_variables, no_integer_variables, clocks,
+                          [](std::string const & err) { std::cerr << tchecker::log_error << err << std::endl; })};
+  if (typed_expr.get() == nullptr)
+    throw std::invalid_argument("type error in expression " + str);
+
+  // instantiate a typed expression visitor, add each clock constraint from expression to c
+  try {
+    tchecker::clock_constraints_visitor_t v(c);
+    typed_expr->visit(v);
+  }
+  catch (...) {
+    throw std::invalid_argument("error in " + str);
+  }
+}
+
 /* clock_reset_t */
 
 clock_reset_t::clock_reset_t(tchecker::clock_id_t left_id, tchecker::clock_id_t right_id, tchecker::integer_t value)
@@ -203,8 +377,11 @@ std::string to_string(tchecker::clock_reset_container_t const & c, tchecker::clo
 
 void clock_reset_to_constraints(tchecker::clock_reset_t const & r, tchecker::clock_constraint_container_t & cc)
 {
+  if (r.value() == std::numeric_limits<tchecker::integer_t>::min())
+    throw std::overflow_error("tchecker::clock_reset_to_constraints: overflow");
   cc.push_back(tchecker::clock_constraint_t{r.left_id(), r.right_id(), tchecker::LE, r.value()});
-  cc.push_back(tchecker::clock_constraint_t{r.right_id(), r.left_id(), tchecker::LE, -r.value()});
+  cc.push_back(
+      tchecker::clock_constraint_t{r.right_id(), r.left_id(), tchecker::LE, static_cast<tchecker::integer_t>(-r.value())});
 }
 
 void clock_resets_to_constraints(tchecker::clock_reset_container_t const & rc, tchecker::clock_constraint_container_t & cc)
@@ -305,7 +482,7 @@ tchecker::clock_id_t reference_clock_variables_t::declare_reference_clock(std::s
 tchecker::reference_clock_variables_t single_reference_clocks(tchecker::flat_clock_variables_t const & flat_clocks,
                                                               tchecker::process_id_t proc_count)
 {
-  std::string const zero_clock_name = "0";
+  std::string const zero_clock_name = "$0";
 
   std::vector<std::string> proc_refname_map(proc_count, zero_clock_name);
 
@@ -356,6 +533,24 @@ tchecker::reference_clock_variables_t process_reference_clocks(tchecker::variabl
   }
 
   return reference_clocks;
+}
+
+/* clock_variables */
+
+tchecker::clock_variables_t clock_variables(tchecker::reference_clock_variables_t const & refclocks,
+                                            tchecker::clock_variables_t const & clocks)
+{
+  tchecker::clock_variables_t clockvars;
+
+  // declare reference clocks
+  for (tchecker::clock_id_t id = 0; id < refclocks.refcount(); ++id)
+    clockvars.declare(refclocks.name(id), 1);
+
+  // declare clocks
+  for (auto && [id, name] : clocks.index())
+    clockvars.declare(name, clocks.info(id).size());
+
+  return clockvars;
 }
 
 } // end of namespace tchecker

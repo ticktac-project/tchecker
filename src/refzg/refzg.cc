@@ -157,7 +157,61 @@ void attributes(tchecker::ta::system_t const & system, tchecker::refzg::transiti
   tchecker::ta::attributes(system, t, m);
 }
 
-/* refzg_impl_t */
+/* initialize */
+
+tchecker::state_status_t initialize(tchecker::ta::system_t const & system,
+                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
+                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
+                                    tchecker::intrusive_shared_ptr_t<tchecker::refzg::shared_zone_t> const & zone,
+                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+                                    tchecker::clock_constraint_container_t & invariant, tchecker::integer_t spread,
+                                    std::map<std::string, std::string> const & attributes)
+{
+  // initialize vloc, intval and vedge from ta
+  auto state_status = tchecker::ta::initialize(system, vloc, intval, vedge, invariant, attributes);
+  if (state_status != STATE_OK)
+    return state_status;
+
+  std::shared_ptr<tchecker::reference_clock_variables_t const> const r = zone->reference_clock_variables();
+
+  // initialize zone from attributes["zone"]
+  tchecker::clock_constraint_container_t clk_constraints;
+  try {
+    tchecker::clock_variables_t clock_variables = tchecker::clock_variables(*r, system.clock_variables());
+    tchecker::from_string(clk_constraints, clock_variables, attributes.at("zone"));
+  }
+  catch (...) {
+    return tchecker::STATE_BAD;
+  }
+
+  tchecker::dbm::db_t * rdbm = zone->dbm();
+  std::vector<tchecker::clock_id_t> const & refmap = r->refmap();
+  tchecker::refdbm::universal_positive(rdbm, *r);
+  // NB: do not use constrain(..., clk_constraints) as constraints are expressed over reference clocks
+  // and offset clocks, and not system clocks
+  for (tchecker::clock_constraint_t const & c : clk_constraints) {
+    assert((c.id1() != tchecker::REFCLOCK_ID) || (c.id2() != tchecker::REFCLOCK_ID));
+    tchecker::clock_id_t id1 = (c.id1() == tchecker::REFCLOCK_ID ? refmap[c.id2()] : c.id1());
+    tchecker::clock_id_t id2 = (c.id2() == tchecker::REFCLOCK_ID ? refmap[c.id1()] : c.id2());
+    tchecker::dbm::status_t zone_status = tchecker::refdbm::constrain(rdbm, *r, id1, id2, c.comparator(), c.value());
+    if (zone_status == tchecker::dbm::EMPTY)
+      return tchecker::STATE_BAD;
+  }
+
+  // Apply invariant
+  tchecker::dbm::status_t zone_status = tchecker::refdbm::constrain(rdbm, *r, invariant);
+  if (zone_status == tchecker::dbm::EMPTY)
+    return tchecker::STATE_CLOCKS_SRC_INVARIANT_VIOLATED;
+
+  // Apply spread
+  zone_status = tchecker::refdbm::bound_spread(rdbm, *r, spread);
+  if (zone_status == tchecker::dbm::EMPTY)
+    return tchecker::STATE_CLOCKS_EMPTY_SPREAD;
+
+  return tchecker::STATE_OK;
+}
+
+/* refzg_t */
 
 refzg_t::refzg_t(std::shared_ptr<tchecker::ta::system_t const> const & system, enum tchecker::ts::sharing_type_t sharing_type,
                  std::shared_ptr<tchecker::reference_clock_variables_t const> const & r,
@@ -265,6 +319,23 @@ void refzg_t::prev(tchecker::refzg::const_state_sptr_t const & s, incoming_edges
 void refzg_t::prev(tchecker::refzg::const_state_sptr_t const & s, std::vector<sst_t> & v, tchecker::state_status_t mask)
 {
   tchecker::ts::prev(*this, s, v, mask);
+}
+
+// Builder
+
+void refzg_t::build(std::map<std::string, std::string> const & attributes, std::vector<sst_t> & v,
+                    tchecker::state_status_t mask)
+{
+  tchecker::refzg::state_sptr_t s = _state_allocator.construct();
+  tchecker::refzg::transition_sptr_t t = _transition_allocator.construct();
+  tchecker::state_status_t status = tchecker::refzg::initialize(*_system, *s, *t, _spread, attributes);
+  if (status & mask) {
+    if (_sharing_type == tchecker::ts::SHARING) {
+      share(s);
+      share(t);
+    }
+    v.push_back(std::make_tuple(status, s, t));
+  }
 }
 
 // Inspector

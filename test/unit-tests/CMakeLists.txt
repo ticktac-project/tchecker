@@ -25,6 +25,7 @@ set(TEST_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/test-delay_allowed.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-extract_variables.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-finite-path.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/test-from_string.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-guard_weak_sync.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-hashtable.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-labels.hh

@@ -103,6 +103,7 @@ using intvar_values_range_t = tchecker::range_t<tchecker::integer_iterator_t>;
  \brief Compute range of values of a bounded integer variable
  \param intvar_info : informations on bounded integer variable
  \return a range of values of the bounded integer variable described by intvar_info
+ \throw std::overflow_error : if intvar_info.max() + 1 cannot be represented as an tchecker::integer_t
  */
 tchecker::intvar_values_range_t intvar_values_range(tchecker::intvar_info_t const & intvar_info);
 
@@ -187,15 +188,15 @@ public:
 /*!
  \brief Type of integer variables array
  */
-using intvars_array_t = tchecker::make_array_t<tchecker::integer_t, sizeof(tchecker::integer_t), intval_base_t>;
+using integer_array_t = tchecker::make_array_t<tchecker::integer_t, sizeof(tchecker::integer_t), intval_base_t>;
 
 /*!
- \class intvars_valuation_t
- \brief Valuation of integer variables
+ \class intval_t
+ \brief Valuation of bounded integer variables
  \note NO FIELD SHOULD BE ADDED TO THIS CLASS (either by definition or
  inheritance). See tchecker::make_array_t for details
  */
-class intvars_valuation_t : public tchecker::intvars_array_t {
+class intval_t : public tchecker::integer_array_t {
 public:
   /*!
    \brief Assignment operator
@@ -203,7 +204,7 @@ public:
    \post this is a copy of v
    \return this after assignment
    */
-  tchecker::intvars_valuation_t & operator=(tchecker::intvars_valuation_t const & v) = default;
+  tchecker::intval_t & operator=(tchecker::intval_t const & v) = default;
 
   /*!
    \brief Move assignment operator
@@ -211,33 +212,33 @@ public:
    \post v has been moved to this
    \return this after assignment
    */
-  tchecker::intvars_valuation_t & operator=(tchecker::intvars_valuation_t && v) = default;
+  tchecker::intval_t & operator=(tchecker::intval_t && v) = default;
 
   /*!
    \brief Accessor
    \return Size
    \note Size coincide with capacity for intvars valuations
    */
-  inline constexpr typename tchecker::intvars_valuation_t::capacity_t size() const { return capacity(); }
+  inline constexpr typename tchecker::intval_t::capacity_t size() const { return capacity(); }
 
   /*!
    \brief Construction
-   \param args : arguments to a constructor of intvars_valuation_t
+   \param args : arguments to a constructor of intval_t
    \pre ptr points to an allocated zone of capacity at least
-   allocation_size_t<intvars_valuation_t>::alloc_size(args)
-   \post intvars_valuation_t(args) has been called on ptr
+   allocation_size_t<intval_t>::alloc_size(args)
+   \post intval_t(args) has been called on ptr
    */
-  template <class... ARGS> static inline void construct(void * ptr, ARGS &&... args) { new (ptr) intvars_valuation_t(args...); }
+  template <class... ARGS> static inline void construct(void * ptr, ARGS &&... args) { new (ptr) intval_t(args...); }
 
   /*!
    \brief Destruction
    \param v : intvars valuation
-   \post ~intvars_valuation_t() has been called on v
+   \post ~intval_t() has been called on v
    */
-  static inline void destruct(tchecker::intvars_valuation_t * v)
+  static inline void destruct(tchecker::intval_t * v)
   {
     assert(v != nullptr);
-    v->~intvars_valuation_t();
+    v->~intval_t();
   }
 
 protected:
@@ -246,8 +247,8 @@ protected:
    \param size : intvars valuation size
    \param value : initial value
    */
-  intvars_valuation_t(unsigned short size, tchecker::integer_t value = 0)
-      : intvars_array_t(std::make_tuple(size), std::make_tuple(value))
+  intval_t(unsigned short size, tchecker::integer_t value = 0)
+      : tchecker::integer_array_t(std::make_tuple(size), std::make_tuple(value))
   {
   }
 
@@ -256,92 +257,116 @@ protected:
    \param v : intvars valuation
    \post this is a copy of v
    */
-  intvars_valuation_t(tchecker::intvars_valuation_t const & v) = default;
+  intval_t(tchecker::intval_t const & v) = default;
 
   /*!
    \brief Move constructor
    \param v : intvars valuation
    \post v has been moved to this
    */
-  intvars_valuation_t(tchecker::intvars_valuation_t && v) = default;
+  intval_t(tchecker::intval_t && v) = default;
 
   /*!
    \brief Destructor
    */
-  ~intvars_valuation_t() = default;
+  ~intval_t() = default;
 };
 
 /*!
  \class allocation_size_t
  \brief Specialization of tchecker::allocation_size_t for class
- tchecker::intvars_valuation_t
+ tchecker::intval_t
  */
-template <> class allocation_size_t<tchecker::intvars_valuation_t> {
+template <> class allocation_size_t<tchecker::intval_t> {
 public:
   /*!
    \brief Allocation size
-   \param args : arguments for a constructor of class
-   tchecker::invars_valuation_t
-   \return allocation size for objects of class tchecker::intvars_valuation_t
+   \param args : arguments for a constructor of class tchecker::intval_t
+   \return allocation size for objects of class tchecker::intval_t
    */
   template <class... ARGS> static constexpr std::size_t alloc_size(ARGS &&... args)
   {
-    return tchecker::allocation_size_t<tchecker::intvars_array_t>::alloc_size(args...);
+    return tchecker::allocation_size_t<tchecker::integer_array_t>::alloc_size(args...);
   }
 };
 
 /*!
- \brief Allocate and construct an intvars valuation
- \param size : intvars valuation size
- \param args : arguments to a constructor of tchecker::intvars_valuation_t
- \return an instance of intvars_valuation_t of size values constructed
- from args
+ \brief Allocate and construct a bounded integer variables valuation
+ \param size : size of bounded integer variables valuation
+ \param args : arguments to a constructor of tchecker::intval_t
+ \return an instance of intval_t of size values constructed from args
  */
-template <class... ARGS>
-tchecker::intvars_valuation_t * intvars_valuation_allocate_and_construct(unsigned short size, ARGS &&... args)
+template <class... ARGS> tchecker::intval_t * intval_allocate_and_construct(unsigned short size, ARGS &&... args)
 {
-  char * ptr = new char[tchecker::allocation_size_t<tchecker::intvars_valuation_t>::alloc_size(size)];
+  char * ptr = new char[tchecker::allocation_size_t<tchecker::intval_t>::alloc_size(size)];
 
-  tchecker::intvars_valuation_t::construct(ptr, args...);
+  tchecker::intval_t::construct(ptr, args...);
 
-  return reinterpret_cast<tchecker::intvars_valuation_t *>(ptr);
+  return reinterpret_cast<tchecker::intval_t *>(ptr);
 }
 
 /*!
- \brief Destruct and deallocate an intvars valuation
- \param v : intvars valuation
- \pre v has been returned by intvars_valuation_allocate_and_construct
+ \brief Destruct and deallocate a bounded integer variables valuation
+ \param v : bounded integer variables valuation
+ \pre v has been returned by intval_allocate_and_construct
  \post v has been destructed and deallocated
  */
-void intvars_valuation_destruct_and_deallocate(tchecker::intvars_valuation_t * v);
+void intval_destruct_and_deallocate(tchecker::intval_t * v);
 
 /*!
- \brief Output integer variables valuation
+ \brief Output bounded integer variables valuation
  \param os : output stream
- \param intvars_val : integer variables valuation
+ \param intval : bounded integer variables valuation
  \param index : an index of integer variables
- \post intvars_val has been output to os with variable names from index
+ \pre index is an index of variables in intval
+ \post intval has been output to os with variable names from index
  \return os after output
  */
-std::ostream & output(std::ostream & os, tchecker::intvars_valuation_t const & intvars_val,
-                      tchecker::intvar_index_t const & index);
+std::ostream & output(std::ostream & os, tchecker::intval_t const & intval, tchecker::intvar_index_t const & index);
 
 /*!
- \brief Write integer variables valuation to string
- \param intvars_val : integer variables valuation
+ \brief Convert bounded integer variables valuation to string
+ \param intval : ounded integer variables valuation
  \param index : an index of integer variables
- \return An std::string representation of intvars_val using variable names from index
+ \pre index is an index of variables in intval
+ \return An std::string representation of intvval using variable names from index
  */
-std::string to_string(tchecker::intvars_valuation_t const & intvars_val, tchecker::intvar_index_t const & index);
+std::string to_string(tchecker::intval_t const & intval, tchecker::intvar_index_t const & index);
 
 /*!
- \brief Lexical ordering on integer valuations
- \param intvars_val1 : first integer variable valuation
- \param intvars_val2 : second integer variable valuation
- \return 0 if intvars_val1 and intvars_val2 are equal, a negative value if intvars_val1 is smaller than intvars_val2 w.r.t.
+ \brief Initialize a bounded integer variables valuation from a string
+ \param intval : ounded integer variables valuation
+ \param variables : flat bounded integer variables
+ \param str : a string
+ \pre str is a comma-separated list assignments.
+ The lhs of each assignment is the name of a flattened bounded integer variable in variables
+ The rhs of each assignment is an integer that can be represented as tchecker::integer_t
+ The value assigned to each variable fits within the domain of the variable according to variables
+ The list contains one assignment for each flattened bounded integer variables in variables
+ \post the values in intval have been updated according to str
+ \throw std::invalid_argument : if str is not syntactically correct,
+ or if str does not match the precondition
+ */
+void from_string(tchecker::intval_t & intval, tchecker::flat_integer_variables_t const & variables, std::string const & str);
+
+/*!
+ \brief Lexical ordering on bounded integer variables valuations
+ \param intval1 : first valuation
+ \param intval2 : second valuation
+ \return 0 if intval1 and intval2 are equal, a negative value if intval1 is smaller than intval2 w.r.t.
  lexical ordering, and a positive value otherwise.
  */
-int lexical_cmp(tchecker::intvars_valuation_t const & intvars_val1, tchecker::intvars_valuation_t const & intvars_val2);
+int lexical_cmp(tchecker::intval_t const & intval1, tchecker::intval_t const & intval2);
+
+/*!
+ \brief Type of shared integer variables valuation
+ */
+using shared_intval_t = tchecker::make_shared_t<tchecker::intval_t>;
+
+/*!
+ \brief Type of shared pointer to integer variables valuation
+*/
+using intval_sptr_t = tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t>;
 
 } // end of namespace tchecker
 

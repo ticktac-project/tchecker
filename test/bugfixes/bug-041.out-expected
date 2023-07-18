@@ -7,10 +7,10 @@ COVREAH output
 // VISITED_STATES 4
 // VISITED_TRANSITIONS 4
 digraph fischer_async_2_10 {
-  0 [initial="true", intval="id1=0,id2=0", labels="", vloc="<A,A,l,l>", zone="(0<=x1 & 0<=x2)"]
-  1 [intval="id1=0,id2=0", labels="", vloc="<A,req,l,l>", zone="(0<=x1 & 0<=x2)"]
-  2 [intval="id1=0,id2=0", labels="", vloc="<req,A,l,l>", zone="(0<=x1 & 0<=x2)"]
-  3 [intval="id1=0,id2=0", labels="", vloc="<req,req,l,l>", zone="(0<=x1 & 0<=x2)"]
+  0 [initial="true", intval="id1=0,id2=0", labels="", vloc="<A,A,l,l>", zone="(0<=x1 && 0<=x2)"]
+  1 [intval="id1=0,id2=0", labels="", vloc="<A,req,l,l>", zone="(0<=x1 && 0<=x2)"]
+  2 [intval="id1=0,id2=0", labels="", vloc="<req,A,l,l>", zone="(0<=x1 && 0<=x2)"]
+  3 [intval="id1=0,id2=0", labels="", vloc="<req,req,l,l>", zone="(0<=x1 && 0<=x2)"]
   0 -> 1 [edge_type="actual", vedge="<P2@id_is_0,ID2@id_is_0>"]
   0 -> 2 [edge_type="actual", vedge="<P1@id_is_0,ID1@id_is_0>"]
   1 -> 3 [edge_type="subsumption", vedge="<P1@id_is_0,ID1@id_is_0>"]
@@ -23,10 +23,10 @@ EXPLORE output
 // VISITED_STATES 4
 // VISITED_TRANSITIONS 4
 digraph fischer_async_2_10 {
-  0 [initial="true", intval="id1=0,id2=0", labels="", vloc="<A,A,l,l>", zone="(0<=x1 & 0<=x2)"]
-  1 [intval="id1=0,id2=0", labels="", vloc="<A,req,l,l>", zone="(0<=x1 & 0<=x2)"]
-  2 [intval="id1=0,id2=0", labels="", vloc="<req,A,l,l>", zone="(0<=x1 & 0<=x2)"]
-  3 [intval="id1=0,id2=0", labels="", vloc="<req,req,l,l>", zone="(0<=x1 & 0<=x2)"]
+  0 [initial="true", intval="id1=0,id2=0", labels="", vloc="<A,A,l,l>", zone="(0<=x1 && 0<=x2)"]
+  1 [intval="id1=0,id2=0", labels="", vloc="<A,req,l,l>", zone="(0<=x1 && 0<=x2)"]
+  2 [intval="id1=0,id2=0", labels="", vloc="<req,A,l,l>", zone="(0<=x1 && 0<=x2)"]
+  3 [intval="id1=0,id2=0", labels="", vloc="<req,req,l,l>", zone="(0<=x1 && 0<=x2)"]
   0 -> 1 [vedge="<P2@id_is_0,ID2@id_is_0>"]
   0 -> 2 [vedge="<P1@id_is_0,ID1@id_is_0>"]
   1 -> 3 [vedge="<P1@id_is_0,ID1@id_is_0>"]

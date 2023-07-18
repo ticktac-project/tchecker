@@ -5,10 +5,13 @@
  *
  */
 
+#include <ostream>
+#include <regex>
 #include <sstream>
 
 #include "tchecker/syncprod/vloc.hh"
 #include "tchecker/utils/ordering.hh"
+#include "tchecker/utils/string.hh"
 
 namespace tchecker {
 
@@ -38,6 +41,33 @@ std::string to_string(tchecker::vloc_t const & vloc, tchecker::system::system_t 
   std::stringstream sstream;
   tchecker::output(sstream, vloc, system);
   return sstream.str();
+}
+
+void from_string(tchecker::vloc_t & vloc, tchecker::system::system_t const & system, std::string const & str)
+{
+  // Matches text of the form: <ID,ID,...,ID> where ID is a alphanum
+  const std::regex vloc_regex("<[a-zA-Z_][a-zA-Z0-9_.]*(,[a-zA-Z_][a-zA-Z0-9_.]*)*>");
+  if (!std::regex_match(str, vloc_regex))
+    throw std::invalid_argument("tchecker::from_string: syntax error, str should be of the form <l0,l1,...,l2>");
+
+  // Get the list of location names in str
+  std::vector<std::string> location_names = tchecker::split(str.substr(1, str.size() - 2), ',');
+
+  // Initialize vloc from the list of location names
+  if (location_names.size() != vloc.capacity())
+    throw std::invalid_argument("tchecker::from_string: expecting " + std::to_string(vloc.capacity()) +
+                                " location(s) but got " + std::to_string(location_names.size()) + " in " + str);
+
+  for (tchecker::process_id_t pid = 0; pid < vloc.capacity(); ++pid) {
+    try {
+      tchecker::system::loc_const_shared_ptr_t loc = system.location(pid, location_names[pid]);
+      vloc[pid] = loc->id();
+    }
+    catch (std::invalid_argument & e) {
+      throw std::invalid_argument("tchecker::from_string: unknown location " + location_names[pid] + " in process " +
+                                  system.process_name(pid));
+    }
+  }
 }
 
 int lexical_cmp(tchecker::vloc_t const & vloc1, tchecker::vloc_t const & vloc2)

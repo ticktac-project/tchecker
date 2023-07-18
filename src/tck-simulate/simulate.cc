@@ -44,8 +44,9 @@ static std::size_t randomized_select(std::vector<tchecker::zg::zg_t::sst_t> cons
   return std::rand() % v.size();
 }
 
-std::shared_ptr<tchecker::tck_simulate::graph_t> randomized_simulation(tchecker::parsing::system_declaration_t const & sysdecl,
-                                                                       std::size_t nsteps)
+std::shared_ptr<tchecker::tck_simulate::graph_t>
+randomized_simulation(tchecker::parsing::system_declaration_t const & sysdecl, std::size_t nsteps,
+                      std::map<std::string, std::string> const & starting_state_attributes)
 {
   std::size_t const block_size = 1000;
   std::size_t const table_size = 65536;
@@ -59,7 +60,11 @@ std::shared_ptr<tchecker::tck_simulate::graph_t> randomized_simulation(tchecker:
 
   srand(time(NULL));
 
-  zg->initial(v);
+  if (starting_state_attributes.empty()) // start simulation from initial state
+    zg->initial(v);
+  else // start simulation from specified starting state
+    zg->build(starting_state_attributes, v);
+
   std::size_t k = tchecker::tck_simulate::randomized_select(v);
   if (k == tchecker::tck_simulate::NO_SELECTION)
     return g;
@@ -134,7 +139,8 @@ static std::size_t interactive_select(tchecker::tck_simulate::display_t & displa
 
 std::shared_ptr<tchecker::tck_simulate::graph_t>
 interactive_simulation(tchecker::parsing::system_declaration_t const & sysdecl,
-                       enum tchecker::tck_simulate::display_type_t display_type)
+                       enum tchecker::tck_simulate::display_type_t display_type,
+                       std::map<std::string, std::string> const & starting_state_attributes)
 {
   std::size_t const block_size = 1000;
   std::size_t const table_size = 65536;
@@ -151,11 +157,23 @@ interactive_simulation(tchecker::parsing::system_declaration_t const & sysdecl,
 
   srand(time(NULL)); // needed if user chooses randomize selection
 
-  zg->initial(v);
-  std::size_t k = tchecker::tck_simulate::interactive_select(*display, tchecker::zg::const_state_sptr_t{nullptr}, v);
+  tchecker::tck_simulate::graph_t::node_sptr_t previous_node{nullptr};
+  std::size_t k = tchecker::tck_simulate::NO_SELECTION;
+
+  if (starting_state_attributes.empty()) {
+    // start simulation from initial states (interactive selection)
+    zg->initial(v);
+    k = tchecker::tck_simulate::interactive_select(*display, tchecker::zg::const_state_sptr_t{nullptr}, v);
+  }
+  else {
+    // start simulation from specified state
+    zg->build(starting_state_attributes, v);
+    assert(v.size() <= 1);
+    k = (v.size() == 0 ? tchecker::tck_simulate::NO_SELECTION : 0); // select state if any
+  }
   if (k == tchecker::tck_simulate::NO_SELECTION)
     return g;
-  tchecker::tck_simulate::graph_t::node_sptr_t previous_node = g->add_node(zg->state(v[k]));
+  previous_node = g->add_node(zg->state(v[k]));
   previous_node->initial(true);
   v.clear();
 
@@ -173,6 +191,48 @@ interactive_simulation(tchecker::parsing::system_declaration_t const & sysdecl,
   } while (1);
 
   return g;
+}
+
+// One-step simulation
+
+void onestep_simulation(tchecker::parsing::system_declaration_t const & sysdecl,
+                        enum tchecker::tck_simulate::display_type_t display_type,
+                        std::map<std::string, std::string> const & starting_state_attributes)
+{
+  std::size_t const block_size = 1000;
+  std::size_t const table_size = 65536;
+
+  std::shared_ptr<tchecker::ta::system_t const> system{new tchecker::ta::system_t{sysdecl}};
+  std::shared_ptr<tchecker::zg::zg_t> zg{tchecker::zg::factory(system, tchecker::ts::NO_SHARING,
+                                                               tchecker::zg::STANDARD_SEMANTICS, tchecker::zg::NO_EXTRAPOLATION,
+                                                               block_size, table_size)};
+  std::vector<tchecker::zg::zg_t::sst_t> v;
+
+  std::unique_ptr<tchecker::tck_simulate::display_t> display{
+      tchecker::tck_simulate::display_factory(display_type, std::cout, zg)};
+
+  if (starting_state_attributes.empty()) {
+    // start simulation from initial states (interactive selection)
+    zg->initial(v);
+    display->output_initial(v);
+    v.clear();
+  }
+  else {
+    // start simulation from specified state
+    zg->build(starting_state_attributes, v);
+    assert(v.size() <= 1);
+    if (v.size() == 0) {
+      std::cerr << "No valid state to start simulation" << std::endl;
+      return;
+    }
+    tchecker::zg::const_state_sptr_t s{zg->state(v[0])};
+    v.clear();
+
+    // get next states
+    zg->next(s, v);
+    display->output_next(s, v);
+    v.clear();
+  }
 }
 
 } // namespace tck_simulate

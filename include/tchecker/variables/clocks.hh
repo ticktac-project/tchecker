@@ -78,10 +78,8 @@ using flat_clock_variables_t =
  \brief Clock constraint
  \note Represents a constraint x_i - x_j # k  where i and j are IDs of clock
  variables, # is either < or <=, and k is an integer.
- A constraint is diagonal if both i and j are distinct from tchecker::REFCLOCK_ID.
- If one of i and j is equal to tchecker::REFCLOCK_ID, the constraint is simple.
- Hence, x_i - x_j # k with j = tchecker::REFCLOCK_ID encodes the constraint x_i # k.
- And similarly, the constraints encodes -x_j # k when i = tchecker::REFCLOCK_ID.
+ x_i or x_j shall be set to tchecker::REFCLOCK_ID to encode a constraint involving
+ one clock (e.g. x <= 2 is represented as x - tchecker::REFCLOCK_ID <= 2)
  */
 class clock_constraint_t {
 public:
@@ -171,20 +169,6 @@ public:
    */
   inline constexpr tchecker::integer_t & value() { return _value; }
 
-  /*!
-   \brief Accessor
-   \return true if this is a diagonal constraint, false otherwise
-   \note diagonal() is equivalent to !simple()
-   */
-  inline constexpr bool diagonal() const { return ((_id1 != tchecker::REFCLOCK_ID) && (_id2 != tchecker::REFCLOCK_ID)); }
-
-  /*!
-   \brief Accessor
-   \return true if this is a simple constraint, false otherwise
-   \note simple() is equivalent to !diagonal()
-   */
-  inline constexpr bool simple() const { return ((_id1 == tchecker::REFCLOCK_ID) || (_id2 == tchecker::REFCLOCK_ID)); }
-
 protected:
   friend std::ostream & operator<<(std::ostream & os, tchecker::clock_constraint_t const & c);
 
@@ -262,7 +246,7 @@ std::ostream & output_clock_constraints(std::ostream & os, tchecker::range_t<CLK
   auto begin = range.begin(), end = range.end();
   for (auto it = begin; it != end; ++it) {
     if (it != begin)
-      os << " & ";
+      os << " && ";
     tchecker::output(os, *it, index);
   }
   return os;
@@ -303,6 +287,21 @@ int lexical_cmp(tchecker::clock_constraint_container_t const & c1, tchecker::clo
  \return a string representation of c using index
 */
 std::string to_string(tchecker::clock_constraint_container_t const & c, tchecker::clock_index_t const & index);
+
+/*!
+ \brief Conversion from string
+ \param c : clock constraint container
+ \param clocks : clock variables
+ \param str : string
+ \pre str is a conjunction of clock constraints
+ clock constraints in str are syntactically valid w.r.t. TChecker clock expressions
+ all clocks appearing in str are declared in locks
+ no other variable appear in str
+ \post clock constraints from str have been added to c
+ \throw std::invalid_argument : if str does not match the predcondition
+*/
+void from_string(tchecker::clock_constraint_container_t & c, tchecker::clock_variables_t const & clocks,
+                 std::string const & str);
 
 /*!
  \class clock_reset_t
@@ -534,6 +533,7 @@ std::string to_string(tchecker::clock_reset_container_t const & c, tchecker::clo
  \param cc : clock constraint container
  \post the constraints (x - y <= c) && (y - x <= -c) corresponding to reset r
  as x := y + c have been added to cc
+ \throw std::overflow_error : if -c cannot be represented as a tchecker::integer_t
 */
 void clock_reset_to_constraints(tchecker::clock_reset_t const & r, tchecker::clock_constraint_container_t & cc);
 
@@ -744,6 +744,18 @@ tchecker::reference_clock_variables_t single_reference_clocks(tchecker::flat_clo
 tchecker::reference_clock_variables_t process_reference_clocks(tchecker::variable_access_map_t const & vaccess_map,
                                                                tchecker::flat_clock_variables_t const & flat_clocks,
                                                                tchecker::process_id_t proc_count);
+
+/* translation of reference clocks to clock variables */
+
+/*!
+ \brief Build clock variables from reference clocks and clock variables
+ \param refclocks : reference clocks
+ \param clocks : clock variables
+ \return clock variables with all reference clocks from refclocks first, then all clocks from
+ clocks
+*/
+tchecker::clock_variables_t clock_variables(tchecker::reference_clock_variables_t const & refclocks,
+                                            tchecker::clock_variables_t const & clocks);
 
 } // end of namespace tchecker
 

@@ -98,7 +98,7 @@ void locs_t::add_locations(tchecker::system::locs_t const & locs)
     add_location(loc->pid(), loc->name(), loc->attributes());
 }
 
-tchecker::system::loc_const_shared_ptr_t locs_t::location(tchecker::process_id_t pid, std::string const & name)
+tchecker::system::loc_const_shared_ptr_t locs_t::location(tchecker::process_id_t pid, std::string const & name) const
 {
   if (pid >= _locs_index.size())
     throw std::invalid_argument("Unknow pid, cannot find location");

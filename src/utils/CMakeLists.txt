@@ -6,6 +6,7 @@ set(UTILS_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/hashtable.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/iterator.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/log.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/string.cc
     ${TCHECKER_INCLUDE_DIR}/tchecker/utils/allocation_size.hh
     ${TCHECKER_INCLUDE_DIR}/tchecker/utils/array.hh
     ${TCHECKER_INCLUDE_DIR}/tchecker/utils/cache.hh
@@ -18,4 +19,5 @@ set(UTILS_SRC
     ${TCHECKER_INCLUDE_DIR}/tchecker/utils/shared_objects.hh
     ${TCHECKER_INCLUDE_DIR}/tchecker/utils/singleton_pool.hh
     ${TCHECKER_INCLUDE_DIR}/tchecker/utils/spinlock.hh
+    ${TCHECKER_INCLUDE_DIR}/tchecker/utils/string.hh
     PARENT_SCOPE)

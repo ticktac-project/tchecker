@@ -422,6 +422,24 @@ void attributes(tchecker::syncprod::system_t const & system, tchecker::syncprod:
   m["vedge"] = tchecker::to_string(t.vedge(), system.as_system_system());
 }
 
+/* initialize */
+
+tchecker::state_status_t initialize(tchecker::syncprod::system_t const & system,
+                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
+                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+                                    std::map<std::string, std::string> const & attributes)
+{
+  try {
+    tchecker::from_string(*vloc, system.as_system_system(), attributes.at("vloc"));
+    for (tchecker::process_id_t pid = 0; pid < system.processes_count(); ++pid)
+      (*vedge)[pid] = tchecker::NO_EDGE;
+    return tchecker::STATE_OK;
+  }
+  catch (...) {
+    return tchecker::STATE_BAD;
+  }
+}
+
 /* syncprod_t */
 
 syncprod_t::syncprod_t(std::shared_ptr<tchecker::syncprod::system_t const> const & system,
@@ -528,6 +546,23 @@ void syncprod_t::prev(tchecker::syncprod::const_state_sptr_t const & s, incoming
 void syncprod_t::prev(tchecker::syncprod::const_state_sptr_t const & s, std::vector<sst_t> & v, tchecker::state_status_t mask)
 {
   tchecker::ts::prev(*this, s, v, mask);
+}
+
+// Builder
+
+void syncprod_t::build(std::map<std::string, std::string> const & attributes, std::vector<sst_t> & v,
+                       tchecker::state_status_t mask)
+{
+  tchecker::syncprod::state_sptr_t s = _state_allocator.construct();
+  tchecker::syncprod::transition_sptr_t t = _transition_allocator.construct();
+  tchecker::state_status_t status = tchecker::syncprod::initialize(*_system, *s, *t, attributes);
+  if (status & mask) {
+    if (_sharing_type == tchecker::ts::SHARING) {
+      share(s);
+      share(t);
+    }
+    v.push_back(std::make_tuple(status, s, t));
+  }
 }
 
 // Inspector

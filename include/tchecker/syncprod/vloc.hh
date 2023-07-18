@@ -166,6 +166,20 @@ std::ostream & output(std::ostream & os, tchecker::vloc_t const & vloc, tchecker
 std::string to_string(tchecker::vloc_t const & vloc, tchecker::system::system_t const & system);
 
 /*!
+ \brief Initialize a vector of locations from a string
+ \param vloc : vector of locations
+ \param system : a system
+ \param str : a string
+ \pre str is a comma-separated list of location names, starting with < and ending with >
+ str contains exactly one location for each process in system
+ \post the locations in vloc have been updated according to str
+ \throw std::invalid_argument : if str is not syntactically correct,
+ or if str does not contain exactly one location per process,
+ or if one of the location does not belong to the corresponding process,
+ */
+void from_string(tchecker::vloc_t & vloc, tchecker::system::system_t const & system, std::string const & str);
+
+/*!
  \brief Lexical ordering
  \param vloc1 : first tuple of locations
  \param vloc2 : second tuple of locations
