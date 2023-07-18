@@ -157,15 +157,23 @@ interactive_simulation(tchecker::parsing::system_declaration_t const & sysdecl,
 
   srand(time(NULL)); // needed if user chooses randomize selection
 
-  if (starting_state_attributes.empty()) // start simulation from initial states
-    zg->initial(v);
-  else // start simulation from specified states
-    zg->build(starting_state_attributes, v);
+  tchecker::tck_simulate::graph_t::node_sptr_t previous_node{nullptr};
+  std::size_t k = tchecker::tck_simulate::NO_SELECTION;
 
-  std::size_t k = tchecker::tck_simulate::interactive_select(*display, tchecker::zg::const_state_sptr_t{nullptr}, v);
+  if (starting_state_attributes.empty()) {
+    // start simulation from initial states (interactive selection)
+    zg->initial(v);
+    k = tchecker::tck_simulate::interactive_select(*display, tchecker::zg::const_state_sptr_t{nullptr}, v);
+  }
+  else {
+    // start simulation from specified states
+    zg->build(starting_state_attributes, v);
+    assert(v.size() <= 1);
+    k = (v.size() == 0 ? tchecker::tck_simulate::NO_SELECTION : 0); // select state if any
+  }
   if (k == tchecker::tck_simulate::NO_SELECTION)
     return g;
-  tchecker::tck_simulate::graph_t::node_sptr_t previous_node = g->add_node(zg->state(v[k]));
+  previous_node = g->add_node(zg->state(v[k]));
   previous_node->initial(true);
   v.clear();
 
