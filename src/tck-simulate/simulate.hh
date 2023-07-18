@@ -52,6 +52,18 @@ interactive_simulation(tchecker::parsing::system_declaration_t const & sysdecl,
                        enum tchecker::tck_simulate::display_type_t display_type,
                        std::map<std::string, std::string> const & starting_state_attributes);
 
+/*!
+ \brief One-step simulation of timed automata
+ \param sysdecl : system declaration
+ \param display_type : type of display
+ \param starting_state_attributes : attributes of simulation starting state
+ \return the simulation tree built from interactive of the system of timed processes sysdecl
+ \note simulation starts from the initial state of sysdecl if starting_state_attributes is empty
+*/
+void onestep_simulation(tchecker::parsing::system_declaration_t const & sysdecl,
+                        enum tchecker::tck_simulate::display_type_t display_type,
+                        std::map<std::string, std::string> const & starting_state_attributes);
+
 } // namespace tck_simulate
 
 } // namespace tchecker

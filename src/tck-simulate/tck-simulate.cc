@@ -24,12 +24,12 @@
  \brief Command-line simulator for TChecker timed automata models
  */
 
-static struct option long_options[] = {{"interactive", no_argument, 0, 'i'},  {"json", no_argument, 0, 0},
-                                       {"random", required_argument, 0, 'r'}, {"output", required_argument, 0, 'o'},
-                                       {"state", required_argument, 0, 's'},  {"trace", no_argument, 0, 't'},
-                                       {"help", no_argument, 0, 'h'},         {0, 0, 0, 0}};
+static struct option long_options[] = {
+    {"interactive", no_argument, 0, 'i'}, {"json", no_argument, 0, 0},           {"random", required_argument, 0, 'r'},
+    {"onestep", no_argument, 0, '1'},     {"output", required_argument, 0, 'o'}, {"state", required_argument, 0, 's'},
+    {"trace", no_argument, 0, 't'},       {"help", no_argument, 0, 'h'},         {0, 0, 0, 0}};
 
-static char * const options = (char *)"ir:ho:s:t";
+static char * const options = (char *)"1ir:ho:s:t";
 
 /*!
 \brief Print usage message for program progname
@@ -37,7 +37,8 @@ static char * const options = (char *)"ir:ho:s:t";
 void usage(char * progname)
 {
   std::cerr << "Usage: " << progname << " [options] [file]" << std::endl;
-  std::cerr << "   -i          interactive simulation" << std::endl;
+  std::cerr << "   -1          one-step simulation (output initial or next states if combined with -s)" << std::endl;
+  std::cerr << "   -i          interactive simulation (default)" << std::endl;
   std::cerr << "   --json      display states/transitions in JSON format" << std::endl;
   std::cerr << "   -r N        randomized simulation, N steps" << std::endl;
   std::cerr << "   -o file     output file for simulation trace" << std::endl;
@@ -45,14 +46,22 @@ void usage(char * progname)
   std::cerr << "               vloc: comma-separated list of location names (one per process), in-between < and >" << std::endl;
   std::cerr << "               intval: comma-separated list of assignments (one per integer variable)" << std::endl;
   std::cerr << "               zone: conjunction of clock-constraints (following TChecker expression syntax)" << std::endl;
-  std::cerr << "   -t          output simulation trace (default: stdout)" << std::endl;
+  std::cerr << "   -t          output simulation trace (default: stdout), incompatible with -1" << std::endl;
   std::cerr << "   -h          help" << std::endl;
   std::cerr << "reads from standard input if file is not provided" << std::endl;
 }
 
-static bool interactive_simulation = false;
+/*!
+ \brief Type of simulation
+*/
+enum simulation_type_t {
+  INTERACTIVE_SIMULATION, /*!< Interactive simulation */
+  ONESTEP_SIMULATION,     /*!< One-step simulation */
+  RANDOMIZED_SIMULATION,  /*!< Randomized simulation */
+};
+
+static enum simulation_type_t simulation_type = INTERACTIVE_SIMULATION;
 static enum tchecker::tck_simulate::display_type_t display_type = tchecker::tck_simulate::HUMAN_READABLE_DISPLAY;
-static bool randomized_simulation = false;
 static bool help = false;
 static std::size_t nsteps = 0;
 static std::string output_filename = "";
@@ -80,11 +89,14 @@ int parse_command_line(int argc, char * argv[])
       throw std::runtime_error("Unknown command-line option");
     else if (c != 0) {
       switch (c) {
+      case '1':
+        simulation_type = ONESTEP_SIMULATION;
+        break;
       case 'i':
-        interactive_simulation = true;
+        simulation_type = INTERACTIVE_SIMULATION;
         break;
       case 'r': {
-        randomized_simulation = true;
+        simulation_type = RANDOMIZED_SIMULATION;
         long long int l = std::strtoll(optarg, nullptr, 10);
         if (l < 0)
           throw std::runtime_error("Invalid trace length (must be positive)");
@@ -198,8 +210,8 @@ int main(int argc, char * argv[])
       return EXIT_SUCCESS;
     }
 
-    if (randomized_simulation && interactive_simulation) {
-      std::cerr << "Interactive and randomized simulations are mutually exclusive" << std::endl;
+    if (output_trace && (simulation_type == ONESTEP_SIMULATION)) {
+      std::cerr << "Cannot output trace in one-step simulation" << std::endl;
       return EXIT_FAILURE;
     }
 
@@ -218,12 +230,14 @@ int main(int argc, char * argv[])
       starting_state_attributes = parse_state_json(starting_state_json);
 
     std::shared_ptr<tchecker::tck_simulate::graph_t> g{nullptr};
-    if (interactive_simulation)
+    if (simulation_type == INTERACTIVE_SIMULATION)
       g = tchecker::tck_simulate::interactive_simulation(*sysdecl, display_type, starting_state_attributes);
-    else if (randomized_simulation)
+    else if (simulation_type == RANDOMIZED_SIMULATION)
       g = tchecker::tck_simulate::randomized_simulation(*sysdecl, nsteps, starting_state_attributes);
+    else if (simulation_type == ONESTEP_SIMULATION)
+      tchecker::tck_simulate::onestep_simulation(*sysdecl, display_type, starting_state_attributes);
     else
-      throw std::runtime_error("Select one of interactive or randomized simulation");
+      throw std::runtime_error("Select one of interactive, one-step or randomized simulation");
 
     if (output_trace)
       tchecker::tck_simulate::dot_output(*os, *g, sysdecl->name());
