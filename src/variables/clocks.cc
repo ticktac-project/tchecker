@@ -269,6 +269,9 @@ private:
 void from_string(tchecker::clock_constraint_container_t & c, tchecker::clock_variables_t const & clocks,
                  std::string const & str)
 {
+  if (str == "")
+    return;
+
   // parse str as a typed expression
   std::unique_ptr<tchecker::expression_t> expr{tchecker::parsing::parse_expression("", str)};
   if (expr.get() == nullptr)
