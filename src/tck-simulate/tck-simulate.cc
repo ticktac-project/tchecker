@@ -13,6 +13,8 @@
 #include <memory>
 #include <string>
 
+#include <boost/json.hpp>
+
 #include "simulate.hh"
 #include "tchecker/parsing/parsing.hh"
 #include "tchecker/utils/log.hh"
@@ -22,15 +24,12 @@
  \brief Command-line simulator for TChecker timed automata models
  */
 
-static struct option long_options[] = {{"interactive", no_argument, 0, 'i'},
-                                       {"json", no_argument, 0, 0},
-                                       {"random", required_argument, 0, 'r'},
-                                       {"output", required_argument, 0, 'o'},
-                                       {"trace", no_argument, 0, 't'},
-                                       {"help", no_argument, 0, 'h'},
-                                       {0, 0, 0, 0}};
+static struct option long_options[] = {{"interactive", no_argument, 0, 'i'},  {"json", no_argument, 0, 0},
+                                       {"random", required_argument, 0, 'r'}, {"output", required_argument, 0, 'o'},
+                                       {"state", required_argument, 0, 's'},  {"trace", no_argument, 0, 't'},
+                                       {"help", no_argument, 0, 'h'},         {0, 0, 0, 0}};
 
-static char * const options = (char *)"ir:ho:t";
+static char * const options = (char *)"ir:ho:s:t";
 
 /*!
 \brief Print usage message for program progname
@@ -42,14 +41,14 @@ void usage(char * progname)
   std::cerr << "   --json      display states/transitions in JSON format" << std::endl;
   std::cerr << "   -r N        randomized simulation, N steps" << std::endl;
   std::cerr << "   -o file     output file for simulation trace" << std::endl;
+  std::cerr << "   -s state    starting state, specified as a JSON object with keys vloc, intval and zone" << std::endl;
+  std::cerr << "               vloc: comma-separated list of location names (one per process), in-between < and >" << std::endl;
+  std::cerr << "               intval: comma-separated list of assignments (one per integer variable)" << std::endl;
+  std::cerr << "               zone: conjunction of clock-constraints (following TChecker expression syntax)" << std::endl;
   std::cerr << "   -t          output simulation trace (default: stdout)" << std::endl;
   std::cerr << "   -h          help" << std::endl;
   std::cerr << "reads from standard input if file is not provided" << std::endl;
 }
-
-/*!
- \brief Type of dysplay
-*/
 
 static bool interactive_simulation = false;
 static enum tchecker::tck_simulate::display_type_t display_type = tchecker::tck_simulate::HUMAN_READABLE_DISPLAY;
@@ -57,6 +56,7 @@ static bool randomized_simulation = false;
 static bool help = false;
 static std::size_t nsteps = 0;
 static std::string output_filename = "";
+static std::string starting_state_json = "";
 static bool output_trace = false;
 
 /*!
@@ -91,6 +91,9 @@ int parse_command_line(int argc, char * argv[])
         nsteps = l;
         break;
       }
+      case 's':
+        starting_state_json = optarg;
+        break;
       case 't':
         output_trace = true;
         break;
@@ -140,6 +143,41 @@ std::shared_ptr<tchecker::parsing::system_declaration_t> load_system(std::string
 }
 
 /*!
+ \brief Parse JSON description of state as a map of attributes
+ \param state_json : JSON description of state
+ \pre state_json is a JSON object with keys: vloc, intval and zone
+ \note all other keys in state_json are ignored
+ \return state_json vloc, intval and zone as a map of attributes
+ \throw std::invalid_argument : if state_json cannot be parsed, or if the precondition is not
+ satisfied
+*/
+std::map<std::string, std::string> parse_state_json(std::string const & state_json)
+{
+  boost::json::error_code ec;
+  boost::json::value json_value = boost::json::parse(state_json, ec);
+  if (ec)
+    throw std::invalid_argument("Syntax error in JSON state description: " + state_json);
+
+  if (json_value.kind() != boost::json::kind::object)
+    throw std::invalid_argument("State description is not a JSON object: " + state_json);
+
+  boost::json::object const & json_obj = json_value.get_object();
+
+  auto value_as_string = [&](boost::json::object const & obj, std::string const & key) {
+    boost::json::value const & v = obj.at(key);
+    if (v.kind() != boost::json::kind::string)
+      throw std::invalid_argument("Unexpected value for key " + key + ", expecting a string");
+    return v.get_string();
+  };
+
+  std::map<std::string, std::string> attributes;
+  attributes["vloc"] = value_as_string(json_obj, "vloc");
+  attributes["intval"] = value_as_string(json_obj, "intval");
+  attributes["zone"] = value_as_string(json_obj, "zone");
+  return attributes;
+}
+
+/*!
  \brief Main function
 */
 int main(int argc, char * argv[])
@@ -175,11 +213,15 @@ int main(int argc, char * argv[])
     if (output_filename != "")
       os = new std::ofstream(output_filename, std::ios::out);
 
+    std::map<std::string, std::string> starting_state_attributes;
+    if (starting_state_json != "")
+      starting_state_attributes = parse_state_json(starting_state_json);
+
     std::shared_ptr<tchecker::tck_simulate::graph_t> g{nullptr};
     if (interactive_simulation)
-      g = tchecker::tck_simulate::interactive_simulation(*sysdecl, display_type);
+      g = tchecker::tck_simulate::interactive_simulation(*sysdecl, display_type, starting_state_attributes);
     else if (randomized_simulation)
-      g = tchecker::tck_simulate::randomized_simulation(*sysdecl, nsteps);
+      g = tchecker::tck_simulate::randomized_simulation(*sysdecl, nsteps, starting_state_attributes);
     else
       throw std::runtime_error("Select one of interactive or randomized simulation");
 
