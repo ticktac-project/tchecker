@@ -17,7 +17,7 @@ jobs:
   build-and-test:
     strategy:
       matrix:
-        os: [ubuntu-lunar, macos-latest]
+        os: [ubuntu-latest, macos-latest]
         intsize: [int16, int32, int64]
         cxx: [g++, clang++]
     name: ${{ matrix.os }} / ${{ matrix.intsize }} / ${{ matrix.cxx }}
@@ -27,7 +27,7 @@ jobs:
       CXX: ${{ matrix.cxx }}
     steps:
       - name: Getting project repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - if: ${{ matrix.os == 'macos-latest' }}
         run: echo "/usr/local/opt/bison/bin" >> $GITHUB_PATH
