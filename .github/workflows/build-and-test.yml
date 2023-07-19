@@ -17,7 +17,7 @@ jobs:
   build-and-test:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-lunar, macos-latest]
         intsize: [int16, int32, int64]
         cxx: [g++, clang++]
     name: ${{ matrix.os }} / ${{ matrix.intsize }} / ${{ matrix.cxx }}
