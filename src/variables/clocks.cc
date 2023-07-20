@@ -553,4 +553,39 @@ tchecker::clock_variables_t clock_variables(tchecker::reference_clock_variables_
   return clockvars;
 }
 
+/* clockval_t */
+
+void clockval_destruct_and_deallocate(tchecker::clockval_t * v)
+{
+  tchecker::clockval_t::destruct(v);
+  delete[] reinterpret_cast<char *>(v);
+}
+
+std::ostream & output(std::ostream & os, tchecker::clockval_t const & clockval, tchecker::clock_index_t const & index)
+{
+  auto const size = index.size();
+
+  for (tchecker::clock_id_t id = 0; id < size; ++id) {
+    if (id > 0)
+      os << ",";
+    os << index.value(id) << "=" << clockval[id];
+  }
+  return os;
+}
+
+std::string to_string(tchecker::clockval_t const & clockval, tchecker::clock_index_t const & index)
+{
+  std::stringstream sstream;
+  output(sstream, clockval, index);
+  return sstream.str();
+}
+
+int lexical_cmp(tchecker::clockval_t const & clockval1, tchecker::clockval_t const & clockval2)
+{
+  return tchecker::lexical_cmp(clockval1.begin(), clockval1.end(), clockval2.begin(), clockval2.end(),
+                               [](tchecker::clock_rational_value_t v1, tchecker::clock_rational_value_t v2) -> int {
+                                 return (v1 < v2 ? -1 : (v1 == v2 ? 0 : 1));
+                               });
+}
+
 } // end of namespace tchecker

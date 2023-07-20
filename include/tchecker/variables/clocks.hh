@@ -12,8 +12,13 @@
 #include <string>
 #include <vector>
 
+#include <boost/rational.hpp>
+
 #include "tchecker/basictypes.hh"
 #include "tchecker/dbm/db.hh"
+#include "tchecker/utils/allocation_size.hh"
+#include "tchecker/utils/array.hh"
+#include "tchecker/utils/cache.hh"
 #include "tchecker/utils/index.hh"
 #include "tchecker/utils/iterator.hh"
 #include "tchecker/variables/access.hh"
@@ -756,6 +761,188 @@ tchecker::reference_clock_variables_t process_reference_clocks(tchecker::variabl
 */
 tchecker::clock_variables_t clock_variables(tchecker::reference_clock_variables_t const & refclocks,
                                             tchecker::clock_variables_t const & clocks);
+
+// Clock variables valuation
+
+/*!
+ \class clockval_base_t
+ \brief Base class for clock valuations which can be stored in cache
+*/
+class clockval_base_t : public tchecker::array_capacity_t<unsigned short>, public tchecker::cached_object_t {
+public:
+  using tchecker::array_capacity_t<unsigned short>::array_capacity_t;
+};
+
+/*!
+ \brief Type of clock value
+*/
+using clock_rational_value_t = boost::rational<tchecker::integer_t>;
+
+/*!
+ \brief Type of rational array
+ */
+using clock_value_array_t = tchecker::make_array_t<tchecker::clock_rational_value_t, sizeof(tchecker::clock_rational_value_t),
+                                                   tchecker::clockval_base_t>;
+
+/*!
+ \class clockval_t
+ \brief Valuation of clocks
+ \note NO FIELD SHOULD BE ADDED TO THIS CLASS (either by definition or
+ inheritance). See tchecker::make_array_t for details
+ */
+class clockval_t : public tchecker::clock_value_array_t {
+public:
+  /*!
+   \brief Assignment operator
+   \param v : clocks valuation
+   \post this is a copy of v
+   \return this after assignment
+   */
+  tchecker::clockval_t & operator=(tchecker::clockval_t const & v) = default;
+
+  /*!
+   \brief Move assignment operator
+   \param v : clocks valuation
+   \post v has been moved to this
+   \return this after assignment
+   */
+  tchecker::clockval_t & operator=(tchecker::clockval_t && v) = default;
+
+  /*!
+   \brief Accessor
+   \return Size
+   \note Size coincide with capacity for clocks valuations
+   */
+  inline constexpr typename tchecker::clockval_t::capacity_t size() const { return capacity(); }
+
+  /*!
+   \brief Construction
+   \param args : arguments to a constructor of clockval_t
+   \pre ptr points to an allocated zone of capacity at least
+   allocation_size_t<clockval_t>::alloc_size(args)
+   \post clockval_t(args) has been called on ptr
+   */
+  template <class... ARGS> static inline void construct(void * ptr, ARGS &&... args) { new (ptr) clockval_t(args...); }
+
+  /*!
+   \brief Destruction
+   \param v : clocks valuation
+   \post ~clockval_t() has been called on v
+   */
+  static inline void destruct(tchecker::clockval_t * v)
+  {
+    assert(v != nullptr);
+    v->~clockval_t();
+  }
+
+protected:
+  /*!
+   \brief Constructor
+   \param size : clocks valuation size
+   \param value : initial value
+   */
+  clockval_t(unsigned short size, tchecker::clock_rational_value_t value = 0)
+      : tchecker::clock_value_array_t(std::make_tuple(size), std::make_tuple(value))
+  {
+  }
+
+  /*!
+   \brief Copy constructor
+   \param v : clocks valuation
+   \post this is a copy of v
+   */
+  clockval_t(tchecker::clockval_t const & v) = default;
+
+  /*!
+   \brief Move constructor
+   \param v : clocks valuation
+   \post v has been moved to this
+   */
+  clockval_t(tchecker::clockval_t && v) = default;
+
+  /*!
+   \brief Destructor
+   */
+  ~clockval_t() = default;
+};
+
+/*!
+ \class allocation_size_t
+ \brief Specialization of tchecker::allocation_size_t for class
+ tchecker::clockval_t
+ */
+template <> class allocation_size_t<tchecker::clockval_t> {
+public:
+  /*!
+   \brief Allocation size
+   \param args : arguments for a constructor of class tchecker::clockval_t
+   \return allocation size for objects of class tchecker::clockval_t
+   */
+  template <class... ARGS> static constexpr std::size_t alloc_size(ARGS &&... args)
+  {
+    return tchecker::allocation_size_t<tchecker::clock_value_array_t>::alloc_size(args...);
+  }
+};
+
+/*!
+ \brief Allocate and construct a clocks valuation
+ \param size : size of clocks valuation
+ \param args : arguments to a constructor of tchecker::clockval_t
+ \return an instance of tchecker::clockval_t of size values constructed from args
+ */
+template <class... ARGS> tchecker::clockval_t * clockval_allocate_and_construct(unsigned short size, ARGS &&... args)
+{
+  char * ptr = new char[tchecker::allocation_size_t<tchecker::clockval_t>::alloc_size(size)];
+  tchecker::clockval_t::construct(ptr, args...);
+  return reinterpret_cast<tchecker::clockval_t *>(ptr);
+}
+
+/*!
+ \brief Destruct and deallocate a clocks valuation
+ \param v : clocks valuation
+ \pre v has been returned by clockval_allocate_and_construct
+ \post v has been destructed and deallocated
+ */
+void clockval_destruct_and_deallocate(tchecker::clockval_t * v);
+
+/*!
+ \brief Output clocks valuation
+ \param os : output stream
+ \param clockval : clocks valuation
+ \param index : an index of clocks
+ \pre index is an index of variables in clockval
+ \post clockval has been output to os with clock names from index
+ \return os after output
+ */
+std::ostream & output(std::ostream & os, tchecker::clockval_t const & clockval, tchecker::clock_index_t const & index);
+
+/*!
+ \brief Convert clocks valuation to string
+ \param clockval : clocks valuation
+ \param index : an index of clocks
+ \pre index is an index of clocks in intval
+ \return An std::string representation of clockval using clock names from index
+ */
+std::string to_string(tchecker::clockval_t const & clokcval, tchecker::clock_index_t const & index);
+
+/*!
+ \brief Lexical ordering on clocks valuations
+ \param intval1 : first valuation
+ \param intval2 : second valuation
+ \return 0 if intval1 and intval2 are equal, a negative value if intval1 is smaller than intval2 w.r.t.
+ lexical ordering, and a positive value otherwise.
+ */
+int lexical_cmp(tchecker::clockval_t const & clockval1, tchecker::clockval_t const & clockval2);
+
+/*!
+ \brief Type of shared clocks valuation
+ */
+using shared_clockval_t = tchecker::make_shared_t<tchecker::clockval_t>;
+
+/*!
+ \brief Type of shared pointer to clocks valuation
+*/
+using clockval_sptr_t = tchecker::intrusive_shared_ptr_t<tchecker::shared_clockval_t>;
 
 } // end of namespace tchecker
 
