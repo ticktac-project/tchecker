@@ -69,6 +69,50 @@ int lexical_cmp(tchecker::zg::path::edge_t const & e1, tchecker::zg::path::edge_
   return tchecker::zg::lexical_cmp(e1.transition(), e2.transition()) < 0;
 }
 
+/* finite_path_t */
+
+void finite_path_t::attributes(tchecker::zg::path::node_t const & n, std::map<std::string, std::string> & m) const
+{
+  tchecker::ts::finite_path_t<tchecker::zg::zg_t, tchecker::zg::path::node_t, tchecker::zg::path::edge_t>::attributes(
+      n.state_ptr(), m);
+  if (n.initial())
+    m["initial"] = "true";
+  if (n.final())
+    m["final"] = "true";
+}
+
+void finite_path_t::attributes(tchecker::zg::path::edge_t const & e, std::map<std::string, std::string> & m) const
+{
+  tchecker::ts::finite_path_t<tchecker::zg::zg_t, tchecker::zg::path::node_t, tchecker::zg::path::edge_t>::attributes(
+      e.transition_ptr(), m);
+}
+
+/* node_le_t */
+
+bool node_le_t::operator()(tchecker::zg::path::finite_path_t::node_sptr_t const & n1,
+                           tchecker::zg::path::finite_path_t::node_sptr_t const & n2) const
+{
+  return tchecker::zg::path::lexical_cmp(static_cast<tchecker::zg::path::node_t const &>(*n1),
+                                         static_cast<tchecker::zg::path::node_t const &>(*n2)) < 0;
+}
+
+/* edge_le_t */
+
+bool edge_le_t::operator()(tchecker::zg::path::finite_path_t::edge_sptr_t const & e1,
+                           tchecker::zg::path::finite_path_t::edge_sptr_t const & e2) const
+{
+  return tchecker::zg::path::lexical_cmp(static_cast<tchecker::zg::path::edge_t const &>(*e1),
+                                         static_cast<tchecker::zg::path::edge_t const &>(*e2)) < 0;
+}
+
+/* dot_output */
+
+std::ostream & dot_output(std::ostream & os, tchecker::zg::path::finite_path_t const & path, std::string const & name)
+{
+  return tchecker::graph::dot_output<tchecker::zg::path::finite_path_t, tchecker::zg::path::node_le_t,
+                                     tchecker::zg::path::edge_le_t>(os, path, name);
+}
+
 } // namespace path
 
 } // namespace zg

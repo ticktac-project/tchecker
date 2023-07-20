@@ -69,6 +69,50 @@ int lexical_cmp(tchecker::refzg::path::edge_t const & e1, tchecker::refzg::path:
   return tchecker::refzg::lexical_cmp(e1.transition(), e2.transition()) < 0;
 }
 
+/* finite_path_t */
+
+void finite_path_t::attributes(tchecker::refzg::path::node_t const & n, std::map<std::string, std::string> & m) const
+{
+  tchecker::ts::finite_path_t<tchecker::refzg::refzg_t, tchecker::refzg::path::node_t,
+                              tchecker::refzg::path::edge_t>::attributes(n, m);
+  if (n.initial())
+    m["initial"] = "true";
+  if (n.final())
+    m["final"] = "true";
+}
+
+void finite_path_t::attributes(tchecker::refzg::path::edge_t const & e, std::map<std::string, std::string> & m) const
+{
+  tchecker::ts::finite_path_t<tchecker::refzg::refzg_t, tchecker::refzg::path::node_t,
+                              tchecker::refzg::path::edge_t>::attributes(e, m);
+}
+
+/* node_le_t */
+
+bool node_le_t::operator()(tchecker::refzg::path::finite_path_t::node_sptr_t const & n1,
+                           tchecker::refzg::path::finite_path_t::node_sptr_t const & n2) const
+{
+  return tchecker::refzg::path::lexical_cmp(static_cast<tchecker::refzg::path::node_t const &>(*n1),
+                                            static_cast<tchecker::refzg::path::node_t const &>(*n2)) < 0;
+}
+
+/* edge_le_t */
+
+bool edge_le_t::operator()(tchecker::refzg::path::finite_path_t::edge_sptr_t const & e1,
+                           tchecker::refzg::path::finite_path_t::edge_sptr_t const & e2) const
+{
+  return tchecker::refzg::path::lexical_cmp(static_cast<tchecker::refzg::path::edge_t const &>(*e1),
+                                            static_cast<tchecker::refzg::path::edge_t const &>(*e2)) < 0;
+}
+
+/* dot_output */
+
+std::ostream & dot_output(std::ostream & os, tchecker::refzg::path::finite_path_t const & path, std::string const & name)
+{
+  return tchecker::graph::dot_output<tchecker::refzg::path::finite_path_t, tchecker::refzg::path::node_le_t,
+                                     tchecker::refzg::path::edge_le_t>(os, path, name);
+}
+
 } // namespace path
 
 } // namespace refzg

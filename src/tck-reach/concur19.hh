@@ -234,7 +234,7 @@ namespace symbolic {
 /*!
  \brief Type of symbolic reachability counter-example
 */
-using cex_t = tchecker::refzg::path::finite_path_t<tchecker::refzg::refzg_t>;
+using cex_t = tchecker::refzg::path::finite_path_t;
 
 /*!
  \brief Compute a counter-example from a covering reachability graph of a zone graph with

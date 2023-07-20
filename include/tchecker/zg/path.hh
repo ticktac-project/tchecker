@@ -132,11 +132,10 @@ int lexical_cmp(tchecker::zg::path::edge_t const & e1, tchecker::zg::path::edge_
 
 /*!
  \class finite_path_t
- \tparam ZG : type of zone graph
  \brief Finite path in a zone graph
 */
-template <class ZG>
-class finite_path_t : public tchecker::ts::finite_path_t<ZG, tchecker::zg::path::node_t, tchecker::zg::path::edge_t> {
+class finite_path_t
+    : public tchecker::ts::finite_path_t<tchecker::zg::zg_t, tchecker::zg::path::node_t, tchecker::zg::path::edge_t> {
 public:
   /*!
    \brief Constructor
@@ -145,7 +144,7 @@ public:
    \note this keeps a pointer to zg
    \note all nodes and edges added to this path shall be built from states and transitions in zg
   */
-  using tchecker::ts::finite_path_t<ZG, tchecker::zg::path::node_t, tchecker::zg::path::edge_t>::finite_path_t;
+  using tchecker::ts::finite_path_t<tchecker::zg::zg_t, tchecker::zg::path::node_t, tchecker::zg::path::edge_t>::finite_path_t;
 
   using tchecker::graph::finite_path_t<tchecker::zg::path::node_t, tchecker::zg::path::edge_t>::attributes;
 
@@ -155,24 +154,14 @@ protected:
    \param n : a node
    \param m : a map (key, value) of attributes
   */
-  virtual void attributes(tchecker::zg::path::node_t const & n, std::map<std::string, std::string> & m) const
-  {
-    tchecker::ts::finite_path_t<ZG, tchecker::zg::path::node_t, tchecker::zg::path::edge_t>::attributes(n.state_ptr(), m);
-    if (n.initial())
-      m["initial"] = "true";
-    if (n.final())
-      m["final"] = "true";
-  }
+  virtual void attributes(tchecker::zg::path::node_t const & n, std::map<std::string, std::string> & m) const;
 
   /*!
    \brief Accessor to edge attributes
    \param e : an edge
    \param m : a map (key, value) of attributes
   */
-  virtual void attributes(tchecker::zg::path::edge_t const & e, std::map<std::string, std::string> & m) const
-  {
-    tchecker::ts::finite_path_t<ZG, tchecker::zg::path::node_t, tchecker::zg::path::edge_t>::attributes(e.transition_ptr(), m);
-  }
+  virtual void attributes(tchecker::zg::path::edge_t const & e, std::map<std::string, std::string> & m) const;
 };
 
 /* output */
@@ -180,7 +169,7 @@ protected:
 /*!
  \brief Lexicographic ordering on path nodes
 */
-template <class ZG> class node_le_t {
+class node_le_t {
 public:
   /*!
    \brief Lexicographic ordering
@@ -188,19 +177,15 @@ public:
    \param n2 : a path node
    \return true if n1 is lexicographically smaller than n2, false otherwise
   */
-  bool operator()(typename tchecker::zg::path::finite_path_t<ZG>::node_sptr_t const & n1,
-                  typename tchecker::zg::path::finite_path_t<ZG>::node_sptr_t const & n2) const
-  {
-    return tchecker::zg::path::lexical_cmp(static_cast<tchecker::zg::path::node_t const &>(*n1),
-                                           static_cast<tchecker::zg::path::node_t const &>(*n2)) < 0;
-  }
+  bool operator()(tchecker::zg::path::finite_path_t::node_sptr_t const & n1,
+                  tchecker::zg::path::finite_path_t::node_sptr_t const & n2) const;
 };
 
 /*!
  \brief Lexicograohic ordering on edges
  \class path_edge_le_t
 */
-template <class ZG> class edge_le_t {
+class edge_le_t {
 public:
   /*!
    \brief Lexicographic ordering on path edges
@@ -208,33 +193,22 @@ public:
    \param e2 : a path edge
    \return true if e1 is lexicographically smaller than e2, false otherwise
   */
-  bool operator()(typename tchecker::zg::path::finite_path_t<ZG>::edge_sptr_t const & e1,
-                  typename tchecker::zg::path::finite_path_t<ZG>::edge_sptr_t const & e2) const
-  {
-    return tchecker::zg::path::lexical_cmp(static_cast<tchecker::zg::path::edge_t const &>(*e1),
-                                           static_cast<tchecker::zg::path::edge_t const &>(*e2)) < 0;
-  }
+  bool operator()(tchecker::zg::path::finite_path_t::edge_sptr_t const & e1,
+                  tchecker::zg::path::finite_path_t::edge_sptr_t const & e2) const;
 };
 
 /*!
  \brief Dot output of zone graph finite paths
- \tparam ZG : type of zone graph
  \param os : output stream
  \param path : a path
  \param name : path name
  \post path has been output to os following the graphviz DOT file format
  \return os after output
 */
-template <class ZG>
-std::ostream & dot_output(std::ostream & os, tchecker::zg::path::finite_path_t<ZG> const & path, std::string const & name)
-{
-  return tchecker::graph::dot_output<tchecker::zg::path::finite_path_t<ZG>, tchecker::zg::path::node_le_t<ZG>,
-                                     tchecker::zg::path::edge_le_t<ZG>>(os, path, name);
-}
+std::ostream & dot_output(std::ostream & os, tchecker::zg::path::finite_path_t const & path, std::string const & name);
 
 /*!
  \brief Compute a finite run in a zone graph following a specified sequence of tuples of edges
- \tparam ZG : type of zone graph
  \tparam VEDGE_RANGE : type of range of tuple of edges, shall dereference to tchecker::const_vedge_sptr_t
  \param zg : zone graph
  \param initial_vloc : tuple of initial locations
@@ -247,11 +221,11 @@ std::ostream & dot_output(std::ostream & os, tchecker::zg::path::finite_path_t<Z
  or if seq is not feasible from the initial state
  \note the returned path keeps a shared pointer on zg
  */
-template <class ZG, typename VEDGE_RANGE>
-tchecker::zg::path::finite_path_t<ZG> * compute_run(std::shared_ptr<ZG> const & zg, tchecker::vloc_t const & initial_vloc,
-                                                    VEDGE_RANGE const & seq)
+template <typename VEDGE_RANGE>
+tchecker::zg::path::finite_path_t * compute_run(std::shared_ptr<tchecker::zg::zg_t> const & zg,
+                                                tchecker::vloc_t const & initial_vloc, VEDGE_RANGE const & seq)
 {
-  tchecker::zg::path::finite_path_t<ZG> * path = new tchecker::zg::path::finite_path_t<ZG>{zg};
+  tchecker::zg::path::finite_path_t * path = new tchecker::zg::path::finite_path_t{zg};
 
   tchecker::zg::const_state_sptr_t s{tchecker::zg::initial(*zg, initial_vloc)};
   if (s.ptr() == nullptr) {
