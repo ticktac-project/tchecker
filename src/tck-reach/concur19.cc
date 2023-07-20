@@ -197,8 +197,8 @@ namespace symbolic {
 
 tchecker::tck_reach::concur19::cex::symbolic::cex_t * counter_example(tchecker::tck_reach::concur19::graph_t const & g)
 {
-  return tchecker::tck_reach::counter_example_refzg<tchecker::tck_reach::concur19::graph_t,
-                                                    tchecker::tck_reach::concur19::cex::symbolic::cex_t>(g);
+  return tchecker::tck_reach::symbolic_counter_example_refzg<tchecker::tck_reach::concur19::graph_t,
+                                                             tchecker::tck_reach::concur19::cex::symbolic::cex_t>(g);
 }
 
 std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::concur19::cex::symbolic::cex_t const & cex,

@@ -208,7 +208,7 @@ public:
 std::ostream & dot_output(std::ostream & os, tchecker::zg::path::finite_path_t const & path, std::string const & name);
 
 /*!
- \brief Compute a finite run in a zone graph following a specified sequence of tuples of edges
+ \brief Compute a finite symbolic run in a zone graph following a specified sequence of tuples of edges
  \tparam VEDGE_RANGE : type of range of tuple of edges, shall dereference to tchecker::const_vedge_sptr_t
  \param zg : zone graph
  \param initial_vloc : tuple of initial locations
@@ -222,8 +222,8 @@ std::ostream & dot_output(std::ostream & os, tchecker::zg::path::finite_path_t c
  \note the returned path keeps a shared pointer on zg
  */
 template <typename VEDGE_RANGE>
-tchecker::zg::path::finite_path_t * compute_run(std::shared_ptr<tchecker::zg::zg_t> const & zg,
-                                                tchecker::vloc_t const & initial_vloc, VEDGE_RANGE const & seq)
+tchecker::zg::path::finite_path_t * compute_symbolic_run(std::shared_ptr<tchecker::zg::zg_t> const & zg,
+                                                         tchecker::vloc_t const & initial_vloc, VEDGE_RANGE const & seq)
 {
   tchecker::zg::path::finite_path_t * path = new tchecker::zg::path::finite_path_t{zg};
 

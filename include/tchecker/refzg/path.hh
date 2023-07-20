@@ -210,7 +210,7 @@ public:
 std::ostream & dot_output(std::ostream & os, tchecker::refzg::path::finite_path_t const & path, std::string const & name);
 
 /*!
- \brief Compute a finite run in a zone graph with reference clocks following a specified sequence of tuples of edges
+ \brief Compute a finite symbolic run in a zone graph with reference clocks following a specified sequence of tuples of edges
  \tparam VEDGE_RANGE : type of range of tuple of edges, shall dereference to tchecker::const_vedge_sptr_t
  \param refzg : zone graph with reference clocks
  \param initial_vloc : tuple of initial locations
@@ -224,8 +224,8 @@ std::ostream & dot_output(std::ostream & os, tchecker::refzg::path::finite_path_
  \note the returned path keeps a shared pointer on refzg
  */
 template <typename VEDGE_RANGE>
-tchecker::refzg::path::finite_path_t * compute_run(std::shared_ptr<tchecker::refzg::refzg_t> const & refzg,
-                                                   tchecker::vloc_t const & initial_vloc, VEDGE_RANGE const & seq)
+tchecker::refzg::path::finite_path_t * compute_symbolic_run(std::shared_ptr<tchecker::refzg::refzg_t> const & refzg,
+                                                            tchecker::vloc_t const & initial_vloc, VEDGE_RANGE const & seq)
 {
   tchecker::refzg::path::finite_path_t * path = new tchecker::refzg::path::finite_path_t{refzg};
 
