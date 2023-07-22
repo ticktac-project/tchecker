@@ -1929,3 +1929,503 @@ TEST_CASE("Zone inclusion w.r.t. abstraction aLU from LICS12", "[dbm]")
     REQUIRE(tchecker::dbm::is_alu_le(dbm_positive, dbm, dim, l_inf, u_inf));
   }
 }
+
+TEST_CASE("scale_up, structural tests", "[dbm]")
+{
+  tchecker::clock_id_t const dim = 3;
+  tchecker::dbm::db_t dbm[dim * dim];
+
+  tchecker::clock_id_t const x = 1;
+  tchecker::clock_id_t const y = 2;
+
+  SECTION("scale_up universal_positive DBM does nothing")
+  {
+    tchecker::dbm::universal_positive(dbm, dim);
+    tchecker::dbm::scale_up(dbm, dim, 7);
+    REQUIRE(tchecker::dbm::is_universal_positive(dbm, dim));
+  }
+
+  SECTION("scale_up some DBM has expected effect")
+  {
+    DBM(0, 0) = tchecker::dbm::LE_ZERO;
+    DBM(0, x) = tchecker::dbm::db(tchecker::LE, -1);
+    DBM(0, y) = tchecker::dbm::LE_ZERO;
+    DBM(x, 0) = tchecker::dbm::LT_INFINITY;
+    DBM(x, x) = tchecker::dbm::LE_ZERO;
+    DBM(x, y) = tchecker::dbm::LT_INFINITY;
+    DBM(y, 0) = tchecker::dbm::db(tchecker::LT, 3);
+    DBM(y, x) = tchecker::dbm::db(tchecker::LT, 2);
+    DBM(y, y) = tchecker::dbm::LE_ZERO;
+
+    tchecker::integer_t const factor = 10;
+    tchecker::dbm::scale_up(dbm, dim, factor);
+
+    REQUIRE(DBM(0, 0) == tchecker::dbm::LE_ZERO);
+    REQUIRE(DBM(0, x) == tchecker::dbm::db(tchecker::LE, -1 * factor));
+    REQUIRE(DBM(0, y) == tchecker::dbm::LE_ZERO);
+    REQUIRE(DBM(x, 0) == tchecker::dbm::LT_INFINITY);
+    REQUIRE(DBM(x, x) == tchecker::dbm::LE_ZERO);
+    REQUIRE(DBM(x, y) == tchecker::dbm::LT_INFINITY);
+    REQUIRE(DBM(y, 0) == tchecker::dbm::db(tchecker::LT, 3 * factor));
+    REQUIRE(DBM(y, x) == tchecker::dbm::db(tchecker::LT, 2 * factor));
+    REQUIRE(DBM(y, y) == tchecker::dbm::LE_ZERO);
+  }
+
+  SECTION("scale_up with factor <= 0 throws an exception")
+  {
+    tchecker::dbm::universal_positive(dbm, dim);
+    REQUIRE_THROWS_AS(tchecker::dbm::scale_up(dbm, dim, 0), std::invalid_argument);
+    REQUIRE_THROWS_AS(tchecker::dbm::scale_up(dbm, dim, -892), std::invalid_argument);
+  }
+
+  SECTION("scale_up with overflow throws")
+  {
+    DBM(0, 0) = tchecker::dbm::LE_ZERO;
+    DBM(0, x) = tchecker::dbm::db(tchecker::LE, 0);
+    DBM(0, y) = tchecker::dbm::db(tchecker::LE, 0);
+    DBM(x, 0) = tchecker::dbm::db(tchecker::LE, 1);
+    DBM(x, x) = tchecker::dbm::LE_ZERO;
+    DBM(x, y) = tchecker::dbm::db(tchecker::LE, 1);
+    DBM(y, 0) = tchecker::dbm::db(tchecker::LE, 1);
+    DBM(y, x) = tchecker::dbm::db(tchecker::LE, 1);
+    DBM(y, y) = tchecker::dbm::LE_ZERO;
+
+    tchecker::integer_t const factor = tchecker::dbm::MAX_VALUE + 1;
+
+    REQUIRE_THROWS_AS(tchecker::dbm::scale_up(dbm, dim, factor), std::overflow_error);
+  }
+
+  SECTION("scale_up with underflow throws")
+  {
+    DBM(0, 0) = tchecker::dbm::LE_ZERO;
+    DBM(0, x) = tchecker::dbm::db(tchecker::LE, tchecker::dbm::MIN_VALUE / 2);
+    DBM(0, y) = tchecker::dbm::db(tchecker::LE, 0);
+    DBM(x, 0) = tchecker::dbm::LT_INFINITY;
+    DBM(x, x) = tchecker::dbm::LE_ZERO;
+    DBM(x, y) = tchecker::dbm::LT_INFINITY;
+    DBM(y, 0) = tchecker::dbm::LT_INFINITY;
+    DBM(y, x) = tchecker::dbm::LT_INFINITY;
+    DBM(y, y) = tchecker::dbm::LE_ZERO;
+
+    tchecker::integer_t const factor = 10;
+
+    REQUIRE_THROWS_AS(tchecker::dbm::scale_up(dbm, dim, factor), std::underflow_error);
+  }
+}
+
+TEST_CASE("scale_down, structural tests", "[dbm]")
+{
+  tchecker::clock_id_t const dim = 3;
+  tchecker::dbm::db_t dbm[dim * dim];
+
+  tchecker::clock_id_t const x = 1;
+  tchecker::clock_id_t const y = 2;
+
+  SECTION("scale_down universal_positive DBM does nothing")
+  {
+    tchecker::dbm::universal_positive(dbm, dim);
+    tchecker::dbm::scale_down(dbm, dim, 3);
+    REQUIRE(tchecker::dbm::is_universal_positive(dbm, dim));
+  }
+
+  SECTION("scale_down some DBM has expected effect")
+  {
+    DBM(0, 0) = tchecker::dbm::LE_ZERO;
+    DBM(0, x) = tchecker::dbm::db(tchecker::LE, -2);
+    DBM(0, y) = tchecker::dbm::LE_ZERO;
+    DBM(x, 0) = tchecker::dbm::LT_INFINITY;
+    DBM(x, x) = tchecker::dbm::LE_ZERO;
+    DBM(x, y) = tchecker::dbm::LT_INFINITY;
+    DBM(y, 0) = tchecker::dbm::db(tchecker::LT, 6);
+    DBM(y, x) = tchecker::dbm::db(tchecker::LT, 4);
+    DBM(y, y) = tchecker::dbm::LE_ZERO;
+
+    tchecker::integer_t const factor = 2;
+    tchecker::dbm::scale_down(dbm, dim, factor);
+
+    REQUIRE(DBM(0, 0) == tchecker::dbm::LE_ZERO);
+    REQUIRE(DBM(0, x) == tchecker::dbm::db(tchecker::LE, -2 / factor));
+    REQUIRE(DBM(0, y) == tchecker::dbm::LE_ZERO);
+    REQUIRE(DBM(x, 0) == tchecker::dbm::LT_INFINITY);
+    REQUIRE(DBM(x, x) == tchecker::dbm::LE_ZERO);
+    REQUIRE(DBM(x, y) == tchecker::dbm::LT_INFINITY);
+    REQUIRE(DBM(y, 0) == tchecker::dbm::db(tchecker::LT, 6 / factor));
+    REQUIRE(DBM(y, x) == tchecker::dbm::db(tchecker::LT, 4 / factor));
+    REQUIRE(DBM(y, y) == tchecker::dbm::LE_ZERO);
+  }
+
+  SECTION("scale_down with factor <= 0 throws an exception")
+  {
+    tchecker::dbm::universal_positive(dbm, dim);
+    REQUIRE_THROWS_AS(tchecker::dbm::scale_down(dbm, dim, 0), std::invalid_argument);
+    REQUIRE_THROWS_AS(tchecker::dbm::scale_down(dbm, dim, -1920), std::invalid_argument);
+  }
+
+  SECTION("scale_down with factor which is not a divisor throws")
+  {
+    DBM(0, 0) = tchecker::dbm::LE_ZERO;
+    DBM(0, x) = tchecker::dbm::db(tchecker::LE, -1);
+    DBM(0, y) = tchecker::dbm::LE_ZERO;
+    DBM(x, 0) = tchecker::dbm::LT_INFINITY;
+    DBM(x, x) = tchecker::dbm::LE_ZERO;
+    DBM(x, y) = tchecker::dbm::LT_INFINITY;
+    DBM(y, 0) = tchecker::dbm::db(tchecker::LT, 3);
+    DBM(y, x) = tchecker::dbm::db(tchecker::LT, 2);
+    DBM(y, y) = tchecker::dbm::LE_ZERO;
+
+    tchecker::integer_t const factor = 2;
+    REQUIRE_THROWS_AS(tchecker::dbm::scale_down(dbm, dim, factor), std::invalid_argument);
+  }
+}
+
+TEST_CASE("has_fixed_value", "[dbm]")
+{
+  tchecker::clock_id_t const dim = 3;
+  tchecker::dbm::db_t dbm[dim * dim];
+
+  tchecker::clock_id_t const x = 1;
+  tchecker::clock_id_t const y = 2;
+
+  SECTION("x and y have fixed value in the zero DBM")
+  {
+    tchecker::dbm::zero(dbm, dim);
+    REQUIRE(tchecker::dbm::has_fixed_value(dbm, dim, 0));
+    REQUIRE(tchecker::dbm::has_fixed_value(dbm, dim, x));
+    REQUIRE(tchecker::dbm::has_fixed_value(dbm, dim, y));
+  }
+
+  SECTION("x and y do not have a fixed value in the universal positive DBM")
+  {
+    tchecker::dbm::universal_positive(dbm, dim);
+    REQUIRE(tchecker::dbm::has_fixed_value(dbm, dim, 0));
+    REQUIRE_FALSE(tchecker::dbm::has_fixed_value(dbm, dim, x));
+    REQUIRE_FALSE(tchecker::dbm::has_fixed_value(dbm, dim, y));
+  }
+
+  SECTION("some zone where x has fixed value but not y")
+  {
+    DBM(0, 0) = tchecker::dbm::LE_ZERO;
+    DBM(0, x) = tchecker::dbm::db(tchecker::LE, -2);
+    DBM(0, y) = tchecker::dbm::db(tchecker::LT, -3);
+    DBM(x, 0) = tchecker::dbm::db(tchecker::LE, 2);
+    DBM(x, x) = tchecker::dbm::LE_ZERO;
+    DBM(x, y) = tchecker::dbm::db(tchecker::LT, -1);
+    DBM(y, 0) = tchecker::dbm::db(tchecker::LT, 4);
+    DBM(y, x) = tchecker::dbm::db(tchecker::LT, 2);
+    DBM(y, y) = tchecker::dbm::LE_ZERO;
+
+    REQUIRE(tchecker::dbm::has_fixed_value(dbm, dim, 0));
+    REQUIRE(tchecker::dbm::has_fixed_value(dbm, dim, x));
+    REQUIRE_FALSE(tchecker::dbm::has_fixed_value(dbm, dim, y));
+  }
+}
+
+TEST_CASE("admits_integer_value", "[dbm]")
+{
+  tchecker::clock_id_t const dim = 3;
+  tchecker::dbm::db_t dbm[dim * dim];
+
+  tchecker::clock_id_t const x = 1;
+  tchecker::clock_id_t const y = 2;
+
+  SECTION("x and y admit integer value in the zero DBM")
+  {
+    tchecker::dbm::zero(dbm, dim);
+    REQUIRE(tchecker::dbm::admits_integer_value(dbm, dim, x));
+    REQUIRE(tchecker::dbm::admits_integer_value(dbm, dim, y));
+  }
+
+  SECTION("x and y admit integer value in the universal positive DBM")
+  {
+    tchecker::dbm::universal_positive(dbm, dim);
+    REQUIRE(tchecker::dbm::admits_integer_value(dbm, dim, x));
+    REQUIRE(tchecker::dbm::admits_integer_value(dbm, dim, y));
+  }
+
+  SECTION("some zone where x admits integer value but not y")
+  {
+    DBM(0, 0) = tchecker::dbm::LE_ZERO;
+    DBM(0, x) = tchecker::dbm::db(tchecker::LE, -2);
+    DBM(0, y) = tchecker::dbm::db(tchecker::LT, -3);
+    DBM(x, 0) = tchecker::dbm::db(tchecker::LE, 2);
+    DBM(x, x) = tchecker::dbm::LE_ZERO;
+    DBM(x, y) = tchecker::dbm::db(tchecker::LT, -1);
+    DBM(y, 0) = tchecker::dbm::db(tchecker::LT, 4);
+    DBM(y, x) = tchecker::dbm::db(tchecker::LT, 2);
+    DBM(y, y) = tchecker::dbm::LE_ZERO;
+
+    REQUIRE(tchecker::dbm::admits_integer_value(dbm, dim, x));
+    REQUIRE_FALSE(tchecker::dbm::admits_integer_value(dbm, dim, y));
+  }
+}
+
+TEST_CASE("is_single_valuation", "[dbm]")
+{
+  tchecker::clock_id_t const dim = 3;
+  tchecker::dbm::db_t dbm[dim * dim];
+
+  tchecker::clock_id_t const x = 1;
+  tchecker::clock_id_t const y = 2;
+
+  SECTION("the zero DBM is single valuation")
+  {
+    tchecker::dbm::zero(dbm, dim);
+    REQUIRE(tchecker::dbm::is_single_valuation(dbm, dim));
+  }
+
+  SECTION("the universal positive DBM is not single valuation")
+  {
+    tchecker::dbm::universal_positive(dbm, dim);
+    REQUIRE_FALSE(tchecker::dbm::is_single_valuation(dbm, dim));
+  }
+
+  SECTION("some zone which is not single valuation")
+  {
+    DBM(0, 0) = tchecker::dbm::LE_ZERO;
+    DBM(0, x) = tchecker::dbm::db(tchecker::LE, -1);
+    DBM(0, y) = tchecker::dbm::LE_ZERO;
+    DBM(x, 0) = tchecker::dbm::LT_INFINITY;
+    DBM(x, x) = tchecker::dbm::LE_ZERO;
+    DBM(x, y) = tchecker::dbm::LT_INFINITY;
+    DBM(y, 0) = tchecker::dbm::db(tchecker::LT, 3);
+    DBM(y, x) = tchecker::dbm::db(tchecker::LT, 2);
+    DBM(y, y) = tchecker::dbm::LE_ZERO;
+
+    REQUIRE_FALSE(tchecker::dbm::is_single_valuation(dbm, dim));
+  }
+
+  SECTION("some zone which is single valuation")
+  {
+    DBM(0, 0) = tchecker::dbm::LE_ZERO;
+    DBM(0, x) = tchecker::dbm::db(tchecker::LE, -1);
+    DBM(0, y) = tchecker::dbm::LE_ZERO;
+    DBM(x, 0) = tchecker::dbm::db(tchecker::LE, 1);
+    DBM(x, x) = tchecker::dbm::LE_ZERO;
+    DBM(x, y) = tchecker::dbm::db(tchecker::LE, 1);
+    DBM(y, 0) = tchecker::dbm::LE_ZERO;
+    DBM(y, x) = tchecker::dbm::db(tchecker::LE, -1);
+    DBM(y, y) = tchecker::dbm::LE_ZERO;
+
+    REQUIRE(tchecker::dbm::is_single_valuation(dbm, dim));
+  }
+}
+
+TEST_CASE("constrain_to_single_valuation", "[dbm]")
+{
+  tchecker::clock_id_t const dim = 3;
+  tchecker::dbm::db_t dbm[dim * dim];
+
+  tchecker::clock_id_t const x = 1;
+  tchecker::clock_id_t const y = 2;
+
+  SECTION("contrain the zero DBM to single valuation")
+  {
+    tchecker::dbm::zero(dbm, dim);
+    tchecker::integer_t factor = tchecker::dbm::constrain_to_single_valuation(dbm, dim);
+    REQUIRE(factor == 1);
+    REQUIRE(tchecker::dbm::is_single_valuation(dbm, dim));
+  }
+
+  SECTION("constrain the universal positive DBM to single valuation")
+  {
+    tchecker::dbm::universal_positive(dbm, dim);
+    tchecker::integer_t factor = tchecker::dbm::constrain_to_single_valuation(dbm, dim);
+    REQUIRE(factor == 1);
+    REQUIRE(tchecker::dbm::is_single_valuation(dbm, dim));
+  }
+
+  SECTION("some zone with single valuation x=2, y=7/2")
+  {
+    DBM(0, 0) = tchecker::dbm::LE_ZERO;
+    DBM(0, x) = tchecker::dbm::db(tchecker::LT, -1);
+    DBM(0, y) = tchecker::dbm::db(tchecker::LT, -2);
+    DBM(x, 0) = tchecker::dbm::db(tchecker::LT, 3);
+    DBM(x, x) = tchecker::dbm::LE_ZERO;
+    DBM(x, y) = tchecker::dbm::db(tchecker::LT, -1);
+    DBM(y, 0) = tchecker::dbm::db(tchecker::LT, 4);
+    DBM(y, x) = tchecker::dbm::db(tchecker::LT, 3);
+    DBM(y, y) = tchecker::dbm::LE_ZERO;
+
+    tchecker::integer_t factor = tchecker::dbm::constrain_to_single_valuation(dbm, dim);
+    REQUIRE(factor == 2);
+    REQUIRE(tchecker::dbm::is_single_valuation(dbm, dim));
+    REQUIRE(tchecker::dbm::value(DBM(x, 0)) == 4);
+    REQUIRE(tchecker::dbm::value(DBM(y, 0)) == 7);
+  }
+}
+
+TEST_CASE("simplify", "[dbm]")
+{
+  tchecker::clock_id_t const dim = 3;
+  tchecker::dbm::db_t dbm[dim * dim];
+
+  tchecker::clock_id_t const x = 1;
+  tchecker::clock_id_t const y = 2;
+
+  tchecker::integer_t val = 1;
+
+  SECTION("simplify zero DBM reduces val to 1")
+  {
+    tchecker::dbm::zero(dbm, dim);
+    val = 23;
+
+    tchecker::dbm::simplify(dbm, dim, val);
+
+    REQUIRE(val == 1);
+
+    for (tchecker::clock_id_t x = 0; x < dim; ++x)
+      for (tchecker::clock_id_t y = 0; y < dim; ++y)
+        REQUIRE(DBM(x, y) == tchecker::dbm::LE_ZERO);
+  }
+
+  SECTION("simplify universal positive DBM reduces val to 1")
+  {
+    tchecker::dbm::universal_positive(dbm, dim);
+    val = 1739;
+
+    tchecker::dbm::simplify(dbm, dim, val);
+
+    REQUIRE(val == 1);
+    REQUIRE(tchecker::dbm::is_universal_positive(dbm, dim));
+  }
+
+  SECTION("simplify some reducible DBM has expected result")
+  {
+    DBM(0, 0) = tchecker::dbm::LE_ZERO;
+    DBM(0, x) = tchecker::dbm::db(tchecker::LE, -2);
+    DBM(0, y) = tchecker::dbm::LE_ZERO;
+    DBM(x, 0) = tchecker::dbm::LT_INFINITY;
+    DBM(x, x) = tchecker::dbm::LE_ZERO;
+    DBM(x, y) = tchecker::dbm::LT_INFINITY;
+    DBM(y, 0) = tchecker::dbm::db(tchecker::LT, 6);
+    DBM(y, x) = tchecker::dbm::db(tchecker::LT, 4);
+    DBM(y, y) = tchecker::dbm::LE_ZERO;
+
+    val = 2;
+
+    tchecker::dbm::simplify(dbm, dim, val);
+
+    REQUIRE(val == 1);
+    REQUIRE(DBM(0, 0) == tchecker::dbm::LE_ZERO);
+    REQUIRE(DBM(0, x) == tchecker::dbm::db(tchecker::LE, -1));
+    REQUIRE(DBM(0, y) == tchecker::dbm::LE_ZERO);
+    REQUIRE(DBM(x, 0) == tchecker::dbm::LT_INFINITY);
+    REQUIRE(DBM(x, x) == tchecker::dbm::LE_ZERO);
+    REQUIRE(DBM(x, y) == tchecker::dbm::LT_INFINITY);
+    REQUIRE(DBM(y, 0) == tchecker::dbm::db(tchecker::LT, 3));
+    REQUIRE(DBM(y, x) == tchecker::dbm::db(tchecker::LT, 2));
+    REQUIRE(DBM(y, y) == tchecker::dbm::LE_ZERO);
+  }
+
+  SECTION("simplify some reducible DBM bu with irreducible val does nothing")
+  {
+    DBM(0, 0) = tchecker::dbm::LE_ZERO;
+    DBM(0, x) = tchecker::dbm::db(tchecker::LE, -2);
+    DBM(0, y) = tchecker::dbm::LE_ZERO;
+    DBM(x, 0) = tchecker::dbm::LT_INFINITY;
+    DBM(x, x) = tchecker::dbm::LE_ZERO;
+    DBM(x, y) = tchecker::dbm::LT_INFINITY;
+    DBM(y, 0) = tchecker::dbm::db(tchecker::LT, 6);
+    DBM(y, x) = tchecker::dbm::db(tchecker::LT, 4);
+    DBM(y, y) = tchecker::dbm::LE_ZERO;
+
+    val = 7;
+
+    tchecker::dbm::simplify(dbm, dim, val);
+
+    REQUIRE(val == 7);
+    REQUIRE(DBM(0, 0) == tchecker::dbm::LE_ZERO);
+    REQUIRE(DBM(0, x) == tchecker::dbm::db(tchecker::LE, -2));
+    REQUIRE(DBM(0, y) == tchecker::dbm::LE_ZERO);
+    REQUIRE(DBM(x, 0) == tchecker::dbm::LT_INFINITY);
+    REQUIRE(DBM(x, x) == tchecker::dbm::LE_ZERO);
+    REQUIRE(DBM(x, y) == tchecker::dbm::LT_INFINITY);
+    REQUIRE(DBM(y, 0) == tchecker::dbm::db(tchecker::LT, 6));
+    REQUIRE(DBM(y, x) == tchecker::dbm::db(tchecker::LT, 4));
+    REQUIRE(DBM(y, y) == tchecker::dbm::LE_ZERO);
+  }
+
+  SECTION("simplify some irreducible DBM does nothing")
+  {
+    DBM(0, 0) = tchecker::dbm::LE_ZERO;
+    DBM(0, x) = tchecker::dbm::db(tchecker::LT, -1);
+    DBM(0, y) = tchecker::dbm::db(tchecker::LT, -2);
+    DBM(x, 0) = tchecker::dbm::db(tchecker::LT, 3);
+    DBM(x, x) = tchecker::dbm::LE_ZERO;
+    DBM(x, y) = tchecker::dbm::db(tchecker::LT, -1);
+    DBM(y, 0) = tchecker::dbm::db(tchecker::LT, 4);
+    DBM(y, x) = tchecker::dbm::db(tchecker::LT, 3);
+    DBM(y, y) = tchecker::dbm::LE_ZERO;
+
+    val = 3;
+
+    tchecker::dbm::simplify(dbm, dim, val);
+
+    REQUIRE(val == 3);
+    REQUIRE(DBM(0, 0) == tchecker::dbm::LE_ZERO);
+    REQUIRE(DBM(0, x) == tchecker::dbm::db(tchecker::LT, -1));
+    REQUIRE(DBM(0, y) == tchecker::dbm::db(tchecker::LT, -2));
+    REQUIRE(DBM(x, 0) == tchecker::dbm::db(tchecker::LT, 3));
+    REQUIRE(DBM(x, x) == tchecker::dbm::LE_ZERO);
+    REQUIRE(DBM(x, y) == tchecker::dbm::db(tchecker::LT, -1));
+    REQUIRE(DBM(y, 0) == tchecker::dbm::db(tchecker::LT, 4));
+    REQUIRE(DBM(y, x) == tchecker::dbm::db(tchecker::LT, 3));
+    REQUIRE(DBM(y, y) == tchecker::dbm::LE_ZERO);
+  }
+
+  SECTION("simplify some reducible DBM with val 0 has expected result")
+  {
+    DBM(0, 0) = tchecker::dbm::LE_ZERO;
+    DBM(0, x) = tchecker::dbm::db(tchecker::LE, -2);
+    DBM(0, y) = tchecker::dbm::LE_ZERO;
+    DBM(x, 0) = tchecker::dbm::LT_INFINITY;
+    DBM(x, x) = tchecker::dbm::LE_ZERO;
+    DBM(x, y) = tchecker::dbm::LT_INFINITY;
+    DBM(y, 0) = tchecker::dbm::db(tchecker::LT, 6);
+    DBM(y, x) = tchecker::dbm::db(tchecker::LT, 4);
+    DBM(y, y) = tchecker::dbm::LE_ZERO;
+
+    val = 0;
+
+    tchecker::dbm::simplify(dbm, dim, val);
+
+    REQUIRE(val == 0);
+    REQUIRE(DBM(0, 0) == tchecker::dbm::LE_ZERO);
+    REQUIRE(DBM(0, x) == tchecker::dbm::db(tchecker::LE, -1));
+    REQUIRE(DBM(0, y) == tchecker::dbm::LE_ZERO);
+    REQUIRE(DBM(x, 0) == tchecker::dbm::LT_INFINITY);
+    REQUIRE(DBM(x, x) == tchecker::dbm::LE_ZERO);
+    REQUIRE(DBM(x, y) == tchecker::dbm::LT_INFINITY);
+    REQUIRE(DBM(y, 0) == tchecker::dbm::db(tchecker::LT, 3));
+    REQUIRE(DBM(y, x) == tchecker::dbm::db(tchecker::LT, 2));
+    REQUIRE(DBM(y, y) == tchecker::dbm::LE_ZERO);
+  }
+
+  SECTION("simplify some irreducible DBM with val 0 does nothing")
+  {
+    DBM(0, 0) = tchecker::dbm::LE_ZERO;
+    DBM(0, x) = tchecker::dbm::db(tchecker::LT, -1);
+    DBM(0, y) = tchecker::dbm::db(tchecker::LT, -2);
+    DBM(x, 0) = tchecker::dbm::db(tchecker::LT, 3);
+    DBM(x, x) = tchecker::dbm::LE_ZERO;
+    DBM(x, y) = tchecker::dbm::db(tchecker::LT, -1);
+    DBM(y, 0) = tchecker::dbm::db(tchecker::LT, 4);
+    DBM(y, x) = tchecker::dbm::db(tchecker::LT, 3);
+    DBM(y, y) = tchecker::dbm::LE_ZERO;
+
+    val = 0;
+
+    tchecker::dbm::simplify(dbm, dim, val);
+
+    REQUIRE(val == 0);
+    REQUIRE(DBM(0, 0) == tchecker::dbm::LE_ZERO);
+    REQUIRE(DBM(0, x) == tchecker::dbm::db(tchecker::LT, -1));
+    REQUIRE(DBM(0, y) == tchecker::dbm::db(tchecker::LT, -2));
+    REQUIRE(DBM(x, 0) == tchecker::dbm::db(tchecker::LT, 3));
+    REQUIRE(DBM(x, x) == tchecker::dbm::LE_ZERO);
+    REQUIRE(DBM(x, y) == tchecker::dbm::db(tchecker::LT, -1));
+    REQUIRE(DBM(y, 0) == tchecker::dbm::db(tchecker::LT, 4));
+    REQUIRE(DBM(y, x) == tchecker::dbm::db(tchecker::LT, 3));
+    REQUIRE(DBM(y, y) == tchecker::dbm::LE_ZERO);
+  }
+}

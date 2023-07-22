@@ -685,6 +685,132 @@ std::ostream & output(std::ostream & os, tchecker::dbm::db_t const * dbm, tcheck
 int lexical_cmp(tchecker::dbm::db_t const * dbm1, tchecker::clock_id_t dim1, tchecker::dbm::db_t const * dbm2,
                 tchecker::clock_id_t dim2);
 
+/*!
+ \brief Multiply all constants of a dbm by factor
+ \param dbm : a dbm
+ \param dim : dimension of dbm
+ \param factor scale factor
+ \pre dbm is not nullptr (checked by assertion)
+ dbm is a dim*dim array of difference bounds
+ dim >= 1 (checked by assertion)
+ dbm is consistent (checked by assertion)
+ dbm is tight (checked by assertion)
+ factor > 0
+ \post all non infinity values in dbm have been multiplied by factor
+ dbm is consistent and tight
+ \throw std::invalid_argument : if factor <= 0
+ \throw std::overflow_error : if overflow occurs
+ \throw std::underflow_error : if underflow occurs
+ \note (<,inf) in dbm are left unchanged
+ */
+void scale_up(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::integer_t factor);
+
+/*!
+ \brief Divide all constants of a dbm by factor
+ \param dbm : a dbm
+ \param dim : dimension of dbm
+ \param factor scale factor
+ \pre dbm is not nullptr (checked by assertion)
+ dbm is a dim*dim array of difference bounds
+ dim >= 1 (checked by assertion)
+ dbm is consistent (checked by assertion)
+ dbm is tight (checked by assertion)
+ factor > 0
+ factor is a divider of all non-infinity entries in dbm
+ \post all non infinity values in dbm have been divided by factor
+ dbm is consistent and tight
+ \throw std::invalid_argument : if factor <= 0 or if factor is not a divider of all entries in dbm
+ \note (<,inf) in dbm are left unchanged
+ */
+void scale_down(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::integer_t factor);
+
+/*!
+ \brief Check if a clock has a fixed value in a DBM
+ \param dbm : a dbm
+ \param dim : dimension of dbm
+ \param x : clock ID
+ \pre dbm is not nullptr (checked by assertion)
+ dbm is a dim*dim array of difference bounds
+ dim >= 1 (checked by assertion)
+ dbm is consistent (checked by assertion)
+ dbm is tight (checked by assertion)
+ 0<=x<dim (checked by assertion)
+ \return true if clock x has a fixed value in dbm, false otherwise
+*/
+bool has_fixed_value(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x);
+
+/*!
+ \brief Check if a clock admits an integer value in a DBM
+ \param dbm : a dbm
+ \param dim : dimension of dbm
+ \param x : clock ID
+ \pre dbm is not nullptr (checked by assertion)
+ dbm is a dim*dim array of difference bounds
+ dim >= 1 (checked by assertion)
+ dbm is consistent (checked by assertion)
+ dbm is tight (checked by assertion)
+ 0<=x<dim (checked by assertion)
+ \return true if clock x admits an integer value in dbm, false otherwise
+*/
+bool admits_integer_value(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x);
+
+/*!
+ \brief Check if a DBM contains a single valuation
+ \param dbm : a dbm
+ \param dim : dimension of dbm
+ \pre dbm is not nullptr (checked by assertion)
+ dbm is a dim*dim array of difference bounds
+ dim >= 1 (checked by assertion)
+ dbm is consistent (checked by assertion)
+ dbm is tight (checked by assertion)
+ \return true if dbm contains a single valuation, false otherwise
+*/
+bool is_single_valuation(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim);
+
+/*!
+ \brief Constrains a DBM to a single valuation
+ \param dbm : a dbm
+ \param dim : dimension of dbm
+ \pre dbm is not nullptr (checked by assertion)
+ dbm is a dim*dim array of difference bounds
+ dbm is consistent (checked by assertion)
+ dbm is tight (checked by assertion)
+ dim >= 1 (checked by assertion).
+ \post dbm represents a single valuation
+ dbm is consistent and tight
+ \return the scale factor applied to dbm to make it single integer valued
+ \throw std::overflow_error : if overflow occurs
+ \throw std::underflow_error : if underflow occurs
+ \note A DBM can only represent integer values, whereas constraints such as 0<x<1
+ only admit non-integer valuations. The solution is thus to scale up dbm by some
+ factor to enlarge constraints in such a way that they admit an integer solution
+ (e.g. scale up by 2 yields 0<x<2 which admits 1 as a integer solution). The returned
+ value is the scale factor applied to dbm in order to get an integer solution.
+ Hence, the actual rational valuation consists in clock values in the DBM divided by
+ the scale factor.
+*/
+tchecker::integer_t constrain_to_single_valuation(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim);
+
+/*!
+ \brief Simplify the values in a DBM
+ \param dbm : a dbm
+ \param dim : dimension of dbm
+ \param val : some integer
+ \pre dbm is not nullptr (checked by assertion)
+ dbm is a dim*dim array of difference bounds
+ dbm is consistent (checked by assertion)
+ dbm is tight (checked by assertion)
+ dim >= 1 (checked by assertion)
+ val >= 0 (checked by assertion)
+ \post the values in dbm as well as val have been divided by their gcd
+ dbm is consistent and tight
+ val >= 0
+ \note when val > 0, it can be seen as the common divisor of all values in dbm. Then, the
+ function simplify reduces all rational numbers in the resulting DBM while keeping a common
+ divisor in val
+ */
+void simplify(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::integer_t & val);
+
 } // end of namespace dbm
 
 } // end of namespace tchecker

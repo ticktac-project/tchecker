@@ -6,6 +6,7 @@
  */
 
 #include <cassert>
+#include <numeric>
 
 #if BOOST_VERSION <= 106600
 #include <boost/functional/hash.hpp>
@@ -907,6 +908,187 @@ int lexical_cmp(tchecker::dbm::db_t const * dbm1, tchecker::clock_id_t dim1, tch
   assert(dim1 >= 1);
   assert(dim2 >= 1);
   return tchecker::lexical_cmp(dbm1, dbm1 + dim1 * dim1, dbm2, dbm2 + dim2 * dim2, tchecker::dbm::db_cmp);
+}
+
+// NB: first implementation provided by Ocan Sankur, added overflow/underflow checks (FH)
+void scale_up(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::integer_t factor)
+{
+  assert(dbm != nullptr);
+  assert(dim >= 1);
+  assert(tchecker::dbm::is_consistent(dbm, dim));
+  assert(tchecker::dbm::is_tight(dbm, dim));
+
+  if (factor <= 0)
+    throw std::invalid_argument("tchecker::dbm::scale_up: factor should be positive");
+
+  for (tchecker::clock_id_t x = 0; x < dim; ++x) {
+    for (tchecker::clock_id_t y = 0; y < dim; ++y) {
+      if (DBM(x, y) == tchecker::dbm::LT_INFINITY)
+        continue;
+      tchecker::integer_t value = tchecker::dbm::value(DBM(x, y));
+
+      if (tchecker::dbm::MAX_VALUE / factor < value)
+        throw std::overflow_error("tchecker::dbm::scale_up: overflow error");
+      if (tchecker::dbm::MIN_VALUE / factor > value)
+        throw std::underflow_error("tchecker::dbm::scale_up: underflow error");
+
+      DBM(x, y) = tchecker::dbm::db(tchecker::dbm::comparator(DBM(x, y)), value * factor);
+    }
+  }
+
+  assert(tchecker::dbm::is_consistent(dbm, dim));
+  assert(tchecker::dbm::is_tight(dbm, dim));
+}
+
+void scale_down(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::integer_t factor)
+{
+  assert(dbm != nullptr);
+  assert(dim >= 1);
+  assert(tchecker::dbm::is_consistent(dbm, dim));
+  assert(tchecker::dbm::is_tight(dbm, dim));
+
+  if (factor <= 0)
+    throw std::invalid_argument("tchecker::dbm::scale_down: factor should be positive");
+
+  for (tchecker::clock_id_t x = 0; x < dim; ++x) {
+    for (tchecker::clock_id_t y = 0; y < dim; ++y) {
+      if (DBM(x, y) == tchecker::dbm::LT_INFINITY)
+        continue;
+      tchecker::integer_t value = tchecker::dbm::value(DBM(x, y));
+      if (value % factor != 0)
+        throw std::invalid_argument("tchecker::dbm::scale_down: dbm is not divisible by factor");
+
+      DBM(x, y) = tchecker::dbm::db(tchecker::dbm::comparator(DBM(x, y)), value / factor);
+    }
+  }
+
+  assert(tchecker::dbm::is_consistent(dbm, dim));
+  assert(tchecker::dbm::is_tight(dbm, dim));
+}
+
+bool has_fixed_value(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x)
+{
+  assert(dbm != nullptr);
+  assert(dim >= 1);
+  assert(tchecker::dbm::is_consistent(dbm, dim));
+  assert(tchecker::dbm::is_tight(dbm, dim));
+  assert(x < dim);
+
+  return (tchecker::dbm::comparator(DBM(x, 0)) == tchecker::LE) && (tchecker::dbm::comparator(DBM(0, x)) == tchecker::LE) &&
+         (tchecker::dbm::value(DBM(0, x)) == -tchecker::dbm::value(DBM(x, 0)));
+}
+
+bool admits_integer_value(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x)
+{
+  assert(dbm != nullptr);
+  assert(dim >= 1);
+  assert(tchecker::dbm::is_consistent(dbm, dim));
+  assert(tchecker::dbm::is_tight(dbm, dim));
+  assert(x < dim);
+
+  return (DBM(x, 0) == tchecker::dbm::LT_INFINITY) ||
+         !((tchecker::dbm::comparator(DBM(x, 0)) == tchecker::LT) && (tchecker::dbm::comparator(DBM(0, x)) == tchecker::LT) &&
+           (-(tchecker::dbm::value(DBM(x, 0)) - 1) == tchecker::dbm::value(DBM(0, x))));
+}
+
+// NB: implementation provided by Ocan Sankur
+bool is_single_valuation(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim)
+{
+  assert(dbm != nullptr);
+  assert(dim >= 1);
+  assert(tchecker::dbm::is_consistent(dbm, dim));
+  assert(tchecker::dbm::is_tight(dbm, dim));
+
+  for (tchecker::clock_id_t x = 1; x < dim; ++x)
+    if (!tchecker::dbm::has_fixed_value(dbm, dim, x))
+      return false;
+
+  return true;
+}
+
+/* NB: first implementation provided by Ocan Sankur, several modifications (FH)
+ * Algorithm is as follows:
+ * 1- check if some clock does not admit an integer value (e.g. 0<x<1)
+ * 2- if yes, scale up the dbm
+ * 3- then, choose a clock that does not have a fixed value yet, and choose an integer value for this clock
+ * 4- repeat from step (1) until every clock has a fixed value (i.e. dbm is single valued)
+ * NB: the scale up amounts to assign rational values to clocks, hence the returned factor is the
+ * denominator of the value of each clock in the resulting DBM
+ *
+ * To illustrate, consider the constraints: (1<x<3 && 2<y<4 && 1<y-x<3). Observe that x and y admit an integer
+ * value: x=2 on the one hand, and y=3 on the other hand. But those value are not compatible w.r.t. the
+ * constraints over y-x. So picking value x=2 result in the constraints: (2<=x<=2 && 3<y<4 && 1<y-x<2).
+ * We first need to scale up the DBM, say by factor 2: (4<=x<=4 && 6<y<8 && 2<y-x<4). Now we can choose y=7,
+ * which yields the dbm: (4<=x<=4 && 7<=y<=7 && 3<=y-x<=3) with factor=2, which encods the clock valuation
+ * x=4/2=2 and y=7/2
+ */
+tchecker::integer_t constrain_to_single_valuation(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim)
+{
+  assert(dbm != nullptr);
+  assert(dim >= 1);
+  assert(tchecker::dbm::is_consistent(dbm, dim));
+  assert(tchecker::dbm::is_tight(dbm, dim));
+
+  tchecker::integer_t factor = 1;
+
+  for (tchecker::clock_id_t x = 1; x < dim; ++x) {
+    // find clock which has not fixed value yet
+    if (has_fixed_value(dbm, dim, x))
+      continue;
+
+    // if selected clock does not admit integer value, scale dbm up
+    if (!tchecker::dbm::admits_integer_value(dbm, dim, x)) {
+      if (factor > std::numeric_limits<tchecker::integer_t>::max() / 2)
+        throw std::overflow_error("tchecker::dbm::constrain_to_single_valuation: scale factor overflow");
+      factor *= 2;
+      tchecker::dbm::scale_up(dbm, dim, factor);
+    }
+
+    // then, choose integer value for selected clock
+    if (tchecker::dbm::value(DBM(0, x)) <= tchecker::dbm::MIN_VALUE)
+      throw std::overflow_error("tchecker::dbm::constrain_to_single_valuation: integer value overflow");
+
+    tchecker::integer_t v = -tchecker::dbm::value(DBM(0, x)) + (tchecker::dbm::comparator(DBM(0, x)) == tchecker::LE ? 0 : 1);
+    tchecker::dbm::constrain(dbm, dim, 0, x, tchecker::LE, -v);
+    tchecker::dbm::constrain(dbm, dim, x, 0, tchecker::LE, v);
+  }
+
+  assert(tchecker::dbm::is_consistent(dbm, dim));
+  assert(tchecker::dbm::is_tight(dbm, dim));
+
+  return factor;
+}
+
+// NB: implementation provided by Ocan Sankur, several modifications (FH)
+void simplify(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::integer_t & val)
+{
+  assert(dbm != nullptr);
+  assert(dim >= 1);
+  assert(tchecker::dbm::is_consistent(dbm, dim));
+  assert(tchecker::dbm::is_tight(dbm, dim));
+  assert(val >= 0);
+
+  // Compute the gcd of val and the entries in dbm
+  tchecker::integer_t d = val;
+  for (tchecker::clock_id_t x = 0; x < dim; ++x)
+    for (tchecker::clock_id_t y = 0; y < dim; ++y) {
+      if (DBM(x, y) == tchecker::dbm::LT_INFINITY)
+        continue;
+      d = std::gcd(d, tchecker::dbm::value(DBM(x, y)));
+      if (d == 1)
+        break;
+    }
+
+  // Divide all entries in dbm as well as val by the computed gcd
+  if (d == 1)
+    return;
+
+  tchecker::dbm::scale_down(dbm, dim, d);
+  val /= d;
+
+  assert(tchecker::dbm::is_consistent(dbm, dim));
+  assert(tchecker::dbm::is_tight(dbm, dim));
+  assert(val >= 0);
 }
 
 } // end of namespace dbm
