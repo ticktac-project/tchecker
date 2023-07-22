@@ -59,10 +59,10 @@ static_assert(tchecker::dbm::LE_ZERO != tchecker::dbm::LT_INFINITY, "");
  \brief Build a difference bound
  \param cmp : a comparator
  \param value : a value
- \pre MIN_VALUE <= value <= MAX_VALUE
+ \pre tchecker::dbm::MIN_VALUE <= value <= tchecker::dbm::MAX_VALUE
  \return <value if cmp is LT and <=value if cmp is LE
- \note it is not checked whether value is between MIN_VALUE and MAX_VALUE, hence
- overflow/underflow may occur
+ \note it is not checked whether value is between tchecker::dbm::MIN_VALUE and
+ tchecker::dbm::MAX_VALUE, hence overflow/underflow may occur
  \note the implementation relies on the left-shift operator which is unspecified
  when value is negative. Hence, semantics is implementation-dependent. In particular,
  this is incorrect on architectures that do not use two-complement representation
