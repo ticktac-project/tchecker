@@ -2254,7 +2254,7 @@ TEST_CASE("constrain_to_single_valuation", "[dbm]")
   }
 }
 
-TEST_CASE("simplify", "[dbm]")
+TEST_CASE("gcd", "[dbm]")
 {
   tchecker::clock_id_t const dim = 3;
   tchecker::dbm::db_t dbm[dim * dim];
@@ -2262,34 +2262,21 @@ TEST_CASE("simplify", "[dbm]")
   tchecker::clock_id_t const x = 1;
   tchecker::clock_id_t const y = 2;
 
-  tchecker::integer_t val = 1;
-
-  SECTION("simplify zero DBM reduces val to 1")
+  SECTION("gcd of zero DBM is 0")
   {
     tchecker::dbm::zero(dbm, dim);
-    val = 23;
-
-    tchecker::dbm::simplify(dbm, dim, val);
-
-    REQUIRE(val == 1);
-
-    for (tchecker::clock_id_t x = 0; x < dim; ++x)
-      for (tchecker::clock_id_t y = 0; y < dim; ++y)
-        REQUIRE(DBM(x, y) == tchecker::dbm::LE_ZERO);
+    tchecker::integer_t g = tchecker::dbm::gcd(dbm, dim);
+    REQUIRE(g == 0);
   }
 
-  SECTION("simplify universal positive DBM reduces val to 1")
+  SECTION("gcd of universal positive DBM is 0")
   {
     tchecker::dbm::universal_positive(dbm, dim);
-    val = 1739;
-
-    tchecker::dbm::simplify(dbm, dim, val);
-
-    REQUIRE(val == 1);
-    REQUIRE(tchecker::dbm::is_universal_positive(dbm, dim));
+    tchecker::integer_t g = tchecker::dbm::gcd(dbm, dim);
+    REQUIRE(g == 0);
   }
 
-  SECTION("simplify some reducible DBM has expected result")
+  SECTION("gcd of reducible DBM is as expected")
   {
     DBM(0, 0) = tchecker::dbm::LE_ZERO;
     DBM(0, x) = tchecker::dbm::db(tchecker::LE, -2);
@@ -2301,51 +2288,11 @@ TEST_CASE("simplify", "[dbm]")
     DBM(y, x) = tchecker::dbm::db(tchecker::LT, 4);
     DBM(y, y) = tchecker::dbm::LE_ZERO;
 
-    val = 2;
-
-    tchecker::dbm::simplify(dbm, dim, val);
-
-    REQUIRE(val == 1);
-    REQUIRE(DBM(0, 0) == tchecker::dbm::LE_ZERO);
-    REQUIRE(DBM(0, x) == tchecker::dbm::db(tchecker::LE, -1));
-    REQUIRE(DBM(0, y) == tchecker::dbm::LE_ZERO);
-    REQUIRE(DBM(x, 0) == tchecker::dbm::LT_INFINITY);
-    REQUIRE(DBM(x, x) == tchecker::dbm::LE_ZERO);
-    REQUIRE(DBM(x, y) == tchecker::dbm::LT_INFINITY);
-    REQUIRE(DBM(y, 0) == tchecker::dbm::db(tchecker::LT, 3));
-    REQUIRE(DBM(y, x) == tchecker::dbm::db(tchecker::LT, 2));
-    REQUIRE(DBM(y, y) == tchecker::dbm::LE_ZERO);
+    tchecker::integer_t g = tchecker::dbm::gcd(dbm, dim);
+    REQUIRE(g == 2);
   }
 
-  SECTION("simplify some reducible DBM bu with irreducible val does nothing")
-  {
-    DBM(0, 0) = tchecker::dbm::LE_ZERO;
-    DBM(0, x) = tchecker::dbm::db(tchecker::LE, -2);
-    DBM(0, y) = tchecker::dbm::LE_ZERO;
-    DBM(x, 0) = tchecker::dbm::LT_INFINITY;
-    DBM(x, x) = tchecker::dbm::LE_ZERO;
-    DBM(x, y) = tchecker::dbm::LT_INFINITY;
-    DBM(y, 0) = tchecker::dbm::db(tchecker::LT, 6);
-    DBM(y, x) = tchecker::dbm::db(tchecker::LT, 4);
-    DBM(y, y) = tchecker::dbm::LE_ZERO;
-
-    val = 7;
-
-    tchecker::dbm::simplify(dbm, dim, val);
-
-    REQUIRE(val == 7);
-    REQUIRE(DBM(0, 0) == tchecker::dbm::LE_ZERO);
-    REQUIRE(DBM(0, x) == tchecker::dbm::db(tchecker::LE, -2));
-    REQUIRE(DBM(0, y) == tchecker::dbm::LE_ZERO);
-    REQUIRE(DBM(x, 0) == tchecker::dbm::LT_INFINITY);
-    REQUIRE(DBM(x, x) == tchecker::dbm::LE_ZERO);
-    REQUIRE(DBM(x, y) == tchecker::dbm::LT_INFINITY);
-    REQUIRE(DBM(y, 0) == tchecker::dbm::db(tchecker::LT, 6));
-    REQUIRE(DBM(y, x) == tchecker::dbm::db(tchecker::LT, 4));
-    REQUIRE(DBM(y, y) == tchecker::dbm::LE_ZERO);
-  }
-
-  SECTION("simplify some irreducible DBM does nothing")
+  SECTION("gcd of irreducible DBM is 1")
   {
     DBM(0, 0) = tchecker::dbm::LE_ZERO;
     DBM(0, x) = tchecker::dbm::db(tchecker::LT, -1);
@@ -2357,75 +2304,7 @@ TEST_CASE("simplify", "[dbm]")
     DBM(y, x) = tchecker::dbm::db(tchecker::LT, 3);
     DBM(y, y) = tchecker::dbm::LE_ZERO;
 
-    val = 3;
-
-    tchecker::dbm::simplify(dbm, dim, val);
-
-    REQUIRE(val == 3);
-    REQUIRE(DBM(0, 0) == tchecker::dbm::LE_ZERO);
-    REQUIRE(DBM(0, x) == tchecker::dbm::db(tchecker::LT, -1));
-    REQUIRE(DBM(0, y) == tchecker::dbm::db(tchecker::LT, -2));
-    REQUIRE(DBM(x, 0) == tchecker::dbm::db(tchecker::LT, 3));
-    REQUIRE(DBM(x, x) == tchecker::dbm::LE_ZERO);
-    REQUIRE(DBM(x, y) == tchecker::dbm::db(tchecker::LT, -1));
-    REQUIRE(DBM(y, 0) == tchecker::dbm::db(tchecker::LT, 4));
-    REQUIRE(DBM(y, x) == tchecker::dbm::db(tchecker::LT, 3));
-    REQUIRE(DBM(y, y) == tchecker::dbm::LE_ZERO);
-  }
-
-  SECTION("simplify some reducible DBM with val 0 has expected result")
-  {
-    DBM(0, 0) = tchecker::dbm::LE_ZERO;
-    DBM(0, x) = tchecker::dbm::db(tchecker::LE, -2);
-    DBM(0, y) = tchecker::dbm::LE_ZERO;
-    DBM(x, 0) = tchecker::dbm::LT_INFINITY;
-    DBM(x, x) = tchecker::dbm::LE_ZERO;
-    DBM(x, y) = tchecker::dbm::LT_INFINITY;
-    DBM(y, 0) = tchecker::dbm::db(tchecker::LT, 6);
-    DBM(y, x) = tchecker::dbm::db(tchecker::LT, 4);
-    DBM(y, y) = tchecker::dbm::LE_ZERO;
-
-    val = 0;
-
-    tchecker::dbm::simplify(dbm, dim, val);
-
-    REQUIRE(val == 0);
-    REQUIRE(DBM(0, 0) == tchecker::dbm::LE_ZERO);
-    REQUIRE(DBM(0, x) == tchecker::dbm::db(tchecker::LE, -1));
-    REQUIRE(DBM(0, y) == tchecker::dbm::LE_ZERO);
-    REQUIRE(DBM(x, 0) == tchecker::dbm::LT_INFINITY);
-    REQUIRE(DBM(x, x) == tchecker::dbm::LE_ZERO);
-    REQUIRE(DBM(x, y) == tchecker::dbm::LT_INFINITY);
-    REQUIRE(DBM(y, 0) == tchecker::dbm::db(tchecker::LT, 3));
-    REQUIRE(DBM(y, x) == tchecker::dbm::db(tchecker::LT, 2));
-    REQUIRE(DBM(y, y) == tchecker::dbm::LE_ZERO);
-  }
-
-  SECTION("simplify some irreducible DBM with val 0 does nothing")
-  {
-    DBM(0, 0) = tchecker::dbm::LE_ZERO;
-    DBM(0, x) = tchecker::dbm::db(tchecker::LT, -1);
-    DBM(0, y) = tchecker::dbm::db(tchecker::LT, -2);
-    DBM(x, 0) = tchecker::dbm::db(tchecker::LT, 3);
-    DBM(x, x) = tchecker::dbm::LE_ZERO;
-    DBM(x, y) = tchecker::dbm::db(tchecker::LT, -1);
-    DBM(y, 0) = tchecker::dbm::db(tchecker::LT, 4);
-    DBM(y, x) = tchecker::dbm::db(tchecker::LT, 3);
-    DBM(y, y) = tchecker::dbm::LE_ZERO;
-
-    val = 0;
-
-    tchecker::dbm::simplify(dbm, dim, val);
-
-    REQUIRE(val == 0);
-    REQUIRE(DBM(0, 0) == tchecker::dbm::LE_ZERO);
-    REQUIRE(DBM(0, x) == tchecker::dbm::db(tchecker::LT, -1));
-    REQUIRE(DBM(0, y) == tchecker::dbm::db(tchecker::LT, -2));
-    REQUIRE(DBM(x, 0) == tchecker::dbm::db(tchecker::LT, 3));
-    REQUIRE(DBM(x, x) == tchecker::dbm::LE_ZERO);
-    REQUIRE(DBM(x, y) == tchecker::dbm::db(tchecker::LT, -1));
-    REQUIRE(DBM(y, 0) == tchecker::dbm::db(tchecker::LT, 4));
-    REQUIRE(DBM(y, x) == tchecker::dbm::db(tchecker::LT, 3));
-    REQUIRE(DBM(y, y) == tchecker::dbm::LE_ZERO);
+    tchecker::integer_t g = tchecker::dbm::gcd(dbm, dim);
+    REQUIRE(g == 1);
   }
 }

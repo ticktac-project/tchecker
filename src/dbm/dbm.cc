@@ -1033,7 +1033,7 @@ tchecker::integer_t constrain_to_single_valuation(tchecker::dbm::db_t * dbm, tch
 
   for (tchecker::clock_id_t x = 1; x < dim; ++x) {
     // find clock which has not fixed value yet
-    if (has_fixed_value(dbm, dim, x))
+    if (tchecker::dbm::has_fixed_value(dbm, dim, x))
       continue;
 
     // if selected clock does not admit integer value, scale dbm up
@@ -1059,17 +1059,14 @@ tchecker::integer_t constrain_to_single_valuation(tchecker::dbm::db_t * dbm, tch
   return factor;
 }
 
-// NB: implementation provided by Ocan Sankur, several modifications (FH)
-void simplify(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::integer_t & val)
+tchecker::integer_t gcd(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim)
 {
   assert(dbm != nullptr);
   assert(dim >= 1);
   assert(tchecker::dbm::is_consistent(dbm, dim));
   assert(tchecker::dbm::is_tight(dbm, dim));
-  assert(val >= 0);
 
-  // Compute the gcd of val and the entries in dbm
-  tchecker::integer_t d = val;
+  tchecker::integer_t d = 0;
   for (tchecker::clock_id_t x = 0; x < dim; ++x)
     for (tchecker::clock_id_t y = 0; y < dim; ++y) {
       if (DBM(x, y) == tchecker::dbm::LT_INFINITY)
@@ -1079,16 +1076,7 @@ void simplify(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::int
         break;
     }
 
-  // Divide all entries in dbm as well as val by the computed gcd
-  if (d == 1)
-    return;
-
-  tchecker::dbm::scale_down(dbm, dim, d);
-  val /= d;
-
-  assert(tchecker::dbm::is_consistent(dbm, dim));
-  assert(tchecker::dbm::is_tight(dbm, dim));
-  assert(val >= 0);
+  return d;
 }
 
 } // end of namespace dbm

@@ -784,7 +784,7 @@ bool is_single_valuation(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t d
  \note A DBM can only represent integer values, whereas constraints such as 0<x<1
  only admit non-integer valuations. The solution is thus to scale up dbm by some
  factor to enlarge constraints in such a way that they admit an integer solution
- (e.g. scale up by 2 yields 0<x<2 which admits 1 as a integer solution). The returned
+ (e.g. scale up by 2 yields 0<x<2 which admits 1 as an integer solution). The returned
  value is the scale factor applied to dbm in order to get an integer solution.
  Hence, the actual rational valuation consists in clock values in the DBM divided by
  the scale factor.
@@ -792,24 +792,18 @@ bool is_single_valuation(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t d
 tchecker::integer_t constrain_to_single_valuation(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim);
 
 /*!
- \brief Simplify the values in a DBM
+ \brief Compute greatest common divisor of entries in a DBM
  \param dbm : a dbm
  \param dim : dimension of dbm
- \param val : some integer
  \pre dbm is not nullptr (checked by assertion)
  dbm is a dim*dim array of difference bounds
  dbm is consistent (checked by assertion)
  dbm is tight (checked by assertion)
  dim >= 1 (checked by assertion)
- val >= 0 (checked by assertion)
- \post the values in dbm as well as val have been divided by their gcd
- dbm is consistent and tight
- val >= 0
- \note when val > 0, it can be seen as the common divisor of all values in dbm. Then, the
- function simplify reduces all rational numbers in the resulting DBM while keeping a common
- divisor in val
- */
-void simplify(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim, tchecker::integer_t & val);
+ \return the greatest common divisor of all non-infinity entries in rdbm, 0 if
+ all non-infinity entries are 0
+*/
+tchecker::integer_t gcd(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim);
 
 } // end of namespace dbm
 
