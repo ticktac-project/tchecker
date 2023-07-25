@@ -1028,6 +1028,7 @@ tchecker::integer_t constrain_to_single_valuation(tchecker::dbm::db_t * dbm, tch
   assert(dim >= 1);
   assert(tchecker::dbm::is_consistent(dbm, dim));
   assert(tchecker::dbm::is_tight(dbm, dim));
+  assert(tchecker::dbm::is_positive(dbm, dim));
 
   tchecker::integer_t factor = 1;
 
@@ -1045,7 +1046,7 @@ tchecker::integer_t constrain_to_single_valuation(tchecker::dbm::db_t * dbm, tch
     }
 
     // then, choose integer value for selected clock
-    if (tchecker::dbm::value(DBM(0, x)) <= tchecker::dbm::MIN_VALUE)
+    if (tchecker::dbm::value(DBM(0, x)) < -tchecker::dbm::MAX_VALUE)
       throw std::overflow_error("tchecker::dbm::constrain_to_single_valuation: integer value overflow");
 
     tchecker::integer_t v = -tchecker::dbm::value(DBM(0, x)) + (tchecker::dbm::comparator(DBM(0, x)) == tchecker::LE ? 0 : 1);

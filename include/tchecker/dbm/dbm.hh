@@ -775,7 +775,8 @@ bool is_single_valuation(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t d
  dbm is a dim*dim array of difference bounds
  dbm is consistent (checked by assertion)
  dbm is tight (checked by assertion)
- dim >= 1 (checked by assertion).
+ dbm is positive (checked by assertion)
+ dim >= 1 (checked by assertion)
  \post dbm represents a single valuation
  dbm is consistent and tight
  \return the scale factor applied to dbm to make it single integer valued
