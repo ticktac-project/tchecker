@@ -884,6 +884,129 @@ int lexical_cmp(tchecker::dbm::db_t const * rdbm1, tchecker::reference_clock_var
   return tchecker::lexical_cmp(rdbm1, rdbm1 + rdim1 * rdim1, rdbm2, rdbm2 + rdim2 * rdim2, tchecker::dbm::db_cmp);
 }
 
+void scale_up(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r, tchecker::integer_t factor)
+{
+  tchecker::dbm::scale_up(rdbm, r.size(), factor);
+}
+
+void scale_down(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r, tchecker::integer_t factor)
+{
+  tchecker::dbm::scale_down(rdbm, r.size(), factor);
+}
+
+bool has_fixed_value(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r, tchecker::clock_id_t x)
+{
+  assert(rdbm != nullptr);
+  assert(tchecker::refdbm::is_consistent(rdbm, r));
+  assert(tchecker::refdbm::is_tight(rdbm, r));
+  assert(x < r.size());
+
+  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const rx = (x < r.refcount() ? 0 : r.refmap()[x]);
+
+  return (tchecker::dbm::comparator(RDBM(x, rx)) == tchecker::LE) && (tchecker::dbm::comparator(RDBM(rx, x)) == tchecker::LE) &&
+         (tchecker::dbm::value(RDBM(rx, x)) == -tchecker::dbm::value(RDBM(x, rx)));
+}
+
+bool admits_integer_value(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r,
+                          tchecker::clock_id_t x)
+{
+  assert(rdbm != nullptr);
+  assert(tchecker::refdbm::is_consistent(rdbm, r));
+  assert(tchecker::refdbm::is_tight(rdbm, r));
+  assert(x < r.size());
+
+  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const rx = (x < r.refcount() ? 0 : r.refmap()[x]);
+
+  return (RDBM(x, rx) == tchecker::dbm::LT_INFINITY) ||
+         !((tchecker::dbm::comparator(RDBM(x, rx)) == tchecker::LT) &&
+           (tchecker::dbm::comparator(RDBM(rx, x)) == tchecker::LT) &&
+           (-(tchecker::dbm::value(RDBM(x, rx)) - 1) == tchecker::dbm::value(RDBM(rx, x))));
+}
+
+bool is_single_valuation(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r)
+{
+  assert(rdbm != nullptr);
+  assert(tchecker::refdbm::is_consistent(rdbm, r));
+  assert(tchecker::refdbm::is_tight(rdbm, r));
+
+  tchecker::clock_id_t const rdim = r.size();
+  for (tchecker::clock_id_t x = 1; x < rdim; ++x)
+    if (!tchecker::refdbm::has_fixed_value(rdbm, r, x))
+      return false;
+
+  return true;
+}
+
+tchecker::integer_t constrain_to_single_valuation(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r)
+{
+  assert(rdbm != nullptr);
+  assert(tchecker::refdbm::is_consistent(rdbm, r));
+  assert(tchecker::refdbm::is_tight(rdbm, r));
+
+  tchecker::integer_t factor = 1;
+
+  tchecker::clock_id_t const rdim = r.size();
+  tchecker::clock_id_t const refcount = r.refcount();
+  std::vector<tchecker::clock_id_t> const & refmap = r.refmap();
+  for (tchecker::clock_id_t x = 1; x < rdim; ++x) {
+    // find clock which has not fixed value yet
+    if (tchecker::refdbm::has_fixed_value(rdbm, r, x))
+      continue;
+
+    // if selected clock does not admit integer value, scale dbm up
+    if (!tchecker::refdbm::admits_integer_value(rdbm, r, x)) {
+      if (factor > std::numeric_limits<tchecker::integer_t>::max() / 2)
+        throw std::overflow_error("tchecker::refdbm::constrain_to_single_valuation: scale factor overflow");
+      factor *= 2;
+      tchecker::refdbm::scale_up(rdbm, r, factor);
+    }
+
+    // if x is a reference clock, then choose integer value w.r.t. first reference clock (i.e. 0)
+    if (x < refcount) {
+      // x-0<vx0 && 0-x<v0x
+      // <=> -v0x < x-0 < vx0
+      // then, choose smallest absolute value v within [-v0x,vx0], and set x-0 == v
+      tchecker::integer_t const max_v_x0 =
+          tchecker::dbm::value(RDBM(x, 0)) - (tchecker::dbm::comparator(RDBM(x, 0)) == tchecker::LE ? 0 : 1);
+      tchecker::integer_t const max_v_0x =
+          tchecker::dbm::value(RDBM(0, x)) - (tchecker::dbm::comparator(RDBM(0, x)) == tchecker::LE ? 0 : 1);
+      assert(-max_v_0x <= max_v_x0);
+      // choose smallest absolute value v between -max_v_0x and max_v_x0
+      tchecker::integer_t v = 0;
+      if (max_v_x0 < 0)
+        v = max_v_x0;
+      else if (-max_v_0x > 0)
+        v = -max_v_0x;
+      tchecker::refdbm::constrain(rdbm, r, x, 0, tchecker::LE, v);
+      tchecker::refdbm::constrain(rdbm, r, 0, x, tchecker::LE, -v);
+    }
+    else {
+      // otherwise, choose integer value w.r.t. reference clock (using rx<=x)
+      tchecker::clock_id_t const rx = refmap[x];
+
+      if (tchecker::dbm::value(RDBM(rx, x)) <= tchecker::dbm::MIN_VALUE)
+        throw std::overflow_error("tchecker::refdbm::constrain_to_single_valuation: integer value overflow");
+
+      tchecker::integer_t v =
+          -tchecker::dbm::value(RDBM(rx, x)) + (tchecker::dbm::comparator(RDBM(rx, x)) == tchecker::LE ? 0 : 1);
+      tchecker::refdbm::constrain(rdbm, r, rx, x, tchecker::LE, -v);
+      tchecker::refdbm::constrain(rdbm, r, x, rx, tchecker::LE, v);
+    }
+  }
+
+  assert(tchecker::refdbm::is_consistent(rdbm, r));
+  assert(tchecker::refdbm::is_tight(rdbm, r));
+
+  return factor;
+}
+
+tchecker::integer_t gcd(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r)
+{
+  return tchecker::dbm::gcd(rdbm, r.size());
+}
+
 } // end of namespace refdbm
 
 } // end of namespace tchecker

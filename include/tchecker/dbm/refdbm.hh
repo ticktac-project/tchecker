@@ -841,6 +841,128 @@ std::ostream & output(std::ostream & os, tchecker::dbm::db_t const * rdbm, tchec
 int lexical_cmp(tchecker::dbm::db_t const * rdbm1, tchecker::reference_clock_variables_t const & r1,
                 tchecker::dbm::db_t const * rdbm2, tchecker::reference_clock_variables_t const & r2);
 
+/*!
+ \brief Multiply all constants of a DBM with reference clocks by factor
+ \param rdbm : a DBM
+ \param r : reference clocks for rdbm
+ \param factor scale factor
+ \pre rdbm is not nullptr (checked by assertion)
+ rdbm is a r.size()*r.size() array of difference bounds
+ rdbm is a DBM over reference clocks r
+ rdbm is consistent (checked by assertion)
+ rdbm is tight (checked by assertion)
+ factor > 0
+ \post all non infinity values in rdbm have been multiplied by factor
+ rdbm is consistent and tight
+ \throw std::invalid_argument : if factor <= 0
+ \throw std::overflow_error : if overflow occurs
+ \throw std::underflow_error : if underflow occurs
+ \note (<,inf) in dbm are left unchanged
+ */
+void scale_up(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r, tchecker::integer_t factor);
+
+/*!
+ \brief Divide all constants of a DBM with reference clocks by factor
+ \param rdbm : a DBM
+ \param r : reference clocks for rdbm
+ \param factor scale factor
+ \pre rdbm is not nullptr (checked by assertion)
+ rdbm is a r.size()*r.size() array of difference bounds
+ rdbm is consistent (checked by assertion)
+ rdbm is tight (checked by assertion)
+ factor > 0
+ factor is a divider of all non-infinity entries in rdbm
+ \post all non infinity values in rdbm have been divided by factor
+ rdbm is consistent and tight
+ \throw std::invalid_argument : if factor <= 0 or if factor is not a divider of all entries in rdbm
+ \note (<,inf) in rdbm are left unchanged
+ */
+void scale_down(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r, tchecker::integer_t factor);
+
+/*!
+ \brief Check if a clock has a fixed value in a DBM with reference clocks
+ \param rdbm : a DBM
+ \param r : reference clocks for rdbm
+ \param x : clock ID
+ \pre rdbm is not nullptr (checked by assertion)
+ rdbm is a r.size()*r.size() array of difference bounds
+ rdbm is consistent (checked by assertion)
+ rdbm is tight (checked by assertion)
+ 0<=x<r.size() (checked by assertion)
+ \return true if clock x has a fixed value in dbm, false otherwise
+ \note the first reference clock in r is assumed to have fixed value
+ other reference clocks have fixed value w.r.t. the first reference clock
+ offset clocks have fixed value w.r.t. their reference clock
+*/
+bool has_fixed_value(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r, tchecker::clock_id_t x);
+
+/*!
+ \brief Check if a clock admits an integer value in a DBM with reference clocks
+ \param rdbm : a DBM
+ \param r : reference clocks for rdbm
+ \param x : clock ID
+ \pre rdbm is not nullptr (checked by assertion)
+ rdbm is a r.size()*r.size() array of difference bounds
+ rdbm is consistent (checked by assertion)
+ rdbm is tight (checked by assertion)
+ 0<=x<r.size() (checked by assertion)
+ \return true if clock x admits an integer value in rdbm, false otherwise
+ \note reference clocks admit an integer value w.r.t. the first reference clock
+ offset clocks admit an integer value w.r.t. their reference clock
+*/
+bool admits_integer_value(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r,
+                          tchecker::clock_id_t x);
+
+/*!
+ \brief Check if a DBM contains a single valuation
+ \param rdbm : a DBM
+ \param r : reference clocks for rdbm
+ \pre rdbm is not nullptr (checked by assertion)
+ rdbm is a r.size()*r.size() array of difference bounds
+ rdbm is consistent (checked by assertion)
+ rdbm is tight (checked by assertion)
+ \return true if rdbm contains a single valuation, false otherwise
+ \note a DBM with reference clocks admits a single valuation if choosing a value for one of
+ the clocks sets the value of every other clock
+*/
+bool is_single_valuation(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r);
+
+/*!
+ \brief Constrains a DBM with reference clocks to a single valuation
+ \param rdbm : a DBM
+ \param r : reference clocks for rdbm
+ \pre rdbm is not nullptr (checked by assertion)
+ rdbm is a r.size()*r.size() array of difference bounds
+ rdbm is consistent (checked by assertion)
+ rdbm is tight (checked by assertion)
+ \post rdbm represents a single valuation (i.e. is_single_valuation() returns true)
+ rdbm is consistent and tight
+ \return the scale factor applied to rdbm to make it single integer valued
+ \throw std::overflow_error : if overflow occurs
+ \throw std::underflow_error : if underflow occurs
+ \note A DBM can only represent integer values, whereas constraints such as 0<x<1
+ only admit non-integer valuations. The solution is thus to scale up rdbm by some
+ factor to enlarge constraints in such a way that they admit an integer solution
+ (e.g. scale up by 2 yields 0<x<2 which admits 1 as an integer solution). The returned
+ value is the scale factor applied to rdbm in order to get an integer solution.
+ Hence, the actual rational valuation consists in clock values in the DBM divided by
+ the scale factor.
+*/
+tchecker::integer_t constrain_to_single_valuation(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r);
+
+/*!
+ \brief Compute greatest common divisor of entries in a DBM with reference clocks
+ \param dbm : a dbm
+ \param r : reference clocks for rdbm
+ \pre rdbm is not nullptr (checked by assertion)
+ rdbm is a r.size()*r.size() array of difference bounds
+ rdbm is consistent (checked by assertion)
+ rdbm is tight (checked by assertion)
+ \return the greatest common divisor of all non-infinity entries in rdbm, 0 if
+ all non-infinity entries are 0
+*/
+tchecker::integer_t gcd(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r);
+
 } // end of namespace refdbm
 
 } // end of namespace tchecker

@@ -2071,3 +2071,320 @@ TEST_CASE("to_dbm on DBMs with reference clocks", "[refdbm]")
     REQUIRE(tchecker::dbm::is_equal(dbm, dbm2, dim));
   }
 }
+
+TEST_CASE("has_fixed_value", "[refdbm]")
+{
+  std::vector<std::string> refclocks{"$0", "$1", "$2"};
+  tchecker::reference_clock_variables_t r(refclocks);
+  r.declare("x1", "$0");
+  r.declare("x2", "$0");
+  r.declare("y", "$1");
+  r.declare("z", "$2");
+
+  tchecker::clock_id_t const t0 = r.id("$0");
+  tchecker::clock_id_t const t1 = r.id("$1");
+  tchecker::clock_id_t const t2 = r.id("$2");
+  tchecker::clock_id_t const x1 = r.id("x1");
+  tchecker::clock_id_t const x2 = r.id("x2");
+  tchecker::clock_id_t const y = r.id("y");
+  tchecker::clock_id_t const z = r.id("z");
+
+  tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
+  tchecker::dbm::db_t rdbm[rdim * rdim];
+
+  SECTION("every clock has fixed value in the zero DBM")
+  {
+    tchecker::refdbm::zero(rdbm, r);
+    REQUIRE(tchecker::refdbm::has_fixed_value(rdbm, r, t0));
+    REQUIRE(tchecker::refdbm::has_fixed_value(rdbm, r, t1));
+    REQUIRE(tchecker::refdbm::has_fixed_value(rdbm, r, t2));
+    REQUIRE(tchecker::refdbm::has_fixed_value(rdbm, r, x1));
+    REQUIRE(tchecker::refdbm::has_fixed_value(rdbm, r, x2));
+    REQUIRE(tchecker::refdbm::has_fixed_value(rdbm, r, y));
+    REQUIRE(tchecker::refdbm::has_fixed_value(rdbm, r, z));
+  }
+
+  SECTION("only clock $0 has fixed value in universal positive DBM")
+  {
+    tchecker::refdbm::universal_positive(rdbm, r);
+    REQUIRE(tchecker::refdbm::has_fixed_value(rdbm, r, t0));
+    REQUIRE_FALSE(tchecker::refdbm::has_fixed_value(rdbm, r, t1));
+    REQUIRE_FALSE(tchecker::refdbm::has_fixed_value(rdbm, r, t2));
+    REQUIRE_FALSE(tchecker::refdbm::has_fixed_value(rdbm, r, x1));
+    REQUIRE_FALSE(tchecker::refdbm::has_fixed_value(rdbm, r, x2));
+    REQUIRE_FALSE(tchecker::refdbm::has_fixed_value(rdbm, r, y));
+    REQUIRE_FALSE(tchecker::refdbm::has_fixed_value(rdbm, r, z));
+  }
+
+  SECTION("A DBM with clocks which have fixed value, and clocks which do not")
+  {
+    // t1 == t0 + 1 && t2 > t0 + 7 && x1 == t0 && t0 - x2 < 2 && t1 - y < 3 && t2 - z == 6
+    tchecker::refdbm::universal_positive(rdbm, r);
+    RDBM(t1, t0) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM(t0, t1) = tchecker::dbm::db(tchecker::LE, -1);
+    RDBM(t0, t2) = tchecker::dbm::db(tchecker::LT, -7);
+    RDBM(x1, t0) = tchecker::dbm::LE_ZERO;
+    RDBM(t0, x1) = tchecker::dbm::LE_ZERO;
+    RDBM(t0, x2) = tchecker::dbm::db(tchecker::LT, 2);
+    RDBM(t1, y) = tchecker::dbm::db(tchecker::LT, 3);
+    RDBM(t2, z) = tchecker::dbm::db(tchecker::LE, 6);
+    RDBM(z, t2) = tchecker::dbm::db(tchecker::LE, -6);
+    tchecker::refdbm::tighten(rdbm, r);
+
+    REQUIRE(tchecker::refdbm::has_fixed_value(rdbm, r, t0));
+    REQUIRE(tchecker::refdbm::has_fixed_value(rdbm, r, t1));
+    REQUIRE_FALSE(tchecker::refdbm::has_fixed_value(rdbm, r, t2));
+    REQUIRE(tchecker::refdbm::has_fixed_value(rdbm, r, x1));
+    REQUIRE_FALSE(tchecker::refdbm::has_fixed_value(rdbm, r, x2));
+    REQUIRE_FALSE(tchecker::refdbm::has_fixed_value(rdbm, r, y));
+    REQUIRE(tchecker::refdbm::has_fixed_value(rdbm, r, z));
+  }
+}
+
+TEST_CASE("admits_integer_value", "[refdbm]")
+{
+  std::vector<std::string> refclocks{"$0", "$1", "$2"};
+  tchecker::reference_clock_variables_t r(refclocks);
+  r.declare("x1", "$0");
+  r.declare("x2", "$0");
+  r.declare("y", "$1");
+  r.declare("z", "$2");
+
+  tchecker::clock_id_t const t0 = r.id("$0");
+  tchecker::clock_id_t const t1 = r.id("$1");
+  tchecker::clock_id_t const t2 = r.id("$2");
+  tchecker::clock_id_t const x1 = r.id("x1");
+  tchecker::clock_id_t const x2 = r.id("x2");
+  tchecker::clock_id_t const y = r.id("y");
+  tchecker::clock_id_t const z = r.id("z");
+
+  tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
+  tchecker::dbm::db_t rdbm[rdim * rdim];
+
+  SECTION("every clock admits an integer value in the zero DBM")
+  {
+    tchecker::refdbm::zero(rdbm, r);
+    REQUIRE(tchecker::refdbm::admits_integer_value(rdbm, r, t0));
+    REQUIRE(tchecker::refdbm::admits_integer_value(rdbm, r, t1));
+    REQUIRE(tchecker::refdbm::admits_integer_value(rdbm, r, t2));
+    REQUIRE(tchecker::refdbm::admits_integer_value(rdbm, r, x1));
+    REQUIRE(tchecker::refdbm::admits_integer_value(rdbm, r, x2));
+    REQUIRE(tchecker::refdbm::admits_integer_value(rdbm, r, y));
+    REQUIRE(tchecker::refdbm::admits_integer_value(rdbm, r, z));
+  }
+
+  SECTION("every clock admits an integer value in universal positive DBM")
+  {
+    tchecker::refdbm::universal_positive(rdbm, r);
+    REQUIRE(tchecker::refdbm::admits_integer_value(rdbm, r, t0));
+    REQUIRE(tchecker::refdbm::admits_integer_value(rdbm, r, t1));
+    REQUIRE(tchecker::refdbm::admits_integer_value(rdbm, r, t2));
+    REQUIRE(tchecker::refdbm::admits_integer_value(rdbm, r, x1));
+    REQUIRE(tchecker::refdbm::admits_integer_value(rdbm, r, x2));
+    REQUIRE(tchecker::refdbm::admits_integer_value(rdbm, r, y));
+    REQUIRE(tchecker::refdbm::admits_integer_value(rdbm, r, z));
+  }
+
+  SECTION("A DBM with clocks which admit an integer value, and clocks which do not")
+  {
+    // t1 == t0 + 1 && t0 - 1 < t2 < t0 && t0 < x1 < t0+1 && t0<x2 && t1 <= y < t1 + 1 && t2 - z == 6
+    tchecker::refdbm::universal_positive(rdbm, r);
+    RDBM(t1, t0) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM(t0, t1) = tchecker::dbm::db(tchecker::LE, -1);
+    RDBM(t0, t2) = tchecker::dbm::db(tchecker::LT, 1);
+    RDBM(t2, t0) = tchecker::dbm::db(tchecker::LT, 0);
+    RDBM(x1, t0) = tchecker::dbm::db(tchecker::LT, 1);
+    RDBM(t0, x1) = tchecker::dbm::db(tchecker::LT, 0);
+    RDBM(t0, x2) = tchecker::dbm::db(tchecker::LT, 0);
+    RDBM(t1, y) = tchecker::dbm::LE_ZERO;
+    RDBM(y, t1) = tchecker::dbm::db(tchecker::LT, 1);
+    RDBM(t2, z) = tchecker::dbm::db(tchecker::LE, 6);
+    RDBM(z, t2) = tchecker::dbm::db(tchecker::LE, -6);
+    tchecker::refdbm::tighten(rdbm, r);
+
+    REQUIRE(tchecker::refdbm::admits_integer_value(rdbm, r, t0));
+    REQUIRE(tchecker::refdbm::admits_integer_value(rdbm, r, t1));
+    REQUIRE_FALSE(tchecker::refdbm::admits_integer_value(rdbm, r, t2));
+    REQUIRE_FALSE(tchecker::refdbm::admits_integer_value(rdbm, r, x1));
+    REQUIRE(tchecker::refdbm::admits_integer_value(rdbm, r, x2));
+    REQUIRE(tchecker::refdbm::admits_integer_value(rdbm, r, y));
+    REQUIRE(tchecker::refdbm::admits_integer_value(rdbm, r, z));
+  }
+}
+
+TEST_CASE("is_single_valuation", "[refdbm]")
+{
+  std::vector<std::string> refclocks{"$0", "$1", "$2"};
+  tchecker::reference_clock_variables_t r(refclocks);
+  r.declare("x1", "$0");
+  r.declare("x2", "$0");
+  r.declare("y", "$1");
+  r.declare("z", "$2");
+
+  tchecker::clock_id_t const t0 = r.id("$0");
+  tchecker::clock_id_t const t1 = r.id("$1");
+  tchecker::clock_id_t const t2 = r.id("$2");
+  tchecker::clock_id_t const x1 = r.id("x1");
+  tchecker::clock_id_t const x2 = r.id("x2");
+  tchecker::clock_id_t const y = r.id("y");
+  tchecker::clock_id_t const z = r.id("z");
+
+  tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
+  tchecker::dbm::db_t rdbm[rdim * rdim];
+
+  SECTION("the zero DBM is single valuation")
+  {
+    tchecker::refdbm::zero(rdbm, r);
+    REQUIRE(tchecker::refdbm::is_single_valuation(rdbm, r));
+  }
+
+  SECTION("the universal positive DBM is not single valuation")
+  {
+    tchecker::refdbm::universal_positive(rdbm, r);
+    REQUIRE_FALSE(tchecker::refdbm::is_single_valuation(rdbm, r));
+  }
+
+  SECTION("some zone which is not single valuation (some clock has no integer value)")
+  {
+    // t1 == t0 + 1 && t0 - 1 < t2 < t0 && t0 < x1 < t0+1 && x2==t0+5 && t1 <= y < t1 + 1 && t2 - z == 6
+    tchecker::refdbm::universal_positive(rdbm, r);
+    RDBM(t1, t0) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM(t0, t1) = tchecker::dbm::db(tchecker::LE, -1);
+    RDBM(t0, t2) = tchecker::dbm::db(tchecker::LT, 1);
+    RDBM(t2, t0) = tchecker::dbm::db(tchecker::LT, 0);
+    RDBM(x1, t0) = tchecker::dbm::db(tchecker::LT, 1);
+    RDBM(t0, x1) = tchecker::dbm::db(tchecker::LT, 0);
+    RDBM(t0, x2) = tchecker::dbm::db(tchecker::LE, -5);
+    RDBM(x2, t0) = tchecker::dbm::db(tchecker::LE, 5);
+    RDBM(t1, y) = tchecker::dbm::LE_ZERO;
+    RDBM(y, t1) = tchecker::dbm::db(tchecker::LT, 1);
+    RDBM(t2, z) = tchecker::dbm::db(tchecker::LE, 6);
+    RDBM(z, t2) = tchecker::dbm::db(tchecker::LE, -6);
+    tchecker::refdbm::tighten(rdbm, r);
+
+    REQUIRE_FALSE(tchecker::refdbm::is_single_valuation(rdbm, r));
+  }
+
+  SECTION("some zone which is not single valuation (some clock has more than one integer value)")
+  {
+    // t1 == t0 + 1 && t2==t0 && t0 < x1 < t0+3 && t0<x2 && t1 <= y < t1 + 1 && t2 - z == 6
+    tchecker::refdbm::universal_positive(rdbm, r);
+    RDBM(t1, t0) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM(t0, t1) = tchecker::dbm::db(tchecker::LE, -1);
+    RDBM(t0, t2) = tchecker::dbm::LE_ZERO;
+    RDBM(t2, t0) = tchecker::dbm::LE_ZERO;
+    RDBM(x1, t0) = tchecker::dbm::db(tchecker::LT, 3);
+    RDBM(t0, x1) = tchecker::dbm::db(tchecker::LT, 0);
+    RDBM(t0, x2) = tchecker::dbm::db(tchecker::LT, 0);
+    RDBM(t1, y) = tchecker::dbm::LE_ZERO;
+    RDBM(y, t1) = tchecker::dbm::db(tchecker::LT, 1);
+    RDBM(t2, z) = tchecker::dbm::db(tchecker::LE, 6);
+    RDBM(z, t2) = tchecker::dbm::db(tchecker::LE, -6);
+    tchecker::refdbm::tighten(rdbm, r);
+
+    REQUIRE_FALSE(tchecker::refdbm::is_single_valuation(rdbm, r));
+  }
+
+  SECTION("some zone which is single valuation")
+  {
+    // t1 == t0 + 1 && t2==t0 && x1==t0+1 && x2=t0+2 && t1 == y && t2 - z == 6
+    tchecker::refdbm::universal_positive(rdbm, r);
+    RDBM(t1, t0) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM(t0, t1) = tchecker::dbm::db(tchecker::LE, -1);
+    RDBM(t0, t2) = tchecker::dbm::LE_ZERO;
+    RDBM(t2, t0) = tchecker::dbm::LE_ZERO;
+    RDBM(x1, t0) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM(t0, x1) = tchecker::dbm::db(tchecker::LE, -1);
+    RDBM(x2, t0) = tchecker::dbm::db(tchecker::LE, 2);
+    RDBM(t0, x2) = tchecker::dbm::db(tchecker::LE, -2);
+    RDBM(t1, y) = tchecker::dbm::LE_ZERO;
+    RDBM(y, t1) = tchecker::dbm::LE_ZERO;
+    RDBM(t2, z) = tchecker::dbm::db(tchecker::LE, 6);
+    RDBM(z, t2) = tchecker::dbm::db(tchecker::LE, -6);
+    tchecker::refdbm::tighten(rdbm, r);
+
+    REQUIRE(tchecker::refdbm::is_single_valuation(rdbm, r));
+  }
+}
+
+TEST_CASE("constrain_to_single_valuation", "[refdbm]")
+{
+  std::vector<std::string> refclocks{"$0", "$1", "$2"};
+  tchecker::reference_clock_variables_t r(refclocks);
+  r.declare("x1", "$0");
+  r.declare("x2", "$0");
+  r.declare("y", "$1");
+  r.declare("z", "$2");
+
+  tchecker::clock_id_t const t0 = r.id("$0");
+  tchecker::clock_id_t const t1 = r.id("$1");
+  tchecker::clock_id_t const t2 = r.id("$2");
+  tchecker::clock_id_t const x1 = r.id("x1");
+  tchecker::clock_id_t const x2 = r.id("x2");
+  tchecker::clock_id_t const y = r.id("y");
+  tchecker::clock_id_t const z = r.id("z");
+
+  tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
+  tchecker::dbm::db_t rdbm[rdim * rdim];
+
+  SECTION("contrain the zero DBM to single valuation")
+  {
+    tchecker::refdbm::zero(rdbm, r);
+    tchecker::integer_t factor = tchecker::refdbm::constrain_to_single_valuation(rdbm, r);
+
+    REQUIRE(factor == 1);
+    REQUIRE(tchecker::refdbm::is_single_valuation(rdbm, r));
+    for (tchecker::clock_id_t x = 0; x < rdim; ++x)
+      for (tchecker::clock_id_t y = 0; y < rdim; ++y)
+        REQUIRE(RDBM(x, y) == tchecker::dbm::LE_ZERO);
+  }
+
+  SECTION("constrain the universal positive DBM to single valuation")
+  {
+    tchecker::refdbm::universal_positive(rdbm, r);
+    tchecker::integer_t factor = tchecker::refdbm::constrain_to_single_valuation(rdbm, r);
+
+    REQUIRE(factor == 1);
+    REQUIRE(tchecker::refdbm::is_single_valuation(rdbm, r));
+    for (tchecker::clock_id_t x = 0; x < rdim; ++x)
+      for (tchecker::clock_id_t y = 0; y < rdim; ++y)
+        REQUIRE(RDBM(x, y) == tchecker::dbm::LE_ZERO);
+  }
+
+  SECTION("some zone")
+  {
+    // t1 == t0 + 1 && t2==t0 && t0 < x1 < t0+1 && t0<x2 && t1 <= y < t1 + 1 && t2 - z == 6
+    tchecker::refdbm::universal_positive(rdbm, r);
+    RDBM(t1, t0) = tchecker::dbm::db(tchecker::LE, 1);
+    RDBM(t0, t1) = tchecker::dbm::db(tchecker::LE, -1);
+    RDBM(t0, t2) = tchecker::dbm::LE_ZERO;
+    RDBM(t2, t0) = tchecker::dbm::LE_ZERO;
+    RDBM(x1, t0) = tchecker::dbm::db(tchecker::LT, 1);
+    RDBM(t0, x1) = tchecker::dbm::db(tchecker::LT, 0);
+    RDBM(t0, x2) = tchecker::dbm::db(tchecker::LT, 0);
+    RDBM(t1, y) = tchecker::dbm::LE_ZERO;
+    RDBM(y, t1) = tchecker::dbm::db(tchecker::LT, 1);
+    RDBM(t2, z) = tchecker::dbm::db(tchecker::LE, 6);
+    RDBM(z, t2) = tchecker::dbm::db(tchecker::LE, -6);
+    tchecker::refdbm::tighten(rdbm, r);
+
+    tchecker::integer_t factor = tchecker::refdbm::constrain_to_single_valuation(rdbm, r);
+    REQUIRE(factor == 2);
+
+    // expected: t1==t0+2 & t2==t0 & x1==t0+1 && x2==t0+2 && y==t1 && t2-z==12
+    // with factor==2
+    REQUIRE(tchecker::refdbm::is_single_valuation(rdbm, r));
+    REQUIRE(RDBM(t1, t0) == tchecker::dbm::db(tchecker::LE, 2));
+    REQUIRE(RDBM(t0, t1) == tchecker::dbm::db(tchecker::LE, -2));
+    REQUIRE(RDBM(t0, t2) == tchecker::dbm::LE_ZERO);
+    REQUIRE(RDBM(t2, t0) == tchecker::dbm::LE_ZERO);
+    REQUIRE(RDBM(x1, t0) == tchecker::dbm::db(tchecker::LE, 1));
+    REQUIRE(RDBM(t0, x1) == tchecker::dbm::db(tchecker::LE, -1));
+    REQUIRE(RDBM(x2, t0) == tchecker::dbm::db(tchecker::LE, 1));
+    REQUIRE(RDBM(t0, x2) == tchecker::dbm::db(tchecker::LE, -1));
+    REQUIRE(RDBM(t1, y) == tchecker::dbm::LE_ZERO);
+    REQUIRE(RDBM(y, t1) == tchecker::dbm::LE_ZERO);
+    REQUIRE(RDBM(t2, z) == tchecker::dbm::db(tchecker::LE, 12));
+    REQUIRE(RDBM(z, t2) == tchecker::dbm::db(tchecker::LE, -12));
+  }
+}
