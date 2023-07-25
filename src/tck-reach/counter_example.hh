@@ -81,7 +81,7 @@ template <class GRAPH, class CEX> CEX * symbolic_counter_example_zg(GRAPH const 
 
   // Get the corresponding run in a zone graph with standard semantics and no extrapolation
   tchecker::vloc_t const & initial_vloc = g.edge_src(seq[0])->state().vloc();
-  CEX * cex = tchecker::zg::path::compute_symbolic_run(zg, initial_vloc, tchecker::make_range(vedge_seq));
+  CEX * cex = tchecker::zg::path::compute_symbolic_run(zg, initial_vloc, vedge_seq);
   if (!cex->empty()) {
     cex->first()->initial(true);
     cex->last()->final(true);
@@ -120,7 +120,7 @@ template <class GRAPH, class CEX> CEX * symbolic_counter_example_refzg(GRAPH con
 
   // Get the corresponding run in a zone graph with standard semantics and no extrapolation
   tchecker::vloc_t const & initial_vloc = g.edge_src(seq[0])->state().vloc();
-  CEX * cex = tchecker::refzg::path::compute_symbolic_run(refzg, initial_vloc, tchecker::make_range(vedge_seq));
+  CEX * cex = tchecker::refzg::path::compute_symbolic_run(refzg, initial_vloc, vedge_seq);
   if (!cex->empty()) {
     cex->first()->initial(true);
     cex->last()->final(true);

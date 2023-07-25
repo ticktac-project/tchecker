@@ -211,7 +211,6 @@ std::ostream & dot_output(std::ostream & os, tchecker::refzg::path::finite_path_
 
 /*!
  \brief Compute a finite symbolic run in a zone graph with reference clocks following a specified sequence of tuples of edges
- \tparam VEDGE_RANGE : type of range of tuple of edges, shall dereference to tchecker::const_vedge_sptr_t
  \param refzg : zone graph with reference clocks
  \param initial_vloc : tuple of initial locations
  \param seq : sequence of tuple of edges as a range
@@ -223,33 +222,9 @@ std::ostream & dot_output(std::ostream & os, tchecker::refzg::path::finite_path_
  or if seq is not feasible from the initial state
  \note the returned path keeps a shared pointer on refzg
  */
-template <typename VEDGE_RANGE>
 tchecker::refzg::path::finite_path_t * compute_symbolic_run(std::shared_ptr<tchecker::refzg::refzg_t> const & refzg,
-                                                            tchecker::vloc_t const & initial_vloc, VEDGE_RANGE const & seq)
-{
-  tchecker::refzg::path::finite_path_t * path = new tchecker::refzg::path::finite_path_t{refzg};
-
-  tchecker::refzg::const_state_sptr_t s{tchecker::refzg::initial(*refzg, initial_vloc)};
-  if (s.ptr() == nullptr) {
-    delete path;
-    throw std::invalid_argument("No initial state with given tuple of locations");
-  }
-
-  path->add_first_node(s);
-  path->first()->initial(true);
-
-  for (tchecker::const_vedge_sptr_t const & vedge_ptr : seq) {
-    s = path->last()->state_ptr();
-    auto && [nexts, nextt] = tchecker::refzg::next(*refzg, s, *vedge_ptr);
-    if (nexts.ptr() == nullptr || nextt.ptr() == nullptr) {
-      delete path;
-      throw std::invalid_argument("Sequence is not feasible from given initial locations");
-    }
-    path->extend_back(nextt, nexts);
-  }
-
-  return path;
-}
+                                                            tchecker::vloc_t const & initial_vloc,
+                                                            std::vector<tchecker::const_vedge_sptr_t> const & seq);
 
 } // namespace path
 

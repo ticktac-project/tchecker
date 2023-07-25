@@ -113,6 +113,36 @@ std::ostream & dot_output(std::ostream & os, tchecker::zg::path::finite_path_t c
                                      tchecker::zg::path::edge_le_t>(os, path, name);
 }
 
+/* compute_symbolic_run */
+
+tchecker::zg::path::finite_path_t * compute_symbolic_run(std::shared_ptr<tchecker::zg::zg_t> const & zg,
+                                                         tchecker::vloc_t const & initial_vloc,
+                                                         std::vector<tchecker::const_vedge_sptr_t> const & seq)
+{
+  tchecker::zg::path::finite_path_t * path = new tchecker::zg::path::finite_path_t{zg};
+
+  tchecker::zg::const_state_sptr_t s{tchecker::zg::initial(*zg, initial_vloc)};
+  if (s.ptr() == nullptr) {
+    delete path;
+    throw std::invalid_argument("No initial state with given tuple of locations");
+  }
+
+  path->add_first_node(s);
+  path->first()->initial(true);
+
+  for (tchecker::const_vedge_sptr_t const & vedge_ptr : seq) {
+    s = path->last()->state_ptr();
+    auto && [nexts, nextt] = tchecker::zg::next(*zg, s, *vedge_ptr);
+    if (nexts.ptr() == nullptr || nextt.ptr() == nullptr) {
+      delete path;
+      throw std::invalid_argument("Sequence is not feasible from given initial locations");
+    }
+    path->extend_back(nextt, nexts);
+  }
+
+  return path;
+}
+
 } // namespace path
 
 } // namespace zg
