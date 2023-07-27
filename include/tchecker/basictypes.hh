@@ -13,6 +13,8 @@
 #include <limits>
 #include <tchecker/config.hh>
 
+#include <boost/rational.hpp>
+
 /*!
  \file basictypes.hh
  \brief Definition of basic types for models
@@ -103,6 +105,11 @@ static_assert(REFCLOCK_ID <= std::numeric_limits<tchecker::integer_t>::max());
 \brief Definition of reference clock name
 */
 std::string const REFCLOCK_NAME("0");
+
+/*!
+ \brief Type of clock value
+*/
+using clock_rational_value_t = boost::rational<tchecker::integer_t>;
 
 /*!
  \brief Type inequality comparator

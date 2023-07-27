@@ -806,6 +806,20 @@ tchecker::integer_t constrain_to_single_valuation(tchecker::dbm::db_t * dbm, tch
 */
 tchecker::integer_t gcd(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim);
 
+/*!
+ \brief Check is a clock valuation satisfies a DBM
+ \param dbm : a dbm
+ \param dim : dimension of dbm
+ \pre dbm is not nullptr (checked by assertion)
+ dbm is a dim*dim array of difference bounds
+ dbm is consistent (checked by assertion)
+ dbm is tight (checked by assertion)
+ dim >= 1 (checked by assertion)
+ the size of clockval is equal to dim (checked by assertion)
+ \return true if clockval satisfies all the constraints in dbm, false otherwise
+ */
+bool satisfies(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim, tchecker::clockval_t const & clockval);
+
 } // end of namespace dbm
 
 } // end of namespace tchecker

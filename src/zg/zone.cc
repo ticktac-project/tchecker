@@ -91,6 +91,11 @@ tchecker::dbm::db_t const * zone_t::dbm() const { return dbm_ptr(); }
 
 void zone_t::to_dbm(tchecker::dbm::db_t * dbm) const { std::memcpy(dbm, dbm_ptr(), _dim * _dim * sizeof(*dbm)); }
 
+bool zone_t::belongs(tchecker::clockval_t const & clockval) const
+{
+  return tchecker::dbm::satisfies(dbm_ptr(), _dim, clockval);
+}
+
 zone_t::zone_t(tchecker::clock_id_t dim) : _dim(dim) { tchecker::dbm::universal_positive(dbm_ptr(), _dim); }
 
 zone_t::zone_t(tchecker::zg::zone_t const & zone) : _dim(zone._dim)

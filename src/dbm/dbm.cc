@@ -1080,6 +1080,26 @@ tchecker::integer_t gcd(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t di
   return d;
 }
 
+bool satisfies(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim, tchecker::clockval_t const & clockval)
+{
+  assert(dbm != nullptr);
+  assert(dim >= 1);
+  assert(tchecker::dbm::is_consistent(dbm, dim));
+  assert(tchecker::dbm::is_tight(dbm, dim));
+  assert(clockval.size() == dim);
+
+  for (tchecker::clock_id_t x = 0; x < dim; ++x)
+    for (tchecker::clock_id_t y = 0; y < dim; ++y) {
+      if (x == y)
+        continue;
+      if (DBM(x, y) == tchecker::dbm::LT_INFINITY)
+        continue;
+      if (!tchecker::satisfies(clockval, x, y, tchecker::dbm::comparator(DBM(x, y)), tchecker::dbm::value(DBM(x, y))))
+        return false;
+    }
+  return true;
+}
+
 } // end of namespace dbm
 
 } // end of namespace tchecker

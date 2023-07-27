@@ -156,6 +156,13 @@ public:
   void to_dbm(tchecker::dbm::db_t * dbm) const;
 
   /*!
+   \brief Checks if a clock valuation belongs to the zone
+   \param clockval : clock valuation
+   \return true if clockval belongs to this zone, false otherwise
+  */
+  bool belongs(tchecker::clockval_t const & clockval) const;
+
+  /*!
    \brief Construction
    \tparam ARGS : type of arguments to a constructor of tchecker::zg::zone_t
    \tparam ptr : pointer to an allocated zone

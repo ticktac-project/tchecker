@@ -2308,3 +2308,88 @@ TEST_CASE("gcd", "[dbm]")
     REQUIRE(g == 1);
   }
 }
+
+TEST_CASE("satisfies", "[dbm]")
+{
+  tchecker::clock_id_t const dim = 3;
+  tchecker::dbm::db_t dbm[dim * dim];
+
+  tchecker::clock_id_t const x = 1;
+  tchecker::clock_id_t const y = 2;
+
+  tchecker::clockval_t * clockval = tchecker::clockval_allocate_and_construct(dim, static_cast<unsigned short>(dim));
+
+  SECTION("the initial clock valuation satisfies the zero DBM")
+  {
+    tchecker::dbm::zero(dbm, dim);
+    tchecker::initial(*clockval);
+    REQUIRE(tchecker::dbm::satisfies(dbm, dim, *clockval));
+  }
+
+  SECTION("a non-initial clock valuation satisfies the zero DBM")
+  {
+    tchecker::dbm::zero(dbm, dim);
+
+    (*clockval)[0] = 0;
+    (*clockval)[x] = 1;
+    (*clockval)[y] = 0;
+
+    REQUIRE_FALSE(tchecker::dbm::satisfies(dbm, dim, *clockval));
+  }
+
+  SECTION("the initial clock valuation satisfies the universal positive DBM")
+  {
+    tchecker::dbm::universal_positive(dbm, dim);
+    tchecker::initial(*clockval);
+    REQUIRE(tchecker::dbm::satisfies(dbm, dim, *clockval));
+  }
+
+  SECTION("any clock valuation satisfies the zero DBM")
+  {
+    tchecker::dbm::universal_positive(dbm, dim);
+
+    (*clockval)[0] = 0;
+    (*clockval)[x] = 124;
+    (*clockval)[y] = 6712;
+
+    REQUIRE(tchecker::dbm::satisfies(dbm, dim, *clockval));
+  }
+
+  SECTION("some zone and clock valuation that satisfie")
+  {
+    DBM(0, 0) = tchecker::dbm::LE_ZERO;
+    DBM(0, x) = tchecker::dbm::db(tchecker::LT, -1);
+    DBM(0, y) = tchecker::dbm::db(tchecker::LT, -2);
+    DBM(x, 0) = tchecker::dbm::db(tchecker::LT, 3);
+    DBM(x, x) = tchecker::dbm::LE_ZERO;
+    DBM(x, y) = tchecker::dbm::db(tchecker::LT, -1);
+    DBM(y, 0) = tchecker::dbm::db(tchecker::LT, 4);
+    DBM(y, x) = tchecker::dbm::db(tchecker::LT, 3);
+    DBM(y, y) = tchecker::dbm::LE_ZERO;
+
+    (*clockval)[0] = 0;
+    (*clockval)[x] = tchecker::clock_rational_value_t(4, 3);
+    (*clockval)[y] = 3;
+
+    REQUIRE(tchecker::dbm::satisfies(dbm, dim, *clockval));
+  }
+
+  SECTION("some zone and clock valuation that does not satisfy")
+  {
+    DBM(0, 0) = tchecker::dbm::LE_ZERO;
+    DBM(0, x) = tchecker::dbm::db(tchecker::LT, -1);
+    DBM(0, y) = tchecker::dbm::db(tchecker::LT, -2);
+    DBM(x, 0) = tchecker::dbm::db(tchecker::LT, 3);
+    DBM(x, x) = tchecker::dbm::LE_ZERO;
+    DBM(x, y) = tchecker::dbm::db(tchecker::LT, -1);
+    DBM(y, 0) = tchecker::dbm::db(tchecker::LT, 4);
+    DBM(y, x) = tchecker::dbm::db(tchecker::LT, 3);
+    DBM(y, y) = tchecker::dbm::LE_ZERO;
+
+    tchecker::initial(*clockval);
+
+    REQUIRE_FALSE(tchecker::dbm::satisfies(dbm, dim, *clockval));
+  }
+
+  tchecker::clockval_destruct_and_deallocate(clockval);
+}

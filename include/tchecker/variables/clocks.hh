@@ -12,8 +12,6 @@
 #include <string>
 #include <vector>
 
-#include <boost/rational.hpp>
-
 #include "tchecker/basictypes.hh"
 #include "tchecker/dbm/db.hh"
 #include "tchecker/utils/allocation_size.hh"
@@ -774,11 +772,6 @@ public:
 };
 
 /*!
- \brief Type of clock value
-*/
-using clock_rational_value_t = boost::rational<tchecker::integer_t>;
-
-/*!
  \brief Type of rational array
  */
 using clock_value_array_t = tchecker::make_array_t<tchecker::clock_rational_value_t, sizeof(tchecker::clock_rational_value_t),
@@ -943,6 +936,59 @@ using shared_clockval_t = tchecker::make_shared_t<tchecker::clockval_t>;
  \brief Type of shared pointer to clocks valuation
 */
 using clockval_sptr_t = tchecker::intrusive_shared_ptr_t<tchecker::shared_clockval_t>;
+
+/*!
+ \brief Type of shared pointer to const clocks valuation
+*/
+using const_clockval_sptr_t = tchecker::intrusive_shared_ptr_t<tchecker::shared_clockval_t const>;
+
+/*!
+ \brief Initialize all clocks to 0
+ \param clockval : clock valuation
+ \post all clocks have value 0 in clockval
+*/
+void initial(tchecker::clockval_t & clockval);
+
+/*!
+ \brief Check that all clocks have value 0
+ \param clockval : clock valuation
+ \return true if every clock has value 0 in clockval, false otherwise
+*/
+bool is_initial(tchecker::clockval_t const & clockval);
+
+/*!
+ \brief Check is a clock valuation satisfies a constraint
+ \param clockval : clock valuation
+ \param id1 : id of first clock
+ \param id2 : id of second clock
+ \param cmp : comparator
+ \param value : constant
+ \pre id1 < clockval.size() (checked by assertion)
+ id2 < clockval.size() (checked by assertion)
+ \return true if the values of clocks id1 and id2 in clockval satisfy
+ id1-id2 # value with # as < if cmp is tchecker::LT, and # as <= if
+ cmp is tchecker::LE
+*/
+bool satisfies(tchecker::clockval_t const & clockval, tchecker::clock_id_t id1, tchecker::clock_id_t id2,
+               enum tchecker::ineq_cmp_t cmp, tchecker::integer_t value);
+
+/*!
+ \brief Check if a clock valuation satisfies a clock constraint
+ \param clockval : clock valuation
+ \param c : clock constraint
+ \pre c is expressed over the variables in clockval
+ \return true if the clockval satisfies c, false otherwise
+*/
+bool satisfies(tchecker::clockval_t const & clockval, tchecker::clock_constraint_t const & c);
+
+/*!
+ \brief Check if a clock valuation satisfies a collection (conjunction) of clock constraints
+ \param clockval : clock valuation
+ \param cc : collection of clock constraint
+ \pre cc is expressed over the variables in clockval
+ \return true if the clockval satisfies all clock constraints in cc, false otherwise
+*/
+bool satisfies(tchecker::clockval_t const & clockval, tchecker::clock_constraint_container_t const & cc);
 
 } // end of namespace tchecker
 

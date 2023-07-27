@@ -588,4 +588,39 @@ int lexical_cmp(tchecker::clockval_t const & clockval1, tchecker::clockval_t con
                                });
 }
 
+void initial(tchecker::clockval_t & clockval)
+{
+  for (tchecker::clock_id_t id = 0; id < clockval.size(); ++id)
+    clockval[id] = 0;
+}
+
+bool is_initial(tchecker::clockval_t const & clockval)
+{
+  for (tchecker::clock_id_t id = 0; id < clockval.size(); ++id)
+    if (clockval[id] != 0)
+      return false;
+  return true;
+}
+
+bool satisfies(tchecker::clockval_t const & clockval, tchecker::clock_id_t id1, tchecker::clock_id_t id2,
+               enum tchecker::ineq_cmp_t cmp, tchecker::integer_t value)
+{
+  if (cmp == tchecker::LT)
+    return clockval[id1] - clockval[id2] < value;
+  return clockval[id1] - clockval[id2] <= value;
+}
+
+bool satisfies(tchecker::clockval_t const & clockval, tchecker::clock_constraint_t const & c)
+{
+  return tchecker::satisfies(clockval, c.id1(), c.id2(), c.comparator(), c.value());
+}
+
+bool satisfies(tchecker::clockval_t const & clockval, tchecker::clock_constraint_container_t const & cc)
+{
+  for (tchecker::clock_constraint_t const & c : cc)
+    if (!tchecker::satisfies(clockval, c))
+      return false;
+  return true;
+}
+
 } // end of namespace tchecker
