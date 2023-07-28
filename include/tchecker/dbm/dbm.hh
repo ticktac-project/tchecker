@@ -48,6 +48,20 @@ enum status_t {
 };
 
 /*!
+ \brief Copy a DBM into another DBM
+ \param dbm1 : target dbm
+ \param dbm2 : source dbm
+ \param dim : dimension of dbm1 and dbm2
+ \pre dbm1 is not nullptr (checked by assertion)
+ dbm1 is a dim*dim array of difference bounds
+ dbm2 is not nullptr (checked by assertion)
+ dbm2 is a dim*dim array of difference bounds
+ dim >= 1 (checked by assertion)
+ \post dbm1 is a copy of dbm2
+*/
+void copy(tchecker::dbm::db_t * dbm1, tchecker::dbm::db_t * dbm2, tchecker::clock_id_t dim);
+
+/*!
  \brief Universal zone
  \param dbm : a DBM
  \param dim : dimension of dbm
