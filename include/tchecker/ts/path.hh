@@ -68,6 +68,18 @@ public:
 
   using tchecker::graph::finite_path_t<NODE, EDGE>::attributes;
 
+  /*!
+   \brief Accessor
+   \return transition system
+  */
+  inline TS & ts() const { return *_ts; }
+
+  /*!
+   \brief Accessor
+   \return shared pointer to transition system
+  */
+  inline std::shared_ptr<TS> ts_ptr() const { return _ts; }
+
 protected:
   /*!
    \brief Accessor to node attributes
