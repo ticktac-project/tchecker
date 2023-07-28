@@ -916,7 +916,7 @@ std::ostream & output(std::ostream & os, tchecker::clockval_t const & clockval, 
  \pre index is an index of clocks in intval
  \return An std::string representation of clockval using clock names from index
  */
-std::string to_string(tchecker::clockval_t const & clokcval, tchecker::clock_index_t const & index);
+std::string to_string(tchecker::clockval_t const & clockval, tchecker::clock_index_t const & index);
 
 /*!
  \brief Lexical ordering on clocks valuations
