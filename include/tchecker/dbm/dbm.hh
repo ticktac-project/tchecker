@@ -59,7 +59,7 @@ enum status_t {
  dim >= 1 (checked by assertion)
  \post dbm1 is a copy of dbm2
 */
-void copy(tchecker::dbm::db_t * dbm1, tchecker::dbm::db_t * dbm2, tchecker::clock_id_t dim);
+void copy(tchecker::dbm::db_t * dbm1, tchecker::dbm::db_t const * dbm2, tchecker::clock_id_t dim);
 
 /*!
  \brief Universal zone

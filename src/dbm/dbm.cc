@@ -28,7 +28,7 @@ namespace dbm {
 #define L(i)       (i == 0 ? 0 : l[i - 1])
 #define U(i)       (i == 0 ? 0 : u[i - 1])
 
-void copy(tchecker::dbm::db_t * dbm1, tchecker::dbm::db_t * dbm2, tchecker::clock_id_t dim)
+void copy(tchecker::dbm::db_t * dbm1, tchecker::dbm::db_t const * dbm2, tchecker::clock_id_t dim)
 {
   std::memcpy(dbm1, dbm2, dim * dim * sizeof(*dbm2));
 }
