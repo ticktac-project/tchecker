@@ -568,7 +568,11 @@ std::ostream & output(std::ostream & os, tchecker::clockval_t const & clockval, 
   for (tchecker::clock_id_t id = 0; id < size; ++id) {
     if (id > 0)
       os << ",";
-    os << index.value(id) << "=" << clockval[id];
+    os << index.value(id) << "=";
+    if (clockval[id].numerator() == 0 || clockval[id].denominator() == 1)
+      os << clockval[id].numerator();
+    else
+      os << clockval[id];
   }
   return os;
 }
