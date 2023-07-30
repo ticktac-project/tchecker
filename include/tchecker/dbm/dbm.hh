@@ -807,6 +807,24 @@ bool is_single_valuation(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t d
 tchecker::integer_t constrain_to_single_valuation(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim);
 
 /*!
+ \brief Compute a satisfying integer valuation from a single valuation DBM
+ \param dbm : a dbm
+ \param dim : dimension of dbm
+ \param clock_values : vector of clock_values
+ \pre dbm is not nullptr (checked by assertion)
+ dbm is a dim*dim array of difference bounds
+ dbm is consistent (checked by assertion)
+ dbm is tight (checked by assertion)
+ dbm is positive (checked by assertion)
+ dbm is single valuation (checked by assertion)
+ dim >= 1 (checked by assertion)
+ clock_values has size dim (checked by assertion)
+ \post clock_values contains the integer clock valuation that satisfies dbm
+*/
+void satisfying_integer_valuation(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim,
+                                  std::vector<tchecker::integer_t> & clock_values);
+
+/*!
  \brief Compute greatest common divisor of entries in a DBM
  \param dbm : a dbm
  \param dim : dimension of dbm

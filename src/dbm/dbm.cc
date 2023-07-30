@@ -1065,6 +1065,20 @@ tchecker::integer_t constrain_to_single_valuation(tchecker::dbm::db_t * dbm, tch
   return factor;
 }
 
+void satisfying_integer_valuation(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim,
+                                  std::vector<tchecker::integer_t> & clock_values)
+{
+  assert(dbm != nullptr);
+  assert(dim >= 1);
+  assert(tchecker::dbm::is_consistent(dbm, dim));
+  assert(tchecker::dbm::is_tight(dbm, dim));
+  assert(tchecker::dbm::is_positive(dbm, dim));
+  assert(tchecker::dbm::is_single_valuation(dbm, dim));
+  assert(clock_values.size() == dim);
+  for (tchecker::clock_id_t x = 1; x < dim; ++x)
+    clock_values[x] = tchecker::dbm::value(DBM(0, x));
+}
+
 tchecker::integer_t gcd(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim)
 {
   assert(dbm != nullptr);
