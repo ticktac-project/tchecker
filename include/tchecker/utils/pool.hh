@@ -317,6 +317,30 @@ public:
    */
   void enroll(std::shared_ptr<collectable_t> const & collectable) { _collectables.push_back(collectable); }
 
+  /*!
+   \brief Accessor
+   \return number of allocated objects per block
+  */
+  inline std::size_t alloc_nb() const { return _alloc_nb; }
+
+  /*!
+   \brief Accessor
+   \return size of allocated objects
+  */
+  inline std::size_t alloc_size() const { return _alloc_size; }
+
+  /*!
+   \brief Accessor
+   \return size of allocated blocks
+  */
+  inline std::size_t block_size() const { return _block_size; }
+
+  /*!
+   \brief Accessor
+   \return number of allocated blocks
+  */
+  inline std::size_t blocks_count() const { return _blocks_count; }
+
 protected:
   /*!
    \brief Accessor to next chunk
