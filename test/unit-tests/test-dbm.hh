@@ -2254,6 +2254,34 @@ TEST_CASE("constrain_to_single_valuation", "[dbm]")
   }
 }
 
+TEST_CASE("satisfying_integer_valuation", "[dbm]")
+{
+  tchecker::clock_id_t const dim = 3;
+  tchecker::dbm::db_t dbm[dim * dim];
+
+  tchecker::clock_id_t const x = 1;
+  tchecker::clock_id_t const y = 2;
+
+  DBM(0, 0) = tchecker::dbm::LE_ZERO;
+  DBM(0, x) = tchecker::dbm::db(tchecker::LE, -1);
+  DBM(0, y) = tchecker::dbm::db(tchecker::LE, -6);
+  DBM(x, 0) = tchecker::dbm::db(tchecker::LE, 1);
+  DBM(x, x) = tchecker::dbm::LE_ZERO;
+  DBM(x, y) = tchecker::dbm::db(tchecker::LE, -5);
+  DBM(y, 0) = tchecker::dbm::db(tchecker::LE, 6);
+  DBM(y, x) = tchecker::dbm::db(tchecker::LE, 5);
+  DBM(y, y) = tchecker::dbm::LE_ZERO;
+
+  REQUIRE(tchecker::dbm::is_single_valuation(dbm, dim));
+
+  std::vector<tchecker::integer_t> v(dim, 9);
+  tchecker::dbm::satisfying_integer_valuation(dbm, dim, v);
+
+  REQUIRE(v[0] == 0);
+  REQUIRE(v[x] == 1);
+  REQUIRE(v[y] == 6);
+}
+
 TEST_CASE("gcd", "[dbm]")
 {
   tchecker::clock_id_t const dim = 3;

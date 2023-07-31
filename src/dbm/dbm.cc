@@ -1075,8 +1075,8 @@ void satisfying_integer_valuation(tchecker::dbm::db_t * dbm, tchecker::clock_id_
   assert(tchecker::dbm::is_positive(dbm, dim));
   assert(tchecker::dbm::is_single_valuation(dbm, dim));
   assert(clock_values.size() == dim);
-  for (tchecker::clock_id_t x = 1; x < dim; ++x)
-    clock_values[x] = tchecker::dbm::value(DBM(0, x));
+  for (tchecker::clock_id_t x = 0; x < dim; ++x)
+    clock_values[x] = tchecker::dbm::value(DBM(x, 0));
 }
 
 tchecker::integer_t gcd(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim)
