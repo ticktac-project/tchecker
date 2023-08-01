@@ -112,6 +112,22 @@ std::string const REFCLOCK_NAME("0");
 using clock_rational_value_t = boost::rational<tchecker::integer_t>;
 
 /*!
+ \brief Output clock rational value
+ \param os : output stream
+ \param v : clock value
+ \post v has been output to os
+ \return os after output
+*/
+std::ostream & operator<<(std::ostream & os, tchecker::clock_rational_value_t v);
+
+/*!
+ \brief String conversion of clock rational value
+ \param v : clock value
+ \return std::string representation of v
+*/
+std::string to_string(tchecker::clock_rational_value_t v);
+
+/*!
  \brief Type inequality comparator
  */
 enum ineq_cmp_t : unsigned {

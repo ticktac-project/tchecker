@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <limits>
+#include <sstream>
 
 #include "tchecker/basictypes.hh"
 
@@ -31,6 +32,24 @@ std::ostream & operator<<(std::ostream & os, enum tchecker::sync_strength_t s)
   if (s == tchecker::SYNC_WEAK)
     os << "?";
   return os;
+}
+
+/* clock_rational_value_t */
+
+std::ostream & operator<<(std::ostream & os, tchecker::clock_rational_value_t v)
+{
+  if (v.numerator() == 0 || v.denominator() == 1)
+    os << v.numerator();
+  else
+    os << v.numerator() << "/" << v.denominator();
+  return os;
+}
+
+std::string to_string(tchecker::clock_rational_value_t v)
+{
+  std::stringstream sstream;
+  sstream << v;
+  return sstream.str();
 }
 
 } // end of namespace tchecker
