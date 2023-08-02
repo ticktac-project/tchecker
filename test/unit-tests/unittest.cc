@@ -9,6 +9,7 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "test-cache.hh"
+#include "test-clocks.hh"
 #include "test-db.hh"
 #include "test-dbm.hh"
 #include "test-delay_allowed.hh"

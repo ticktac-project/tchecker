@@ -878,17 +878,19 @@ public:
 };
 
 /*!
- \brief Allocate and construct a clocks valuation
+ \brief Allocate and construct a clock valuation
  \param size : size of clocks valuation
- \param args : arguments to a constructor of tchecker::clockval_t
- \return an instance of tchecker::clockval_t of size values constructed from args
+ \param value : clock value
+ \return an instance of tchecker::clockval_t of size values, initialized to value
  */
-template <class... ARGS> tchecker::clockval_t * clockval_allocate_and_construct(unsigned short size, ARGS &&... args)
-{
-  char * ptr = new char[tchecker::allocation_size_t<tchecker::clockval_t>::alloc_size(size)];
-  tchecker::clockval_t::construct(ptr, args...);
-  return reinterpret_cast<tchecker::clockval_t *>(ptr);
-}
+tchecker::clockval_t * clockval_allocate_and_construct(unsigned short size, tchecker::clock_rational_value_t value = 0);
+
+/*!
+ \brief Clone a clock valuation
+ \param clockval : clock valuation
+ \return a clone of tchecker::clockval_t
+ */
+tchecker::clockval_t * clockval_clone(tchecker::clockval_t const & clockval);
 
 /*!
  \brief Destruct and deallocate a clocks valuation
@@ -902,21 +904,22 @@ void clockval_destruct_and_deallocate(tchecker::clockval_t * v);
  \brief Output clocks valuation
  \param os : output stream
  \param clockval : clocks valuation
- \param index : an index of clocks
- \pre index is an index of variables in clockval
- \post clockval has been output to os with clock names from index
+ \param clock_name : map from clock IDs to strings
+ \pre clock_name maps any clock ID from 0 to clockval.size()-1 to a name
+ \post clockval has been output to os with clock names from clock_name
  \return os after output
  */
-std::ostream & output(std::ostream & os, tchecker::clockval_t const & clockval, tchecker::clock_index_t const & index);
+std::ostream & output(std::ostream & os, tchecker::clockval_t const & clockval,
+                      std::function<std::string(tchecker::clock_id_t)> clock_name);
 
 /*!
  \brief Convert clocks valuation to string
  \param clockval : clocks valuation
- \param index : an index of clocks
- \pre index is an index of clocks in intval
- \return An std::string representation of clockval using clock names from index
+ \param clock_name : map from clock IDs to strings
+ \pre clock_name maps any clock ID from 0 to clockval.size()-1 to a name
+ \return An std::string representation of clockval using clock names from clock_name
  */
-std::string to_string(tchecker::clockval_t const & clockval, tchecker::clock_index_t const & index);
+std::string to_string(tchecker::clockval_t const & clockval, std::function<std::string(tchecker::clock_id_t)> clock_name);
 
 /*!
  \brief Lexical ordering on clocks valuations
@@ -989,6 +992,26 @@ bool satisfies(tchecker::clockval_t const & clockval, tchecker::clock_constraint
  \return true if the clockval satisfies all clock constraints in cc, false otherwise
 */
 bool satisfies(tchecker::clockval_t const & clockval, tchecker::clock_constraint_container_t const & cc);
+
+/*!
+ \brief Compute delay between two clock valuations
+ \param src : first clock valuation
+ \param invariant : invariant
+ \param guard : guard
+ \param reset : clock reset
+ \param tgt : second clock valuation
+ \pre src and tgt have the same size (checked by assertion)
+ src[0] == tgt[0] == 0 (checked by assertion)
+ src satisfies invariant (checked by assertion)
+ invariant, guard and reset are expressed over the clocks in src and tgt
+ \return a (small) rational delay d >= 0 such that src+d satisfies invariant and guard,
+ and such that applying reset to src+d yields tgt
+ a negative value if no such delay exist
+ */
+tchecker::clock_rational_value_t delay(tchecker::clockval_t const & src,
+                                       tchecker::clock_constraint_container_t const & invariant,
+                                       tchecker::clock_constraint_container_t const & guard,
+                                       tchecker::clock_reset_container_t const & reset, tchecker::clockval_t const & tgt);
 
 } // end of namespace tchecker
 

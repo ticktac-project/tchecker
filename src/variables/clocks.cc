@@ -18,6 +18,7 @@
 #else
 #include <boost/container_hash/hash.hpp>
 #endif
+#include <boost/dynamic_bitset.hpp>
 
 #include "tchecker/basictypes.hh"
 #include "tchecker/expression/expression.hh"
@@ -555,32 +556,44 @@ tchecker::clock_variables_t clock_variables(tchecker::reference_clock_variables_
 
 /* clockval_t */
 
+#define CV_ID(id) (id == tchecker::REFCLOCK_ID ? 0 : id + 1) // converts from system IDs to clockval IDs
+
+tchecker::clockval_t * clockval_allocate_and_construct(unsigned short size, tchecker::clock_rational_value_t value)
+{
+  char * ptr = new char[tchecker::allocation_size_t<tchecker::clockval_t>::alloc_size(size)];
+  tchecker::clockval_t::construct(ptr, size, value);
+  return reinterpret_cast<tchecker::clockval_t *>(ptr);
+}
+
+tchecker::clockval_t * clockval_clone(tchecker::clockval_t const & clockval)
+{
+  char * ptr = new char[tchecker::allocation_size_t<tchecker::clockval_t>::alloc_size(clockval.size())];
+  tchecker::clockval_t::construct(ptr, clockval);
+  return reinterpret_cast<tchecker::clockval_t *>(ptr);
+}
+
 void clockval_destruct_and_deallocate(tchecker::clockval_t * v)
 {
   tchecker::clockval_t::destruct(v);
   delete[] reinterpret_cast<char *>(v);
 }
 
-std::ostream & output(std::ostream & os, tchecker::clockval_t const & clockval, tchecker::clock_index_t const & index)
+std::ostream & output(std::ostream & os, tchecker::clockval_t const & clockval,
+                      std::function<std::string(tchecker::clock_id_t)> clock_name)
 {
-  auto const size = index.size();
-
-  for (tchecker::clock_id_t id = 0; id < size; ++id) {
-    if (id > 0)
+  auto const size = clockval.size();
+  for (tchecker::clock_id_t x = 0; x < size; ++x) {
+    if (x > 0)
       os << ",";
-    os << index.value(id) << "=";
-    if (clockval[id].numerator() == 0 || clockval[id].denominator() == 1)
-      os << clockval[id].numerator();
-    else
-      os << clockval[id];
+    os << clock_name(x) << "=" << tchecker::to_string(clockval[x]);
   }
   return os;
 }
 
-std::string to_string(tchecker::clockval_t const & clockval, tchecker::clock_index_t const & index)
+std::string to_string(tchecker::clockval_t const & clockval, std::function<std::string(tchecker::clock_id_t)> clock_name)
 {
   std::stringstream sstream;
-  output(sstream, clockval, index);
+  output(sstream, clockval, clock_name);
   return sstream.str();
 }
 
@@ -616,7 +629,7 @@ bool satisfies(tchecker::clockval_t const & clockval, tchecker::clock_id_t id1, 
 
 bool satisfies(tchecker::clockval_t const & clockval, tchecker::clock_constraint_t const & c)
 {
-  return tchecker::satisfies(clockval, c.id1(), c.id2(), c.comparator(), c.value());
+  return tchecker::satisfies(clockval, CV_ID(c.id1()), CV_ID(c.id2()), c.comparator(), c.value());
 }
 
 bool satisfies(tchecker::clockval_t const & clockval, tchecker::clock_constraint_container_t const & cc)
@@ -625,6 +638,194 @@ bool satisfies(tchecker::clockval_t const & clockval, tchecker::clock_constraint
     if (!tchecker::satisfies(clockval, c))
       return false;
   return true;
+}
+
+/* delay */
+
+/*!
+ \struct delay_constraint_t
+ \brief constraint on delay
+*/
+struct delay_constraint_t {
+  tchecker::clock_rational_value_t bound; /*!< Bound on delay */
+  bool strict;                            /*!< Whether the bound is strict (< or >) or not (<= or >=) */
+};
+
+/*!
+ \brief Build a delay constraint
+*/
+static tchecker::delay_constraint_t dc(tchecker::clock_rational_value_t b, bool s)
+{
+  return tchecker::delay_constraint_t{.bound = b, .strict = s};
+}
+
+/*!
+ \brief Comparison of delay constraints
+*/
+static bool operator<(tchecker::delay_constraint_t const & dc1, tchecker::delay_constraint_t const & dc2)
+{
+  return (dc1.bound < dc2.bound) || ((dc1.bound == dc2.bound) && dc1.strict && !dc2.strict);
+}
+
+/*!
+ \brief Comparison of delay constraints
+*/
+static bool operator<=(tchecker::delay_constraint_t const & dc1, tchecker::delay_constraint_t const & dc2)
+{
+  return (dc1.bound < dc2.bound) || ((dc1.bound == dc2.bound) && !dc2.strict);
+}
+
+/*!
+ \brief Comparison of delay constraints
+*/
+static bool operator>=(tchecker::delay_constraint_t const & dc1, tchecker::delay_constraint_t const & dc2)
+{
+  return !(dc1 < dc2);
+}
+
+/*!
+ \brief Comparison of delay constraints
+*/
+static bool operator>(tchecker::delay_constraint_t const & dc1, tchecker::delay_constraint_t const & dc2)
+{
+  return !(dc1 <= dc2);
+}
+
+/*!
+ \brief Compute the minimum of two delay constraints
+*/
+static tchecker::delay_constraint_t min(tchecker::delay_constraint_t const & dc1, tchecker::delay_constraint_t const & dc2)
+{
+  return (dc1 <= dc2 ? dc1 : dc2);
+}
+
+/*!
+ \brief Compute the maximum of two constraints
+*/
+static tchecker::delay_constraint_t max(tchecker::delay_constraint_t const & dc1, tchecker::delay_constraint_t const & dc2)
+{
+  return (dc1 >= dc2 ? dc1 : dc2);
+}
+
+/*!
+ \brief Output operator on delay constraints
+*/
+static std::ostream & operator<<(std::ostream & os, tchecker::delay_constraint_t const & dc)
+{
+  return os << "(" << dc.bound << "," << (dc.strict ? "strict" : "non-strict") << ")";
+}
+
+/*!
+ \brief Compute lower and upper bound constraints on delay from a clock valuation and clock constraints
+*/
+static std::tuple<tchecker::delay_constraint_t, tchecker::delay_constraint_t>
+delay_constraints(tchecker::clockval_t const & clockval, tchecker::clock_constraint_container_t const & cc)
+{
+  tchecker::delay_constraint_t lower{0, false}, upper{tchecker::dbm::INF_VALUE, false};
+
+  for (tchecker::clock_constraint_t const & c : cc) {
+    if (c.id2() == tchecker::REFCLOCK_ID) // upper delay constraint
+      upper = tchecker::min(upper, tchecker::dc(c.value() - clockval[CV_ID(c.id1())], (c.comparator() == tchecker::LT)));
+    else if (c.id1() == tchecker::REFCLOCK_ID) // lower delay constraint
+      lower = tchecker::max(lower, tchecker::dc((-c.value()) - clockval[CV_ID(c.id2())], (c.comparator() == tchecker::LT)));
+  }
+
+  return std::make_tuple(lower, upper);
+}
+
+/*!
+ \brief Compute lower and upper bound constraints on delay from clock valuations and clock reset
+ \pre each clock is reset at most once in reset
+ \return lower and upper bound constraints on delay such that (src+delay)[reset]==tgt if any
+ \note resets of the form x=y+c induce constraints like delay=tgt[x]-src[y]-c
+ \note resets to constants x=c induce no constraint on delay, except that tgt[x] must be equal to c.
+ If not, this function returns insatisfiable constraints
+ \note clocks which are not reset induce a constraint delay=tgt[x]-src[x]
+*/
+static std::tuple<tchecker::delay_constraint_t, tchecker::delay_constraint_t>
+delay_constraints(tchecker::clockval_t const & src, tchecker::clock_reset_container_t const & reset,
+                  tchecker::clockval_t const & tgt)
+{
+  tchecker::clock_id_t const dim = src.size();
+
+  tchecker::delay_constraint_t lower{0, false}, upper{tchecker::dbm::INF_VALUE, false};
+
+  boost::dynamic_bitset<> non_reset_clocks(dim);
+  non_reset_clocks.set();
+
+  for (tchecker::clock_reset_t const & r : reset) {
+    assert((r.left_id() < dim) || (r.left_id() == tchecker::REFCLOCK_ID));
+    assert((r.right_id() < dim) || (r.right_id() == tchecker::REFCLOCK_ID));
+    assert((r.left_id() != tchecker::REFCLOCK_ID) || (r.right_id() != tchecker::REFCLOCK_ID));
+
+    if (r.right_id() == tchecker::REFCLOCK_ID) {
+      // reset to constant
+      if (tgt[CV_ID(r.left_id())] != r.value())
+        upper.bound = lower.bound - 1; // make constraints inconsistent
+    }
+    else {
+      // reset to clock value (+ constant)
+      if (non_reset_clocks[CV_ID(r.right_id())]) {
+        // induce constraints on delay if right clock has not been reset yet
+        tchecker::clock_rational_value_t delay = tgt[CV_ID(r.left_id())] - src[CV_ID(r.right_id())] - r.value();
+        lower = tchecker::max(lower, tchecker::dc(delay, false));
+        upper = tchecker::min(upper, tchecker::dc(delay, false));
+      }
+      else if (tgt[CV_ID(r.left_id())] != tgt[CV_ID(r.right_id())] + r.value())
+        upper.bound = lower.bound - 1; // make constraints inconsistent if reset does not yield expected value
+    }
+
+    assert(non_reset_clocks[CV_ID(r.left_id())]);
+    non_reset_clocks[CV_ID(r.left_id())] = 0;
+  }
+
+  non_reset_clocks[0] = 0; // clock 0 is "reset" as it always have value 0
+
+  // constraints from clocks which are not reset
+  for (tchecker::clock_id_t x = 0; x < dim; ++x)
+    if (non_reset_clocks[x]) {
+      tchecker::clock_rational_value_t const delay = tgt[x] - src[x];
+      lower = tchecker::max(lower, tchecker::dc(delay, false));
+      upper = tchecker::min(upper, tchecker::dc(delay, false));
+    }
+
+  return std::make_tuple(lower, upper);
+}
+
+tchecker::clock_rational_value_t delay(tchecker::clockval_t const & src,
+                                       tchecker::clock_constraint_container_t const & invariant,
+                                       tchecker::clock_constraint_container_t const & guard,
+                                       tchecker::clock_reset_container_t const & reset, tchecker::clockval_t const & tgt)
+{
+  assert(src.size() == tgt.size());
+  assert(src[0] == 0);
+  assert(tgt[0] == 0);
+  assert(tchecker::satisfies(src, invariant));
+
+  // get lower and upeer constraints on delays from guard, invariant and reset, then choose some delay in-between
+  auto && [lower_guard, upper_guard] = tchecker::delay_constraints(src, guard);
+  auto && [lower_invariant, upper_invariant] = tchecker::delay_constraints(src, invariant);
+  auto && [lower_reset, upper_reset] = tchecker::delay_constraints(src, reset, tgt);
+
+  tchecker::delay_constraint_t const lower = tchecker::max(tchecker::max(lower_guard, lower_invariant), lower_reset);
+  tchecker::delay_constraint_t const upper = tchecker::min(tchecker::min(upper_guard, upper_invariant), upper_reset);
+
+  if (upper.bound < lower.bound)
+    return -1;
+  if ((upper.bound == lower.bound) && (lower.strict || upper.strict))
+    return -1;
+
+  tchecker::clock_rational_value_t delay = 0;
+  if (!lower.strict)
+    delay = lower.bound;
+  else if (upper.bound == tchecker::dbm::INF_VALUE)
+    delay = lower.bound + tchecker::clock_rational_value_t{5, 10};
+  else
+    delay = (upper.bound + lower.bound) / 2;
+
+  assert(delay >= 0);
+
+  return delay;
 }
 
 } // end of namespace tchecker
