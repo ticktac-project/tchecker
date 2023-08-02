@@ -53,13 +53,12 @@ template <class GRAPH> bool final_node(typename GRAPH::node_sptr_t const & n) { 
 template <class GRAPH> bool true_edge(typename GRAPH::edge_sptr_t const & e) { return true; }
 
 /*!
- \brief Compute a symbolic counter example over the zone graph
+ \brief Compute a counter example over the zone graph
  \tparam GRAPH : type of graph, see tchecker::algorithms::path::finite::algorithm_t for requirements
- \tparam CEX : type of counter example, should inherit from tchecker::zg::path::finite_path_t
  \param g : a graph over the zone graph (reachability graph, subsumption graph, etc)
  \return a finite path from an initial node of g to a final node of g
  */
-template <class GRAPH, class CEX> CEX * symbolic_counter_example_zg(GRAPH const & g)
+template <class GRAPH> tchecker::zg::path::concrete::finite_path_t * counter_example_zg(GRAPH const & g)
 {
   std::shared_ptr<tchecker::zg::zg_t> zg{tchecker::zg::factory(
       g.zg().system_ptr(), g.zg().sharing_type(), tchecker::zg::STANDARD_SEMANTICS, tchecker::zg::NO_EXTRAPOLATION, 128, 128)};
@@ -72,7 +71,7 @@ template <class GRAPH, class CEX> CEX * symbolic_counter_example_zg(GRAPH const 
                     &tchecker::tck_reach::true_edge<GRAPH>);
 
   if (seq.empty())
-    return new CEX{zg};
+    return new tchecker::zg::path::concrete::finite_path_t{zg, 1};
 
   // Extract sequence of vedges
   std::vector<tchecker::const_vedge_sptr_t> vedge_seq;
@@ -81,11 +80,15 @@ template <class GRAPH, class CEX> CEX * symbolic_counter_example_zg(GRAPH const 
 
   // Get the corresponding run in a zone graph with standard semantics and no extrapolation
   tchecker::vloc_t const & initial_vloc = g.edge_src(seq[0])->state().vloc();
-  CEX * cex = tchecker::zg::path::compute_symbolic_run(zg, initial_vloc, vedge_seq);
-  if (!cex->empty()) {
-    cex->first()->initial(true);
-    cex->last()->final(true);
+  std::unique_ptr<tchecker::zg::path::symbolic::finite_path_t> zg_path{
+      tchecker::zg::path::symbolic::compute(zg, initial_vloc, vedge_seq)};
+  if (!zg_path->empty()) {
+    zg_path->first()->initial(true);
+    zg_path->last()->final(true);
   }
+
+  // Compute counter-exemple from zone graph path
+  tchecker::zg::path::concrete::finite_path_t * cex = tchecker::zg::path::concrete::compute(*zg_path);
 
   return cex;
 }

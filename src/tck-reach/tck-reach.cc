@@ -50,7 +50,7 @@ void usage(char * progname)
   std::cerr << "   -C type       type of certificate" << std::endl;
   std::cerr << "          none       no certificate (default)" << std::endl;
   std::cerr << "          graph      graph of explored state-space" << std::endl;
-  std::cerr << "          symbolic   symbolic run to a state with searched labels (if any)" << std::endl;
+  std::cerr << "          run        run to a state with searched labels (if any)" << std::endl;
   std::cerr << "   -h            help" << std::endl;
   std::cerr << "   -l l1,l2,...  comma-separated list of searched labels" << std::endl;
   std::cerr << "   -o out_file   output file for certificate (default is standard output)" << std::endl;
@@ -68,9 +68,9 @@ enum algorithm_t {
 };
 
 enum certificate_t {
-  CERTIFICATE_GRAPH,        /*!< Graph of state-space */
-  CERTIFICATE_SYMBOLIC_RUN, /*!< Symbolic counter-example run */
-  CERTIFICATE_NONE,         /*!< No certificate */
+  CERTIFICATE_GRAPH, /*!< Graph of state-space */
+  CERTIFICATE_RUN,   /*!< Counter-example run */
+  CERTIFICATE_NONE,  /*!< No certificate */
 };
 
 static enum algorithm_t algorithm = ALGO_NONE;            /*!< Selected algorithm */
@@ -121,8 +121,8 @@ int parse_command_line(int argc, char * argv[])
           certificate = CERTIFICATE_NONE;
         else if (strcmp(optarg, "graph") == 0)
           certificate = CERTIFICATE_GRAPH;
-        else if (strcmp(optarg, "symbolic") == 0)
-          certificate = CERTIFICATE_SYMBOLIC_RUN;
+        else if (strcmp(optarg, "run") == 0)
+          certificate = CERTIFICATE_RUN;
         else
           throw std::runtime_error("Unknown type of certificate");
         break;
@@ -197,12 +197,11 @@ void reach(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysd
   // certificate
   if (certificate == CERTIFICATE_GRAPH)
     tchecker::tck_reach::zg_reach::dot_output(*os, *graph, sysdecl->name());
-  else if ((certificate == CERTIFICATE_SYMBOLIC_RUN) && stats.reachable()) {
-    std::unique_ptr<tchecker::tck_reach::zg_reach::cex::symbolic::cex_t> cex{
-        tchecker::tck_reach::zg_reach::cex::symbolic::counter_example(*graph)};
+  else if ((certificate == CERTIFICATE_RUN) && stats.reachable()) {
+    std::unique_ptr<tchecker::tck_reach::zg_reach::cex::cex_t> cex{tchecker::tck_reach::zg_reach::cex::counter_example(*graph)};
     if (cex->empty())
-      throw std::runtime_error("Unable to compute a symbolic counter example");
-    tchecker::tck_reach::zg_reach::cex::symbolic::dot_output(*os, *cex, sysdecl->name());
+      throw std::runtime_error("Unable to compute a counter example");
+    tchecker::tck_reach::zg_reach::cex::dot_output(*os, *cex, sysdecl->name());
   }
 }
 
@@ -221,12 +220,11 @@ void concur19(std::shared_ptr<tchecker::parsing::system_declaration_t> const & s
   tchecker::algorithms::covreach::stats_t stats;
   std::shared_ptr<tchecker::tck_reach::concur19::graph_t> graph;
 
-  if (certificate == CERTIFICATE_SYMBOLIC_RUN)
-    std::tie(stats, graph) = tchecker::tck_reach::concur19::run(
-        sysdecl, labels, search_order, tchecker::algorithms::covreach::COVERING_LEAF_NODES, block_size, table_size);
-  else
-    std::tie(stats, graph) = tchecker::tck_reach::concur19::run(
-        sysdecl, labels, search_order, tchecker::algorithms::covreach::COVERING_FULL, block_size, table_size);
+  tchecker::algorithms::covreach::covering_t covering =
+      (certificate == CERTIFICATE_RUN ? tchecker::algorithms::covreach::COVERING_LEAF_NODES
+                                      : tchecker::algorithms::covreach::COVERING_FULL);
+
+  std::tie(stats, graph) = tchecker::tck_reach::concur19::run(sysdecl, labels, search_order, covering, block_size, table_size);
 
   // stats
   std::map<std::string, std::string> m;
@@ -237,7 +235,7 @@ void concur19(std::shared_ptr<tchecker::parsing::system_declaration_t> const & s
   // certificate
   if (certificate == CERTIFICATE_GRAPH)
     tchecker::tck_reach::concur19::dot_output(*os, *graph, sysdecl->name());
-  else if ((certificate == CERTIFICATE_SYMBOLIC_RUN) && stats.reachable()) {
+  else if ((certificate == CERTIFICATE_RUN) && stats.reachable()) {
     std::unique_ptr<tchecker::tck_reach::concur19::cex::symbolic::cex_t> cex{
         tchecker::tck_reach::concur19::cex::symbolic::counter_example(*graph)};
     if (cex->empty())
@@ -258,12 +256,12 @@ void covreach(std::shared_ptr<tchecker::parsing::system_declaration_t> const & s
   tchecker::algorithms::covreach::stats_t stats;
   std::shared_ptr<tchecker::tck_reach::zg_covreach::graph_t> graph;
 
-  if (certificate == CERTIFICATE_SYMBOLIC_RUN)
-    std::tie(stats, graph) = tchecker::tck_reach::zg_covreach::run(
-        sysdecl, labels, search_order, tchecker::algorithms::covreach::COVERING_LEAF_NODES, block_size, table_size);
-  else
-    std::tie(stats, graph) = tchecker::tck_reach::zg_covreach::run(
-        sysdecl, labels, search_order, tchecker::algorithms::covreach::COVERING_FULL, block_size, table_size);
+  tchecker::algorithms::covreach::covering_t covering =
+      (certificate == CERTIFICATE_RUN ? tchecker::algorithms::covreach::COVERING_LEAF_NODES
+                                      : tchecker::algorithms::covreach::COVERING_FULL);
+
+  std::tie(stats, graph) =
+      tchecker::tck_reach::zg_covreach::run(sysdecl, labels, search_order, covering, block_size, table_size);
 
   // stats
   std::map<std::string, std::string> m;
@@ -274,12 +272,12 @@ void covreach(std::shared_ptr<tchecker::parsing::system_declaration_t> const & s
   // certificate
   if (certificate == CERTIFICATE_GRAPH)
     tchecker::tck_reach::zg_covreach::dot_output(*os, *graph, sysdecl->name());
-  else if ((certificate == CERTIFICATE_SYMBOLIC_RUN) && stats.reachable()) {
-    std::unique_ptr<tchecker::tck_reach::zg_covreach::cex::symbolic::cex_t> cex{
-        tchecker::tck_reach::zg_covreach::cex::symbolic::counter_example(*graph)};
+  else if ((certificate == CERTIFICATE_RUN) && stats.reachable()) {
+    std::unique_ptr<tchecker::tck_reach::zg_covreach::cex::cex_t> cex{
+        tchecker::tck_reach::zg_covreach::cex::counter_example(*graph)};
     if (cex->empty())
       throw std::runtime_error("Unable to compute a symbolic counter example");
-    tchecker::tck_reach::zg_covreach::cex::symbolic::dot_output(*os, *cex, sysdecl->name());
+    tchecker::tck_reach::zg_covreach::cex::dot_output(*os, *cex, sysdecl->name());
   }
 }
 

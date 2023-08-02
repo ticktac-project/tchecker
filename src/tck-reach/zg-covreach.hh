@@ -175,12 +175,10 @@ std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::zg_covreach::g
 
 namespace cex {
 
-namespace symbolic {
-
 /*!
- \brief Type of symbolic reachability counter-example
+ \brief Type of reachability counter-example
 */
-using cex_t = tchecker::zg::path::finite_path_t;
+using cex_t = tchecker::zg::path::concrete::finite_path_t;
 
 /*!
  \brief Compute a counter-example from a covering reachability graph of a zone graph
@@ -188,7 +186,7 @@ using cex_t = tchecker::zg::path::finite_path_t;
  \return a finite path from an initial node to a final node in g if any, nullptr otherwise
  \note the returned pointer shall be deleted
 */
-tchecker::tck_reach::zg_covreach::cex::symbolic::cex_t * counter_example(tchecker::tck_reach::zg_covreach::graph_t const & g);
+tchecker::tck_reach::zg_covreach::cex::cex_t * counter_example(tchecker::tck_reach::zg_covreach::graph_t const & g);
 
 /*!
  \brief Counter-example output
@@ -198,10 +196,8 @@ tchecker::tck_reach::zg_covreach::cex::symbolic::cex_t * counter_example(tchecke
  \post cex has been output to os
  \return os after output
  */
-std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::zg_covreach::cex::symbolic::cex_t const & cex,
+std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::zg_covreach::cex::cex_t const & cex,
                           std::string const & name);
-
-} // namespace symbolic
 
 } // namespace cex
 

@@ -138,21 +138,15 @@ std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::zg_reach::grap
 /* counter example */
 namespace cex {
 
-namespace symbolic {
-
-tchecker::tck_reach::zg_reach::cex::symbolic::cex_t * counter_example(tchecker::tck_reach::zg_reach::graph_t const & g)
+tchecker::tck_reach::zg_reach::cex::cex_t * counter_example(tchecker::tck_reach::zg_reach::graph_t const & g)
 {
-  return tchecker::tck_reach::symbolic_counter_example_zg<tchecker::tck_reach::zg_reach::graph_t,
-                                                          tchecker::tck_reach::zg_reach::cex::symbolic::cex_t>(g);
+  return tchecker::tck_reach::counter_example_zg<tchecker::tck_reach::zg_reach::graph_t>(g);
 }
 
-std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::zg_reach::cex::symbolic::cex_t const & cex,
-                          std::string const & name)
+std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::zg_reach::cex::cex_t const & cex, std::string const & name)
 {
-  return tchecker::zg::path::dot_output(os, cex, name);
+  return tchecker::zg::path::concrete::dot_output(os, cex, name);
 }
-
-} // namespace symbolic
 
 } // namespace cex
 
