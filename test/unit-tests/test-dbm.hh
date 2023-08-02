@@ -2345,7 +2345,7 @@ TEST_CASE("satisfies", "[dbm]")
   tchecker::clock_id_t const x = 1;
   tchecker::clock_id_t const y = 2;
 
-  tchecker::clockval_t * clockval = tchecker::clockval_allocate_and_construct(dim, static_cast<unsigned short>(dim));
+  tchecker::clockval_t * clockval = tchecker::clockval_allocate_and_construct(dim);
 
   SECTION("the initial clock valuation satisfies the zero DBM")
   {
