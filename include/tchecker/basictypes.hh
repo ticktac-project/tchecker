@@ -139,6 +139,22 @@ static_assert(tchecker::LT == 0, "Less-than should be 0");
 static_assert(tchecker::LE == 1, "Less-than should be 1");
 
 /*!
+ \brief Output operator for inequality comparator
+ \param os : output stream
+ \param cmp : comparator
+ \post cmp has been output to os
+ \return os after output
+*/
+std::ostream & operator<<(std::ostream & os, tchecker::ineq_cmp_t cmp);
+
+/*!
+ \brief String conversion of comparator
+ \param cmp : comparator
+ \return string representation of cmp
+*/
+std::string to_string(tchecker::ineq_cmp_t cmp);
+
+/*!
  \brief Type of label identifiers
  */
 using label_id_t = tchecker::id_t;

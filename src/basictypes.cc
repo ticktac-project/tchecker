@@ -52,4 +52,15 @@ std::string to_string(tchecker::clock_rational_value_t v)
   return sstream.str();
 }
 
+/* inequality comparator */
+
+std::ostream & operator<<(std::ostream & os, tchecker::ineq_cmp_t cmp) { return os << (cmp == tchecker::LT ? "<" : "<="); }
+
+std::string to_string(tchecker::ineq_cmp_t cmp)
+{
+  std::stringstream sstream;
+  sstream << cmp;
+  return sstream.str();
+}
+
 } // end of namespace tchecker
