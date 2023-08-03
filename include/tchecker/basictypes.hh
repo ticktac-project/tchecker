@@ -109,7 +109,15 @@ std::string const REFCLOCK_NAME("0");
 /*!
  \brief Type of clock value
 */
-using clock_rational_value_t = boost::rational<tchecker::integer_t>;
+using clock_rational_value_t = boost::rational<int64_t>;
+// NB: we do not take tchecker::integer_t for the integer base type as it fails with 16 bits integers
+// moreover, we generally need big coefficients for clock values
+
+static_assert(std::numeric_limits<int64_t>::min() <= std::numeric_limits<tchecker::integer_t>::min(),
+              "tchecker::clock_rational_value_t is too small w.r.t. tchecker::integer_t");
+
+static_assert(std::numeric_limits<int64_t>::max() >= std::numeric_limits<tchecker::integer_t>::max(),
+              "tchecker::clock_rational_value_t is too small w.r.t. tchecker::integer_t");
 
 /*!
  \brief Output clock rational value
