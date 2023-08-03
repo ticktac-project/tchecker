@@ -41,12 +41,12 @@ void usage(char * progname)
   std::cerr << "   -i          interactive simulation (default)" << std::endl;
   std::cerr << "   --json      display states/transitions in JSON format" << std::endl;
   std::cerr << "   -r N        randomized simulation, N steps" << std::endl;
-  std::cerr << "   -o file     output file for simulation trace" << std::endl;
+  std::cerr << "   -o file     output file for simulation trace (default: stdout)" << std::endl;
   std::cerr << "   -s state    starting state, specified as a JSON object with keys vloc, intval and zone" << std::endl;
   std::cerr << "               vloc: comma-separated list of location names (one per process), in-between < and >" << std::endl;
   std::cerr << "               intval: comma-separated list of assignments (one per integer variable)" << std::endl;
   std::cerr << "               zone: conjunction of clock-constraints (following TChecker expression syntax)" << std::endl;
-  std::cerr << "   -t          output simulation trace (default: stdout), incompatible with -1" << std::endl;
+  std::cerr << "   -t          output simulation trace, incompatible with -1" << std::endl;
   std::cerr << "   -h          help" << std::endl;
   std::cerr << "reads from standard input if file is not provided" << std::endl;
 }
