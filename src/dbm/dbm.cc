@@ -1029,6 +1029,10 @@ bool is_single_valuation(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t d
  */
 tchecker::integer_t constrain_to_single_valuation(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim)
 {
+#define SCALE_FACTOR 2 // arbitrary scale factor (unit tests rely on value 2)
+
+  static_assert(SCALE_FACTOR % 2 == 0, "constrain_to_single_valuation factor must be an even number");
+
   assert(dbm != nullptr);
   assert(dim >= 1);
   assert(tchecker::dbm::is_consistent(dbm, dim));
@@ -1044,9 +1048,9 @@ tchecker::integer_t constrain_to_single_valuation(tchecker::dbm::db_t * dbm, tch
 
     // if selected clock does not admit integer value, scale dbm up
     if (!tchecker::dbm::admits_integer_value(dbm, dim, x)) {
-      if (factor > std::numeric_limits<tchecker::integer_t>::max() / 2)
+      if (factor > std::numeric_limits<tchecker::integer_t>::max() / SCALE_FACTOR)
         throw std::overflow_error("tchecker::dbm::constrain_to_single_valuation: scale factor overflow");
-      factor *= 2;
+      factor *= SCALE_FACTOR;
       tchecker::dbm::scale_up(dbm, dim, factor);
     }
 
@@ -1054,7 +1058,19 @@ tchecker::integer_t constrain_to_single_valuation(tchecker::dbm::db_t * dbm, tch
     if (tchecker::dbm::value(DBM(0, x)) < -tchecker::dbm::MAX_VALUE)
       throw std::overflow_error("tchecker::dbm::constrain_to_single_valuation: integer value overflow");
 
-    tchecker::integer_t v = -tchecker::dbm::value(DBM(0, x)) + (tchecker::dbm::comparator(DBM(0, x)) == tchecker::LE ? 0 : 1);
+    // choose smallest value if possible
+    tchecker::integer_t v = -tchecker::dbm::value(DBM(0, x));
+    if (tchecker::dbm::comparator(DBM(0, x)) == tchecker::LT) {
+      // if not, try a value which is a multiple of factor if possible
+      tchecker::integer_t const vx0 = tchecker::dbm::value(DBM(x, 0));
+      enum tchecker::ineq_cmp_t const cmpx0 = tchecker::dbm::comparator(DBM(x, 0));
+      if ((DBM(x, 0) == tchecker::dbm::LT_INFINITY) || (v < vx0 - factor) || (cmpx0 == tchecker::LE && v <= vx0 - factor))
+        v += factor;
+      else
+        // otherwise, choose intermediate value in-between min an max allowed value
+        v += 1;
+    }
+
     tchecker::dbm::constrain(dbm, dim, 0, x, tchecker::LE, -v);
     tchecker::dbm::constrain(dbm, dim, x, 0, tchecker::LE, v);
   }
