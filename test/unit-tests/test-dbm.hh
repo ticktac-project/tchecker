@@ -2212,11 +2212,12 @@ TEST_CASE("is_single_valuation", "[dbm]")
 
 TEST_CASE("constrain_to_single_valuation", "[dbm]")
 {
-  tchecker::clock_id_t const dim = 3;
+  tchecker::clock_id_t const dim = 4;
   tchecker::dbm::db_t dbm[dim * dim];
 
   tchecker::clock_id_t const x = 1;
   tchecker::clock_id_t const y = 2;
+  tchecker::clock_id_t const z = 3;
 
   SECTION("contrain the zero DBM to single valuation")
   {
@@ -2234,23 +2235,112 @@ TEST_CASE("constrain_to_single_valuation", "[dbm]")
     REQUIRE(tchecker::dbm::is_single_valuation(dbm, dim));
   }
 
-  SECTION("some zone with single valuation x=2, y=7/2")
+  SECTION("some zone with single valuation x=2, y=7/2, z=0")
   {
     DBM(0, 0) = tchecker::dbm::LE_ZERO;
     DBM(0, x) = tchecker::dbm::db(tchecker::LT, -1);
     DBM(0, y) = tchecker::dbm::db(tchecker::LT, -2);
+    DBM(0, z) = tchecker::dbm::LE_ZERO;
     DBM(x, 0) = tchecker::dbm::db(tchecker::LT, 3);
     DBM(x, x) = tchecker::dbm::LE_ZERO;
     DBM(x, y) = tchecker::dbm::db(tchecker::LT, -1);
+    DBM(x, z) = tchecker::dbm::db(tchecker::LT, 3);
     DBM(y, 0) = tchecker::dbm::db(tchecker::LT, 4);
     DBM(y, x) = tchecker::dbm::db(tchecker::LT, 3);
     DBM(y, y) = tchecker::dbm::LE_ZERO;
+    DBM(y, z) = tchecker::dbm::db(tchecker::LT, 4);
+    DBM(z, 0) = tchecker::dbm::LE_ZERO;
+    DBM(z, x) = tchecker::dbm::db(tchecker::LT, -1);
+    DBM(z, y) = tchecker::dbm::db(tchecker::LT, -2);
+    DBM(z, z) = tchecker::dbm::LE_ZERO;
 
     tchecker::integer_t factor = tchecker::dbm::constrain_to_single_valuation(dbm, dim);
     REQUIRE(factor == 2);
     REQUIRE(tchecker::dbm::is_single_valuation(dbm, dim));
     REQUIRE(tchecker::dbm::value(DBM(x, 0)) == 4);
     REQUIRE(tchecker::dbm::value(DBM(y, 0)) == 7);
+    REQUIRE(tchecker::dbm::value(DBM(z, 0)) == 0);
+  }
+
+  SECTION("zone (20<x<22 && 31<y<33 && z==0 && x==y-11 && 20<x-z<22 && 31<y-z<33) with valuation x=21, y=32, z=0")
+  {
+    DBM(0, 0) = tchecker::dbm::LE_ZERO;
+    DBM(0, x) = tchecker::dbm::db(tchecker::LT, -20);
+    DBM(0, y) = tchecker::dbm::db(tchecker::LT, -31);
+    DBM(0, z) = tchecker::dbm::LE_ZERO;
+    DBM(x, 0) = tchecker::dbm::db(tchecker::LT, 22);
+    DBM(x, x) = tchecker::dbm::LE_ZERO;
+    DBM(x, y) = tchecker::dbm::db(tchecker::LE, -11);
+    DBM(x, z) = tchecker::dbm::db(tchecker::LT, 22);
+    DBM(y, 0) = tchecker::dbm::db(tchecker::LT, 33);
+    DBM(y, x) = tchecker::dbm::db(tchecker::LE, 11);
+    DBM(y, y) = tchecker::dbm::LE_ZERO;
+    DBM(y, z) = tchecker::dbm::db(tchecker::LT, 33);
+    DBM(z, 0) = tchecker::dbm::LE_ZERO;
+    DBM(z, x) = tchecker::dbm::db(tchecker::LT, -20);
+    DBM(z, y) = tchecker::dbm::db(tchecker::LT, -31);
+    DBM(z, z) = tchecker::dbm::LE_ZERO;
+
+    tchecker::integer_t factor = tchecker::dbm::constrain_to_single_valuation(dbm, dim);
+    REQUIRE(factor == 1);
+    REQUIRE(tchecker::dbm::is_single_valuation(dbm, dim));
+    REQUIRE(tchecker::dbm::value(DBM(x, 0)) == 21);
+    REQUIRE(tchecker::dbm::value(DBM(y, 0)) == 32);
+    REQUIRE(tchecker::dbm::value(DBM(z, 0)) == 0);
+  }
+
+  SECTION("zone (19<x<=21 && 30<y<=32 && 0<=z<2 && y-x==11 && 19<x-z<20 && 30<y-z<31) with valuation x=20, y=31, z=1/2")
+  {
+    DBM(0, 0) = tchecker::dbm::LE_ZERO;
+    DBM(0, x) = tchecker::dbm::db(tchecker::LT, -19);
+    DBM(0, y) = tchecker::dbm::db(tchecker::LT, -30);
+    DBM(0, z) = tchecker::dbm::LE_ZERO;
+    DBM(x, 0) = tchecker::dbm::db(tchecker::LE, 21);
+    DBM(x, x) = tchecker::dbm::LE_ZERO;
+    DBM(x, y) = tchecker::dbm::db(tchecker::LE, -11);
+    DBM(x, z) = tchecker::dbm::db(tchecker::LT, 20);
+    DBM(y, 0) = tchecker::dbm::db(tchecker::LE, 32);
+    DBM(y, x) = tchecker::dbm::db(tchecker::LE, 11);
+    DBM(y, y) = tchecker::dbm::LE_ZERO;
+    DBM(y, z) = tchecker::dbm::db(tchecker::LT, 31);
+    DBM(z, 0) = tchecker::dbm::db(tchecker::LT, 2);
+    DBM(z, x) = tchecker::dbm::db(tchecker::LT, -19);
+    DBM(z, y) = tchecker::dbm::db(tchecker::LT, -30);
+    DBM(z, z) = tchecker::dbm::LE_ZERO;
+
+    tchecker::integer_t factor = tchecker::dbm::constrain_to_single_valuation(dbm, dim);
+    REQUIRE(factor == 2);
+    REQUIRE(tchecker::dbm::is_single_valuation(dbm, dim));
+    REQUIRE(tchecker::dbm::value(DBM(x, 0)) == 40);
+    REQUIRE(tchecker::dbm::value(DBM(y, 0)) == 62);
+    REQUIRE(tchecker::dbm::value(DBM(z, 0)) == 1);
+  }
+
+  SECTION("zone (35<x<=39 && 57<y<=61 && 0<=z<4 && y-x==22 && 35<x-z<37 && 57<y-z<59) with valuation x=36, y=58, z=0")
+  {
+    DBM(0, 0) = tchecker::dbm::LE_ZERO;
+    DBM(0, x) = tchecker::dbm::db(tchecker::LT, -35);
+    DBM(0, y) = tchecker::dbm::db(tchecker::LT, -57);
+    DBM(0, z) = tchecker::dbm::LE_ZERO;
+    DBM(x, 0) = tchecker::dbm::db(tchecker::LE, 39);
+    DBM(x, x) = tchecker::dbm::LE_ZERO;
+    DBM(x, y) = tchecker::dbm::db(tchecker::LE, -22);
+    DBM(x, z) = tchecker::dbm::db(tchecker::LT, 37);
+    DBM(y, 0) = tchecker::dbm::db(tchecker::LE, 61);
+    DBM(y, x) = tchecker::dbm::db(tchecker::LE, 22);
+    DBM(y, y) = tchecker::dbm::LE_ZERO;
+    DBM(y, z) = tchecker::dbm::db(tchecker::LT, 59);
+    DBM(z, 0) = tchecker::dbm::db(tchecker::LT, 4);
+    DBM(z, x) = tchecker::dbm::db(tchecker::LT, -35);
+    DBM(z, y) = tchecker::dbm::db(tchecker::LT, -57);
+    DBM(z, z) = tchecker::dbm::LE_ZERO;
+
+    tchecker::integer_t factor = tchecker::dbm::constrain_to_single_valuation(dbm, dim);
+    REQUIRE(factor == 1);
+    REQUIRE(tchecker::dbm::is_single_valuation(dbm, dim));
+    REQUIRE(tchecker::dbm::value(DBM(x, 0)) == 36);
+    REQUIRE(tchecker::dbm::value(DBM(y, 0)) == 58);
+    REQUIRE(tchecker::dbm::value(DBM(z, 0)) == 0);
   }
 }
 
