@@ -963,6 +963,54 @@ tchecker::integer_t constrain_to_single_valuation(tchecker::dbm::db_t * rdbm, tc
 */
 tchecker::integer_t gcd(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r);
 
+/*!
+ \brief Check ordering of two clocks in a DBM with reference clocks
+ \param rdbm : a DBM
+ \param r : reference clocks for rdbm
+ \param x1 : a clock
+ \param x2 : a clock
+ \pre rdbm is not nullptr (checked by assertion)
+ rdbm is a r.size()*r.size() array of difference bounds
+ rdbm is consistent (checked by assertion)
+ rdbm is tight (checked by assertion)
+ rdbm is a DBM over reference clocks r
+ x1 and x2 are valid clock identifiers in r (checked by assertion)
+ \return tchecker::refdbm::CLK_LT if x1 < x2 is true in all valuations in rdbm,
+ tchecker::dbm::CLK_LE if x1 <= x2 is true in all valuations in rdbm
+ tchecker::dbm::CLK_EQ if x1 = x2 is true in all valuations in rdbm
+ tchecker::dbm::CLK_GE if x1 >= x2 is true in all valuations in rdbm
+ tchecker::dbm::CLK_GT if x1 > x2 is true in all valuations in rdbm
+ tchecker::dbm::CLK_INCOMPARABLE otherwise
+*/
+enum tchecker::dbm::clock_ordering_t clock_cmp(tchecker::dbm::db_t const * rdbm,
+                                               tchecker::reference_clock_variables_t const & r, tchecker::clock_id_t x1,
+                                               tchecker::clock_id_t x2);
+
+/*!
+ \brief Check clocks relative position in time
+ \param rdbm : a DBM
+ \param r : reference clocks for rdbm
+ \param x1 : a first clock
+ \param x2 : a second clock
+ \pre rdbm is not nullptr (checked by assertion)
+ rdbm is a r.size()*r.size() array of difference bounds
+ rdbm is consistent (checked by assertion)
+ rdbm is tight (checked by assertion)
+ rdbm is a DBM over reference clocks r
+ x1 and x2 are valid clock identifiers in r (checked by assertion)
+ \return tchecker::dbm::CLK_AHEAD if clock x1 is greater than clock x2 in all
+ the valuations in rdbm
+ tchecker::dbm::CLK_BEHIND if clock x1 is less than clocks x2 in all the
+ valuations in rdbm
+ tchecker::dbm::CLK_SYNCHRONIZED if clock x1 and x2 are equal in all the
+ valuations in rdbm
+ tchecker::dbm::CLK_SYNCHRONIZABLE otherwise, i.e. there exists a valuation in
+ rdbm where x1 and x2 are equal
+*/
+enum tchecker::dbm::clock_position_t clock_position(tchecker::dbm::db_t const * rdbm,
+                                                    tchecker::reference_clock_variables_t const & r, tchecker::clock_id_t x1,
+                                                    tchecker::clock_id_t x2);
+
 } // end of namespace refdbm
 
 } // end of namespace tchecker

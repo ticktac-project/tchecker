@@ -852,6 +852,72 @@ tchecker::integer_t gcd(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t di
  */
 bool satisfies(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim, tchecker::clockval_t const & clockval);
 
+/*!
+\brief Type of clock ordering
+*/
+enum clock_ordering_t {
+  CLK_LT,           /*!< Less-than */
+  CLK_LE,           /*!< Less-than or equal-to */
+  CLK_EQ,           /*!< Equal */
+  CLK_GE,           /*!< Greater-than or equal-to */
+  CLK_GT,           /*!< Greater-than */
+  CLK_INCOMPARABLE, /*!< Incomparable */
+};
+
+/*!
+ \brief Check ordering of two clocks in a DBM
+ \param dbm : a dbm
+ \param dim : dimension of dbm
+ \param x1 : a first clock
+ \param x2 : a second clock
+ \pre dbm is not nullptr (checked by assertion)
+ dbm is a dim*dim array of difference bounds
+ dbm is consistent (checked by assertion)
+ dbm is tight (checked by assertion)
+ dim >= 1 (checked by assertion)
+ x1 and x2 are less than dim (checked by assertion)
+ \return tchecker::dbm::CLK_LT if x1 < x2 is true in all valuations in dbm,
+ tchecker::dbm::CLK_LE if x1 <= x2 is true in all valuations in dbm
+ tchecker::dbm::CLK_EQ if x1 = x2 is true in all valuations in dbm
+ tchecker::dbm::CLK_GE if x1 >= x2 is true in all valuations in dbm
+ tchecker::dbm::CLK_GT if x1 > x2 is true in all valuations in dbm
+ tchecker::dbm::CLK_INCOMPARABLE otherwise
+*/
+enum tchecker::dbm::clock_ordering_t clock_cmp(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim,
+                                               tchecker::clock_id_t x1, tchecker::clock_id_t x2);
+
+/*!
+ \brief Type of clock relative position in time
+*/
+enum clock_position_t {
+  CLK_AHEAD,         /*!< Clock is strictly ahead in time */
+  CLK_BEHIND,        /*!< Clock is strictly behind in time */
+  CLK_SYNCHRONIZED,  /*!< Clocks are synchronized */
+  CLK_SYNCHRONIZABLE /*!< Clocks are synchronizable */
+};
+
+/*!
+ \brief Check clocks relative position in time
+ \param dbm : a dbm
+ \param dim : dimension of dbm
+ \param x1 : a first clock
+ \param x2 : a second clock
+ \pre dbm is not nullptr (checked by assertion)
+ dbm is a dim*dim array of difference bounds
+ dbm is consistent (checked by assertion)
+ dbm is tight (checked by assertion)
+ dim >= 1 (checked by assertion)
+ x1 and x2 are less than dim (checked by assertion)
+ \return tchecker::dbm::CLK_AHEAD if clock x1 is greater than clock x2 in all the valuations in dbm
+ tchecker::dbm::CLK_BEHIND if clock x1 is less than clocks x2 in all the valuations in dbm
+ tchecker::dbm::CLK_SYNCHRONIZED if clock x1 and x2 are equal in all the valuations in dbm
+ tchecker::dbm::CLK_SYNCHRONIZABLE otherwise, i.e.there exists a valuation in dbm where x1 and x2 are equal
+ \note this function is quite similar to tchecker::dbm::clock_cmp, however it allows to think about relative
+ positions of clocks on a timeline, independently of representation of time in DBMs
+ */
+enum tchecker::dbm::clock_position_t clock_position(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim,
+                                                    tchecker::clock_id_t x1, tchecker::clock_id_t x2);
+
 } // end of namespace dbm
 
 } // end of namespace tchecker

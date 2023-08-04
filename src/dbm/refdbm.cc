@@ -1007,6 +1007,38 @@ tchecker::integer_t gcd(tchecker::dbm::db_t const * rdbm, tchecker::reference_cl
   return tchecker::dbm::gcd(rdbm, r.size());
 }
 
+enum tchecker::dbm::clock_ordering_t clock_cmp(tchecker::dbm::db_t const * rdbm,
+                                               tchecker::reference_clock_variables_t const & r, tchecker::clock_id_t x1,
+                                               tchecker::clock_id_t x2)
+{
+  assert(rdbm != nullptr);
+  assert(tchecker::refdbm::is_consistent(rdbm, r));
+  assert(tchecker::refdbm::is_tight(rdbm, r));
+  assert(x1 < r.size());
+  assert(x2 < r.size());
+  return tchecker::dbm::clock_cmp(rdbm, r.size(), x1, x2);
+}
+
+enum tchecker::dbm::clock_position_t clock_position(tchecker::dbm::db_t const * rdbm,
+                                                    tchecker::reference_clock_variables_t const & r, tchecker::clock_id_t x1,
+                                                    tchecker::clock_id_t x2)
+{
+  assert(rdbm != nullptr);
+  assert(tchecker::refdbm::is_consistent(rdbm, r));
+  assert(tchecker::refdbm::is_tight(rdbm, r));
+  assert(x1 < r.size());
+  assert(x2 < r.size());
+
+  enum tchecker::dbm::clock_ordering_t cmp = tchecker::refdbm::clock_cmp(rdbm, r, x1, x2);
+  if (cmp == tchecker::dbm::CLK_LT)
+    return tchecker::dbm::CLK_AHEAD;
+  if (cmp == tchecker::dbm::CLK_GT)
+    return tchecker::dbm::CLK_BEHIND;
+  if (cmp == tchecker::dbm::CLK_EQ)
+    return tchecker::dbm::CLK_SYNCHRONIZED;
+  return tchecker::dbm::CLK_SYNCHRONIZABLE;
+}
+
 } // end of namespace refdbm
 
 } // end of namespace tchecker

@@ -1135,6 +1135,50 @@ bool satisfies(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim, tcheck
   return true;
 }
 
+enum tchecker::dbm::clock_ordering_t clock_cmp(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim,
+                                               tchecker::clock_id_t x1, tchecker::clock_id_t x2)
+
+{
+  assert(dbm != nullptr);
+  assert(dim >= 1);
+  assert(tchecker::dbm::is_consistent(dbm, dim));
+  assert(tchecker::dbm::is_tight(dbm, dim));
+  assert(x1 < dim);
+  assert(x2 < dim);
+
+  if (DBM(x1, x2) < tchecker::dbm::LE_ZERO)
+    return tchecker::dbm::CLK_LT;
+  if (DBM(x2, x1) < tchecker::dbm::LE_ZERO)
+    return tchecker::dbm::CLK_GT;
+  if ((DBM(x1, x2) == tchecker::dbm::LE_ZERO) && (DBM(x2, x1) == tchecker::dbm::LE_ZERO))
+    return tchecker::dbm::CLK_EQ;
+  if (DBM(x1, x2) == tchecker::dbm::LE_ZERO)
+    return tchecker::dbm::CLK_LE;
+  if (DBM(x2, x1) == tchecker::dbm::LE_ZERO)
+    return tchecker::dbm::CLK_GE;
+  return tchecker::dbm::CLK_INCOMPARABLE;
+}
+
+enum tchecker::dbm::clock_position_t clock_position(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim,
+                                                    tchecker::clock_id_t x1, tchecker::clock_id_t x2)
+{
+  assert(dbm != nullptr);
+  assert(dim >= 1);
+  assert(tchecker::dbm::is_consistent(dbm, dim));
+  assert(tchecker::dbm::is_tight(dbm, dim));
+  assert(x1 < dim);
+  assert(x2 < dim);
+
+  enum tchecker::dbm::clock_ordering_t cmp = clock_cmp(dbm, dim, x1, x2);
+  if (cmp == tchecker::dbm::CLK_GT)
+    return tchecker::dbm::CLK_AHEAD;
+  if (cmp == tchecker::dbm::CLK_LT)
+    return tchecker::dbm::CLK_BEHIND;
+  if (cmp == tchecker::dbm::CLK_EQ)
+    return tchecker::dbm::CLK_SYNCHRONIZED;
+  return tchecker::dbm::CLK_SYNCHRONIZABLE;
+}
+
 } // end of namespace dbm
 
 } // end of namespace tchecker

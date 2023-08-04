@@ -2388,3 +2388,368 @@ TEST_CASE("constrain_to_single_valuation", "[refdbm]")
     REQUIRE(RDBM(z, t2) == tchecker::dbm::db(tchecker::LE, -12));
   }
 }
+
+TEST_CASE("Clock-ordering in DBMs with reference clocks", "[refdbm]")
+{
+  std::vector<std::string> refclocks{"$0", "$1", "$2"};
+  tchecker::reference_clock_variables_t r(refclocks);
+  r.declare("x1", "$0");
+  r.declare("x2", "$0");
+  r.declare("y", "$1");
+  r.declare("z", "$2");
+
+  tchecker::clock_id_t const t0 = r.id("$0");
+  tchecker::clock_id_t const t1 = r.id("$1");
+  tchecker::clock_id_t const t2 = r.id("$2");
+  tchecker::clock_id_t const x1 = r.id("x1");
+  tchecker::clock_id_t const x2 = r.id("x2");
+  tchecker::clock_id_t const y = r.id("y");
+  tchecker::clock_id_t const z = r.id("z");
+
+  tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
+
+  // t0 == t1, t2 incomparable, t0 < x1, t0 <= x2, t1=y, t2 <= z,
+  tchecker::dbm::db_t rdbm[rdim * rdim];
+  tchecker::refdbm::universal_positive(rdbm, r);
+  RDBM(t0, t1) = tchecker::dbm::LE_ZERO;
+  RDBM(t1, t0) = tchecker::dbm::LE_ZERO;
+  RDBM(t0, x1) = tchecker::dbm::db(tchecker::LT, 0);
+  RDBM(t0, x2) = tchecker::dbm::LE_ZERO;
+  RDBM(t1, y) = tchecker::dbm::LE_ZERO;
+  RDBM(y, t1) = tchecker::dbm::LE_ZERO;
+  RDBM(t2, z) = tchecker::dbm::LE_ZERO;
+  tchecker::refdbm::tighten(rdbm, r);
+
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, t0, t0) == tchecker::dbm::CLK_EQ);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, t0, t1) == tchecker::dbm::CLK_EQ);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, t0, t2) == tchecker::dbm::CLK_INCOMPARABLE);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, t0, x1) == tchecker::dbm::CLK_LT);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, t0, x2) == tchecker::dbm::CLK_LE);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, t0, y) == tchecker::dbm::CLK_EQ);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, t0, z) == tchecker::dbm::CLK_INCOMPARABLE);
+
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, t1, t0) == tchecker::dbm::CLK_EQ);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, t1, t1) == tchecker::dbm::CLK_EQ);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, t1, t2) == tchecker::dbm::CLK_INCOMPARABLE);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, t1, x1) == tchecker::dbm::CLK_LT);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, t1, x2) == tchecker::dbm::CLK_LE);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, t1, y) == tchecker::dbm::CLK_EQ);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, t1, z) == tchecker::dbm::CLK_INCOMPARABLE);
+
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, t2, t0) == tchecker::dbm::CLK_INCOMPARABLE);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, t2, t1) == tchecker::dbm::CLK_INCOMPARABLE);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, t2, t2) == tchecker::dbm::CLK_EQ);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, t2, x1) == tchecker::dbm::CLK_INCOMPARABLE);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, t2, x2) == tchecker::dbm::CLK_INCOMPARABLE);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, t2, y) == tchecker::dbm::CLK_INCOMPARABLE);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, t2, z) == tchecker::dbm::CLK_LE);
+
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, x1, t0) == tchecker::dbm::CLK_GT);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, x1, t1) == tchecker::dbm::CLK_GT);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, x1, t2) == tchecker::dbm::CLK_INCOMPARABLE);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, x1, x1) == tchecker::dbm::CLK_EQ);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, x1, x2) == tchecker::dbm::CLK_INCOMPARABLE);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, x1, y) == tchecker::dbm::CLK_GT);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, x1, z) == tchecker::dbm::CLK_INCOMPARABLE);
+
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, x2, t0) == tchecker::dbm::CLK_GE);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, x2, t1) == tchecker::dbm::CLK_GE);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, x2, t2) == tchecker::dbm::CLK_INCOMPARABLE);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, x2, x1) == tchecker::dbm::CLK_INCOMPARABLE);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, x2, x2) == tchecker::dbm::CLK_EQ);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, x2, y) == tchecker::dbm::CLK_GE);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, x2, z) == tchecker::dbm::CLK_INCOMPARABLE);
+
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, y, t0) == tchecker::dbm::CLK_EQ);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, y, t1) == tchecker::dbm::CLK_EQ);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, y, t2) == tchecker::dbm::CLK_INCOMPARABLE);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, y, x1) == tchecker::dbm::CLK_LT);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, y, x2) == tchecker::dbm::CLK_LE);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, y, y) == tchecker::dbm::CLK_EQ);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, y, z) == tchecker::dbm::CLK_INCOMPARABLE);
+
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, z, t0) == tchecker::dbm::CLK_INCOMPARABLE);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, z, t1) == tchecker::dbm::CLK_INCOMPARABLE);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, z, t2) == tchecker::dbm::CLK_GE);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, z, x1) == tchecker::dbm::CLK_INCOMPARABLE);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, z, x2) == tchecker::dbm::CLK_INCOMPARABLE);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, z, y) == tchecker::dbm::CLK_INCOMPARABLE);
+  REQUIRE(tchecker::refdbm::clock_cmp(rdbm, r, z, z) == tchecker::dbm::CLK_EQ);
+}
+
+TEST_CASE("Clock position in DBMs with reference clocks", "[refdbm]")
+{
+  std::vector<std::string> refclocks{"$0", "$1", "$2"};
+  tchecker::reference_clock_variables_t r(refclocks);
+  r.declare("x1", "$0");
+  r.declare("x2", "$0");
+  r.declare("y", "$1");
+  r.declare("z", "$2");
+
+  tchecker::clock_id_t const t0 = r.id("$0");
+  tchecker::clock_id_t const t1 = r.id("$1");
+  tchecker::clock_id_t const t2 = r.id("$2");
+  tchecker::clock_id_t const x1 = r.id("x1");
+  tchecker::clock_id_t const x2 = r.id("x2");
+  tchecker::clock_id_t const y = r.id("y");
+  tchecker::clock_id_t const z = r.id("z");
+
+  tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
+
+  tchecker::dbm::db_t rdbm[rdim * rdim];
+
+  SECTION("Clocks in zero zone are all synchronized")
+  {
+    tchecker::refdbm::zero(rdbm, r);
+
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t0, t0) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t0, t1) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t0, t2) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t0, x1) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t0, x2) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t0, y) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t0, z) == tchecker::dbm::CLK_SYNCHRONIZED);
+
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t1, t0) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t1, t1) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t1, t2) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t1, x1) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t1, x2) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t1, y) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t1, z) == tchecker::dbm::CLK_SYNCHRONIZED);
+
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t2, t0) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t2, t1) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t2, t2) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t2, x1) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t2, x2) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t2, y) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t2, z) == tchecker::dbm::CLK_SYNCHRONIZED);
+
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x1, t0) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x1, t1) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x1, t2) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x1, x1) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x1, x2) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x1, y) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x1, z) == tchecker::dbm::CLK_SYNCHRONIZED);
+
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x2, t0) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x2, t1) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x2, t2) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x2, x1) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x2, x2) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x2, y) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x2, z) == tchecker::dbm::CLK_SYNCHRONIZED);
+
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, y, t0) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, y, t1) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, y, t2) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, y, x1) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, y, x2) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, y, y) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, y, z) == tchecker::dbm::CLK_SYNCHRONIZED);
+
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, z, t0) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, z, t1) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, z, t2) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, z, x1) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, z, x2) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, z, y) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, z, z) == tchecker::dbm::CLK_SYNCHRONIZED);
+  }
+
+  SECTION("Non reference clocks are synchronized in delayed zero zone")
+  {
+    tchecker::refdbm::zero(rdbm, r);
+    tchecker::refdbm::asynchronous_open_up(rdbm, r);
+
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t0, t0) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t0, t1) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t0, t2) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t0, x1) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t0, x2) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t0, y) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t0, z) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t1, t0) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t1, t1) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t1, t2) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t1, x1) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t1, x2) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t1, y) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t1, z) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t2, t0) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t2, t1) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t2, t2) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t2, x1) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t2, x2) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t2, y) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t2, z) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x1, t0) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x1, t1) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x1, t2) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x1, x1) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x1, x2) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x1, y) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x1, z) == tchecker::dbm::CLK_SYNCHRONIZED);
+
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x2, t0) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x2, t1) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x2, t2) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x2, x1) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x2, x2) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x2, y) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x2, z) == tchecker::dbm::CLK_SYNCHRONIZED);
+
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, y, t0) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, y, t1) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, y, t2) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, y, x1) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, y, x2) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, y, y) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, y, z) == tchecker::dbm::CLK_SYNCHRONIZED);
+
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, z, t0) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, z, t1) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, z, t2) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, z, x1) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, z, x2) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, z, y) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, z, z) == tchecker::dbm::CLK_SYNCHRONIZED);
+  }
+
+  SECTION("Clocks position in a computed zone")
+  {
+    // Initial zero zone delayed
+    tchecker::refdbm::zero(rdbm, r);
+    tchecker::refdbm::asynchronous_open_up(rdbm, r);
+    // Guard x1>1
+    tchecker::refdbm::constrain(rdbm, r, t0, x1, tchecker::LT, -1);
+    // Reset x2, x3
+    tchecker::refdbm::reset_to_reference_clock(rdbm, r, x2);
+    tchecker::refdbm::reset_to_reference_clock(rdbm, r, y);
+
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t0, t0) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t0, t1) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t0, t2) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t0, x1) == tchecker::dbm::CLK_AHEAD);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t0, x2) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t0, y) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t0, z) == tchecker::dbm::CLK_AHEAD);
+
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t1, t0) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t1, t1) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t1, t2) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t1, x1) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t1, x2) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t1, y) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t1, z) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t2, t0) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t2, t1) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t2, t2) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t2, x1) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t2, x2) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t2, y) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t2, z) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x1, t0) == tchecker::dbm::CLK_BEHIND);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x1, t1) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x1, t2) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x1, x1) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x1, x2) == tchecker::dbm::CLK_BEHIND);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x1, y) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x1, z) == tchecker::dbm::CLK_SYNCHRONIZED);
+
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x2, t0) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x2, t1) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x2, t2) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x2, x1) == tchecker::dbm::CLK_AHEAD);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x2, x2) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x2, y) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x2, z) == tchecker::dbm::CLK_AHEAD);
+
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, y, t0) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, y, t1) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, y, t2) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, y, x1) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, y, x2) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, y, y) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, y, z) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, z, t0) == tchecker::dbm::CLK_BEHIND);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, z, t1) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, z, t2) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, z, x1) == tchecker::dbm::CLK_SYNCHRONIZED);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, z, x2) == tchecker::dbm::CLK_BEHIND);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, z, y) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+    REQUIRE(tchecker::refdbm::clock_position(rdbm, r, z, z) == tchecker::dbm::CLK_SYNCHRONIZED);
+  }
+}
+
+TEST_CASE("Clock position in DBMs with reference clocks on not synchronizable zone", "[refdbm]")
+{
+  std::vector<std::string> refclocks{"$0", "$1", "$2"};
+  tchecker::reference_clock_variables_t r(refclocks);
+  r.declare("x1", "$0");
+  r.declare("x2", "$1");
+
+  tchecker::clock_id_t const t0 = r.id("$0");
+  tchecker::clock_id_t const t1 = r.id("$1");
+  tchecker::clock_id_t const t2 = r.id("$2");
+  tchecker::clock_id_t const x1 = r.id("x1");
+  tchecker::clock_id_t const x2 = r.id("x2");
+
+  tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
+
+  // $0-$1<0 & $0-$x1<-10 & $0-$x2<-10 & 0<$1-$2 & -10<=$1-$x1<=10 &
+  // -10<=$1-$x2<=0 & $2-$x1<-10 & $2-$x2<-10 & -10<=$x1-$x2<=0
+  tchecker::dbm::db_t rdbm[rdim * rdim];
+  tchecker::refdbm::universal_positive(rdbm, r);
+  RDBM(t0, t1) = tchecker::dbm::LT_ZERO;
+  RDBM(t0, x1) = tchecker::dbm::db(tchecker::LT, -10);
+  RDBM(t0, x2) = tchecker::dbm::db(tchecker::LT, -10);
+  RDBM(t2, t1) = tchecker::dbm::LT_ZERO;
+  RDBM(t1, x1) = tchecker::dbm::db(tchecker::LE, 10);
+  RDBM(x1, t1) = tchecker::dbm::db(tchecker::LE, 10);
+  RDBM(t1, x2) = tchecker::dbm::LE_ZERO;
+  RDBM(x2, t1) = tchecker::dbm::db(tchecker::LE, 10);
+  RDBM(t2, x1) = tchecker::dbm::db(tchecker::LT, -10);
+  RDBM(t2, x2) = tchecker::dbm::db(tchecker::LT, -10);
+  RDBM(x1, x2) = tchecker::dbm::LE_ZERO;
+  RDBM(x2, x1) = tchecker::dbm::db(tchecker::LE, 10);
+  tchecker::refdbm::tighten(rdbm, r);
+
+  REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t0, t0) == tchecker::dbm::CLK_SYNCHRONIZED);
+  REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t0, t1) == tchecker::dbm::CLK_AHEAD);
+  REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t0, t2) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+  REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t0, x1) == tchecker::dbm::CLK_AHEAD);
+  REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t0, x2) == tchecker::dbm::CLK_AHEAD);
+
+  REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t1, t0) == tchecker::dbm::CLK_BEHIND);
+  REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t1, t1) == tchecker::dbm::CLK_SYNCHRONIZED);
+  REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t1, t2) == tchecker::dbm::CLK_BEHIND);
+  REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t1, x1) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+  REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t1, x2) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+
+  REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t2, t0) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+  REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t2, t1) == tchecker::dbm::CLK_AHEAD);
+  REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t2, t2) == tchecker::dbm::CLK_SYNCHRONIZED);
+  REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t2, x1) == tchecker::dbm::CLK_AHEAD);
+  REQUIRE(tchecker::refdbm::clock_position(rdbm, r, t2, x2) == tchecker::dbm::CLK_AHEAD);
+
+  REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x1, t0) == tchecker::dbm::CLK_BEHIND);
+  REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x1, t1) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+  REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x1, t2) == tchecker::dbm::CLK_BEHIND);
+  REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x1, x1) == tchecker::dbm::CLK_SYNCHRONIZED);
+  REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x1, x2) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+
+  REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x2, t0) == tchecker::dbm::CLK_BEHIND);
+  REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x2, t1) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+  REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x2, t2) == tchecker::dbm::CLK_BEHIND);
+  REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x2, x1) == tchecker::dbm::CLK_SYNCHRONIZABLE);
+  REQUIRE(tchecker::refdbm::clock_position(rdbm, r, x2, x2) == tchecker::dbm::CLK_SYNCHRONIZED);
+}
