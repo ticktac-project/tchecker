@@ -144,7 +144,8 @@ bool operator!=(tchecker::refzg::state_t const & s1, tchecker::refzg::state_t co
  \param s2 : state
  \return true if s1 and s2 have same zone, same tuple of locations and same
  valuation of bounded integer variables, false otherwise
- \note this should only be used on states that have shared internal components
+ \note this should only be used on states that have shared internal components: this
+ function checks pointer equality (not values equality)
  */
 bool shared_equal_to(tchecker::refzg::state_t const & s1, tchecker::refzg::state_t const & s2);
 
@@ -165,7 +166,8 @@ bool operator<=(tchecker::refzg::state_t const & s1, tchecker::refzg::state_t co
  \return true if s1 and s2 have the same tuple of locations and integer
  variables valuation, and the zone in s1 is included in the zone in s2, false
  otherwise
- \note this should only be used on states that have shared internal components
+ \note this should only be used on states that have shared internal components: this
+ function checks pointers instead of values when relevant
 */
 bool shared_is_le(tchecker::refzg::state_t const & s1, tchecker::refzg::state_t const & s2);
 
@@ -191,7 +193,8 @@ bool is_alu_star_le(tchecker::refzg::state_t const & s1, tchecker::refzg::state_
  \return true if s1 and s2 have the same tuple of locations and integer
  variables valuation, and the zone in s1 is included in aLU*-abstraction of the
  zone in s2, false otherwise
- \note this should only be used on states that have shared internal components
+ \note this should only be used on states that have shared internal components: this
+ function checks pointers instead of values when relevant
 */
 bool shared_is_alu_star_le(tchecker::refzg::state_t const & s1, tchecker::refzg::state_t const & s2,
                            tchecker::clockbounds::map_t const & l, tchecker::clockbounds::map_t const & u);
@@ -218,7 +221,8 @@ bool is_time_elapse_alu_star_le(tchecker::refzg::state_t const & s1, tchecker::r
  \return true if s1 and s2 have the same tuple of locations and integer
  variables valuation, and the time-elapsed zone of the zone in s1 is included in aLU*-abstraction of the
  time-elapsed zone of the zone in s2, false otherwise
- \note this should only be used on states that have shared internal components
+ \note this should only be used on states that have shared internal components: this
+ function checks pointers instead of values when relevant
 */
 bool shared_is_time_elapse_alu_star_le(tchecker::refzg::state_t const & s1, tchecker::refzg::state_t const & s2,
                                        tchecker::clockbounds::map_t const & l, tchecker::clockbounds::map_t const & u);
@@ -245,7 +249,8 @@ bool is_sync_alu_le(tchecker::refzg::state_t const & s1, tchecker::refzg::state_
  \return true if s1 and s2 have the same tuple of locations and integer
  variables valuation, and the zone in s1 is sync-subsumed by the zone in s2,
  false otherwise
- \note this should only be used on states that have shared internal components
+ \note this should only be used on states that have shared internal components: this
+ function checks pointers instead of values when relevant
 */
 bool shared_is_sync_alu_le(tchecker::refzg::state_t const & s1, tchecker::refzg::state_t const & s2,
                            tchecker::clockbounds::map_t const & l, tchecker::clockbounds::map_t const & u);
@@ -261,7 +266,8 @@ std::size_t hash_value(tchecker::refzg::state_t const & s);
  \brief Hash for shared states
  \param s : state
  \return Hash value for state s
- \note this should only be used on states that have shared internal components
+ \note this should only be used on states that have shared internal components: this function
+ hashes the pointers (not the values)
  */
 std::size_t shared_hash_value(tchecker::refzg::state_t const & s);
 

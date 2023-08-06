@@ -138,7 +138,8 @@ inline bool operator!=(tchecker::ta::transition_t const & t1, tchecker::ta::tran
  \param t2 : transition
  \return true if t1 and t2 have same tuple of edges, same source invariant, same guard, same resets and same target invariant,
  false otherwise
- \note note this should only be used on transitions that have shared internal components
+ \note note this should only be used on transitions that have shared internal components: this
+ function checks pointer equality (not values equality)
  */
 bool shared_equal_to(tchecker::ta::transition_t const & t1, tchecker::ta::transition_t const & t2);
 
@@ -153,7 +154,8 @@ std::size_t hash_value(tchecker::ta::transition_t const & t);
  \brief Hash for shared transitions
  \param t : transition
  \return Hash value for transition t
- \note note this should only be used on transitions that have shared internal components
+ \note note this should only be used on transitions that have shared internal components: this function
+ hashes the pointers (not the values)
  */
 std::size_t shared_hash_value(tchecker::ta::transition_t const & t);
 

@@ -117,7 +117,8 @@ bool operator!=(tchecker::syncprod::state_t const & s1, tchecker::syncprod::stat
  \param s1 : state
  \param s2 : state
  \return true if s1 and s2 have same tuple of locations, false otherwise
- \note this should only be used on states that have shared internal components
+ \note this should only be used on states that have shared internal components: this
+ function checks pointer equality (not values equality)
 */
 bool shared_equal_to(tchecker::syncprod::state_t const & s1, tchecker::syncprod::state_t const & s2);
 
@@ -132,7 +133,8 @@ std::size_t hash_value(tchecker::syncprod::state_t const & s);
  \brief Hash for shared states
  \param s : state
  \return Hash value for state s
- \note this should only be used on states that have shared internal components
+ \note this should only be used on states that have shared internal components: this function
+ hashes the pointers (not the values)
  */
 std::size_t shared_hash_value(tchecker::syncprod::state_t const & s);
 

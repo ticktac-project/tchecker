@@ -122,7 +122,8 @@ bool operator!=(tchecker::ta::state_t const & s1, tchecker::ta::state_t const & 
  \param s2 : state
  \return true if s1 and s2 have same tuple of locations and same valuation of
  bounded integer variables, false otherwise
- \note this should only be used on states that have shared internal components
+ \note this should only be used on states that have shared internal components: this
+ function checks pointer equality (not values equality)
  */
 bool shared_equal_to(tchecker::ta::state_t const & s1, tchecker::ta::state_t const & s2);
 
@@ -137,6 +138,8 @@ std::size_t hash_value(tchecker::ta::state_t const & s);
  \brief Hash for shared states
  \param s : state
  \return Hash value for state s
+ \note this should be used on states that have shared internal components: this function
+ hashes the pointers (not the values)
  */
 std::size_t shared_hash_value(tchecker::ta::state_t const & s);
 
