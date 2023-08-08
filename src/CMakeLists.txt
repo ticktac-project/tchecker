@@ -39,6 +39,7 @@ add_subdirectory(algorithms)
 add_subdirectory(clockbounds)
 add_subdirectory(dbm)
 add_subdirectory(expression)
+add_subdirectory(fsm)
 add_subdirectory(graph)
 add_subdirectory(parsing)
 add_subdirectory(refzg)
@@ -63,6 +64,7 @@ set(LIBTCHECKER_SRC
   ${CLOCKBOUNDS_SRC}
   ${DBM_SRC}
   ${EXPRESSION_SRC}
+  ${FSM_SRC}
   ${GRAPH_SRC}
   ${OTHER_SRC}
   ${PARSING_SRC}
