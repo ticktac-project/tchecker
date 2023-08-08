@@ -13,23 +13,11 @@ namespace tchecker {
 
 namespace ta {
 
-/* Helpers */
+/*!< Place holder constraint container, should stay empty */
+static tchecker::clock_constraint_container_t place_holder_clkconstr;
 
-/*!
- \class throw_container_t
- \brief Container that throws on call to push_back()
- \tparam CONTAINER : type of embedded container
- */
-template <class CONTAINER> class throw_container_t : public CONTAINER {
-public:
-  template <class T> void push_back(T && t) const { throw std::runtime_error("throw_container_t::push_back() called"); }
-};
-
-/*!< Throw clock constraint container */
-static tchecker::ta::throw_container_t<tchecker::clock_constraint_container_t> throw_clkconstr;
-
-/*!< Throw clock reset container */
-static tchecker::ta::throw_container_t<tchecker::clock_reset_container_t> throw_clkreset;
+/*!< Place holder clock reset container, should stay empty */
+static tchecker::clock_reset_container_t place_holder_clkreset;
 
 /* Semantics functions */
 
@@ -53,9 +41,11 @@ tchecker::state_status_t initial(tchecker::ta::system_t const & system,
 
   // check invariant
   tchecker::vm_t & vm = system.vm();
-  for (tchecker::loc_id_t loc_id : *vloc)
-    if (vm.run(system.invariant_bytecode(loc_id), *intval, invariant, throw_clkreset) == 0)
+  for (tchecker::loc_id_t loc_id : *vloc) {
+    if (vm.run(system.invariant_bytecode(loc_id), *intval, invariant, place_holder_clkreset) == 0)
       return tchecker::STATE_INTVARS_SRC_INVARIANT_VIOLATED;
+    assert(place_holder_clkreset.empty());
+  }
 
   return tchecker::STATE_OK;
 }
@@ -94,9 +84,11 @@ tchecker::state_status_t final(tchecker::ta::system_t const & system,
 
   // check invariant
   tchecker::vm_t & vm = system.vm();
-  for (tchecker::loc_id_t loc_id : *vloc)
-    if (vm.run(system.invariant_bytecode(loc_id), *intval, invariant, throw_clkreset) == 0)
+  for (tchecker::loc_id_t loc_id : *vloc) {
+    if (vm.run(system.invariant_bytecode(loc_id), *intval, invariant, place_holder_clkreset) == 0)
       return tchecker::STATE_INTVARS_TGT_INVARIANT_VIOLATED;
+    assert(place_holder_clkreset.empty());
+  }
 
   return tchecker::STATE_OK;
 }
@@ -113,9 +105,11 @@ tchecker::state_status_t next(tchecker::ta::system_t const & system,
   tchecker::vm_t & vm = system.vm();
 
   // check source invariant
-  for (tchecker::loc_id_t loc_id : *vloc)
-    if (vm.run(system.invariant_bytecode(loc_id), *intval, src_invariant, throw_clkreset) == 0)
+  for (tchecker::loc_id_t loc_id : *vloc) {
+    if (vm.run(system.invariant_bytecode(loc_id), *intval, src_invariant, place_holder_clkreset) == 0)
       return tchecker::STATE_INTVARS_SRC_INVARIANT_VIOLATED;
+    assert(place_holder_clkreset.empty());
+  }
 
   // compute next vloc
   auto status = tchecker::syncprod::next(system.as_syncprod_system(), vloc, vedge, edges);
@@ -123,19 +117,25 @@ tchecker::state_status_t next(tchecker::ta::system_t const & system,
     return status;
 
   // check guards
-  for (tchecker::system::edge_const_shared_ptr_t const & edge : edges)
-    if (vm.run(system.guard_bytecode(edge->id()), *intval, guard, throw_clkreset) == 0)
+  for (tchecker::system::edge_const_shared_ptr_t const & edge : edges) {
+    if (vm.run(system.guard_bytecode(edge->id()), *intval, guard, place_holder_clkreset) == 0)
       return tchecker::STATE_INTVARS_GUARD_VIOLATED;
+    assert(place_holder_clkreset.empty());
+  }
 
   // apply statements
-  for (tchecker::system::edge_const_shared_ptr_t const & edge : edges)
-    if (vm.run(system.statement_bytecode(edge->id()), *intval, throw_clkconstr, reset) == 0)
+  for (tchecker::system::edge_const_shared_ptr_t const & edge : edges) {
+    if (vm.run(system.statement_bytecode(edge->id()), *intval, place_holder_clkconstr, reset) == 0)
       return tchecker::STATE_INTVARS_STATEMENT_FAILED;
+    assert(place_holder_clkconstr.empty());
+  }
 
   // check target invariant
-  for (tchecker::loc_id_t loc_id : *vloc)
-    if (vm.run(system.invariant_bytecode(loc_id), *intval, tgt_invariant, throw_clkreset) == 0)
+  for (tchecker::loc_id_t loc_id : *vloc) {
+    if (vm.run(system.invariant_bytecode(loc_id), *intval, tgt_invariant, place_holder_clkreset) == 0)
       return tchecker::STATE_INTVARS_TGT_INVARIANT_VIOLATED;
+    assert(place_holder_clkreset.empty());
+  }
 
   return tchecker::STATE_OK;
 }
@@ -353,9 +353,11 @@ tchecker::state_status_t initialize(tchecker::ta::system_t const & system,
 
   // check invariant
   tchecker::vm_t & vm = system.vm();
-  for (tchecker::loc_id_t loc_id : *vloc)
-    if (vm.run(system.invariant_bytecode(loc_id), *intval, invariant, throw_clkreset) == 0)
+  for (tchecker::loc_id_t loc_id : *vloc) {
+    if (vm.run(system.invariant_bytecode(loc_id), *intval, invariant, place_holder_clkreset) == 0)
       return tchecker::STATE_INTVARS_SRC_INVARIANT_VIOLATED;
+    assert(place_holder_clkreset.empty());
+  }
 
   return tchecker::STATE_OK;
 }
