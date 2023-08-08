@@ -502,7 +502,7 @@ bool ta_t::is_valid_final(tchecker::ta::const_state_sptr_t const & s) const
   return tchecker::ta::is_valid_final(*_system, *s);
 }
 
-bool ta_t::is_initial(tchecker::ta::const_state_sptr_t const & s) const { return ta::is_initial(*_system, *s); }
+bool ta_t::is_initial(tchecker::ta::const_state_sptr_t const & s) const { return tchecker::ta::is_initial(*_system, *s); }
 
 // Sharing
 
