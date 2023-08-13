@@ -147,6 +147,11 @@ using edges_collection_t = std::vector<tchecker::system::edge_shared_ptr_t>;
 class edges_collection_const_iterator_t : public tchecker::system::edges_collection_t::const_iterator {
 public:
   /*!
+   \brief Default constructor
+  */
+  edges_collection_const_iterator_t() = default;
+
+  /*!
    \brief Constructor
    */
   edges_collection_const_iterator_t(tchecker::system::edges_collection_t::const_iterator const & it);
