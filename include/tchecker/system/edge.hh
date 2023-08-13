@@ -378,6 +378,13 @@ public:
   std::shared_ptr<tchecker::system::loc_edges_maps_t const> incoming_edges_maps() const;
 
   /*!
+   \brief Accessor
+   \param pid : process identifier
+   \return range of edges in process pid
+   */
+  tchecker::range_t<tchecker::system::edges_t::const_iterator_t> edges(tchecker::process_id_t pid) const;
+
+  /*!
    \brief Check validity of edge identifier
    \param id : edge identifier
    \return true is id is an edge identifier, false otherwise
@@ -394,8 +401,10 @@ private:
 
   /*!< Collection of edges */
   tchecker::system::edges_collection_t _edges;
-  /*!< Maps : loc ID to incoming/outgoing edges/events */
+  /*!< Map : loc ID to incoming/outgoing edges/events */
   std::vector<std::shared_ptr<tchecker::system::loc_edges_maps_t>> _loc_edges_maps;
+  /*!< Map : process ID to edges */
+  std::vector<tchecker::system::edges_collection_t> _process_edges_map;
 };
 
 } // end of namespace system
