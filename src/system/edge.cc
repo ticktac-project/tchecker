@@ -84,6 +84,61 @@ bool loc_edges_maps_t::event(tchecker::loc_id_t loc, tchecker::event_id_t event)
   return (loc < _loc_to_events.size() && event < _loc_to_events[loc].size() && _loc_to_events[loc][event]);
 }
 
+/* proc_edges_map_t */
+
+tchecker::system::edges_collection_t const proc_edges_maps_t::_empty_edges;
+
+void proc_edges_maps_t::clear()
+{
+  _proc_to_events.clear();
+  _proc_to_edges.clear();
+  _proc_event_to_edges.clear();
+}
+
+void proc_edges_maps_t::add_edge(tchecker::process_id_t pid, tchecker::system::edge_shared_ptr_t const & edge)
+{
+  tchecker::event_id_t event_id = edge->event_id();
+
+  if (pid >= _proc_to_edges.size())
+    _proc_to_edges.resize(pid + 1);
+  _proc_to_edges[pid].push_back(edge);
+
+  if (pid >= _proc_to_events.size())
+    _proc_to_events.resize(pid + 1);
+  if (event_id >= _proc_to_events[pid].size())
+    _proc_to_events[pid].resize(event_id + 1);
+  _proc_to_events[pid][event_id] = 1;
+
+  if (pid >= _proc_event_to_edges.size())
+    _proc_event_to_edges.resize(pid + 1);
+  if (event_id >= _proc_event_to_edges[pid].size())
+    _proc_event_to_edges[pid].resize(event_id + 1);
+  _proc_event_to_edges[pid][event_id].push_back(edge);
+}
+
+tchecker::range_t<tchecker::system::edges_collection_const_iterator_t>
+proc_edges_maps_t::edges(tchecker::process_id_t pid) const
+{
+  if (pid >= _proc_to_edges.size())
+    return tchecker::make_range<tchecker::system::edges_collection_const_iterator_t>(_empty_edges.begin(), _empty_edges.end());
+  return tchecker::make_range<tchecker::system::edges_collection_const_iterator_t>(_proc_to_edges[pid].begin(),
+                                                                                   _proc_to_edges[pid].end());
+}
+
+tchecker::range_t<tchecker::system::edges_collection_const_iterator_t>
+proc_edges_maps_t::edges(tchecker::process_id_t pid, tchecker::event_id_t event_id) const
+{
+  if (pid >= _proc_event_to_edges.size() || event_id >= _proc_event_to_edges[pid].size())
+    return tchecker::make_range<tchecker::system::edges_collection_const_iterator_t>(_empty_edges.begin(), _empty_edges.end());
+  return tchecker::make_range<tchecker::system::edges_collection_const_iterator_t>(_proc_event_to_edges[pid][event_id].begin(),
+                                                                                   _proc_event_to_edges[pid][event_id].end());
+}
+
+bool proc_edges_maps_t::event(tchecker::process_id_t pid, tchecker::event_id_t event_id) const
+{
+  return (pid < _proc_to_events.size() && event_id < _proc_to_events[pid].size() && _proc_to_events[pid][event_id]);
+}
+
 /* edges_t */
 
 static tchecker::system::edges_collection_t const empty_edges; /*!< Empty collection of edges (for processes with no edges) */
@@ -103,7 +158,7 @@ edges_t::edges_t(tchecker::system::edges_t const & edges) : _loc_edges_maps(tche
 
 edges_t::edges_t(tchecker::system::edges_t && edges)
     : _edges(std::move(edges._edges)), _loc_edges_maps(std::move(edges._loc_edges_maps)),
-      _process_edges_map(std::move(edges._process_edges_map))
+      _proc_edges_map(std::move(edges._proc_edges_map))
 {
 }
 
@@ -124,14 +179,14 @@ tchecker::system::edges_t & edges_t::operator=(tchecker::system::edges_t && edge
     clear();
     _edges = std::move(edges._edges);
     _loc_edges_maps = std::move(edges._loc_edges_maps);
-    _process_edges_map = std::move(edges._process_edges_map);
+    _proc_edges_map = std::move(edges._proc_edges_map);
   }
   return *this;
 }
 
 void edges_t::clear()
 {
-  _process_edges_map.clear();
+  _proc_edges_map.clear();
   _loc_edges_maps.clear();
   _edges.clear();
 }
@@ -151,9 +206,7 @@ void edges_t::add_edge(tchecker::process_id_t pid, tchecker::loc_id_t src, tchec
   _loc_edges_maps[tchecker::system::INCOMING_EDGE]->add_edge(tgt, edge);
   _loc_edges_maps[tchecker::system::OUTGOING_EDGE]->add_edge(src, edge);
 
-  if (pid >= _process_edges_map.size())
-    _process_edges_map.resize(pid + 1);
-  _process_edges_map[pid].push_back(edge);
+  _proc_edges_map.add_edge(pid, edge);
 }
 
 tchecker::range_t<tchecker::system::edges_t::const_iterator_t> edges_t::edges() const
@@ -211,11 +264,13 @@ void edges_t::add_edges(tchecker::system::edges_t const & edges)
 
 tchecker::range_t<tchecker::system::edges_t::const_iterator_t> edges_t::edges(tchecker::process_id_t pid) const
 {
-  if (pid < _process_edges_map.size())
-    return tchecker::make_range(const_iterator_t{_process_edges_map[pid].begin()},
-                                const_iterator_t{_process_edges_map[pid].end()});
-  return tchecker::make_range(const_iterator_t{tchecker::system::empty_edges.begin()},
-                              const_iterator_t{tchecker::system::empty_edges.end()});
+  return _proc_edges_map.edges(pid);
+}
+
+tchecker::range_t<tchecker::system::edges_t::const_iterator_t> edges_t::edges(tchecker::process_id_t pid,
+                                                                              tchecker::event_id_t event_id) const
+{
+  return _proc_edges_map.edges(pid, event_id);
 }
 
 bool edges_t::is_edge(tchecker::edge_id_t id) const { return id < _edges.size(); }

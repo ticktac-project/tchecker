@@ -220,6 +220,62 @@ private:
 };
 
 /*!
+ \class proc_edges_maps_t
+ \brief Maps from process IDs to collection of edges and events
+ */
+class proc_edges_maps_t {
+private:
+  /*!
+   \brief Type of collection of events
+   */
+  using events_collection_t = boost::dynamic_bitset<>;
+
+public:
+  /*!
+   \brief Clear all maps
+   */
+  void clear();
+
+  /*!
+   \brief Add an edge
+   \param pid : process identifier
+   \param edge : an edge
+   \post edge has been added to the maps
+   */
+  void add_edge(tchecker::process_id_t pid, tchecker::system::edge_shared_ptr_t const & edge);
+
+  /*!
+   \brief Accessor
+   \param pid : process identifier
+   \return range of edges associated to process pid
+   */
+  tchecker::range_t<tchecker::system::edges_collection_const_iterator_t> edges(tchecker::process_id_t pid) const;
+
+  /*!
+   \brief Accessor
+   \param pid : process identifier
+   \param event_id : event identifier
+   \return range of edges with event event_id in process pid
+   */
+  tchecker::range_t<tchecker::system::edges_collection_const_iterator_t> edges(tchecker::process_id_t pid,
+                                                                               tchecker::event_id_t event_id) const;
+
+  /*!
+   \brief Accessor
+   \param pid : process identifier
+   \param event_id : event identifier
+   \return true if process pid has an edge labelled with event event_id, false otherwise
+   */
+  bool event(tchecker::process_id_t pid, tchecker::event_id_t event) const;
+
+private:
+  std::vector<tchecker::system::edges_collection_t> _proc_to_edges;  /*!< Map : process ID -> edges */
+  std::vector<events_collection_t> _proc_to_events;                  /*!< Map : process ID -> events */
+  std::vector<std::vector<edges_collection_t>> _proc_event_to_edges; /*!< Map : (process ID, event ID) -> edges */
+  static tchecker::system::edges_collection_t const _empty_edges;    /*!< Empty collection of edges */
+};
+
+/*!
  \brief Direction of edges
  */
 enum edge_direction_t {
@@ -385,6 +441,15 @@ public:
   tchecker::range_t<tchecker::system::edges_t::const_iterator_t> edges(tchecker::process_id_t pid) const;
 
   /*!
+   \brief Accessor
+   \param pid : process identifier
+   \param event_id : event identifier
+   \return range of edges in process pid with event event_id
+   */
+  tchecker::range_t<tchecker::system::edges_t::const_iterator_t> edges(tchecker::process_id_t pid,
+                                                                       tchecker::event_id_t event_id) const;
+
+  /*!
    \brief Check validity of edge identifier
    \param id : edge identifier
    \return true is id is an edge identifier, false otherwise
@@ -403,8 +468,8 @@ private:
   tchecker::system::edges_collection_t _edges;
   /*!< Map : loc ID to incoming/outgoing edges/events */
   std::vector<std::shared_ptr<tchecker::system::loc_edges_maps_t>> _loc_edges_maps;
-  /*!< Map : process ID to edges */
-  std::vector<tchecker::system::edges_collection_t> _process_edges_map;
+  /*!< Map : process ID to edges/events */
+  tchecker::system::proc_edges_maps_t _proc_edges_map;
 };
 
 } // end of namespace system
