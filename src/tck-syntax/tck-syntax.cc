@@ -26,7 +26,8 @@
  \brief Syntax checking and translation of systems
  */
 
-static struct option long_options[] = {{"check", no_argument, 0, 'c'},
+static struct option long_options[] = {{"asynchronous-events", no_argument, 0, 0},
+                                       {"check", no_argument, 0, 'c'},
                                        {"product", no_argument, 0, 'p'},
                                        {"output", required_argument, 0, 'o'},
                                        {"delimiter", required_argument, 0, 'd'},
@@ -41,17 +42,19 @@ static char * const options = (char *)"cd:hn:o:ptj";
 void usage(char * progname)
 {
   std::cerr << "Usage: " << progname << " [options] [file]" << std::endl;
-  std::cerr << "   -c          syntax check (timed automaton)" << std::endl;
-  std::cerr << "   -p          synchronized product" << std::endl;
-  std::cerr << "   -t          transform a system into dot graphviz file format" << std::endl;
-  std::cerr << "   -j          transform a system into json file format" << std::endl;
-  std::cerr << "   -o file     output file" << std::endl;
-  std::cerr << "   -d delim    delimiter string (default: _)" << std::endl;
-  std::cerr << "   -n name     name of synchronized process (default: P)" << std::endl;
-  std::cerr << "   -h          help" << std::endl;
+  std::cerr << "   --asynchronous-events  reports all asynchronous events in the model" << std::endl;
+  std::cerr << "   -c                     syntax check (timed automaton)" << std::endl;
+  std::cerr << "   -p                     synchronized product" << std::endl;
+  std::cerr << "   -t                     transform a system into dot graphviz file format" << std::endl;
+  std::cerr << "   -j                     transform a system into json file format" << std::endl;
+  std::cerr << "   -o file                output file" << std::endl;
+  std::cerr << "   -d delim               delimiter string (default: _)" << std::endl;
+  std::cerr << "   -n name                name of synchronized process (default: P)" << std::endl;
+  std::cerr << "   -h                     help" << std::endl;
   std::cerr << "reads from standard input if file is not provided" << std::endl;
 }
 
+static bool report_asynchronous_events = false;
 static bool check_syntax = false;
 static bool synchronized_product = false;
 static bool transform = false;
@@ -64,7 +67,8 @@ static std::string output_file = "";
 int parse_command_line(int argc, char * argv[])
 {
   while (true) {
-    int c = getopt_long(argc, argv, options, long_options, nullptr);
+    int long_option_index = -1;
+    int c = getopt_long(argc, argv, options, long_options, &long_option_index);
 
     if (c == -1)
       break;
@@ -73,37 +77,44 @@ int parse_command_line(int argc, char * argv[])
       throw std::runtime_error("Missing option parameter");
     else if (c == '?')
       throw std::runtime_error("Unknown command-line option");
-
-    switch (c) {
-    case 'c':
-      check_syntax = true;
-      break;
-    case 'd':
-      delimiter = optarg;
-      break;
-    case 'h':
-      help = true;
-      break;
-    case 'n':
-      process_name = optarg;
-      break;
-    case 'o':
-      if (strcmp(optarg, "") == 0)
-        throw std::invalid_argument("Invalid empty output file name");
-      output_file = optarg;
-      break;
-    case 'p':
-      synchronized_product = true;
-      break;
-    case 't':
-      transform = true;
-      break;
-    case 'j':
-      json = true;
-      break;
-    default:
-      throw std::runtime_error("I should never be executed");
-      break;
+    else if (c != 0) {
+      switch (c) {
+      case 'c':
+        check_syntax = true;
+        break;
+      case 'd':
+        delimiter = optarg;
+        break;
+      case 'h':
+        help = true;
+        break;
+      case 'n':
+        process_name = optarg;
+        break;
+      case 'o':
+        if (strcmp(optarg, "") == 0)
+          throw std::invalid_argument("Invalid empty output file name");
+        output_file = optarg;
+        break;
+      case 'p':
+        synchronized_product = true;
+        break;
+      case 't':
+        transform = true;
+        break;
+      case 'j':
+        json = true;
+        break;
+      default:
+        throw std::runtime_error("This should never be executed");
+        break;
+      }
+    }
+    else {
+      if (strcmp(long_options[long_option_index].name, "asynchronous-events") == 0)
+        report_asynchronous_events = true;
+      else
+        throw std::runtime_error("This also should never be executed");
     }
   }
 
@@ -129,6 +140,31 @@ std::shared_ptr<tchecker::parsing::system_declaration_t> load_system(std::string
     tchecker::log_output_count(std::cout);
 
   return std::shared_ptr<tchecker::parsing::system_declaration_t>(sysdecl);
+}
+
+/*!
+ \brief Report asynchronous events from a declaration
+ \param sysdecl : system declaration
+ \post all asynchronous events in sysdecl have been reported to std::cout
+*/
+void do_report_asynchronous_events(tchecker::parsing::system_declaration_t const & sysdecl)
+{
+  try {
+    tchecker::syncprod::system_t system(sysdecl);
+    std::size_t asynchronous_events_count = 0;
+
+    std::cout << "Asynchronous events in model " << system.name() << std::endl;
+    for (tchecker::system::edge_const_shared_ptr_t const & edge : system.edges())
+      if (system.is_asynchronous(*edge)) {
+        std::cout << "    event " << system.event_name(edge->event_id()) << " in process " << system.process_name(edge->pid())
+                  << std::endl;
+        ++asynchronous_events_count;
+      }
+    std::cout << "Found " << asynchronous_events_count << " asynchronous event(s)" << std::endl;
+  }
+  catch (...) {
+    std::cerr << tchecker::log_error << "Syntax error in TChecker file (run tck-syntax with option -c)" << std::endl;
+  }
 }
 
 /*!
@@ -234,6 +270,9 @@ int main(int argc, char * argv[])
 
     if (check_syntax)
       do_syntax_check_ta(*sysdecl);
+
+    if (report_asynchronous_events)
+      do_report_asynchronous_events(*sysdecl);
 
     if (synchronized_product)
       do_synchronized_product(*sysdecl, process_name, delimiter, *os);
