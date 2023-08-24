@@ -12,6 +12,14 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <tuple>
+#include <unordered_set>
+
+#if BOOST_VERSION <= 106600
+#include <boost/functional/hash.hpp>
+#else
+#include <boost/container_hash/hash.hpp>
+#endif
 
 #include "syntax-check.hh"
 #include "tchecker/parsing/parsing.hh"
@@ -143,24 +151,51 @@ std::shared_ptr<tchecker::parsing::system_declaration_t> load_system(std::string
 }
 
 /*!
+ \brief Type of pair (process identifier, event identifier)
+*/
+using process_event_t = std::tuple<tchecker::process_id_t, tchecker::event_id_t>;
+
+/*!
+ \brief Hash functor on process events
+*/
+class hash_process_event_t {
+public:
+  /*!
+   \brief Hash function
+   \param process_event : process event
+   \return hash code for process_event
+  */
+  std::size_t operator()(process_event_t const & process_event) const
+  {
+    std::size_t h = boost::hash_value(std::get<0>(process_event));
+    boost::hash_combine(h, std::get<1>(process_event));
+    return h;
+  }
+};
+
+/*!
  \brief Report asynchronous events from a declaration
  \param sysdecl : system declaration
  \post all asynchronous events in sysdecl have been reported to std::cout
 */
 void do_report_asynchronous_events(tchecker::parsing::system_declaration_t const & sysdecl)
 {
+  std::unordered_set<process_event_t, hash_process_event_t> reported_asynchronous_events;
+
   try {
     tchecker::syncprod::system_t system(sysdecl);
-    std::size_t asynchronous_events_count = 0;
 
     std::cout << "Asynchronous events in model " << system.name() << std::endl;
     for (tchecker::system::edge_const_shared_ptr_t const & edge : system.edges())
       if (system.is_asynchronous(*edge)) {
-        std::cout << "    event " << system.event_name(edge->event_id()) << " in process " << system.process_name(edge->pid())
-                  << std::endl;
-        ++asynchronous_events_count;
+        process_event_t process_event = std::make_tuple(edge->pid(), edge->event_id());
+        if (reported_asynchronous_events.find(process_event) == reported_asynchronous_events.end()) {
+          std::cout << "    event " << system.event_name(edge->event_id()) << " in process " << system.process_name(edge->pid())
+                    << std::endl;
+          reported_asynchronous_events.insert(process_event);
+        }
       }
-    std::cout << "Found " << asynchronous_events_count << " asynchronous event(s)" << std::endl;
+    std::cout << "Found " << reported_asynchronous_events.size() << " asynchronous event(s)" << std::endl;
   }
   catch (...) {
     std::cerr << tchecker::log_error << "Syntax error in TChecker file (run tck-syntax with option -c)" << std::endl;
