@@ -208,17 +208,20 @@ std::ostream & dot_output(std::ostream & os, tchecker::zg::path::symbolic::finit
  \param zg : zone graph
  \param initial_vloc : tuple of initial locations
  \param seq : sequence of tuple of edges as a range
+ \param last_node_final : final flag for last node
  \pre initial_vloc is a tuple of initial locations in zg
  \pre seq is a feasible sequence in zg from initial_vloc
  \return a finite path in zg, starting from the initial state with tuple of locations initial_vloc,
- and that follows the sequence seq if possible. If the path is not empty, its first node has flag initial set to true
+ and that follows the sequence seq if possible. If the path is not empty, its first node has flag initial set to true,
+ and its last node has flag final set to last_node_final
  \throw std::invalid_argument : if there is not initial state in zg with tuple of locations initial_vloc
  or if seq is not feasible from the initial state
  \note the returned path keeps a shared pointer on zg
  */
 tchecker::zg::path::symbolic::finite_path_t * compute(std::shared_ptr<tchecker::zg::zg_t> const & zg,
                                                       tchecker::vloc_t const & initial_vloc,
-                                                      std::vector<tchecker::const_vedge_sptr_t> const & seq);
+                                                      std::vector<tchecker::const_vedge_sptr_t> const & seq,
+                                                      bool last_node_final = false);
 
 } // namespace symbolic
 
@@ -523,7 +526,8 @@ std::ostream & dot_output(std::ostream & os, tchecker::zg::path::concrete::finit
  \return a finite concrete run in zg, following the sequence of states and transitions in symbolic_run,
  where each clock valuation belongs to the zone in the symbolic path, each successive clock valuations
  are reachable from each others. Delays in transitions correspond to the delay between the clock valuation
- in the source state, and the clock valuation in the target state
+ in the source state, and the clock valuation in the target state.
+ The initial and final flags on nodes in the returned concrete path are set accordingly to symbolic_run
  \note the returned path shares pointers to states, transitions and zone graph with symbolic_run
  \throw std::runtime_error : if concretization of symbolic_run fails
  */

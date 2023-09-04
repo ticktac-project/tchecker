@@ -131,7 +131,8 @@ std::ostream & dot_output(std::ostream & os, tchecker::zg::path::symbolic::finit
 
 tchecker::zg::path::symbolic::finite_path_t * compute(std::shared_ptr<tchecker::zg::zg_t> const & zg,
                                                       tchecker::vloc_t const & initial_vloc,
-                                                      std::vector<tchecker::const_vedge_sptr_t> const & seq)
+                                                      std::vector<tchecker::const_vedge_sptr_t> const & seq,
+                                                      bool last_node_final)
 {
   tchecker::zg::path::symbolic::finite_path_t * path = new tchecker::zg::path::symbolic::finite_path_t{zg};
 
@@ -153,6 +154,8 @@ tchecker::zg::path::symbolic::finite_path_t * compute(std::shared_ptr<tchecker::
     }
     path->extend_back(nextt, nexts);
   }
+
+  path->last()->final(last_node_final);
 
   return path;
 }
@@ -637,11 +640,12 @@ tchecker::zg::path::concrete::finite_path_t * compute(tchecker::zg::path::symbol
       symbolic_node->state().zone().dbm(), static_cast<tchecker::clock_id_t>(symbolic_node->state().zone().dim())};
 
   // build final concrete node
-  concrete_run->add_first_node(symbolic_node->state_ptr(), clockval_dbm.clock_valuation(), false, true);
+  concrete_run->add_first_node(symbolic_node->state_ptr(), clockval_dbm.clock_valuation());
 
   if (symbolic_node == first_symbolic_node) {
     // path is just one node
-    concrete_run->first()->initial(true);
+    concrete_run->first()->initial(symbolic_run.first()->initial());
+    concrete_run->last()->final(symbolic_run.last()->final());
     return concrete_run;
   }
 
@@ -673,12 +677,13 @@ tchecker::zg::path::concrete::finite_path_t * compute(tchecker::zg::path::symbol
     }
 
     // extend concrete run
-    bool initial = (symbolic_node == first_symbolic_node);
-
     concrete_run->extend_front(symbolic_edge->transition_ptr(), delay, symbolic_node->state_ptr(),
-                               clockval_dbm.clock_valuation(), initial, false);
+                               clockval_dbm.clock_valuation());
 
   } while (symbolic_node != first_symbolic_node);
+
+  concrete_run->first()->initial(symbolic_run.first()->initial());
+  concrete_run->last()->final(symbolic_run.last()->final());
 
   return concrete_run;
 }

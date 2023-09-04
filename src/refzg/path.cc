@@ -117,7 +117,8 @@ std::ostream & dot_output(std::ostream & os, tchecker::refzg::path::finite_path_
 
 tchecker::refzg::path::finite_path_t * compute_symbolic_run(std::shared_ptr<tchecker::refzg::refzg_t> const & refzg,
                                                             tchecker::vloc_t const & initial_vloc,
-                                                            std::vector<tchecker::const_vedge_sptr_t> const & seq)
+                                                            std::vector<tchecker::const_vedge_sptr_t> const & seq,
+                                                            bool last_node_final)
 {
   tchecker::refzg::path::finite_path_t * path = new tchecker::refzg::path::finite_path_t{refzg};
 
@@ -139,6 +140,8 @@ tchecker::refzg::path::finite_path_t * compute_symbolic_run(std::shared_ptr<tche
     }
     path->extend_back(nextt, nexts);
   }
+
+  path->last()->final(last_node_final);
 
   return path;
 }

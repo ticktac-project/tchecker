@@ -214,17 +214,20 @@ std::ostream & dot_output(std::ostream & os, tchecker::refzg::path::finite_path_
  \param refzg : zone graph with reference clocks
  \param initial_vloc : tuple of initial locations
  \param seq : sequence of tuple of edges as a range
+ \param last_node_final : final flag for last node
  \pre initial_vloc is a tuple of initial locations in refzg
  \pre seq is a feasible sequence in refzg from initial_vloc
  \return a finite path in refzg, starting from the initial state with tuple of locations initial_vloc,
  and that follows the sequence seq if possible. If the path is not empty, its first node has flag initial set to true
+ and its last node has flag final set to last_node_final
  \throw std::invalid_argument : if there is not initial state in refzg with tuple of locations initial_vloc
  or if seq is not feasible from the initial state
  \note the returned path keeps a shared pointer on refzg
  */
 tchecker::refzg::path::finite_path_t * compute_symbolic_run(std::shared_ptr<tchecker::refzg::refzg_t> const & refzg,
                                                             tchecker::vloc_t const & initial_vloc,
-                                                            std::vector<tchecker::const_vedge_sptr_t> const & seq);
+                                                            std::vector<tchecker::const_vedge_sptr_t> const & seq,
+                                                            bool last_node_final = false);
 
 } // namespace path
 

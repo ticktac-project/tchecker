@@ -174,27 +174,53 @@ std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::zg_reach::grap
 namespace cex {
 
 /*!
- \brief Type of symbolic reachability counter-example
+ \brief Type of symbolic counter-example
 */
-using cex_t = tchecker::zg::path::concrete::finite_path_t;
+using symbolic_cex_t = tchecker::zg::path::symbolic::finite_path_t;
 
 /*!
- \brief Compute a counter-example from a reachability graph of a zone graph
+ \brief Compute a symbolic counter-example from a reachability graph of a zone graph
  \param g : reachability graph on a zone graph
  \return a finite path from an initial node to a final node in g if any, nullptr otherwise
  \note the returned pointer shall be deleted
 */
-tchecker::tck_reach::zg_reach::cex::cex_t * counter_example(tchecker::tck_reach::zg_reach::graph_t const & g);
+tchecker::tck_reach::zg_reach::cex::symbolic_cex_t * symbolic_counter_example(tchecker::tck_reach::zg_reach::graph_t const & g);
 
 /*!
- \brief Counter-example output
+ \brief Symbolic counter-example output
  \param os : output stream
  \param cex : counter example
  \param name : counter example name
  \post cex has been output to os
  \return os after output
  */
-std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::zg_reach::cex::cex_t const & cex, std::string const & name);
+std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::zg_reach::cex::symbolic_cex_t const & cex,
+                          std::string const & name);
+
+/*!
+ \brief Type of concrete counter-example
+*/
+using concrete_cex_t = tchecker::zg::path::concrete::finite_path_t;
+
+/*!
+ \brief Compute a concrete counter-example from a reachability graph of a zone graph
+ \param g : reachability graph on a zone graph
+ \return a finite path from an initial node to a final node in g with concrete clock valuations if any,
+ nullptr otherwise
+ \note the returned pointer shall be deleted
+*/
+tchecker::tck_reach::zg_reach::cex::concrete_cex_t * concrete_counter_example(tchecker::tck_reach::zg_reach::graph_t const & g);
+
+/*!
+ \brief Concrete counter-example output
+ \param os : output stream
+ \param cex : counter example
+ \param name : counter example name
+ \post cex has been output to os
+ \return os after output
+ */
+std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::zg_reach::cex::concrete_cex_t const & cex,
+                          std::string const & name);
 
 } // namespace cex
 

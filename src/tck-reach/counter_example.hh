@@ -53,12 +53,12 @@ template <class GRAPH> bool final_node(typename GRAPH::node_sptr_t const & n) { 
 template <class GRAPH> bool true_edge(typename GRAPH::edge_sptr_t const & e) { return true; }
 
 /*!
- \brief Compute a counter example over the zone graph
+ \brief Compute a symbolic counter example of a zone graph
  \tparam GRAPH : type of graph, see tchecker::algorithms::path::finite::algorithm_t for requirements
  \param g : a graph over the zone graph (reachability graph, subsumption graph, etc)
  \return a finite path from an initial node of g to a final node of g
  */
-template <class GRAPH> tchecker::zg::path::concrete::finite_path_t * counter_example_zg(GRAPH const & g)
+template <class GRAPH> tchecker::zg::path::symbolic::finite_path_t * symbolic_counter_example_zg(GRAPH const & g)
 {
   std::shared_ptr<tchecker::zg::zg_t> zg{tchecker::zg::factory(
       g.zg().system_ptr(), g.zg().sharing_type(), tchecker::zg::STANDARD_SEMANTICS, tchecker::zg::NO_EXTRAPOLATION, 128, 128)};
@@ -71,7 +71,7 @@ template <class GRAPH> tchecker::zg::path::concrete::finite_path_t * counter_exa
                     &tchecker::tck_reach::true_edge<GRAPH>);
 
   if (seq.empty())
-    return new tchecker::zg::path::concrete::finite_path_t{zg, 1};
+    return new tchecker::zg::path::symbolic::finite_path_t{zg};
 
   // Extract sequence of vedges
   std::vector<tchecker::const_vedge_sptr_t> vedge_seq;
@@ -80,15 +80,23 @@ template <class GRAPH> tchecker::zg::path::concrete::finite_path_t * counter_exa
 
   // Get the corresponding run in a zone graph with standard semantics and no extrapolation
   tchecker::vloc_t const & initial_vloc = g.edge_src(seq[0])->state().vloc();
-  std::unique_ptr<tchecker::zg::path::symbolic::finite_path_t> zg_path{
-      tchecker::zg::path::symbolic::compute(zg, initial_vloc, vedge_seq)};
-  if (!zg_path->empty()) {
-    zg_path->first()->initial(true);
-    zg_path->last()->final(true);
-  }
 
-  // Compute counter-exemple from zone graph path
-  tchecker::zg::path::concrete::finite_path_t * cex = tchecker::zg::path::concrete::compute(*zg_path);
+  return tchecker::zg::path::symbolic::compute(zg, initial_vloc, vedge_seq, true);
+}
+
+/*!
+ \brief Compute a concrete counter example of a zone graph
+ \tparam GRAPH : type of graph, see tchecker::algorithms::path::finite::algorithm_t for requirements
+ \param g : a graph over the zone graph (reachability graph, subsumption graph, etc)
+ \return a finite path from an initial node of g to a final node of g, with concrete clock valuations
+ */
+template <class GRAPH> tchecker::zg::path::concrete::finite_path_t * concrete_counter_example_zg(GRAPH const & g)
+{
+  std::unique_ptr<tchecker::zg::path::symbolic::finite_path_t> symbolic_cex{
+      tchecker::tck_reach::symbolic_counter_example_zg<GRAPH>(g)};
+
+  // Compute concrete counter-exemple from symbolic counter-example
+  tchecker::zg::path::concrete::finite_path_t * cex = tchecker::zg::path::concrete::compute(*symbolic_cex);
 
   return cex;
 }
@@ -123,11 +131,7 @@ template <class GRAPH, class CEX> CEX * symbolic_counter_example_refzg(GRAPH con
 
   // Get the corresponding run in a zone graph with standard semantics and no extrapolation
   tchecker::vloc_t const & initial_vloc = g.edge_src(seq[0])->state().vloc();
-  CEX * cex = tchecker::refzg::path::compute_symbolic_run(refzg, initial_vloc, vedge_seq);
-  if (!cex->empty()) {
-    cex->first()->initial(true);
-    cex->last()->final(true);
-  }
+  CEX * cex = tchecker::refzg::path::compute_symbolic_run(refzg, initial_vloc, vedge_seq, true);
 
   return cex;
 }
