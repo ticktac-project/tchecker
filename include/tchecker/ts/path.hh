@@ -102,6 +102,85 @@ private:
   std::shared_ptr<TS> _ts; /*!< Transition system */
 };
 
+/*!
+ \class lasso_path_t
+ \brief Lasso path in a transition system
+ \tparam TS : type of transition system
+ \tparam NODE : type of nodes on the path
+ \tparam EDGE : type of edges on the path
+*/
+template <class TS, class NODE, class EDGE> class lasso_path_t : public tchecker::graph::lasso_path_t<NODE, EDGE> {
+public:
+  /*!
+   \brief Constructor
+   \param ts : a transition system
+   \post this is an empty lasso path
+   \note this keeps a pointer to ts
+   \note all nodes and edges added to this path shall be built from states and transitions in ts
+  */
+  lasso_path_t(std::shared_ptr<TS> const & ts) : _ts(ts) {}
+
+  /*!
+   \brief Copy constructor
+  */
+  lasso_path_t(tchecker::ts::lasso_path_t<TS, NODE, EDGE> const &) = delete;
+
+  /*!
+   \brief Move constructor
+  */
+  lasso_path_t(tchecker::ts::lasso_path_t<TS, NODE, EDGE> &&) = delete;
+
+  /*!
+   \brief Destructor
+  */
+  ~lasso_path_t() { tchecker::graph::lasso_path_t<NODE, EDGE>::clear(); }
+
+  /*!
+   \brief Assignment operator
+  */
+  tchecker::ts::lasso_path_t<TS, NODE, EDGE> & operator=(tchecker::ts::lasso_path_t<TS, NODE, EDGE> const &) = delete;
+
+  /*!
+    \brief Move-assignment operator
+   */
+  tchecker::ts::lasso_path_t<TS, NODE, EDGE> & operator=(tchecker::ts::lasso_path_t<TS, NODE, EDGE> &&) = delete;
+
+  using tchecker::graph::lasso_path_t<NODE, EDGE>::attributes;
+
+  /*!
+   \brief Accessor
+   \return transition system
+  */
+  inline TS & ts() const { return *_ts; }
+
+  /*!
+   \brief Accessor
+   \return shared pointer to transition system
+  */
+  inline std::shared_ptr<TS> ts_ptr() const { return _ts; }
+
+protected:
+  /*!
+   \brief Accessor to node attributes
+   \param n : a node
+   \param m : a map (key, value) of attributes
+  */
+  virtual void attributes(NODE const & n, std::map<std::string, std::string> & m) const { _ts->attributes(n.state_ptr(), m); }
+
+  /*!
+   \brief Accessor to edge attributes
+   \param e : an edge
+   \param m : a map (key, value) of attributes
+  */
+  virtual void attributes(EDGE const & e, std::map<std::string, std::string> & m) const
+  {
+    _ts->attributes(e.transition_ptr(), m);
+  }
+
+private:
+  std::shared_ptr<TS> _ts; /*!< Transition system */
+};
+
 } // namespace ts
 
 } // namespace tchecker

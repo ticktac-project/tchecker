@@ -7,6 +7,7 @@
 
 #include <boost/dynamic_bitset.hpp>
 
+#include "counter_example.hh"
 #include "tchecker/system/static_analysis.hh"
 #include "tchecker/ta/system.hh"
 #include "tchecker/utils/log.hh"
@@ -20,15 +21,9 @@ namespace zg_couvscc {
 
 /* node_t */
 
-node_t::node_t(tchecker::zg::state_sptr_t const & s, bool initial, bool final)
-    : tchecker::graph::node_flags_t(initial, final), tchecker::graph::node_zg_state_t(s)
-{
-}
+node_t::node_t(tchecker::zg::state_sptr_t const & s) : tchecker::graph::node_zg_state_t(s) {}
 
-node_t::node_t(tchecker::zg::const_state_sptr_t const & s, bool initial, bool final)
-    : tchecker::graph::node_flags_t(initial, final), tchecker::graph::node_zg_state_t(s)
-{
-}
+node_t::node_t(tchecker::zg::const_state_sptr_t const & s) : tchecker::graph::node_zg_state_t(s) {}
 
 /* node_hash_t */
 
@@ -131,6 +126,23 @@ std::ostream & dot_output(std::ostream & os, tchecker::tck_liveness::zg_couvscc:
                                                    tchecker::tck_liveness::zg_couvscc::edge_lexical_less_t>(os, g, name);
 }
 
+/* counter example */
+namespace cex {
+
+tchecker::tck_liveness::zg_couvscc::cex::symbolic_cex_t *
+symbolic_counter_example(tchecker::tck_liveness::zg_couvscc::graph_t const & g)
+{
+  return tchecker::tck_liveness::symbolic_counter_example_zg<tchecker::tck_liveness::zg_couvscc::graph_t>(g);
+}
+
+std::ostream & dot_output(std::ostream & os, tchecker::tck_liveness::zg_couvscc::cex::symbolic_cex_t const & cex,
+                          std::string const & name)
+{
+  return tchecker::zg::path::symbolic::dot_output(os, cex, name);
+}
+
+} // namespace cex
+
 /* run */
 
 std::tuple<tchecker::algorithms::couvscc::stats_t, std::shared_ptr<tchecker::tck_liveness::zg_couvscc::graph_t>>
@@ -149,9 +161,16 @@ run(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl, st
 
   boost::dynamic_bitset<> accepting_labels = system->as_syncprod_system().labels(labels);
 
-  tchecker::tck_liveness::zg_couvscc::algorithm_t algorithm;
+  tchecker::algorithms::couvscc::stats_t stats;
 
-  tchecker::algorithms::couvscc::stats_t stats = algorithm.run(*zg, *graph, accepting_labels);
+  if (accepting_labels.count() > 1) {
+    tchecker::tck_liveness::zg_couvscc::generalized_algorithm_t algorithm;
+    stats = algorithm.run(*zg, *graph, accepting_labels);
+  }
+  else {
+    tchecker::tck_liveness::zg_couvscc::single_algorithm_t algorithm;
+    stats = algorithm.run(*zg, *graph, accepting_labels);
+  }
 
   return std::make_tuple(stats, graph);
 }

@@ -218,10 +218,106 @@ std::ostream & dot_output(std::ostream & os, tchecker::zg::path::symbolic::finit
  or if seq is not feasible from the initial state
  \note the returned path keeps a shared pointer on zg
  */
-tchecker::zg::path::symbolic::finite_path_t * compute(std::shared_ptr<tchecker::zg::zg_t> const & zg,
-                                                      tchecker::vloc_t const & initial_vloc,
-                                                      std::vector<tchecker::const_vedge_sptr_t> const & seq,
-                                                      bool last_node_final = false);
+tchecker::zg::path::symbolic::finite_path_t * compute_finite_path(std::shared_ptr<tchecker::zg::zg_t> const & zg,
+                                                                  tchecker::vloc_t const & initial_vloc,
+                                                                  std::vector<tchecker::const_vedge_sptr_t> const & seq,
+                                                                  bool last_node_final = false);
+
+/*!
+ \class lasso_path_t
+ \brief Lasso path in a zone graph
+*/
+class lasso_path_t : public tchecker::ts::lasso_path_t<tchecker::zg::zg_t, tchecker::zg::path::symbolic::node_t,
+                                                       tchecker::zg::path::symbolic::edge_t> {
+public:
+  /*!
+   \brief Constructor
+   \param zg : a zone graph
+   \post this is an empty lasso path
+   \note this keeps a pointer to zg
+   \note all nodes and edges added to this lasso path shall be built from states and transitions in zg
+  */
+  using tchecker::ts::lasso_path_t<tchecker::zg::zg_t, tchecker::zg::path::symbolic::node_t,
+                                   tchecker::zg::path::symbolic::edge_t>::lasso_path_t;
+
+  using tchecker::graph::lasso_path_t<tchecker::zg::path::symbolic::node_t, tchecker::zg::path::symbolic::edge_t>::attributes;
+
+  /*!
+   \brief Accessor
+   \return Underlying zone graph
+  */
+  inline tchecker::zg::zg_t & zg() const
+  {
+    return tchecker::ts::lasso_path_t<tchecker::zg::zg_t, tchecker::zg::path::symbolic::node_t,
+                                      tchecker::zg::path::symbolic::edge_t>::ts();
+  }
+
+  /*!
+   \brief Accessor
+   \return Pointer to underlying zone graph
+  */
+  inline std::shared_ptr<tchecker::zg::zg_t> zg_ptr() const
+  {
+    return tchecker::ts::lasso_path_t<tchecker::zg::zg_t, tchecker::zg::path::symbolic::node_t,
+                                      tchecker::zg::path::symbolic::edge_t>::ts_ptr();
+  }
+
+protected:
+  /*!
+   \brief Accessor to node attributes
+   \param n : a node
+   \param m : a map (key, value) of attributes
+  */
+  virtual void attributes(tchecker::zg::path::symbolic::node_t const & n, std::map<std::string, std::string> & m) const;
+
+  /*!
+   \brief Accessor to edge attributes
+   \param e : an edge
+   \param m : a map (key, value) of attributes
+  */
+  virtual void attributes(tchecker::zg::path::symbolic::edge_t const & e, std::map<std::string, std::string> & m) const;
+};
+
+/* output */
+
+/*!
+ \brief Dot output of zone graph lasso paths
+ \param os : output stream
+ \param path : a lasso path
+ \param name : path name
+ \post path has been output to os following the graphviz DOT file format
+ \return os after output
+*/
+std::ostream & dot_output(std::ostream & os, tchecker::zg::path::symbolic::lasso_path_t const & path, std::string const & name);
+
+/* path computation */
+
+/*!
+ \brief Compute a symbolic lasso path in a zone graph following a specified sequence of tuples of edges
+ \param zg : zone graph
+ \param initial_vloc : tuple of initial locations
+ \param prefix : sequence of tuple of edges, prefix of the lasso path
+ \param cycle : sequence of tuple of edges, cycle of the lasso path
+ \param final_state : predicate that identifies final states
+ \pre initial_vloc is a tuple of initial locations in zg
+ \pre prefix is a feasible sequence in zg from initial_vloc
+ \pre cycle is not empty
+ \pre cycle is a feasible sequence in zg after prefix from initial_vloc
+ \pre the state reached after prefix+cycle is the same as the state reached after prefix
+ \return a lasso path in zg, starting from the initial state with tuple of locations initial_vloc,
+ and that follows the sequence prefix+cycle if possible.
+ If the path is not empty, its first node has flag initial set to true, and its nodes that match final_state
+ have flag final set to true
+ \throw std::invalid_argument : if cycle is empty
+ \throw std::invalid_argument : if there is not initial state in zg with tuple of locations initial_vloc
+ or if prefix+cycle is not feasible from the initial state
+ \note the returned path keeps a shared pointer on zg
+ */
+tchecker::zg::path::symbolic::lasso_path_t *
+compute_lasso_path(std::shared_ptr<tchecker::zg::zg_t> const & zg, tchecker::vloc_t const & initial_vloc,
+                   std::vector<tchecker::const_vedge_sptr_t> const & prefix,
+                   std::vector<tchecker::const_vedge_sptr_t> const & cycle,
+                   std::function<bool(tchecker::zg::state_t const &)> && final_state);
 
 } // namespace symbolic
 
@@ -531,7 +627,8 @@ std::ostream & dot_output(std::ostream & os, tchecker::zg::path::concrete::finit
  \note the returned path shares pointers to states, transitions and zone graph with symbolic_run
  \throw std::runtime_error : if concretization of symbolic_run fails
  */
-tchecker::zg::path::concrete::finite_path_t * compute(tchecker::zg::path::symbolic::finite_path_t const & symbolic_run);
+tchecker::zg::path::concrete::finite_path_t *
+compute_finite_path(tchecker::zg::path::symbolic::finite_path_t const & symbolic_run);
 
 } // namespace concrete
 

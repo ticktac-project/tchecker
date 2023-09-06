@@ -8,6 +8,8 @@
 #ifndef TCHECKER_ALGORITHMS_COUVREUR_SCC_GRAPH_HH
 #define TCHECKER_ALGORITHMS_COUVREUR_SCC_GRAPH_HH
 
+#include "tchecker/graph/node.hh"
+
 /*!
  \file graph.hh
  \brief Graphs for Couvreur's SCC-decomposition-based liveness algorithm
@@ -23,11 +25,12 @@ namespace couvscc {
  \class node_t
  \brief Nodes for Couvreur's SCC algorithm
 */
-class node_t {
+class node_t : public tchecker::graph::node_flags_t {
 public:
   /*!
   \brief Constructor
-  \post this node has DFS number 0 and current flag false
+  \post this node has DFS number 0, current flag false, and initial and final
+  flags false
   */
   node_t();
 

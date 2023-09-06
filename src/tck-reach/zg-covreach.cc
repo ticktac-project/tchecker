@@ -8,7 +8,6 @@
 #include <boost/dynamic_bitset.hpp>
 
 #include "counter_example.hh"
-#include "tchecker/algorithms/path/algorithm.hh"
 #include "tchecker/algorithms/search_order.hh"
 #include "tchecker/system/static_analysis.hh"
 #include "tchecker/ta/state.hh"

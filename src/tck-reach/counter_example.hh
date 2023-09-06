@@ -11,7 +11,7 @@
 #include <memory>
 #include <vector>
 
-#include "tchecker/algorithms/path/algorithm.hh"
+#include "tchecker/algorithms/path/finite_path_extraction.hh"
 #include "tchecker/refzg/path.hh"
 #include "tchecker/refzg/refzg.hh"
 #include "tchecker/syncprod/vedge.hh"
@@ -64,7 +64,7 @@ template <class GRAPH> tchecker::zg::path::symbolic::finite_path_t * symbolic_co
       g.zg().system_ptr(), g.zg().sharing_type(), tchecker::zg::STANDARD_SEMANTICS, tchecker::zg::NO_EXTRAPOLATION, 128, 128)};
 
   // compute sequence of edges from initial to final node in g
-  tchecker::algorithms::path::finite::algorithm_t<GRAPH> algorithm;
+  tchecker::algorithms::finite_path_extraction_algorithm_t<GRAPH> algorithm;
 
   std::vector<typename GRAPH::edge_sptr_t> seq =
       algorithm.run(g, &tchecker::tck_reach::initial_node<GRAPH>, &tchecker::tck_reach::final_node<GRAPH>,
@@ -81,7 +81,7 @@ template <class GRAPH> tchecker::zg::path::symbolic::finite_path_t * symbolic_co
   // Get the corresponding run in a zone graph with standard semantics and no extrapolation
   tchecker::vloc_t const & initial_vloc = g.edge_src(seq[0])->state().vloc();
 
-  return tchecker::zg::path::symbolic::compute(zg, initial_vloc, vedge_seq, true);
+  return tchecker::zg::path::symbolic::compute_finite_path(zg, initial_vloc, vedge_seq, true);
 }
 
 /*!
@@ -96,7 +96,7 @@ template <class GRAPH> tchecker::zg::path::concrete::finite_path_t * concrete_co
       tchecker::tck_reach::symbolic_counter_example_zg<GRAPH>(g)};
 
   // Compute concrete counter-exemple from symbolic counter-example
-  tchecker::zg::path::concrete::finite_path_t * cex = tchecker::zg::path::concrete::compute(*symbolic_cex);
+  tchecker::zg::path::concrete::finite_path_t * cex = tchecker::zg::path::concrete::compute_finite_path(*symbolic_cex);
 
   return cex;
 }
@@ -115,7 +115,7 @@ template <class GRAPH, class CEX> CEX * symbolic_counter_example_refzg(GRAPH con
                                tchecker::refzg::STANDARD_SEMANTICS, g.refzg().spread(), 128, 128)};
 
   // compute sequence of edges from initial to final node in g
-  tchecker::algorithms::path::finite::algorithm_t<GRAPH> algorithm;
+  tchecker::algorithms::finite_path_extraction_algorithm_t<GRAPH> algorithm;
 
   std::vector<typename GRAPH::edge_sptr_t> seq =
       algorithm.run(g, &tchecker::tck_reach::initial_node<GRAPH>, &tchecker::tck_reach::final_node<GRAPH>,

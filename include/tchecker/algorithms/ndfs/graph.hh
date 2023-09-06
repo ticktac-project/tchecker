@@ -8,6 +8,8 @@
 #ifndef TCHECKER_ALGORITHMS_NDFS_GRAPH_HH
 #define TCHECKER_ALGORITHMS_NDFS_GRAPH_HH
 
+#include "tchecker/graph/node.hh"
+
 /*!
  \file graph.hh
  \brief Graphs for the nested DFS algorithm
@@ -34,11 +36,11 @@ enum color_t {
  \class node_t
  \brief Nodes for the nested DFS algorithm
 */
-class node_t {
+class node_t : public tchecker::graph::node_flags_t {
 public:
   /*!
   \brief Constructor
-  \post this node has color white
+  \post this node has color white and has initial and final flags set to false
   */
   node_t();
 

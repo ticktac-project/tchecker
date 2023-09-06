@@ -15,6 +15,7 @@
 
 #include <functional>
 #include <tuple>
+#include <vector>
 
 #include "tchecker/graph/output.hh"
 #include "tchecker/graph/reachability_graph.hh"
@@ -578,6 +579,265 @@ public:
 private:
   node_sptr_t _first; /*!< First node */
   node_sptr_t _last;  /*!< Last node */
+};
+
+/*!
+ \class lasso_path_t
+ \brief Lasso path: prefix + cycle
+ \tparam NODE : type of nodes
+ \tparam EDGE : type of edges
+ \note this path allocates nodes of type tchecker::graph::reachability::node_t<NODE, EDGE> and
+ edges of type tchecker::graph::reachability::edge_t<NODE, EDGE>
+ \note the path is created empty. A first node can then added to the path. Then, the path can
+ be extended from the front (frist node) or from the back (loop root node) adding an edge and a
+ node. It can also be extended with a cycle on the loop root node. Once the cycle has been added,
+ extension on the loop root node is not possible (from the back and adding a loop)
+*/
+template <class NODE, class EDGE> class lasso_path_t : private tchecker::graph::reachability::multigraph_t<NODE, EDGE> {
+public:
+  /*!
+   \brief Type of nodes
+   */
+  using node_t = NODE;
+
+  /*!
+  \brief Type of pointer to shared nodes
+  */
+  using node_sptr_t = typename tchecker::graph::reachability::multigraph_t<NODE, EDGE>::node_sptr_t;
+
+  /*!
+  \brief Type of pointer to const shared nodes
+  */
+  using const_node_sptr_t = typename tchecker::graph::reachability::multigraph_t<NODE, EDGE>::const_node_sptr_t;
+
+  /*!
+  \brief Type of edges
+  */
+  using edge_t = EDGE;
+
+  /*!
+  \brief Type of pointer to shared edge
+  */
+  using edge_sptr_t = typename tchecker::graph::reachability::multigraph_t<NODE, EDGE>::edge_sptr_t;
+
+  /*!
+  \brief Type of pointer to const shared edge
+  */
+  using const_edge_sptr_t = typename tchecker::graph::reachability::multigraph_t<NODE, EDGE>::const_edge_sptr_t;
+
+  /*!
+   \brief Constructor
+   \post this path is empty
+  */
+  lasso_path_t()
+      : tchecker::graph::reachability::multigraph_t<NODE, EDGE>(128), _first(nullptr), _loop_root(nullptr), _has_loop(false)
+  {
+  }
+
+  /*!
+   \brief Copy constructor
+  */
+  lasso_path_t(tchecker::graph::lasso_path_t<NODE, EDGE> const &) = delete;
+
+  /*!
+   \brief Move constructor
+  */
+  lasso_path_t(tchecker::graph::lasso_path_t<NODE, EDGE> &&) = delete;
+
+  /*!
+   \brief Destructor
+  */
+  ~lasso_path_t() { clear(); }
+
+  /*!
+   \brief Assignment operator
+  */
+  tchecker::graph::lasso_path_t<NODE, EDGE> & operator=(tchecker::graph::lasso_path_t<NODE, EDGE> const &) = delete;
+
+  /*!
+   \brief Move-assignment operator
+  */
+  tchecker::graph::lasso_path_t<NODE, EDGE> & operator=(tchecker::graph::lasso_path_t<NODE, EDGE> &&) = delete;
+
+  /*!
+   \brief Makes the path empty
+   \post this path is empty
+  */
+  void clear()
+  {
+    _first = nullptr;
+    _loop_root = nullptr;
+    _has_loop = false;
+    tchecker::graph::reachability::multigraph_t<NODE, EDGE>::clear();
+  }
+
+  /*!
+   \brief Add first node to the path
+   \param node_arg : argument to a constructor of NODE
+   \pre the path is empty
+   \post this path contains a single node constructed from node_arg
+   \throw std::runtime_error : if this path is not empty
+  */
+  template <typename NODE_ARG> void add_first_node(NODE_ARG const & node_arg)
+  {
+    if (!empty())
+      throw std::invalid_argument("Cannot add first node to non-empty lasso path");
+    node_sptr_t n = tchecker::graph::reachability::multigraph_t<NODE, EDGE>::add_node(node_arg);
+    _first = _loop_root = n;
+  }
+
+  /*!
+   \brief Extend path at end (from loop root)
+   \param edge_arg : argument to a constructor of EDGE
+   \param node_arg : argument to a constructor of NODE
+   \pre this path is not empty
+   \pre this path does not already have a loop
+   \post this path has been extended into first -> ... -> loop_root -e-> n where e has been built from edge_arg and
+   n has been built from node_arg
+   \throw std::runtime_error : if this path is empty or if the loop root node already has a loop
+   */
+  template <typename EDGE_ARG, typename NODE_ARG> void extend_back(EDGE_ARG const & edge_arg, NODE_ARG const & node_arg)
+  {
+    if (empty())
+      throw std::runtime_error("Cannot back extend an empty lasso path");
+    if (_has_loop)
+      throw std::runtime_error("Cannot back extend a lasso path which already has a loop");
+    node_sptr_t n = tchecker::graph::reachability::multigraph_t<NODE, EDGE>::add_node(node_arg);
+    tchecker::graph::reachability::multigraph_t<NODE, EDGE>::add_edge(_loop_root, n, edge_arg);
+    _loop_root = n;
+  }
+
+  /*!
+   \brief Extend path at front
+   \param edge_arg : argument to a constructor of EDGE
+   \param node_arg : argument to a constructor of NODE
+   \pre this path is not empty
+   \post this path has been extended into n -e-> first -> ... -> loop_root where e has been built from edge_arg and
+   n has been built from node_arg
+   \throw std::runtime_error : if this path is empty
+   */
+  template <typename EDGE_ARG, typename NODE_ARG> void extend_front(EDGE_ARG const & edge_arg, NODE_ARG const & node_arg)
+  {
+    if (empty())
+      throw std::runtime_error("Cannot front extend an empty lasso path");
+    node_sptr_t n = tchecker::graph::reachability::multigraph_t<NODE, EDGE>::add_node(node_arg);
+    tchecker::graph::reachability::multigraph_t<NODE, EDGE>::add_edge(n, _first, edge_arg);
+    _first = n;
+  }
+
+  /*!
+   \brief Extend path with a loop
+   \param args : sequence of arguments to constructors of EDGE and NODE
+   \param last_edge_arg : argument to a constructor of EDGE
+   \pre this path is not empty
+   \pre this path does not already have a loop
+   \post this path has been extended into first -> ... -> loop_root -> n1 -> ... -> nK -> loop_root where
+   all nodes n1 up to nK and their incoming edges have been built from args, and the loop closing edge from
+   nK to loop_root has been built from closing_ede_arg
+   \throw std::runtime_error : if this path is empty or if this path already has a loop
+   */
+  template <typename EDGE_ARG, typename NODE_ARG>
+  void extend_loop(std::vector<std::tuple<EDGE_ARG, NODE_ARG>> const & args, EDGE_ARG const & closing_edge_arg)
+  {
+    if (empty())
+      throw std::runtime_error("Cannot loop extend an empty lasso path");
+    if (_has_loop)
+      throw std::runtime_error("Cannot loop extend a lasso path which already has a loop");
+    node_sptr_t last = _loop_root;
+    for (auto && [edge_arg, node_arg] : args) {
+      node_sptr_t next = tchecker::graph::reachability::multigraph_t<NODE, EDGE>::add_node(node_arg);
+      tchecker::graph::reachability::multigraph_t<NODE, EDGE>::add_edge(last, next, edge_arg);
+      last = next;
+    }
+    tchecker::graph::reachability::multigraph_t<NODE, EDGE>::add_edge(last, _loop_root, closing_edge_arg);
+    _has_loop = true;
+  }
+
+  /*!
+   \brief Check if a path is empty
+   \return true if this path is empty, false otherwise
+  */
+  bool empty() const { return (_first.ptr() == nullptr); }
+
+  /*!
+   \brief Accessor
+   \return first node in path
+  */
+  inline node_sptr_t first() const { return _first; }
+
+  /*!
+   \brief Accessor
+   \return loop root node in path
+  */
+  inline node_sptr_t loop_root() const { return _loop_root; }
+
+  /*!
+   \brief Accessor
+   \return true if this path has a loop, false otherwise
+  */
+  inline bool has_loop() const { return _has_loop; }
+
+  /*!
+  \brief Type of node iterator
+  */
+  using const_node_iterator_t = typename tchecker::graph::reachability::multigraph_t<NODE, EDGE>::const_node_iterator_t;
+
+  /*!
+   \brief Accessor
+   \return the range of nodes in this path
+  */
+  using tchecker::graph::reachability::multigraph_t<NODE, EDGE>::nodes;
+
+  /*!
+   \brief Accessor
+   \return number of nodes in this path
+   */
+  using tchecker::graph::reachability::multigraph_t<NODE, EDGE>::nodes_count;
+
+  /*!
+  \brief Type of incoming edges iterator
+  */
+  using incoming_edges_iterator_t = typename tchecker::graph::reachability::multigraph_t<NODE, EDGE>::incoming_edges_iterator_t;
+
+  /*!
+  \brief Type of outgoing edges iterator
+  */
+  using outgoing_edges_iterator_t = typename tchecker::graph::reachability::multigraph_t<NODE, EDGE>::outgoing_edges_iterator_t;
+
+  /*!
+   \brief Accessor
+   \param n : node
+   \return range of incoming edges of node n, which is empty if n is the first node, or it contains a single edge otherwise
+   */
+  using tchecker::graph::reachability::multigraph_t<NODE, EDGE>::incoming_edges;
+
+  /*!
+   \brief Accessor
+   \param n : node
+   \return range of outgoing edges of node n, which is empty if n is the last node, or it contains a single edge otherwise
+   */
+  using tchecker::graph::reachability::multigraph_t<NODE, EDGE>::outgoing_edges;
+
+  /*!
+   \brief Accessor
+   \param edge : an edge
+   \return the source node of edge
+   */
+  using tchecker::graph::reachability::multigraph_t<NODE, EDGE>::edge_src;
+
+  /*!
+   \brief Accessor
+   \param edge : an edge
+   \return the target node of edge
+   */
+  using tchecker::graph::reachability::multigraph_t<NODE, EDGE>::edge_tgt;
+
+  using tchecker::graph::reachability::multigraph_t<NODE, EDGE>::attributes;
+
+private:
+  node_sptr_t _first;     /*!< First node in the path */
+  node_sptr_t _loop_root; /*!< Loop root node */
+  bool _has_loop;         /*!< Flag on when the loop is constructed */
 };
 
 } // namespace graph

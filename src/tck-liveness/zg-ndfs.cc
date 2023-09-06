@@ -7,6 +7,7 @@
 
 #include <boost/dynamic_bitset.hpp>
 
+#include "counter_example.hh"
 #include "tchecker/system/static_analysis.hh"
 #include "tchecker/ta/system.hh"
 #include "tchecker/utils/log.hh"
@@ -20,15 +21,9 @@ namespace zg_ndfs {
 
 /* node_t */
 
-node_t::node_t(tchecker::zg::state_sptr_t const & s, bool initial, bool final)
-    : tchecker::graph::node_flags_t(initial, final), tchecker::graph::node_zg_state_t(s)
-{
-}
+node_t::node_t(tchecker::zg::state_sptr_t const & s) : tchecker::graph::node_zg_state_t(s) {}
 
-node_t::node_t(tchecker::zg::const_state_sptr_t const & s, bool initial, bool final)
-    : tchecker::graph::node_flags_t(initial, final), tchecker::graph::node_zg_state_t(s)
-{
-}
+node_t::node_t(tchecker::zg::const_state_sptr_t const & s) : tchecker::graph::node_zg_state_t(s) {}
 
 /* node_hash_t */
 
@@ -130,6 +125,23 @@ std::ostream & dot_output(std::ostream & os, tchecker::tck_liveness::zg_ndfs::gr
                                                    tchecker::tck_liveness::zg_ndfs::node_lexical_less_t,
                                                    tchecker::tck_liveness::zg_ndfs::edge_lexical_less_t>(os, g, name);
 }
+
+/* counter example */
+namespace cex {
+
+tchecker::tck_liveness::zg_ndfs::cex::symbolic_cex_t *
+symbolic_counter_example(tchecker::tck_liveness::zg_ndfs::graph_t const & g)
+{
+  return tchecker::tck_liveness::symbolic_counter_example_zg<tchecker::tck_liveness::zg_ndfs::graph_t>(g);
+}
+
+std::ostream & dot_output(std::ostream & os, tchecker::tck_liveness::zg_ndfs::cex::symbolic_cex_t const & cex,
+                          std::string const & name)
+{
+  return tchecker::zg::path::symbolic::dot_output(os, cex, name);
+}
+
+} // namespace cex
 
 /* run */
 

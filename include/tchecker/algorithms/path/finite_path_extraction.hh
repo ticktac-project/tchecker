@@ -5,8 +5,8 @@
  *
  */
 
-#ifndef TCHECKER_ALGORITHMS_PATH_ALGORITHM_HH
-#define TCHECKER_ALGORITHMS_PATH_ALGORITHM_HH
+#ifndef TCHECKER_ALGORITHMS_FINITE_PATH_EXTRACTION_HH
+#define TCHECKER_ALGORITHMS_FINITE_PATH_EXTRACTION_HH
 
 #include <cassert>
 #include <functional>
@@ -17,20 +17,16 @@
 #include "tchecker/utils/iterator.hh"
 
 /*!
- \file algorithm.hh
- \brief Path extraction algorithm
+ \file finite_path_extraction.hh
+ \brief Finite path extraction algorithm
  */
 
 namespace tchecker {
 
 namespace algorithms {
 
-namespace path {
-
-namespace finite {
-
 /*!
- \class algorithm_t
+ \class finite_path_extraction_algorithm_t
  \brief Finite path extraction algorithm
  \tparam GRAPH : type of graph. Should provide:
  - a type of shared nodes GRAPH::node_sptr_t
@@ -41,7 +37,7 @@ namespace finite {
  See tchecker::graph::reachability::graph_t, tchecker::graph::reachability::multigraph_t
  and tchecker::graph::subsumption::graph_t as examples of such graphs
  */
-template <class GRAPH> class algorithm_t {
+template <class GRAPH> class finite_path_extraction_algorithm_t {
 public:
   /*!
    \brief Type of pointer to node
@@ -54,13 +50,13 @@ public:
   using edge_sptr_t = typename GRAPH::edge_sptr_t;
 
   /*!
-   \brief Extract a finite sequence from a graph
+   \brief Extract a finite sequence of edges from a graph
    \param g : a graph
    \param filter_first : predicate on nodes
    \param filter_last : predicate on nodes
    \param filter_edge : predicate on edges
    \return a finite sequence of edges from g, all satisfying filter_edge, and that leads
-   to a node satisfying filter_first, to a node satisfying filter_last if any,
+   from a node satisfying filter_first, to a node satisfying filter_last if any,
    an empty sequence otherwise
   */
   std::vector<edge_sptr_t> run(GRAPH const & g, std::function<bool(node_sptr_t)> && filter_first,
@@ -186,12 +182,8 @@ private:
   }
 };
 
-} // namespace finite
-
-} // namespace path
-
 } // namespace algorithms
 
 } // namespace tchecker
 
-#endif // TCHECKER_ALGORITHMS_PATH_ALGORITHM_HH
+#endif // TCHECKER_ALGORITHMS_FINITE_PATH_EXTRACTION_HH

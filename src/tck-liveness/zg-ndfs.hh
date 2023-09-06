@@ -22,6 +22,7 @@
 #include "tchecker/parsing/declaration.hh"
 #include "tchecker/syncprod/vedge.hh"
 #include "tchecker/utils/shared_objects.hh"
+#include "tchecker/zg/path.hh"
 #include "tchecker/zg/state.hh"
 #include "tchecker/zg/transition.hh"
 #include "tchecker/zg/zg.hh"
@@ -36,27 +37,21 @@ namespace zg_ndfs {
  \class node_t
  \brief Node of the liveness graph of a zone graph
  */
-class node_t : public tchecker::algorithms::ndfs::node_t,
-               public tchecker::graph::node_flags_t,
-               public tchecker::graph::node_zg_state_t {
+class node_t : public tchecker::algorithms::ndfs::node_t, public tchecker::graph::node_zg_state_t {
 public:
   /*!
    \brief Constructor
    \param s : a zone graph state
-   \param initial : initial node flag
-   \param final : final node flag
-   \post this node keeps a shared pointer to s, and has initial/final node flags as specified
+   \post this node keeps a shared pointer to s
    */
-  node_t(tchecker::zg::state_sptr_t const & s, bool initial = false, bool final = false);
+  node_t(tchecker::zg::state_sptr_t const & s);
 
   /*!
    \brief Constructor
    \param s : a zone graph state
-   \param initial : initial node flag
-   \param final : final node flag
-   \post this node keeps a shared pointer to s, and has initial/final node flags as specified
+   \post this node keeps a shared pointer to s
    */
-  node_t(tchecker::zg::const_state_sptr_t const & s, bool initial = false, bool final = false);
+  node_t(tchecker::zg::const_state_sptr_t const & s);
 };
 
 /*!
@@ -128,6 +123,18 @@ public:
                                                tchecker::tck_liveness::zg_ndfs::node_hash_t,
                                                tchecker::tck_liveness::zg_ndfs::node_equal_to_t>::attributes;
 
+  /*!
+   \brief Accessor
+   \return underlying zone graph
+  */
+  inline tchecker::zg::zg_t & zg() const { return *_zg; }
+
+  /*!
+   \brief Accessor
+   \return shared pointer to underlying zone graph
+  */
+  inline std::shared_ptr<tchecker::zg::zg_t> zg_ptr() const { return _zg; }
+
 protected:
   /*!
    \brief Accessor to node attributes
@@ -157,6 +164,36 @@ private:
  \post graph g with name has been output to os
 */
 std::ostream & dot_output(std::ostream & os, tchecker::tck_liveness::zg_ndfs::graph_t const & g, std::string const & name);
+
+namespace cex {
+
+/*!
+ \brief Type of symbolic counter-example
+*/
+using symbolic_cex_t = tchecker::zg::path::symbolic::lasso_path_t;
+
+/*!
+ \brief Compute a symbolic counter-example from a liveness graph of a zone graph
+ \param g : liveness graph on a zone graph
+ \return a lasso path from an initial node that visits a final node in g infinitely often if any,
+ nullptr otherwise
+ \note the returned pointer shall be deleted
+*/
+tchecker::tck_liveness::zg_ndfs::cex::symbolic_cex_t *
+symbolic_counter_example(tchecker::tck_liveness::zg_ndfs::graph_t const & g);
+
+/*!
+ \brief Symbolic counter-example output
+ \param os : output stream
+ \param cex : counter example
+ \param name : counter example name
+ \post cex has been output to os
+ \return os after output
+ */
+std::ostream & dot_output(std::ostream & os, tchecker::tck_liveness::zg_ndfs::cex::symbolic_cex_t const & cex,
+                          std::string const & name);
+
+} // namespace cex
 
 /*!
  \class algorithm_t

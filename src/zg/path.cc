@@ -127,19 +127,19 @@ std::ostream & dot_output(std::ostream & os, tchecker::zg::path::symbolic::finit
                                      tchecker::zg::path::symbolic::edge_le_t>(os, path, name);
 }
 
-/* compute */
+/* finite path computation */
 
-tchecker::zg::path::symbolic::finite_path_t * compute(std::shared_ptr<tchecker::zg::zg_t> const & zg,
-                                                      tchecker::vloc_t const & initial_vloc,
-                                                      std::vector<tchecker::const_vedge_sptr_t> const & seq,
-                                                      bool last_node_final)
+tchecker::zg::path::symbolic::finite_path_t * compute_finite_path(std::shared_ptr<tchecker::zg::zg_t> const & zg,
+                                                                  tchecker::vloc_t const & initial_vloc,
+                                                                  std::vector<tchecker::const_vedge_sptr_t> const & seq,
+                                                                  bool last_node_final)
 {
   tchecker::zg::path::symbolic::finite_path_t * path = new tchecker::zg::path::symbolic::finite_path_t{zg};
 
   tchecker::zg::const_state_sptr_t s{tchecker::zg::initial(*zg, initial_vloc)};
   if (s.ptr() == nullptr) {
     delete path;
-    throw std::invalid_argument("No initial state with given tuple of locations");
+    throw std::invalid_argument("*** compute_finite_path(symbolic): no initial state with given tuple of locations");
   }
 
   path->add_first_node(s);
@@ -150,12 +150,104 @@ tchecker::zg::path::symbolic::finite_path_t * compute(std::shared_ptr<tchecker::
     auto && [nexts, nextt] = tchecker::zg::next(*zg, s, *vedge_ptr);
     if (nexts.ptr() == nullptr || nextt.ptr() == nullptr) {
       delete path;
-      throw std::invalid_argument("Sequence is not feasible from given initial locations");
+      throw std::invalid_argument("*** compute_finite_path(symbolic): sequence is not feasible from given initial locations");
     }
     path->extend_back(nextt, nexts);
   }
 
   path->last()->final(last_node_final);
+
+  return path;
+}
+
+/* lasso_path_t */
+
+void lasso_path_t::attributes(tchecker::zg::path::symbolic::node_t const & n, std::map<std::string, std::string> & m) const
+{
+  tchecker::ts::lasso_path_t<tchecker::zg::zg_t, tchecker::zg::path::symbolic::node_t,
+                             tchecker::zg::path::symbolic::edge_t>::attributes(n, m);
+  if (n.initial())
+    m["initial"] = "true";
+  if (n.final())
+    m["final"] = "true";
+}
+
+void lasso_path_t::attributes(tchecker::zg::path::symbolic::edge_t const & e, std::map<std::string, std::string> & m) const
+{
+  tchecker::ts::lasso_path_t<tchecker::zg::zg_t, tchecker::zg::path::symbolic::node_t,
+                             tchecker::zg::path::symbolic::edge_t>::attributes(e, m);
+}
+
+/* output lasso path */
+
+std::ostream & dot_output(std::ostream & os, tchecker::zg::path::symbolic::lasso_path_t const & path, std::string const & name)
+{
+  return tchecker::graph::dot_output<tchecker::zg::path::symbolic::lasso_path_t, tchecker::zg::path::symbolic::node_le_t,
+                                     tchecker::zg::path::symbolic::edge_le_t>(os, path, name);
+}
+
+/* lasso path computation */
+
+tchecker::zg::path::symbolic::lasso_path_t *
+compute_lasso_path(std::shared_ptr<tchecker::zg::zg_t> const & zg, tchecker::vloc_t const & initial_vloc,
+                   std::vector<tchecker::const_vedge_sptr_t> const & prefix,
+                   std::vector<tchecker::const_vedge_sptr_t> const & cycle,
+                   std::function<bool(tchecker::zg::state_t const &)> && final_state)
+{
+  if (cycle.empty())
+    throw std::invalid_argument("*** compute_lasso_path: empty cycle");
+
+  tchecker::zg::path::symbolic::lasso_path_t * path = new tchecker::zg::path::symbolic::lasso_path_t{zg};
+
+  // add initial node
+  tchecker::zg::const_state_sptr_t s{tchecker::zg::initial(*zg, initial_vloc)};
+  if (s.ptr() == nullptr) {
+    delete path;
+    throw std::invalid_argument("*** compute_lasso_path: no initial state with given tuple of locations");
+  }
+
+  path->add_first_node(s);
+  path->first()->initial(true);
+
+  // extend with prefix
+  for (tchecker::const_vedge_sptr_t const & vedge_ptr : prefix) {
+    s = path->loop_root()->state_ptr();
+    auto && [nexts, nextt] = tchecker::zg::next(*zg, s, *vedge_ptr);
+    if (nexts.ptr() == nullptr || nextt.ptr() == nullptr) {
+      delete path;
+      throw std::invalid_argument("*** compute_lasso_path: prefix is not feasible from given initial locations");
+    }
+    path->extend_back(nextt, nexts);
+  }
+
+  // compute cycle
+  s = path->loop_root()->state_ptr();
+  std::vector<std::tuple<tchecker::zg::transition_sptr_t, tchecker::zg::state_sptr_t>> args;
+  for (std::size_t i = 0; i < cycle.size() - 1; ++i) {
+    auto && [nexts, nextt] = tchecker::zg::next(*zg, s, *cycle[i]);
+    if (nexts.ptr() == nullptr || nextt.ptr() == nullptr) {
+      delete path;
+      throw std::invalid_argument("*** compute_lasso_path: prefix is not feasible from given initial locations");
+    }
+    args.emplace_back(std::make_tuple(nextt, nexts));
+    s = tchecker::zg::const_state_sptr_t{nexts};
+  }
+
+  // compute cycle closing edge
+  auto && [nexts, nextt] = tchecker::zg::next(*zg, s, *cycle.back());
+  if (nexts.ptr() == nullptr || nextt.ptr() == nullptr) {
+    delete path;
+    throw std::invalid_argument("*** compute_lasso_path: prefix is not feasible from given initial locations");
+  }
+
+  // extend path with cycle
+  assert(*nexts == path->loop_root()->state());
+  path->extend_loop(args, nextt);
+
+  // mark final nodes
+  for (auto node : path->nodes())
+    if (final_state(node->state()))
+      node->final(true);
 
   return path;
 }
@@ -628,7 +720,8 @@ private:
   tchecker::zg::standard_semantics_t _semantics; /*!< Zone graph semantics */
 };
 
-tchecker::zg::path::concrete::finite_path_t * compute(tchecker::zg::path::symbolic::finite_path_t const & symbolic_run)
+tchecker::zg::path::concrete::finite_path_t *
+compute_finite_path(tchecker::zg::path::symbolic::finite_path_t const & symbolic_run)
 {
   tchecker::zg::path::concrete::finite_path_t * concrete_run =
       new tchecker::zg::path::concrete::finite_path_t{symbolic_run.zg_ptr(), 1024};

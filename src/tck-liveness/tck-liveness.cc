@@ -5,6 +5,7 @@
  *
  */
 
+#include <algorithm>
 #include <fstream>
 #include <getopt.h>
 #include <iostream>
@@ -23,7 +24,7 @@
  */
 
 static struct option long_options[] = {{"algorithm", required_argument, 0, 'a'},
-                                       {"certificate", no_argument, 0, 'C'},
+                                       {"certificate", required_argument, 0, 'C'},
                                        {"help", no_argument, 0, 'h'},
                                        {"labels", required_argument, 0, 'l'},
                                        {"output", required_argument, 0, 'o'},
@@ -31,7 +32,7 @@ static struct option long_options[] = {{"algorithm", required_argument, 0, 'a'},
                                        {"table-size", required_argument, 0, 0},
                                        {0, 0, 0, 0}};
 
-static char const * const options = (char *)"a:Chl:o:";
+static char const * const options = (char *)"a:C:hl:o:";
 
 /*!
   \brief Display usage
@@ -45,7 +46,10 @@ void usage(char * progname)
   std::cerr << "                     search an accepting cycle that visits all labels" << std::endl;
   std::cerr << "          ndfs       nested depth-first search algorithm over the zone graph" << std::endl;
   std::cerr << "                     search an accepting cycle with a state with all labels" << std::endl;
-  std::cerr << "   -C            output a certificate (explored state-space) as a graph" << std::endl;
+  std::cerr << "   -C type       type of certificate" << std::endl;
+  std::cerr << "          none       no certificate (default)" << std::endl;
+  std::cerr << "          graph      graph of explored state-space" << std::endl;
+  std::cerr << "          symbolic   symbolic lasso run with loop on labels (only for ndfs)" << std::endl;
   std::cerr << "   -h            help" << std::endl;
   std::cerr << "   -l l1,l2,...  comma-separated list of accepting labels" << std::endl;
   std::cerr << "   -o out_file   output file for certificate (default is standard output)" << std::endl;
@@ -61,8 +65,9 @@ enum algorithm_t {
 };
 
 enum certificate_t {
-  CERTIFICATE_GRAPH, /*!< Graph of state-space */
-  CERTIFICATE_NONE,  /*!< No certificate */
+  CERTIFICATE_GRAPH,    /*!< Graph of state-space */
+  CERTIFICATE_SYMBOLIC, /*!< Symbolic counter-example */
+  CERTIFICATE_NONE,     /*!< No certificate */
 };
 
 static enum algorithm_t algorithm = ALGO_NONE;            /*!< Selected algorithm */
@@ -106,7 +111,14 @@ int parse_command_line(int argc, char * argv[])
           throw std::runtime_error("Unknown algorithm: " + std::string(optarg));
         break;
       case 'C':
-        certificate = CERTIFICATE_GRAPH;
+        if (strcmp(optarg, "none") == 0)
+          certificate = CERTIFICATE_NONE;
+        else if (strcmp(optarg, "graph") == 0)
+          certificate = CERTIFICATE_GRAPH;
+        else if (strcmp(optarg, "symbolic") == 0)
+          certificate = CERTIFICATE_SYMBOLIC;
+        else
+          throw std::runtime_error("Unknown type of certificate: " + std::string(optarg));
         break;
       case 'h':
         help = true;
@@ -176,6 +188,13 @@ void ndfs(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysde
   // certificate
   if (certificate == CERTIFICATE_GRAPH)
     tchecker::tck_liveness::zg_ndfs::dot_output(*os, *graph, sysdecl->name());
+  else if ((certificate == CERTIFICATE_SYMBOLIC) && stats.cycle()) {
+    std::unique_ptr<tchecker::tck_liveness::zg_ndfs::cex::symbolic_cex_t> cex{
+        tchecker::tck_liveness::zg_ndfs::cex::symbolic_counter_example(*graph)};
+    if (cex->empty())
+      throw std::runtime_error("*** tck_liveness: unable to compute a symbolic counter example for ndfs algorithm");
+    tchecker::tck_liveness::zg_ndfs::cex::dot_output(*os, *cex, sysdecl->name());
+  }
 }
 
 /*!
@@ -187,6 +206,12 @@ void ndfs(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysde
 */
 void couvscc(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl)
 {
+  std::string::difference_type labels_count = std::count(labels.begin(), labels.end(), ',') + 1;
+
+  if (certificate == CERTIFICATE_SYMBOLIC && labels_count > 1)
+    throw std::runtime_error(
+        "*** tck_liveness: cannot compute symbolic counter example with more than 1 label (use graph instead)");
+
   auto && [stats, graph] = tchecker::tck_liveness::zg_couvscc::run(sysdecl, labels, block_size, table_size);
 
   // stats
@@ -198,6 +223,13 @@ void couvscc(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sy
   // certificate
   if (certificate == CERTIFICATE_GRAPH)
     tchecker::tck_liveness::zg_couvscc::dot_output(*os, *graph, sysdecl->name());
+  else if ((certificate == CERTIFICATE_SYMBOLIC) && stats.cycle()) {
+    std::unique_ptr<tchecker::tck_liveness::zg_couvscc::cex::symbolic_cex_t> cex{
+        tchecker::tck_liveness::zg_couvscc::cex::symbolic_counter_example(*graph)};
+    if (cex->empty())
+      throw std::runtime_error("*** tck_liveness: unable to compute a symbolic counter example for couvscc algorithm");
+    tchecker::tck_liveness::zg_couvscc::cex::dot_output(*os, *cex, sysdecl->name());
+  }
 }
 
 /*!

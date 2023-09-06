@@ -118,6 +118,7 @@ public:
     for (auto && [status, s, t] : sst) {
       auto && [is_new_node, initial_node] = graph.add_node(s);
       initial_node->initial(true);
+      initial_node->final(accepting(initial_node, ts, labels));
       if (initial_node->color() == tchecker::algorithms::ndfs::WHITE)
         dfs_blue(ts, graph, labels, stats, initial_node);
       if (stats.cycle())
@@ -137,11 +138,12 @@ private:
    \param ts : a transition system
    \param graph : a graph
    \param n : a node
+   \param labels : accepting labels
    \post all successor nodes of n in ts have been added to graph (if not yet in)
-   with corresponding edges
+   with corresponding edges, and flag final set to true if accepting w.r.t labels
    \return all successor nodes of n
   */
-  std::deque<node_sptr_t> expand_node(TS & ts, GRAPH & graph, node_sptr_t & n)
+  std::deque<node_sptr_t> expand_node(TS & ts, GRAPH & graph, node_sptr_t & n, boost::dynamic_bitset<> const & labels)
   {
     std::deque<node_sptr_t> next_nodes;
     std::vector<typename TS::sst_t> v;
@@ -149,6 +151,7 @@ private:
     for (auto && [status, s, t] : v) {
       auto && [new_node, nextn] = graph.add_node(s);
       graph.add_edge(n, nextn, *t);
+      nextn->final(accepting(nextn, ts, labels));
       next_nodes.push_back(nextn);
     }
     return next_nodes;
@@ -191,7 +194,7 @@ private:
     std::stack<blue_stack_entry_t> stack;
 
     n->color() = tchecker::algorithms::ndfs::CYAN;
-    stack.push(blue_stack_entry_t{n, expand_node(ts, graph, n), true});
+    stack.push(blue_stack_entry_t{n, expand_node(ts, graph, n, labels), true});
     ++stats.visited_states_blue();
 
     while (!stack.empty()) {
@@ -199,7 +202,7 @@ private:
       if (succ.empty()) {
         if (allred)
           s->color() = tchecker::algorithms::ndfs::RED;
-        else if (accepting(s, ts, labels)) {
+        else if (s->final()) {
           dfs_red(ts, graph, labels, stats, s);
           s->color() = tchecker::algorithms::ndfs::RED;
         }
@@ -213,13 +216,13 @@ private:
       else {
         node_sptr_t t = stack.top().pick_successor();
         ++stats.visited_transitions_blue();
-        if (t->color() == tchecker::algorithms::ndfs::CYAN && (accepting(s, ts, labels) || accepting(t, ts, labels))) {
+        if (t->color() == tchecker::algorithms::ndfs::CYAN && (s->final() || t->final())) {
           stats.cycle() = true;
           break;
         }
         else if (t->color() == tchecker::algorithms::ndfs::WHITE) {
           t->color() = tchecker::algorithms::ndfs::CYAN;
-          stack.push(blue_stack_entry_t{t, expand_node(ts, graph, t), true});
+          stack.push(blue_stack_entry_t{t, expand_node(ts, graph, t, labels), true});
           ++stats.visited_states_blue();
         }
         else if (t->color() != tchecker::algorithms::ndfs::RED)
