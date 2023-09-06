@@ -49,7 +49,8 @@ void usage(char * progname)
   std::cerr << "   -C type       type of certificate" << std::endl;
   std::cerr << "          none       no certificate (default)" << std::endl;
   std::cerr << "          graph      graph of explored state-space" << std::endl;
-  std::cerr << "          symbolic   symbolic lasso run with loop on labels (only for ndfs)" << std::endl;
+  std::cerr << "          symbolic   symbolic lasso run with loop on labels (not for couvscc with multiple labels)"
+            << std::endl;
   std::cerr << "   -h            help" << std::endl;
   std::cerr << "   -l l1,l2,...  comma-separated list of accepting labels" << std::endl;
   std::cerr << "   -o out_file   output file for certificate (default is standard output)" << std::endl;
