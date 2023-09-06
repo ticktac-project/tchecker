@@ -51,7 +51,7 @@ void usage(char * progname)
   std::cerr << "          none       no certificate (default)" << std::endl;
   std::cerr << "          graph      graph of explored state-space" << std::endl;
   std::cerr << "          symbolic   symbolic run to a state with searched labels if any" << std::endl;
-  std::cerr << "          concrete   concrete run to a state with searched lables if any (only for reach and covreach)"
+  std::cerr << "          concrete   concrete run to a state with searched labels if any (only for reach and covreach)"
             << std::endl;
   std::cerr << "   -h            help" << std::endl;
   std::cerr << "   -l l1,l2,...  comma-separated list of searched labels" << std::endl;
