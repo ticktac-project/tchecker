@@ -770,10 +770,7 @@ TEST_CASE("Satisfaction of a clock constraint by a DBM", "[dbm]")
 
   SECTION("DBM does not satisfy 1 - 2 < 2") { REQUIRE_FALSE(tchecker::dbm::satisfies(dbm, dim, 1, 2, tchecker::LT, 2)); }
 
-  SECTION("DBM does not satisfy 1 - 0 < 235678")
-  {
-    REQUIRE_FALSE(tchecker::dbm::satisfies(dbm, dim, 1, 0, tchecker::LT, 235678));
-  }
+  SECTION("DBM does not satisfy 1 - 0 < 3567") { REQUIRE_FALSE(tchecker::dbm::satisfies(dbm, dim, 1, 0, tchecker::LT, 3567)); }
 
   SECTION("DBM satisfies clock constraint x - y < 5")
   {

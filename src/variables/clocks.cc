@@ -75,7 +75,7 @@ tchecker::clock_constraint_t operator-(tchecker::clock_constraint_t const & c)
   if (c.value() == std::numeric_limits<tchecker::integer_t>::min())
     throw std::invalid_argument("clock constraint negation cannot be represented");
   tchecker::ineq_cmp_t neg_cmp = (c.comparator() == tchecker::LE ? tchecker::LT : tchecker::LE);
-  return tchecker::clock_constraint_t{c.id2(), c.id1(), neg_cmp, -c.value()};
+  return tchecker::clock_constraint_t{c.id2(), c.id1(), neg_cmp, static_cast<tchecker::integer_t>(-c.value())};
 }
 
 std::ostream & operator<<(std::ostream & os, tchecker::clock_constraint_t const & c)

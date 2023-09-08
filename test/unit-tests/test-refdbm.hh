@@ -1230,9 +1230,9 @@ TEST_CASE("Satisfaction of a clock constraint by a DBM with reference clocks", "
 
   SECTION("DBM does not satisfy 3 - 1 < 1") { REQUIRE_FALSE(tchecker::refdbm::satisfies(rdbm, r, 3, 1, tchecker::LT, 1)); }
 
-  SECTION("DBM does not satisfy 0 - 1 < 235678")
+  SECTION("DBM does not satisfy 0 - 1 < 4812")
   {
-    REQUIRE_FALSE(tchecker::refdbm::satisfies(rdbm, r, 0, 1, tchecker::LT, 235678));
+    REQUIRE_FALSE(tchecker::refdbm::satisfies(rdbm, r, 0, 1, tchecker::LT, 4812));
   }
 
   SECTION("DBM satisfies clock constraint y <= 2")
