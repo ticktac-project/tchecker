@@ -472,7 +472,7 @@ enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * rdbm, tchecker::ref
                                        tchecker::integer_t value);
 
 /*!
- \brief Constrain a DBM with reference clocks with a clock constraint
+ \brief Constrain a DBM with reference clocks w.r.t. a clock constraint
  \param rdbm : a DBM
  \param r : reference clocks for rdbm
  \param c : clock constraint
@@ -491,7 +491,7 @@ enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * rdbm, tchecker::ref
 enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
                                        tchecker::clock_constraint_t const & c);
 /*!
- \brief Constrain a DBM with reference clocks with a collection of clock constraints
+ \brief Constrain a DBM with reference clocks w.r.t. a collection of clock constraints
  \param rdbm : a DBM
  \param r : reference clocks for rdbm
  \param cc : collection of clock constraints
@@ -499,7 +499,7 @@ enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * rdbm, tchecker::ref
  rdbm is a r.size()*r.size() array of difference bounds
  rdbm is tight (checked by assertion)
  rdbm is a DBM over reference clocks r
- clocks IDs in c are systems clocks, i.e. the first clock has index 0, and the
+ clocks IDs in cc are systems clocks, i.e. the first clock has index 0, and the
  last clock has index r.size() - r.refcount() - 1
  \post rdbm has been intersected with clock constraints in cc (translated w.r.t.
  r clocks))
@@ -510,6 +510,41 @@ enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * rdbm, tchecker::ref
  */
 enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r,
                                        tchecker::clock_constraint_container_t const & cc);
+
+/*!
+ \brief Check if a DBM with reference clocks satisfies a clock constraint
+ \param rdbm : a dbm
+ \param r : reference clocks for rdbm
+ \param x : first clock
+ \param y : second clock
+ \param cmp : constraint comparator
+ \param value : constraint value
+ \pre rdbm is not nullptr (checked by assertion)
+ rdbm is a r.size()*r.size() array of difference bounds
+ rdbm is consistent (checked by assertion)
+ rdbm is tight (checked by assertion)
+ x < r.size() (checked by assertion)
+ y < r.size() (checked by assertion)
+ value can be represented in a tchecker::dbm::db_t
+ \return true if all valuations in rdbm satisfy "x - y cmp value", false otherwise
+ */
+bool satisfies(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r, tchecker::clock_id_t x,
+               tchecker::clock_id_t y, tchecker::ineq_cmp_t cmp, tchecker::integer_t value);
+
+/*!
+ \brief Check if a DBM with reference clocks satisfies a clock constraint
+ \param rdbm : a dbm
+ \param r : reference clocks for rdbm
+ \param c : clock constraint
+ \pre rdbm is not nullptr (checked by assertion)
+ rdbm is a r.size()*r.size() array of difference bounds
+ rdbm is consistent (checked by assertion)
+ rdbm is tight (checked by assertion)
+ c is expressed over system clocks (i.e. reference clocks are tchecker::REFCLOCK_ID)
+ \return true if all valuations in rdbm satisfy c, false otherwise
+ */
+bool satisfies(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r,
+               tchecker::clock_constraint_t const & c);
 
 /*!
  \brief Restriction to synchronized valuations

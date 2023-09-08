@@ -886,6 +886,33 @@ public:
   virtual void build(std::map<std::string, std::string> const & attributes, std::vector<sst_t> & v,
                      tchecker::state_status_t mask = tchecker::STATE_OK);
 
+  // split
+
+  /*!
+   \brief Split a state according to a clock constraint
+   \param s : state
+   \param c : clock constraint
+   \param v : vector of states
+   \pre the clock identifier in c are expressed over system clocks (with reference clock
+   tchecker::REFCLOCK_ID)
+   \post a copy of s has been added to v if it satisfies c or if it satisfies the negation of c
+   otherwise, s has been splitted into s1, that satisfies c, and s2 that does not satisfy
+   c, then s1 and s2 have been added to v
+   */
+  void split(tchecker::refzg::const_state_sptr_t const & s, tchecker::clock_constraint_t const & c,
+             std::vector<tchecker::refzg::state_sptr_t> & v);
+
+  /*!
+   \brief Split a state according to a collection of clock constraints
+   \param s : state
+   \param constraints : clock constraints
+   \param v : vector of states
+   \post s has been successively split w.r.t. every constraint in constraints. All resulting states
+   have been added to v
+   */
+  void split(tchecker::refzg::const_state_sptr_t const & s, tchecker::clock_constraint_container_t const & constraints,
+             std::vector<tchecker::refzg::state_sptr_t> & v);
+
   // Inspector
 
   /*!
@@ -969,6 +996,15 @@ public:
   inline tchecker::integer_t spread() const { return _spread; }
 
 private:
+  /*!
+   \brief Clone and constrain a state
+   \param s : a state
+   \param c : a clock constraint
+   \return a clone of s with its zone intersected with c
+   */
+  tchecker::refzg::state_sptr_t clone_and_constrain(tchecker::refzg::const_state_sptr_t const & s,
+                                                    tchecker::clock_constraint_t const & c);
+
   std::shared_ptr<tchecker::ta::system_t const> _system;              /*!< System of timed processes */
   enum tchecker::ts::sharing_type_t _sharing_type;                    /*!< Sharing of state/transition components */
   std::shared_ptr<tchecker::reference_clock_variables_t const> _r;    /*!< Reference clock variables */

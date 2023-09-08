@@ -244,6 +244,20 @@ enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * dbm, tchecker::cloc
 }
 
 enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim,
+                                       tchecker::clock_constraint_t const & c)
+{
+  assert(dbm != nullptr);
+  assert(dim >= 1);
+  assert(tchecker::dbm::is_consistent(dbm, dim));
+  assert(tchecker::dbm::is_tight(dbm, dim));
+  tchecker::clock_id_t id1 = (c.id1() == tchecker::REFCLOCK_ID ? 0 : c.id1() + 1);
+  tchecker::clock_id_t id2 = (c.id2() == tchecker::REFCLOCK_ID ? 0 : c.id2() + 1);
+  if (tchecker::dbm::constrain(dbm, dim, id1, id2, c.comparator(), c.value()) == tchecker::dbm::EMPTY)
+    return tchecker::dbm::EMPTY;
+  return tchecker::dbm::NON_EMPTY;
+}
+
+enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim,
                                        tchecker::clock_constraint_container_t const & constraints)
 {
   assert(dbm != nullptr);
@@ -252,9 +266,7 @@ enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * dbm, tchecker::cloc
   assert(tchecker::dbm::is_tight(dbm, dim));
 
   for (tchecker::clock_constraint_t const & c : constraints) {
-    tchecker::clock_id_t id1 = (c.id1() == tchecker::REFCLOCK_ID ? 0 : c.id1() + 1);
-    tchecker::clock_id_t id2 = (c.id2() == tchecker::REFCLOCK_ID ? 0 : c.id2() + 1);
-    if (tchecker::dbm::constrain(dbm, dim, id1, id2, c.comparator(), c.value()) == tchecker::dbm::EMPTY)
+    if (tchecker::dbm::constrain(dbm, dim, c) == tchecker::dbm::EMPTY)
       return tchecker::dbm::EMPTY;
   }
   return tchecker::dbm::NON_EMPTY;
@@ -273,6 +285,31 @@ bool is_equal(tchecker::dbm::db_t const * dbm1, tchecker::dbm::db_t const * dbm2
       if (DBM1(i, j) != DBM2(i, j))
         return false;
   return true;
+}
+
+bool satisfies(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x, tchecker::clock_id_t y,
+               tchecker::ineq_cmp_t cmp, tchecker::integer_t value)
+{
+  assert(dbm != nullptr);
+  assert(dim >= 1);
+  assert(tchecker::dbm::is_consistent(dbm, dim));
+  assert(tchecker::dbm::is_tight(dbm, dim));
+  assert(x < dim);
+  assert(y < dim);
+
+  tchecker::dbm::db_t db = tchecker::dbm::db(cmp, value);
+  return DBM(x, y) <= db;
+}
+
+bool satisfies(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim, tchecker::clock_constraint_t const & cc)
+{
+  assert(dbm != nullptr);
+  assert(dim >= 1);
+  assert(tchecker::dbm::is_consistent(dbm, dim));
+  assert(tchecker::dbm::is_tight(dbm, dim));
+  tchecker::clock_id_t id1 = (cc.id1() == tchecker::REFCLOCK_ID ? 0 : cc.id1() + 1);
+  tchecker::clock_id_t id2 = (cc.id2() == tchecker::REFCLOCK_ID ? 0 : cc.id2() + 1);
+  return tchecker::dbm::satisfies(dbm, dim, id1, id2, cc.comparator(), cc.value());
 }
 
 bool is_le(tchecker::dbm::db_t const * dbm1, tchecker::dbm::db_t const * dbm2, tchecker::clock_id_t dim)

@@ -5,8 +5,11 @@
  *
  */
 
-#include "tchecker/zg/zg.hh"
+#include <queue>
+
 #include "tchecker/dbm/db.hh"
+#include "tchecker/variables/clocks.hh"
+#include "tchecker/zg/zg.hh"
 
 namespace tchecker {
 
@@ -322,6 +325,38 @@ void zg_t::build(std::map<std::string, std::string> const & attributes, std::vec
   }
 }
 
+// Split
+
+void zg_t::split(tchecker::zg::const_state_sptr_t const & s, tchecker::clock_constraint_t const & c,
+                 std::vector<tchecker::zg::state_sptr_t> & v)
+{
+  if (!tchecker::dbm::satisfies(s->zone().dbm(), s->zone().dim(), c))
+    v.push_back(clone_and_constrain(s, -c));
+  if (!tchecker::dbm::satisfies(s->zone().dbm(), s->zone().dim(), -c))
+    v.push_back(clone_and_constrain(s, c));
+}
+
+void zg_t::split(tchecker::zg::const_state_sptr_t const & s, tchecker::clock_constraint_container_t const & constraints,
+                 std::vector<tchecker::zg::state_sptr_t> & v)
+{
+  std::vector<tchecker::zg::state_sptr_t> done;
+  std::queue<tchecker::zg::state_sptr_t> todo;
+
+  todo.push(_state_allocator.clone(*s));
+  for (tchecker::clock_constraint_t const & c : constraints) {
+    while (!todo.empty()) {
+      split(tchecker::zg::const_state_sptr_t{todo.front()}, c, done);
+      todo.pop();
+    }
+    for (tchecker::zg::state_sptr_t const & split_s : done)
+      todo.push(split_s);
+    done.clear();
+  }
+
+  for (; !todo.empty(); todo.pop())
+    v.push_back(todo.front());
+}
+
 // Inspector
 
 boost::dynamic_bitset<> zg_t::labels(tchecker::zg::const_state_sptr_t const & s) const
@@ -351,6 +386,18 @@ bool zg_t::is_initial(tchecker::zg::const_state_sptr_t const & s) const { return
 void zg_t::share(tchecker::zg::state_sptr_t & s) { _state_allocator.share(s); }
 
 void zg_t::share(tchecker::zg::transition_sptr_t & t) { _transition_allocator.share(t); }
+
+// Private
+
+tchecker::zg::state_sptr_t zg_t::clone_and_constrain(tchecker::zg::const_state_sptr_t const & s,
+                                                     tchecker::clock_constraint_t const & c)
+{
+  tchecker::zg::state_sptr_t clone_s = _state_allocator.clone(*s);
+  tchecker::dbm::constrain(clone_s->zone_ptr()->dbm(), clone_s->zone_ptr()->dim(), c);
+  if (!clone_s->zone().is_empty() && _sharing_type == tchecker::ts::SHARING)
+    share(clone_s);
+  return clone_s;
+}
 
 /* tools */
 

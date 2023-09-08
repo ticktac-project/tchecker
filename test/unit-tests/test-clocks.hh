@@ -8,6 +8,23 @@
 #include "tchecker/basictypes.hh"
 #include "tchecker/variables/clocks.hh"
 
+TEST_CASE("clock constraint negation", "[clocks]")
+{
+  SECTION("negation of 0 - 1 < 3 if 1 - 0 <= -3")
+  {
+    tchecker::clock_constraint_t c{0, 1, tchecker::LT, 3};
+    tchecker::clock_constraint_t expected{1, 0, tchecker::LE, -3};
+
+    REQUIRE(-c == expected);
+  }
+
+  SECTION("negation throws on overflow")
+  {
+    tchecker::clock_constraint_t c{0, 1, tchecker::LE, std::numeric_limits<tchecker::integer_t>::min()};
+    REQUIRE_THROWS_AS(-c, std::invalid_argument);
+  }
+}
+
 TEST_CASE("clockval initial", "[clocks]")
 {
   unsigned short const dim = 4;

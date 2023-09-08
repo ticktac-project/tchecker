@@ -1196,6 +1196,64 @@ TEST_CASE("constrain, for reference DBMs", "[refdbm]")
   }
 }
 
+TEST_CASE("Satisfaction of a clock constraint by a DBM with reference clocks", "[refdbm]")
+{
+  std::vector<std::string> refclocks{"$0", "$1"};
+  tchecker::reference_clock_variables_t r(refclocks);
+  r.declare("x", "$0");
+  r.declare("y", "$1");
+
+  tchecker::clock_id_t const rdim = static_cast<tchecker::clock_id_t>(r.size());
+
+  // clocks in rdbm
+  tchecker::clock_id_t const tx = r.id("$0");
+  tchecker::clock_id_t const ty = r.id("$1");
+  tchecker::clock_id_t const x = r.id("x");
+  tchecker::clock_id_t const y = r.id("y");
+
+  // systems clocks
+  tchecker::clock_id_t const _x = 0;
+  tchecker::clock_id_t const _y = 1;
+
+  tchecker::dbm::db_t rdbm[rdim * rdim];
+  tchecker::refdbm::universal_positive(rdbm, r);
+
+  RDBM(tx, x) = tchecker::dbm::db(tchecker::LT, 0); // tx < x (i.e. x > 0)
+  RDBM(y, ty) = tchecker::dbm::db(tchecker::LE, 1); // y <= ty + 1 (i.e. y <= 1)
+  tchecker::refdbm::tighten(rdbm, r);
+
+  SECTION("DBM satisfies 0 - 0 <= 0") { REQUIRE(tchecker::refdbm::satisfies(rdbm, r, 0, 0, tchecker::LE, 0)); }
+
+  SECTION("DBM does not satisfy 0 - 0 > 1") { REQUIRE_FALSE(tchecker::refdbm::satisfies(rdbm, r, 0, 0, tchecker::LT, -1)); }
+
+  SECTION("DBM satisfies 3 - 1 < 3") { REQUIRE(tchecker::refdbm::satisfies(rdbm, r, 3, 1, tchecker::LT, 3)); }
+
+  SECTION("DBM does not satisfy 3 - 1 < 1") { REQUIRE_FALSE(tchecker::refdbm::satisfies(rdbm, r, 3, 1, tchecker::LT, 1)); }
+
+  SECTION("DBM does not satisfy 0 - 1 < 235678")
+  {
+    REQUIRE_FALSE(tchecker::refdbm::satisfies(rdbm, r, 0, 1, tchecker::LT, 235678));
+  }
+
+  SECTION("DBM satisfies clock constraint y <= 2")
+  {
+    tchecker::clock_constraint_t c{_y, tchecker::REFCLOCK_ID, tchecker::LE, 2};
+    REQUIRE(tchecker::refdbm::satisfies(rdbm, r, c));
+  }
+
+  SECTION("DBM does not satisfy clock constraint y < 1")
+  {
+    tchecker::clock_constraint_t c{_y, tchecker::REFCLOCK_ID, tchecker::LT, 1};
+    REQUIRE_FALSE(tchecker::refdbm::satisfies(rdbm, r, c));
+  }
+
+  SECTION("DBM does not satisfy clock constraint x > 1")
+  {
+    tchecker::clock_constraint_t c{tchecker::REFCLOCK_ID, _x, tchecker::LT, -1};
+    REQUIRE_FALSE(tchecker::refdbm::satisfies(rdbm, r, c));
+  }
+}
+
 TEST_CASE("synchronize DBMs with reference clocks", "[refdbm]")
 {
   std::vector<std::string> refclocks{"$0", "$1", "$2"};

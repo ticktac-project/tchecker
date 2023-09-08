@@ -749,9 +749,53 @@ TEST_CASE("DBM equality", "[dbm]")
   }
 }
 
+TEST_CASE("Satisfaction of a clock constraint by a DBM", "[dbm]")
+{
+  tchecker::clock_id_t dim = 3;
+  tchecker::dbm::db_t dbm[dim * dim];
+  tchecker::dbm::universal_positive(dbm, dim);
+
+  DBM(0, 1) = tchecker::dbm::db(tchecker::LT, 0); // x1>0
+  DBM(1, 2) = tchecker::dbm::db(tchecker::LE, 2); // x1-x2<=2
+  tchecker::dbm::tighten(dbm, dim);
+
+  tchecker::clock_id_t const x = 0;
+  tchecker::clock_id_t const y = 1;
+
+  SECTION("DBM satisfies 0 - 0 <= 0") { REQUIRE(tchecker::dbm::satisfies(dbm, dim, 0, 0, tchecker::LE, 0)); }
+
+  SECTION("DBM does not satisfy 0 - 0 > 1") { REQUIRE_FALSE(tchecker::dbm::satisfies(dbm, dim, 0, 0, tchecker::LT, -1)); }
+
+  SECTION("DBM satisfies 1 - 2 < 3") { REQUIRE(tchecker::dbm::satisfies(dbm, dim, 1, 2, tchecker::LT, 3)); }
+
+  SECTION("DBM does not satisfy 1 - 2 < 2") { REQUIRE_FALSE(tchecker::dbm::satisfies(dbm, dim, 1, 2, tchecker::LT, 2)); }
+
+  SECTION("DBM does not satisfy 1 - 0 < 235678")
+  {
+    REQUIRE_FALSE(tchecker::dbm::satisfies(dbm, dim, 1, 0, tchecker::LT, 235678));
+  }
+
+  SECTION("DBM satisfies clock constraint x - y < 5")
+  {
+    tchecker::clock_constraint_t cc{x, y, tchecker::LT, 5};
+    REQUIRE(tchecker::dbm::satisfies(dbm, dim, cc));
+  }
+
+  SECTION("DBM does not satisfy clock constraint x - y <= 1")
+  {
+    tchecker::clock_constraint_t cc{x, y, tchecker::LE, 1};
+    REQUIRE_FALSE(tchecker::dbm::satisfies(dbm, dim, cc));
+  }
+
+  SECTION("DBM does not satisfy clock constraint y - x <= 129")
+  {
+    tchecker::clock_constraint_t cc{y, x, tchecker::LE, 129};
+    REQUIRE_FALSE(tchecker::dbm::satisfies(dbm, dim, cc));
+  }
+}
+
 TEST_CASE("DBM inclusion", "[dbm]")
 {
-
   tchecker::clock_id_t dim = 4;
   tchecker::dbm::db_t dbm[dim * dim];
   tchecker::dbm::universal_positive(dbm, dim);

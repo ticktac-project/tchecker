@@ -260,6 +260,26 @@ enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * dbm, tchecker::cloc
                                        tchecker::clock_id_t y, tchecker::ineq_cmp_t cmp, tchecker::integer_t value);
 
 /*!
+ \brief Constrain a DBM w.r.t. a clock constraint
+ \param dbm : a dbm
+ \param dim : dimension of dbm
+ \param cc : clock constraint
+ \pre dbm is not nullptr (checked by assertion)
+ dbm is a dim*dim array of difference bounds
+ dbm is consistent (checked by assertion)
+ dbm is tight (checked by assertion)
+ dim >= 1 (checked by assertion)
+ cc is expressed over system clocks (i.e. the reference clock is tchecker::REFCLOCK_ID)
+ \post dbm has been intersected with cc
+ if dbm is empty, then its difference bound in (0,0) is less-than <=0
+ (tchecker::dbm::is_empty_0() returns true)
+ the resulting DBM is tight and consistent if not empty
+ \return EMPTY is the resulting DBM is empty, NON_EMPTY otherwise
+*/
+enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * dbm, tchecker::clock_id_t dim,
+                                       tchecker::clock_constraint_t const & cc);
+
+/*!
  \brief Constrain a DBM w.r.t. clock constraints container
  \param dbm : a dbm
  \param dim : dimension of dbm
@@ -304,6 +324,42 @@ bool is_equal(tchecker::dbm::db_t const * dbm1, tchecker::dbm::db_t const * dbm2
  \return true if dbm1 is included into dbm2, false otherwise
  */
 bool is_le(tchecker::dbm::db_t const * dbm1, tchecker::dbm::db_t const * dbm2, tchecker::clock_id_t dim);
+
+/*!
+ \brief Check if a DBM satisfies a clock constraint
+ \param dbm : a dbm
+ \param dim : dimension of dbm
+ \param x : first clock
+ \param y : second clock
+ \param cmp : constraint comparator
+ \param value : constraint value
+ \pre dbm is not nullptr (checked by assertion)
+ dbm is a dim*dim array of difference bounds
+ dbm is consistent (checked by assertion)
+ dbm is tight (checked by assertion)
+ dim >= 1 (checked by assertion)
+ x < dim (checked by assertion)
+ y < dim (checked by assertion)
+ value can be represented in a tchecker::dbm::db_t
+ \return true if all valuations in dbm satisfy "x - y cmp value", false otherwise
+ */
+bool satisfies(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim, tchecker::clock_id_t x, tchecker::clock_id_t y,
+               tchecker::ineq_cmp_t cmp, tchecker::integer_t value);
+
+/*!
+ \brief Check if a DBM satisfies a clock constraint
+ \param dbm : a dbm
+ \param dim : dimension of dbm
+ \param c : clock constraint
+ \pre dbm is not nullptr (checked by assertion)
+ dbm is a dim*dim array of difference bounds
+ dbm is consistent (checked by assertion)
+ dbm is tight (checked by assertion)
+ dim >= 1 (checked by assertion)
+ c is expressed over system clocks (i.e. the reference clock is tchecker::REFCLOCK_ID)
+ \return true if all valuations in dbm satisfy c, false otherwise
+ */
+bool satisfies(tchecker::dbm::db_t const * dbm, tchecker::clock_id_t dim, tchecker::clock_constraint_t const & c);
 
 /*!
  \brief Reset a clock

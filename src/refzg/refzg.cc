@@ -6,6 +6,7 @@
  */
 
 #include <memory>
+#include <queue>
 
 #include <boost/dynamic_bitset.hpp>
 
@@ -338,6 +339,38 @@ void refzg_t::build(std::map<std::string, std::string> const & attributes, std::
   }
 }
 
+// Split
+
+void refzg_t::split(tchecker::refzg::const_state_sptr_t const & s, tchecker::clock_constraint_t const & c,
+                    std::vector<tchecker::refzg::state_sptr_t> & v)
+{
+  if (!tchecker::refdbm::satisfies(s->zone().dbm(), *s->zone().reference_clock_variables(), c))
+    v.push_back(clone_and_constrain(s, -c));
+  if (!tchecker::refdbm::satisfies(s->zone().dbm(), *s->zone().reference_clock_variables(), -c))
+    v.push_back(clone_and_constrain(s, c));
+}
+
+void refzg_t::split(tchecker::refzg::const_state_sptr_t const & s, tchecker::clock_constraint_container_t const & constraints,
+                    std::vector<tchecker::refzg::state_sptr_t> & v)
+{
+  std::vector<tchecker::refzg::state_sptr_t> done;
+  std::queue<tchecker::refzg::state_sptr_t> todo;
+
+  todo.push(_state_allocator.clone(*s));
+  for (tchecker::clock_constraint_t const & c : constraints) {
+    while (!todo.empty()) {
+      split(tchecker::refzg::const_state_sptr_t{todo.front()}, c, done);
+      todo.pop();
+    }
+    for (tchecker::refzg::state_sptr_t const & split_s : done)
+      todo.push(split_s);
+    done.clear();
+  }
+
+  for (; !todo.empty(); todo.pop())
+    v.push_back(todo.front());
+}
+
 // Inspector
 
 boost::dynamic_bitset<> refzg_t::labels(tchecker::refzg::const_state_sptr_t const & s) const
@@ -370,6 +403,18 @@ bool refzg_t::is_initial(tchecker::refzg::const_state_sptr_t const & s) const
 void refzg_t::share(tchecker::refzg::state_sptr_t & s) { _state_allocator.share(s); }
 
 void refzg_t::share(tchecker::refzg::transition_sptr_t & t) { _transition_allocator.share(t); }
+
+// Private
+
+tchecker::refzg::state_sptr_t refzg_t::clone_and_constrain(tchecker::refzg::const_state_sptr_t const & s,
+                                                           tchecker::clock_constraint_t const & c)
+{
+  tchecker::refzg::state_sptr_t clone_s = _state_allocator.clone(*s);
+  tchecker::refdbm::constrain(clone_s->zone_ptr()->dbm(), *clone_s->zone_ptr()->reference_clock_variables(), c);
+  if (!clone_s->zone().is_empty() && _sharing_type == tchecker::ts::SHARING)
+    share(clone_s);
+  return clone_s;
+}
 
 /* tools */
 

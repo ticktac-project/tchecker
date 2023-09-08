@@ -207,6 +207,16 @@ bool operator!=(tchecker::clock_constraint_t const & c1, tchecker::clock_constra
 std::size_t hash_value(tchecker::clock_constraint_t const & c);
 
 /*!
+ \brief Negation of a clock constraint
+ \param c ; clock constraint
+ \return negation of clock constraint c, that is c.id2 - c.id1 # -c.value where # is < if
+ c.cmp is <=, and # is <= if c.cmp is <
+ \throw std::invalid_argument if the negation of c cannot be represented as a clock constraint
+ (i.e. if -c.value cannot be represented)
+*/
+tchecker::clock_constraint_t operator-(tchecker::clock_constraint_t const & c);
+
+/*!
  \brief Output operator
  \param os : output stream
  \param c : clock constraint

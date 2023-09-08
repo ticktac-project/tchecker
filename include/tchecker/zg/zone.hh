@@ -137,6 +137,8 @@ public:
    \note Modifications to the returned DBM should ensure tightness or emptiness of the zone, following the convention defined
    in file tchecker/dbm/dbm.hh. It is thus strongly suggested to use the function defined in that file to modify the returned
    DBM. Otherwise, the methods may not be accurate over this zone.
+   \note The DBM in a zone may be shared with other zones (if the zone has been enerated by a sharing zone graph). DO NOT MODIFY
+   a shared DBM as it would modify the DBM in multiple zones at once
    */
   tchecker::dbm::db_t * dbm();
 

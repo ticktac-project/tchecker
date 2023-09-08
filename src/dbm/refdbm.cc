@@ -522,6 +522,19 @@ enum tchecker::dbm::status_t constrain(tchecker::dbm::db_t * rdbm, tchecker::ref
   return tchecker::dbm::NON_EMPTY;
 }
 
+bool satisfies(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r, tchecker::clock_id_t x,
+               tchecker::clock_id_t y, tchecker::ineq_cmp_t cmp, tchecker::integer_t value)
+{
+  return tchecker::dbm::satisfies(rdbm, r.size(), x, y, cmp, value);
+}
+
+bool satisfies(tchecker::dbm::db_t const * rdbm, tchecker::reference_clock_variables_t const & r,
+               tchecker::clock_constraint_t const & c)
+{
+  tchecker::clock_constraint_t translated = r.translate(c);
+  return tchecker::refdbm::satisfies(rdbm, r, translated.id1(), translated.id2(), translated.comparator(), translated.value());
+}
+
 enum tchecker::dbm::status_t synchronize(tchecker::dbm::db_t * rdbm, tchecker::reference_clock_variables_t const & r)
 {
   return tchecker::refdbm::bound_spread(rdbm, r, 0);
