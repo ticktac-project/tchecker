@@ -76,7 +76,8 @@ template <class GRAPH> tchecker::zg::path::symbolic::lasso_path_t * symbolic_cou
     cycle_vedges.push_back(e->vedge_ptr());
 
   // Get the corresponding run in a zone graph
-  tchecker::vloc_t const & initial_vloc = g.edge_src(lasso_edges.prefix[0])->state().vloc();
+  typename GRAPH::edge_sptr_t const & first_edge = (!lasso_edges.prefix.empty() ? lasso_edges.prefix[0] : lasso_edges.cycle[0]);
+  tchecker::vloc_t const & initial_vloc = g.edge_src(first_edge)->state().vloc();
 
   tchecker::zg::path::symbolic::lasso_path_t * lasso_path = tchecker::zg::path::symbolic::compute_lasso_path(
       g.zg_ptr(), initial_vloc, prefix_vedges, cycle_vedges, [](tchecker::zg::state_t const & s) { return false; });
