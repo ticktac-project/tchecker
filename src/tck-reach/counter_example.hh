@@ -66,11 +66,10 @@ template <class GRAPH> tchecker::zg::path::symbolic::finite_path_t * symbolic_co
   // compute sequence of edges from initial to final node in g
   tchecker::algorithms::finite_path_extraction_algorithm_t<GRAPH> algorithm;
 
-  std::vector<typename GRAPH::edge_sptr_t> seq =
-      algorithm.run(g, &tchecker::tck_reach::initial_node<GRAPH>, &tchecker::tck_reach::final_node<GRAPH>,
-                    &tchecker::tck_reach::true_edge<GRAPH>);
+  auto && [found, root, seq] = algorithm.run(g, &tchecker::tck_reach::initial_node<GRAPH>,
+                                             &tchecker::tck_reach::final_node<GRAPH>, &tchecker::tck_reach::true_edge<GRAPH>);
 
-  if (seq.empty())
+  if (!found)
     return new tchecker::zg::path::symbolic::finite_path_t{zg};
 
   // Extract sequence of vedges
@@ -79,7 +78,7 @@ template <class GRAPH> tchecker::zg::path::symbolic::finite_path_t * symbolic_co
     vedge_seq.push_back(e->vedge_ptr());
 
   // Get the corresponding run in a zone graph with standard semantics and no extrapolation
-  tchecker::vloc_t const & initial_vloc = g.edge_src(seq[0])->state().vloc();
+  tchecker::vloc_t const & initial_vloc = root->state().vloc();
 
   return tchecker::zg::path::symbolic::compute_finite_path(zg, initial_vloc, vedge_seq, true);
 }
@@ -117,11 +116,10 @@ template <class GRAPH, class CEX> CEX * symbolic_counter_example_refzg(GRAPH con
   // compute sequence of edges from initial to final node in g
   tchecker::algorithms::finite_path_extraction_algorithm_t<GRAPH> algorithm;
 
-  std::vector<typename GRAPH::edge_sptr_t> seq =
-      algorithm.run(g, &tchecker::tck_reach::initial_node<GRAPH>, &tchecker::tck_reach::final_node<GRAPH>,
-                    &tchecker::tck_reach::true_edge<GRAPH>);
+  auto && [found, root, seq] = algorithm.run(g, &tchecker::tck_reach::initial_node<GRAPH>,
+                                             &tchecker::tck_reach::final_node<GRAPH>, &tchecker::tck_reach::true_edge<GRAPH>);
 
-  if (seq.empty())
+  if (!found)
     return new CEX{refzg};
 
   // Extract sequence of vedges
@@ -130,7 +128,7 @@ template <class GRAPH, class CEX> CEX * symbolic_counter_example_refzg(GRAPH con
     vedge_seq.push_back(e->vedge_ptr());
 
   // Get the corresponding run in a zone graph with standard semantics and no extrapolation
-  tchecker::vloc_t const & initial_vloc = g.edge_src(seq[0])->state().vloc();
+  tchecker::vloc_t const & initial_vloc = root->state().vloc();
   CEX * cex = tchecker::refzg::path::compute_symbolic_run(refzg, initial_vloc, vedge_seq, true);
 
   return cex;

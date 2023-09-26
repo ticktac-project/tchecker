@@ -11,6 +11,7 @@
 #include <cassert>
 #include <functional>
 #include <stack>
+#include <tuple>
 #include <unordered_set>
 #include <vector>
 
@@ -55,23 +56,26 @@ public:
    \param filter_first : predicate on nodes
    \param filter_last : predicate on nodes
    \param filter_edge : predicate on edges
-   \return a finite sequence of edges from g, all satisfying filter_edge, and that leads
-   from a node satisfying filter_first, to a node satisfying filter_last if any,
-   an empty sequence otherwise
+   \return a triple (true, n, seq) if a (possibly empty) sequence of edges has been found from n, that satisfies filter_first,
+   to a node that satisfies filter_last, where all edges on seq satisfy filter_edge,
+   (false, nullptr, seq) if no such path exist where seq is empty
   */
-  std::vector<edge_sptr_t> run(GRAPH const & g, std::function<bool(node_sptr_t)> && filter_first,
-                               std::function<bool(node_sptr_t)> && filter_last, std::function<bool(edge_sptr_t)> && filter_edge)
+  std::tuple<bool, node_sptr_t, std::vector<edge_sptr_t>> run(GRAPH const & g, std::function<bool(node_sptr_t)> && filter_first,
+                                                              std::function<bool(node_sptr_t)> && filter_last,
+                                                              std::function<bool(edge_sptr_t)> && filter_edge)
   {
     std::unordered_set<node_sptr_t> visited;
     auto r = g.nodes();
     for (node_sptr_t n : r) {
       if (!filter_first(n))
         continue;
-      std::vector<edge_sptr_t> seq = find_sequence(g, n, std::move(filter_last), std::move(filter_edge), visited);
-      if (!seq.empty())
-        return seq;
+      auto && [found, seq] = find_sequence(g, n, std::move(filter_last), std::move(filter_edge), visited);
+      if (found) {
+        assert(seq.empty() || g.edge_src(seq[0]) == n);
+        return std::make_tuple(true, n, seq);
+      }
     }
-    return std::vector<edge_sptr_t>{};
+    return std::make_tuple(false, nullptr, std::vector<edge_sptr_t>{});
   }
 
 private:
@@ -130,21 +134,24 @@ private:
    \param filter_last : predicate on nodes
    \param filter_edge : predicate on edges
    \param visited : set of nodes that have already been visited
+   \return a pair (true, seq) if a (possibly empty) sequence of edges seq has been found from n
+   to a node satisfying filter_last where all edges satisfy filter_edge,
+   (false, seq) whwre seq is empty otherwise
    \return a finite sequence of edges from g, all satisfying filter_edge, and
    that leads from n to a node satisfying filter_last if any, an empty sequence
    otherwise
    \post all nodes visited during the search have been added to visited
    \note nodes in visited are not explored
   */
-  std::vector<edge_sptr_t> find_sequence(GRAPH const & g, node_sptr_t const & n,
-                                         std::function<bool(node_sptr_t)> && filter_last,
-                                         std::function<bool(edge_sptr_t)> && filter_edge,
-                                         std::unordered_set<node_sptr_t> & visited)
+  std::tuple<bool, std::vector<edge_sptr_t>> find_sequence(GRAPH const & g, node_sptr_t const & n,
+                                                           std::function<bool(node_sptr_t)> && filter_last,
+                                                           std::function<bool(edge_sptr_t)> && filter_edge,
+                                                           std::unordered_set<node_sptr_t> & visited)
   {
     std::vector<edge_sptr_t> seq;
 
     if (filter_last(n))
-      return seq;
+      return std::make_tuple(true, seq);
 
     std::stack<dfs_entry_t> waiting;
 
@@ -172,13 +179,15 @@ private:
       seq.push_back(e);
 
       if (filter_last(nextn))
-        return seq;
+        return std::make_tuple(true, seq);
 
       waiting.push(dfs_entry_t{nextn, g.outgoing_edges(nextn)});
       visited.insert(nextn);
     }
 
-    return seq;
+    assert(seq.empty());
+
+    return std::make_tuple(false, seq);
   }
 };
 
