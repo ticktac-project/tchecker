@@ -62,6 +62,19 @@ public:
   }
 
   /*!
+   \brief Constructor
+   \param table_size : size of the collision table of nodes
+   \param node_hash : hash function
+   \param node_le : covering predicate on nodes
+   \pre table_size != tchecker::COLLISION_TABLE_NOT_STORED
+   \throw std::invalid_argument : if the precondition is violated
+   */
+  graph_t(std::size_t table_size, NODE_SPTR_HASH && node_hash, NODE_SPTR_LE && node_le)
+      : _nodes(table_size, std::move(node_hash)), _node_le(std::move(node_le))
+  {
+  }
+
+  /*!
    \brief Copy constructor (deleted)
    */
   graph_t(tchecker::graph::cover::graph_t<NODE_SPTR, NODE_SPTR_HASH, NODE_SPTR_LE> const &) = delete;

@@ -172,6 +172,19 @@ public:
   }
 
   /*!
+   \brief Constructor
+   \param table_size : size of the table (number of collision lists)
+   \param hash : hash function
+   \pre table_size != tchecker::COLLISION_TABLE_NOT_STORED
+   \throw std::invalid_argument : if the precondition is violated
+   */
+  collision_table_t(std::size_t table_size, HASH && hash) : _table{table_size}, _hash(std::move(hash)), _size(0)
+  {
+    if (table_size == tchecker::COLLISION_TABLE_NOT_STORED)
+      throw std::invalid_argument("Collision table size is too big");
+  }
+
+  /*!
    \brief Copy constructor (deleted)
    */
   collision_table_t(tchecker::collision_table_t<SPTR, HASH> const &) = delete;
@@ -600,6 +613,17 @@ class hashtable_object_t {};
 */
 template <class SPTR, class HASH, class EQUAL> class hashtable_t {
 public:
+  /*!
+   \brief Constructor
+   \param table_size : capacity of the table
+   \param hash : hash function
+   \param equal : equality predicate
+   \pre table_size != tchecker::COLLISION_TABLE_NOT_STORED
+   \throw std::invalid_argument : if the precondition is violated
+   \note the capacity of the table may grow when too many collisions occur
+   */
+  hashtable_t(std::size_t table_size, HASH && hash, EQUAL && equal) : _table(table_size, std::move(hash), std::move(equal)) {}
+
   /*!
    \brief Constructor
    \param table_size : capacity of the table

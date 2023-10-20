@@ -221,6 +221,19 @@ public:
   }
 
   /*!
+  \brief Constructor
+  \param block_size : number of objects allocated in a block
+  \param table_size : size of hash table
+  \param node_hash : hash function on nodes
+  \param node_equal_to : equality predicate on nodes
+  */
+  graph_t(std::size_t block_size, std::size_t table_size, NODE_HASH && node_hash, NODE_EQUAL && node_equal_to)
+      : _node_sptr_hash(std::move(node_hash)), _node_sptr_equal_to(std::move(node_equal_to)),
+        _find_graph(table_size, _node_sptr_hash, _node_sptr_equal_to), _node_pool(block_size), _edge_pool(block_size)
+  {
+  }
+
+  /*!
   \brief Copy constructor (deleted)
   */
   graph_t(tchecker::graph::reachability::graph_t<NODE, EDGE, NODE_HASH, NODE_EQUAL> const &) = delete;
@@ -409,6 +422,13 @@ private:
     node_sptr_hash_t(NODE_HASH const & node_hash) : _node_hash(node_hash) {}
 
     /*!
+     \brief Constructor
+     \param node_hash : hash function on nodes
+     \post this keeps of a copy of node_hash
+    */
+    node_sptr_hash_t(NODE_HASH && node_hash) : _node_hash(std::move(node_hash)) {}
+
+    /*!
      \brief Hash function on shared pointers to nodes
      \param n : a shared pointer to node
      \return hash value for *n w.r.t. NODE_HASH
@@ -431,6 +451,13 @@ private:
      \post this keeps a copy of node_eq
      */
     node_sptr_equal_to_t(NODE_EQUAL const & node_eq) : _node_eq(node_eq) {}
+
+    /*!
+     \brief Constructor
+     \param node_eq : equality predicate on nodes
+     \post this keeps a copy of node_eq
+     */
+    node_sptr_equal_to_t(NODE_EQUAL && node_eq) : _node_eq(std::move(node_eq)) {}
 
     /*!
      \brief Rquality predicate on shared pointers to nodes

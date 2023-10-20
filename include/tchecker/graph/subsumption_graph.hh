@@ -263,6 +263,19 @@ public:
   }
 
   /*!
+  \brief Constructor
+  \param block_size : number of objects allocated in a block
+  \param table_size : size of hash table
+  \param node_hash : hash function on nodes
+  \param node_le : covering predicate on nodes
+  */
+  graph_t(std::size_t block_size, std::size_t table_size, NODE_HASH && node_hash, NODE_LE && node_le)
+      : _node_sptr_hash(std::move(node_hash)), _node_sptr_le(std::move(node_le)),
+        _cover_graph(table_size, _node_sptr_hash, _node_sptr_le), _node_pool(block_size), _edge_pool(block_size)
+  {
+  }
+
+  /*!
   \brief Copy constructor (deleted)
   */
   graph_t(tchecker::graph::subsumption::graph_t<NODE, EDGE, NODE_HASH, NODE_LE> const &) = delete;
@@ -530,6 +543,13 @@ private:
     node_sptr_hash_t(NODE_HASH const & node_hash) : _node_hash(node_hash) {}
 
     /*!
+     \brief Constructor
+     \param node_hash : hash function on nodes
+     \post this keeps of a copy of node_hash
+    */
+    node_sptr_hash_t(NODE_HASH && node_hash) : _node_hash(std::move(node_hash)) {}
+
+    /*!
      \brief Hash function on shared pointers to nodes
      \param n : a shared pointer to node
      \return hash value for *n w.r.t. NODE_HASH
@@ -552,6 +572,13 @@ private:
      \post this keeps a copy of node_le
      */
     node_sptr_le_t(NODE_LE const & node_le) : _node_le(node_le) {}
+
+    /*!
+     \brief Constructor
+     \param node_le : covering predicate on nodes
+     \post this keeps a copy of node_le
+     */
+    node_sptr_le_t(NODE_LE && node_le) : _node_le(std::move(node_le)) {}
 
     /*!
      \brief Covering predicate on shared pointers to nodes

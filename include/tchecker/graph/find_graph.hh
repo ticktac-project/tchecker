@@ -61,6 +61,17 @@ public:
   }
 
   /*!
+   \brief Constructor
+   \param table_size : size of hash table
+   \param hash : hash function
+   \param equal : equality predicate
+  */
+  graph_t(std::size_t table_size, NODE_SPTR_HASH && hash, NODE_SPTR_EQUAL && equal)
+      : _nodes(table_size, std::move(hash), std::move(equal))
+  {
+  }
+
+  /*!
    \brief Copy constructor
   */
   graph_t(tchecker::graph::find::graph_t<NODE_SPTR, NODE_SPTR_HASH, NODE_SPTR_EQUAL> const &) = default;
