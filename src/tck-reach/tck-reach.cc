@@ -16,6 +16,7 @@
 #include "tchecker/algorithms/reach/algorithm.hh"
 #include "tchecker/parsing/parsing.hh"
 #include "tchecker/utils/log.hh"
+#include "zg-aLU-covreach.hh"
 #include "zg-covreach.hh"
 #include "zg-reach.hh"
 
@@ -44,9 +45,11 @@ void usage(char * progname)
 {
   std::cerr << "Usage: " << progname << " [options] [file]" << std::endl;
   std::cerr << "   -a algorithm  reachability algorithm" << std::endl;
-  std::cerr << "          reach      standard reachability algorithm over the zone graph" << std::endl;
-  std::cerr << "          concur19   reachability algorithm with covering over the local-time zone graph" << std::endl;
-  std::cerr << "          covreach   reachability algorithm with covering over the zone graph" << std::endl;
+  std::cerr << "          reach          standard reachability algorithm over the zone graph" << std::endl;
+  std::cerr << "          concur19       reachability algorithm over the local-time zone graph, with sync-subsumption"
+            << std::endl;
+  std::cerr << "          covreach       reachability algorithm over the zone graph with inclusion subsumption" << std::endl;
+  std::cerr << "          aLU-covreach   reachability algorithm over the zone graph with aLU subsumption" << std::endl;
   std::cerr << "   -C type       type of certificate" << std::endl;
   std::cerr << "          none       no certificate (default)" << std::endl;
   std::cerr << "          graph      graph of explored state-space" << std::endl;
@@ -63,10 +66,11 @@ void usage(char * progname)
 }
 
 enum algorithm_t {
-  ALGO_REACH,    /*!< Reachability algorithm */
-  ALGO_CONCUR19, /*!< Covering reachability algorithm over the local-time zone graph */
-  ALGO_COVREACH, /*!< Covering reachability algorithm */
-  ALGO_NONE,     /*!< No algorithm */
+  ALGO_REACH,        /*!< Reachability algorithm */
+  ALGO_CONCUR19,     /*!< Covering reachability algorithm over the local-time zone graph */
+  ALGO_COVREACH,     /*!< Covering reachability algorithm */
+  ALGO_ALU_COVREACH, /*!< Covering reachability algorithm with aLU subsumption*/
+  ALGO_NONE,         /*!< No algorithm */
 };
 
 enum certificate_t {
@@ -116,6 +120,8 @@ int parse_command_line(int argc, char * argv[])
           algorithm = ALGO_CONCUR19;
         else if (strcmp(optarg, "covreach") == 0)
           algorithm = ALGO_COVREACH;
+        else if (strcmp(optarg, "aLU-covreach") == 0)
+          algorithm = ALGO_ALU_COVREACH;
         else
           throw std::runtime_error("Unknown algorithm: " + std::string(optarg));
         break;
@@ -305,6 +311,50 @@ void covreach(std::shared_ptr<tchecker::parsing::system_declaration_t> const & s
 }
 
 /*!
+ \brief Perform covering reachability analysis with aLU subsumption
+ \param sysdecl : system declaration
+ \post statistics on aLU covering reachability analysis of command-line specified
+ labels in the system declared by sysdecl have been output to standard output.
+ A certification has been output if required.
+*/
+void alu_covreach(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl)
+{
+  tchecker::algorithms::covreach::stats_t stats;
+  std::shared_ptr<tchecker::tck_reach::zg_alu_covreach::graph_t> graph;
+
+  tchecker::algorithms::covreach::covering_t covering =
+      (certificate == CERTIFICATE_GRAPH ? tchecker::algorithms::covreach::COVERING_FULL
+                                        : tchecker::algorithms::covreach::COVERING_LEAF_NODES);
+
+  std::tie(stats, graph) =
+      tchecker::tck_reach::zg_alu_covreach::run(sysdecl, labels, search_order, covering, block_size, table_size);
+
+  // stats
+  std::map<std::string, std::string> m;
+  stats.attributes(m);
+  for (auto && [key, value] : m)
+    std::cout << key << " " << value << std::endl;
+
+  // certificate
+  if (certificate == CERTIFICATE_GRAPH)
+    tchecker::tck_reach::zg_alu_covreach::dot_output(*os, *graph, sysdecl->name());
+  else if ((certificate == CERTIFICATE_CONCRETE) && stats.reachable()) {
+    std::unique_ptr<tchecker::tck_reach::zg_alu_covreach::cex::concrete_cex_t> cex{
+        tchecker::tck_reach::zg_alu_covreach::cex::concrete_counter_example(*graph)};
+    if (cex->empty())
+      throw std::runtime_error("Unable to compute a concrete counter example");
+    tchecker::tck_reach::zg_alu_covreach::cex::dot_output(*os, *cex, sysdecl->name());
+  }
+  else if ((certificate == CERTIFICATE_SYMBOLIC) && stats.reachable()) {
+    std::unique_ptr<tchecker::tck_reach::zg_alu_covreach::cex::symbolic_cex_t> cex{
+        tchecker::tck_reach::zg_alu_covreach::cex::symbolic_counter_example(*graph)};
+    if (cex->empty())
+      throw std::runtime_error("Unable to compute a symbolic counter example");
+    tchecker::tck_reach::zg_alu_covreach::cex::dot_output(*os, *cex, sysdecl->name());
+  }
+}
+
+/*!
  \brief Main function
 */
 int main(int argc, char * argv[])
@@ -357,6 +407,9 @@ int main(int argc, char * argv[])
       break;
     case ALGO_COVREACH:
       covreach(sysdecl);
+      break;
+    case ALGO_ALU_COVREACH:
+      alu_covreach(sysdecl);
       break;
     default:
       throw std::runtime_error("No algorithm specified");

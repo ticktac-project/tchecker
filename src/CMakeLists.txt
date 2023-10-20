@@ -120,6 +120,8 @@ add_executable(tck-reach
   ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/concur19.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/counter_example.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/tck-reach.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/zg-aLU-covreach.cc
+  ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/zg-aLU-covreach.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/zg-covreach.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/zg-covreach.hh
   ${CMAKE_CURRENT_SOURCE_DIR}/tck-reach/zg-reach.cc
