@@ -532,7 +532,7 @@ template <class T> std::size_t hash_value(tchecker::intrusive_shared_ptr_t<T> co
  \class intrusive_shared_ptr_hash_t
  \brief Hash
  */
-class instrusive_shared_ptr_hash_t {
+class intrusive_shared_ptr_hash_t {
 public:
   /*!
    \brief Hash
