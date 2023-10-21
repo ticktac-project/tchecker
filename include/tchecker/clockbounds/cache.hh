@@ -137,10 +137,6 @@ public:
     lu_maps_t lu_maps{.L = tchecker::clockbounds::allocate_map(_local_lu->clock_number()),
                       .U = tchecker::clockbounds::allocate_map(_local_lu->clock_number())};
     _local_lu->bounds(*vloc, *lu_maps.L, *lu_maps.U);
-    // aL
-    for (tchecker::clock_id_t id = 0; id < _local_lu->clock_number(); ++id)
-      (*lu_maps.U)[id] = tchecker::clockbounds::MAX_BOUND;
-    // aL
     _cache.insert(std::make_pair(vloc, lu_maps));
 
     return lu_maps_reference_t{.L = *lu_maps.L, .U = *lu_maps.U};
