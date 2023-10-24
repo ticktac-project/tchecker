@@ -2,7 +2,7 @@
 #
 # See files AUTHORS and LICENSE for copyright details.
 
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.13)
 
 set(LOCAL_CONFIG "${CMAKE_SOURCE_DIR}/localconfig-${CMAKE_BUILD_TYPE}.cmake")
 if(EXISTS ${LOCAL_CONFIG})
