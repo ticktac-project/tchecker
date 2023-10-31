@@ -41,7 +41,7 @@ on x in l, and the maximum upper bound on x in l respectively.
 Then to every transition l1 - g;s -> l2 in the automaton we associate the Diophantine equations:
 . L_{x,l1} >= c              if x > c / x >= c / x == c appears in g
 . U_{x,l1} >= c              if x < c / x <= c / x == c appears in g
-. L_{x,l1} >= L_{y,l2} - c   if y := x + c appears in s (and x <= d / x < d is not in g)
+. L_{x,l1} >= L_{y,l2} - c   if y := x + c appears in s
 . U_{x,l1} >= U_{x,l2} - c   ...
 . L_{x,l1} >= L_{x,l2}       if x is not assigned to in s
 . U_{x,l1} >= U_{x,l2}       ...
