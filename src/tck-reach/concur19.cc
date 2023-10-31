@@ -45,14 +45,14 @@ std::size_t node_hash_t::operator()(tchecker::tck_reach::concur19::node_t const 
 
 node_le_t::node_le_t(std::shared_ptr<tchecker::clockbounds::clockbounds_t> const & clockbounds) : _clockbounds(clockbounds)
 {
-  _l = tchecker::clockbounds::allocate_map(_clockbounds->clock_number());
-  _u = tchecker::clockbounds::allocate_map(_clockbounds->clock_number());
+  _l = tchecker::clockbounds::allocate_map(_clockbounds->clocks_number());
+  _u = tchecker::clockbounds::allocate_map(_clockbounds->clocks_number());
 }
 
 node_le_t::node_le_t(tchecker::ta::system_t const & system) : _clockbounds(tchecker::clockbounds::compute_clockbounds(system))
 {
-  _l = tchecker::clockbounds::allocate_map(_clockbounds->clock_number());
-  _u = tchecker::clockbounds::allocate_map(_clockbounds->clock_number());
+  _l = tchecker::clockbounds::allocate_map(_clockbounds->clocks_number());
+  _u = tchecker::clockbounds::allocate_map(_clockbounds->clocks_number());
 }
 
 node_le_t::node_le_t(tchecker::tck_reach::concur19::node_le_t const & node_le) : _clockbounds(node_le._clockbounds)

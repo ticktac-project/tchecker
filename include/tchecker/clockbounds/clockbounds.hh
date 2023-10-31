@@ -863,7 +863,13 @@ public:
    \brief Accessor
    \return Number of clocks
   */
-  inline tchecker::clock_id_t clock_number() const { return _global_lu->clock_number(); }
+  inline tchecker::clock_id_t clocks_number() const { return _global_lu->clock_number(); }
+
+  /*!
+   \brief Accessor
+   \return Number of locations
+   */
+  inline tchecker::loc_id_t locations_number() const { return _local_lu->loc_number(); }
 
 private:
   std::shared_ptr<tchecker::clockbounds::global_lu_map_t> _global_lu; /*!< Global LU map */
