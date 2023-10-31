@@ -55,6 +55,18 @@ bool variable_access_map_t::has_shared_variable() const
   return false;
 }
 
+bool variable_access_map_t::has_shared_variable(enum tchecker::variable_type_t vtype) const
+{
+  for (auto && v2pid : _v2p_map) {
+    if (v2pid.second.size() <= 1)
+      continue;
+    auto && [id, type, access] = v2pid.first;
+    if (type == vtype)
+      return true;
+  }
+  return false;
+}
+
 tchecker::range_t<tchecker::variable_access_map_t::process_id_iterator_t>
 variable_access_map_t::accessing_processes(tchecker::variable_id_t vid, enum tchecker::variable_type_t vtype,
                                            enum tchecker::variable_access_t vaccess) const

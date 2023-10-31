@@ -74,9 +74,18 @@ public:
 
   /*!
    \brief Accessor
-   \return true if there is a shared variable in the map (i.e. a variable accessed by at least 2 processes), false otherwise
+   \return true if there is a shared variable of any type in the map (i.e. a variable accessed by at least 2 processes),
+   false otherwise
    */
   bool has_shared_variable() const;
+
+  /*!
+   \brief Accessor
+   \param vtype : type of variable
+   \return true if there is a shared variable of type vtype in the map,
+   false otherwise
+   */
+  bool has_shared_variable(enum tchecker::variable_type_t vtype) const;
 
   /*!
    \brief Type of iterator over process identifiers
