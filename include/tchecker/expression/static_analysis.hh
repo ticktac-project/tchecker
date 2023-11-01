@@ -98,6 +98,21 @@ void extract_lvalue_offset_variable_ids(tchecker::typed_lvalue_expression_t cons
 void extract_variables(tchecker::typed_expression_t const & expr, std::unordered_set<tchecker::clock_id_t> & clocks,
                        std::unordered_set<tchecker::intvar_id_t> & intvars);
 
+/*!
+ \brief Type of flags of contained clock constraints
+ */
+struct has_clock_constraints_t {
+  bool simple;   /*!< Has simple clock constraints */
+  bool diagonal; /*!< Has diagonal clock constraints */
+};
+
+/*!
+ \brief Compute types of clock constraints in a typed expression
+ \param expr : expression
+ \return types of clock constraints contained in expr
+ */
+tchecker::has_clock_constraints_t has_clock_constraints(tchecker::typed_expression_t const & expr);
+
 } // end of namespace tchecker
 
 #endif // TCHECKER_EXPRESSION_STATIC_ANALYSIS_HH
