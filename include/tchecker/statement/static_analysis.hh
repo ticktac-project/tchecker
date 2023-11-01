@@ -55,6 +55,23 @@ void extract_written_variables(tchecker::typed_statement_t const & stmt, std::un
  sequence statements are recursively visited.
  */
 bool has_local_declarations(tchecker::typed_statement_t const & stmt);
+
+/*!
+ \brief Type of flags of contained clock resets
+ */
+struct has_clock_resets_t {
+  bool constant; /*!< Has reset to constant, i.e. x := c */
+  bool clock;    /*!< Has reset to clock, i.e. x := y */
+  bool sum;      /*!< Has reset to sun, i.e. x := y + c */
+};
+
+/*!
+ \brief Compute types of clock resets in a statement
+ \param stmt : statement
+ \return types of clock resets contained in stmt
+ */
+tchecker::has_clock_resets_t has_clock_resets(tchecker::typed_statement_t const & stmt);
+
 } // end of namespace tchecker
 
 #endif // TCHECKER_STATEMENT_STATIC_ANALYSIS_HH

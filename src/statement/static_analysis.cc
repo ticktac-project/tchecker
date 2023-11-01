@@ -338,4 +338,103 @@ bool has_local_declarations(tchecker::typed_statement_t const & stmt)
   stmt.visit(v);
   return v.value();
 }
+
+/* has_clock_resets */
+
+namespace details {
+
+/*!
+ \class clock_resets_visitor_t
+ \brief Visitor of statements that computes the types of clock resets in a statement
+ */
+class clock_resets_visitor_t : public tchecker::typed_statement_visitor_t {
+public:
+  /*!
+   \brief Constructor
+   */
+  clock_resets_visitor_t() : _has_clock_resets{.constant = false, .clock = false, .sum = false} {}
+
+  /*!
+   \brief Copy constructor
+   */
+  clock_resets_visitor_t(tchecker::details::clock_resets_visitor_t const &) = default;
+
+  /*!
+   \brief Move constructor
+   */
+  clock_resets_visitor_t(tchecker::details::clock_resets_visitor_t &&) = default;
+
+  /*!
+   \brief Destructor
+   */
+  virtual ~clock_resets_visitor_t() = default;
+
+  /*!
+   \brief Assignment operator
+   */
+  tchecker::details::clock_resets_visitor_t & operator=(tchecker::details::clock_resets_visitor_t const &) = default;
+
+  /*!
+   \brief Move assignment operator
+   */
+  tchecker::details::clock_resets_visitor_t & operator=(tchecker::details::clock_resets_visitor_t &&) = default;
+
+  /*!
+   \brief Accessor
+   \return Types of clock resets in last visited statement
+   */
+  inline tchecker::has_clock_resets_t const & has_clock_resets() const { return _has_clock_resets; }
+
+  /*!
+   \brief Clock reset to constant
+   */
+  virtual void visit(tchecker::typed_int_to_clock_assign_statement_t const & stmt) { _has_clock_resets.constant = true; }
+
+  /*!
+   \brief Clock reset to clock
+   */
+  virtual void visit(tchecker::typed_clock_to_clock_assign_statement_t const & stmt) { _has_clock_resets.clock = true; }
+
+  /*!
+   \brief Clock reset to sum
+   */
+  virtual void visit(tchecker::typed_sum_to_clock_assign_statement_t const & stmt) { _has_clock_resets.sum = true; }
+
+  // Other methods: recursion and stop
+
+  virtual void visit(tchecker::typed_local_var_statement_t const & stmt) {}
+
+  virtual void visit(tchecker::typed_local_array_statement_t const & stmt) {}
+
+  virtual void visit(tchecker::typed_sequence_statement_t const & stmt)
+  {
+    stmt.first().visit(*this);
+    stmt.second().visit(*this);
+  }
+
+  virtual void visit(tchecker::typed_assign_statement_t const & stmt) {}
+
+  virtual void visit(tchecker::typed_nop_statement_t const &) {}
+
+  virtual void visit(tchecker::typed_if_statement_t const & stmt)
+  {
+    stmt.then_stmt().visit(*this);
+    stmt.else_stmt().visit(*this);
+  }
+
+  virtual void visit(tchecker::typed_while_statement_t const & stmt) { stmt.statement().visit(*this); }
+
+private:
+  tchecker::has_clock_resets_t _has_clock_resets; /*!< Type of clocks resets contained in statement last visited */
+};
+
+} // end of namespace details
+
+tchecker::has_clock_resets_t has_clock_resets(tchecker::typed_statement_t const & stmt)
+{
+  tchecker::details::clock_resets_visitor_t v;
+  stmt.visit(v);
+  return v.has_clock_resets();
+}
+
 } // end of namespace tchecker
