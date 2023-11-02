@@ -125,11 +125,23 @@ public:
    \param pid : process identifier
    \param vtype : type of variable
    \param vaccess : variable access
-   \retyrn the range of identifiers of the variables of type `vtype` that are accessed by process `pid`, with an access of type
+   \return the range of identifiers of the variables of type `vtype` that are accessed by process `pid`, with an access of type
    `vaccess`
    */
   tchecker::range_t<variable_id_iterator_t> accessed_variables(tchecker::process_id_t pid, enum tchecker::variable_type_t vtype,
                                                                enum tchecker::variable_access_t vaccess) const;
+
+  /*!
+   \brief Accessor
+   \param pid : process identifier
+   \param vid : variable identifier
+   \param vtype : type of variable
+   \param vaccess : variable access
+   \return true if process pid access variable vid of type vtype with access type vaccess,
+   false otherwise
+   */
+  bool access_variable(tchecker::process_id_t pid, tchecker::variable_id_t vid, enum tchecker::variable_type_t vtype,
+                       enum tchecker::variable_access_t vaccess = tchecker::VACCESS_ANY) const;
 
 private:
   v2p_map_t _v2p_map;       /*!< Map : variable ID -> accessing process IDs */
