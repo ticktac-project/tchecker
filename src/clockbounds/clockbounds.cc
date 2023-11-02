@@ -18,7 +18,7 @@ namespace clockbounds {
 
 /* map_t */
 
-tchecker::clockbounds::map_t * allocate_map(tchecker::clock_id_t clock_nb)
+tchecker::clockbounds::map_t * allocate_map(std::size_t clock_nb)
 {
   tchecker::clockbounds::map_t * map =
       tchecker::make_array_allocate_and_construct<tchecker::clockbounds::bound_t, sizeof(tchecker::clockbounds::bound_t),
@@ -55,11 +55,19 @@ bool update(tchecker::clockbounds::map_t & map, tchecker::clock_id_t id, tchecke
 
 bool update(tchecker::clockbounds::map_t & map, tchecker::clockbounds::map_t const & upd)
 {
+  assert(map.capacity() == upd.capacity());
   bool modified = false;
   for (tchecker::clock_id_t id = 0; id < map.capacity(); ++id)
     if (update(map, id, upd[id]))
       modified = true;
   return modified;
+}
+
+void copy(tchecker::clockbounds::map_t & dst, tchecker::clockbounds::map_t const & src)
+{
+  assert(dst.capacity() == src.capacity());
+  for (tchecker::clock_id_t id = 0; id < src.capacity(); ++id)
+    dst[id] = src[id];
 }
 
 std::ostream & operator<<(std::ostream & os, tchecker::clockbounds::map_t const & map)
@@ -334,6 +342,22 @@ std::ostream & operator<<(std::ostream & os, tchecker::clockbounds::global_lu_ma
   return os << "L=" << map.L() << " U=" << map.U() << std::endl;
 }
 
+void fill_global_lu_map(tchecker::clockbounds::global_lu_map_t & global_lu_map,
+                        tchecker::clockbounds::local_lu_map_t const & local_lu_map)
+{
+  if (global_lu_map.clock_number() != local_lu_map.clock_number())
+    throw std::invalid_argument("*** fill_global_lu_map: incompatible number of clocks");
+
+  tchecker::loc_id_t const loc_nb = local_lu_map.loc_number();
+
+  tchecker::clockbounds::clear(global_lu_map.L());
+  tchecker::clockbounds::clear(global_lu_map.U());
+  for (tchecker::loc_id_t loc = 0; loc < loc_nb; ++loc) {
+    tchecker::clockbounds::update(global_lu_map.L(), local_lu_map.L(loc));
+    tchecker::clockbounds::update(global_lu_map.U(), local_lu_map.U(loc));
+  }
+}
+
 /* local_m_map_t */
 
 local_m_map_t::local_m_map_t(tchecker::loc_id_t loc_nb, tchecker::clock_id_t clock_nb)
@@ -453,6 +477,23 @@ std::ostream & operator<<(std::ostream & os, tchecker::clockbounds::local_m_map_
   return os;
 }
 
+void fill_local_m_map(tchecker::clockbounds::local_m_map_t & local_m_map,
+                      tchecker::clockbounds::local_lu_map_t const & local_lu_map)
+{
+  if (local_m_map.clock_number() != local_lu_map.clock_number())
+    throw std::invalid_argument("*** fill_local_m_map: incompatible number of clocks");
+
+  if (local_m_map.loc_number() != local_lu_map.loc_number())
+    throw std::invalid_argument("*** fill_local_m_map: incompatible number of locations");
+
+  tchecker::loc_id_t const loc_nb = local_lu_map.loc_number();
+
+  for (tchecker::loc_id_t loc = 0; loc < loc_nb; ++loc) {
+    tchecker::clockbounds::copy(local_m_map.M(loc), local_lu_map.L(loc));
+    tchecker::clockbounds::update(local_m_map.M(loc), local_lu_map.U(loc));
+  }
+}
+
 /* global_m_map_t */
 
 global_m_map_t::global_m_map_t(tchecker::clock_id_t clock_nb) : _clock_nb(0), _M(nullptr) { resize(clock_nb); }
@@ -530,6 +571,21 @@ void global_m_map_t::bounds(tchecker::vloc_t const & vloc, tchecker::clockbounds
 std::ostream & operator<<(std::ostream & os, tchecker::clockbounds::global_m_map_t const & map)
 {
   return os << "M=" << map.M() << std::endl;
+}
+
+void fill_global_m_map(tchecker::clockbounds::global_m_map_t & global_m_map,
+                       tchecker::clockbounds::local_lu_map_t const & local_lu_map)
+{
+  if (global_m_map.clock_number() != local_lu_map.clock_number())
+    throw std::invalid_argument("*** fill_gloal_m_map: incompatible clock number");
+
+  tchecker::clockbounds::clear(global_m_map.M());
+
+  tchecker::loc_id_t const loc_nb = local_lu_map.loc_number();
+  for (tchecker::loc_id_t loc = 0; loc < loc_nb; ++loc) {
+    tchecker::clockbounds::update(global_m_map.M(), local_lu_map.L(loc));
+    tchecker::clockbounds::update(global_m_map.M(), local_lu_map.U(loc));
+  }
 }
 
 /* clockbounds_t */

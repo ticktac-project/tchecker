@@ -20,6 +20,7 @@ include_directories(${TCHECKER_TEST_DIR})
 
 set(TEST_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/test-cache.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/test-clockbounds.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-clocks.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-db.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-dbm.hh

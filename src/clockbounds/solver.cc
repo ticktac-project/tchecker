@@ -20,7 +20,7 @@ df_solver_t::df_solver_t(tchecker::ta::system_t const & system)
     : _loc_number(system.locations_count()), _clock_number(system.clock_variables().size(tchecker::VK_FLATTENED)),
       _loc_pid(_loc_number, 0),
       _dim(1 + _loc_number * _clock_number), // 1 variable for each clock in each location, plus 1 for dummy clock 0
-      _L(nullptr), _U(nullptr), _has_solution(true)
+      _L(nullptr), _U(nullptr), _updated_L(false), _updated_U(false)
 {
   if ((_loc_number > 0) && (_clock_number > 0) && ((_dim < _loc_number) || (_dim < _clock_number)))
     throw std::invalid_argument("invalid number of clocks or locations (overflow)");
@@ -35,7 +35,7 @@ df_solver_t::df_solver_t(tchecker::ta::system_t const & system)
 
 df_solver_t::df_solver_t(tchecker::clockbounds::df_solver_t const & solver)
     : _loc_number(solver._loc_number), _clock_number(solver._clock_number), _loc_pid(solver._loc_pid), _dim(solver._dim),
-      _L(nullptr), _U(nullptr), _has_solution(true)
+      _L(nullptr), _U(nullptr), _updated_L(solver._updated_L), _updated_U(solver._updated_U)
 {
   _L = new tchecker::dbm::db_t[_dim * _dim];
   _U = new tchecker::dbm::db_t[_dim * _dim];
@@ -46,14 +46,15 @@ df_solver_t::df_solver_t(tchecker::clockbounds::df_solver_t const & solver)
 df_solver_t::df_solver_t(tchecker::clockbounds::df_solver_t && solver)
     : _loc_number(std::move(solver._loc_number)), _clock_number(std::move(solver._clock_number)),
       _loc_pid(std::move(solver._loc_pid)), _dim(std::move(solver._dim)), _L(std::move(solver._L)), _U(std::move(solver._U)),
-      _has_solution(std::move(solver._has_solution))
+      _updated_L(std::move(solver._updated_L)), _updated_U(std::move(solver._updated_U))
 {
   solver._loc_number = 0;
   solver._clock_number = 0;
   solver._dim = 1;
   solver._L = nullptr;
   solver._U = nullptr;
-  solver._has_solution = false;
+  solver._updated_L = false;
+  solver._updated_U = false;
 }
 
 df_solver_t::~df_solver_t()
@@ -78,7 +79,8 @@ tchecker::clockbounds::df_solver_t & df_solver_t::operator=(tchecker::clockbound
     _U = new tchecker::dbm::db_t[_dim * _dim];
     memcpy(_U, solver._U, _dim * _dim * sizeof(*_U));
 
-    _has_solution = solver._has_solution;
+    _updated_L = solver._updated_L;
+    _updated_U = solver._updated_U;
   }
 
   return *this;
@@ -93,14 +95,16 @@ tchecker::clockbounds::df_solver_t & df_solver_t::operator=(tchecker::clockbound
     _dim = std::move(solver._dim);
     _L = std::move(solver._L);
     _U = std::move(solver._U);
-    _has_solution = std::move(solver._has_solution);
+    _updated_L = std::move(solver._updated_L);
+    _updated_U = std::move(solver._updated_U);
 
     solver._loc_number = 0;
     solver._clock_number = 0;
     solver._dim = 1;
     solver._L = nullptr;
     solver._U = nullptr;
-    solver._has_solution = false;
+    solver._updated_L = false;
+    solver._updated_U = false;
   }
 
   return *this;
@@ -109,24 +113,6 @@ tchecker::clockbounds::df_solver_t & df_solver_t::operator=(tchecker::clockbound
 tchecker::clock_id_t df_solver_t::clock_number() const { return _clock_number; }
 
 tchecker::clock_id_t df_solver_t::loc_number() const { return _loc_number; }
-
-tchecker::clockbounds::bound_t df_solver_t::L(tchecker::loc_id_t l, tchecker::clock_id_t x) const
-{
-  assert(l < _loc_number);
-  assert(x < _clock_number);
-  tchecker::dbm::db_t db = _L[0 * _dim + index(l, x)];
-  return (db == tchecker::dbm::LT_INFINITY ? tchecker::clockbounds::NO_BOUND : -tchecker::dbm::value(db));
-}
-
-tchecker::clockbounds::bound_t df_solver_t::U(tchecker::loc_id_t l, tchecker::clock_id_t x) const
-{
-  assert(l < _loc_number);
-  assert(x < _clock_number);
-  tchecker::dbm::db_t db = _U[0 * _dim + index(l, x)];
-  return (db == tchecker::dbm::LT_INFINITY ? tchecker::clockbounds::NO_BOUND : -tchecker::dbm::value(db));
-}
-
-bool df_solver_t::has_solution() const { return _has_solution; }
 
 void df_solver_t::clear()
 {
@@ -140,7 +126,8 @@ void df_solver_t::clear()
     _U[x * _dim + x] = tchecker::dbm::LE_ZERO;
   }
 
-  _has_solution = true;
+  _updated_L = false;
+  _updated_U = false;
 }
 
 void df_solver_t::add_lower_bound_guard(tchecker::loc_id_t l, tchecker::clock_id_t x, tchecker::integer_t c)
@@ -148,7 +135,7 @@ void df_solver_t::add_lower_bound_guard(tchecker::loc_id_t l, tchecker::clock_id
   assert(l < _loc_number);
   assert(x < _clock_number);
   // L_{l, x} >= c  (i.e. 0 - L_{l, x} <= -c)
-  _has_solution &= (tchecker::dbm::constrain(_L, _dim, 0, index(l, x), tchecker::LE, -c) != tchecker::dbm::EMPTY);
+  updateL(0, index(l, x), tchecker::LE, -c);
 }
 
 void df_solver_t::add_upper_bound_guard(tchecker::loc_id_t l, tchecker::clock_id_t x, tchecker::integer_t c)
@@ -156,7 +143,7 @@ void df_solver_t::add_upper_bound_guard(tchecker::loc_id_t l, tchecker::clock_id
   assert(l < _loc_number);
   assert(x < _clock_number);
   // U_{l, x} >= c  (i.e. 0 - U_{l ,x} <= -c)
-  _has_solution &= (tchecker::dbm::constrain(_U, _dim, 0, index(l, x), tchecker::LE, -c) != tchecker::dbm::EMPTY);
+  updateU(0, index(l, x), tchecker::LE, -c);
 }
 
 void df_solver_t::add_assignment(tchecker::loc_id_t l1, tchecker::loc_id_t l2, tchecker::clock_id_t x, tchecker::clock_id_t y,
@@ -167,15 +154,15 @@ void df_solver_t::add_assignment(tchecker::loc_id_t l1, tchecker::loc_id_t l2, t
   assert(x < _clock_number);
   assert(y < _clock_number);
   // Propagation over the edge: L_{l2,x} - L_{l1,y} <= c / U_{l2,x} - U_{l1,xy} <= c
-  _has_solution &= (tchecker::dbm::constrain(_L, _dim, index(l2, x), index(l1, y), tchecker::LE, c) != tchecker::dbm::EMPTY);
-  _has_solution &= (tchecker::dbm::constrain(_U, _dim, index(l2, x), index(l1, y), tchecker::LE, c) != tchecker::dbm::EMPTY);
+  updateL(index(l2, x), index(l1, y), tchecker::LE, c);
+  updateU(index(l2, x), index(l1, y), tchecker::LE, c);
 
   // Propagation across processes: L_{m,x} - L_{l1,y} <= c / U_{m,x} - U_{l1,y} <= c
   // for every location m in another process
   for (tchecker::loc_id_t m = 0; m < _loc_number; ++m)
     if (_loc_pid[m] != _loc_pid[l1]) {
-      _has_solution &= (tchecker::dbm::constrain(_L, _dim, index(m, x), index(l1, y), tchecker::LE, c) != tchecker::dbm::EMPTY);
-      _has_solution &= (tchecker::dbm::constrain(_U, _dim, index(m, x), index(l1, y), tchecker::LE, c) != tchecker::dbm::EMPTY);
+      updateL(index(m, x), index(l1, y), tchecker::LE, c);
+      updateU(index(m, x), index(l1, y), tchecker::LE, c);
     }
 }
 
@@ -185,9 +172,28 @@ void df_solver_t::add_no_assignement(tchecker::loc_id_t l1, tchecker::loc_id_t l
   assert(l2 < _loc_number);
   assert(x < _clock_number);
   // L_{l2,x} - L_{l1,x} <= 0
-  _has_solution &= (tchecker::dbm::constrain(_L, _dim, index(l2, x), index(l1, x), tchecker::LE, 0) != tchecker::dbm::EMPTY);
-  // U_{l2,x} - U_{l1,x} <= 0
-  _has_solution &= (tchecker::dbm::constrain(_U, _dim, index(l2, x), index(l1, x), tchecker::LE, 0) != tchecker::dbm::EMPTY);
+  updateL(index(l2, x), index(l1, x), tchecker::LE, 0);
+  updateU(index(l2, x), index(l1, x), tchecker::LE, 0);
+}
+
+bool df_solver_t::solve(tchecker::clockbounds::local_lu_map_t & map)
+{
+  if (_clock_number != map.clock_number())
+    throw std::invalid_argument("*** solve: invalid number of clocks");
+  if (_loc_number != map.loc_number())
+    throw std::invalid_argument("*** solve: invalid number of locations");
+
+  bool consistent = ensure_tight();
+  if (!consistent)
+    return false;
+
+  for (tchecker::loc_id_t loc = 0; loc < _loc_number; ++loc)
+    for (tchecker::clock_id_t clock = 0; clock < _clock_number; ++clock) {
+      map.L(loc)[clock] = L(loc, clock);
+      map.U(loc)[clock] = U(loc, clock);
+    }
+
+  return true;
 }
 
 std::size_t df_solver_t::index(tchecker::loc_id_t l, tchecker::clock_id_t x) const
@@ -195,6 +201,63 @@ std::size_t df_solver_t::index(tchecker::loc_id_t l, tchecker::clock_id_t x) con
   assert(l < _loc_number);
   assert(x < _clock_number);
   return 1 + l * _clock_number + x;
+}
+
+tchecker::clockbounds::bound_t df_solver_t::L(tchecker::loc_id_t l, tchecker::clock_id_t x) const
+{
+  assert(l < _loc_number);
+  assert(x < _clock_number);
+  assert(!_updated_L);
+  assert(!tchecker::dbm::is_empty_0(_L, _dim));
+  tchecker::dbm::db_t db = _L[0 * _dim + index(l, x)];
+  return (db == tchecker::dbm::LT_INFINITY ? tchecker::clockbounds::NO_BOUND : -tchecker::dbm::value(db));
+}
+
+tchecker::clockbounds::bound_t df_solver_t::U(tchecker::loc_id_t l, tchecker::clock_id_t x) const
+{
+  assert(l < _loc_number);
+  assert(x < _clock_number);
+  assert(!_updated_U);
+  assert(!tchecker::dbm::is_empty_0(_U, _dim));
+  tchecker::dbm::db_t db = _U[0 * _dim + index(l, x)];
+  return (db == tchecker::dbm::LT_INFINITY ? tchecker::clockbounds::NO_BOUND : -tchecker::dbm::value(db));
+}
+
+void df_solver_t::updateL(tchecker::clock_id_t i, tchecker::clock_id_t j, tchecker::ineq_cmp_t cmp, tchecker::integer_t value)
+{
+  assert(i < _dim);
+  assert(j < _dim);
+  tchecker::dbm::db_t bound = tchecker::dbm::db(cmp, value);
+  if (bound < _L[i * _dim + j]) {
+    _L[i * _dim + j] = bound;
+    _updated_L = true;
+  }
+}
+
+void df_solver_t::updateU(tchecker::clock_id_t i, tchecker::clock_id_t j, tchecker::ineq_cmp_t cmp, tchecker::integer_t value)
+{
+  assert(i < _dim);
+  assert(j < _dim);
+  tchecker::dbm::db_t bound = tchecker::dbm::db(cmp, value);
+  if (bound < _U[i * _dim + j]) {
+    _U[i * _dim + j] = bound;
+    _updated_U = true;
+  }
+}
+
+bool df_solver_t::ensure_tight()
+{
+  bool consistent = !tchecker::dbm::is_empty_0(_L, _dim) && !tchecker::dbm::is_empty_0(_U, _dim);
+
+  if (_updated_L)
+    consistent &= (tchecker::dbm::tighten(_L, _dim) != tchecker::dbm::EMPTY);
+  if (_updated_U)
+    consistent &= (tchecker::dbm::tighten(_U, _dim) != tchecker::dbm::EMPTY);
+
+  _updated_L = false;
+  _updated_U = false;
+
+  return consistent;
 }
 
 /*!
@@ -555,11 +618,11 @@ void add_edge_constraints(tchecker::typed_expression_t const & guard, tchecker::
       solver->add_no_assignement(src, tgt, clock);
 }
 
-/* solver */
+/* compute_clockbounds */
 
-std::shared_ptr<tchecker::clockbounds::df_solver_t> solve(tchecker::ta::system_t const & system)
+bool compute_clockbounds(tchecker::ta::system_t const & system, tchecker::clockbounds::clockbounds_t & clockbounds)
 {
-  std::shared_ptr<tchecker::clockbounds::df_solver_t> solver(new tchecker::clockbounds::df_solver_t(system));
+  std::shared_ptr<tchecker::clockbounds::df_solver_t> solver{new tchecker::clockbounds::df_solver_t{system}};
 
   for (tchecker::system::loc_const_shared_ptr_t const & loc : system.locations())
     tchecker::clockbounds::add_location_constraints(system.invariant(loc->id()), loc->id(), solver);
@@ -567,97 +630,15 @@ std::shared_ptr<tchecker::clockbounds::df_solver_t> solve(tchecker::ta::system_t
   for (tchecker::system::edge_const_shared_ptr_t const & edge : system.edges())
     tchecker::clockbounds::add_edge_constraints(system.guard(edge->id()), system.statement(edge->id()), edge->src(),
                                                 edge->tgt(), solver);
-  return solver;
-}
 
-/* fill clock bounds map */
-
-void fill_global_lu_map(tchecker::clockbounds::df_solver_t const & solver, tchecker::clockbounds::global_lu_map_t & map)
-{
-  if (solver.clock_number() != map.clock_number())
-    throw std::invalid_argument("solver and global LU map have incompatible clock numbers");
-
-  if (!solver.has_solution())
-    throw std::invalid_argument("clock bounds solver has no solution");
-
-  tchecker::loc_id_t loc_nb = solver.loc_number();
-  tchecker::clock_id_t clock_nb = solver.clock_number();
-
-  for (tchecker::loc_id_t loc = 0; loc < loc_nb; ++loc)
-    for (tchecker::clock_id_t clock = 0; clock < clock_nb; ++clock) {
-      map.L()[clock] = std::max(solver.L(loc, clock), map.L()[clock]);
-      map.U()[clock] = std::max(solver.U(loc, clock), map.U()[clock]);
-    }
-}
-
-void fill_local_lu_map(tchecker::clockbounds::df_solver_t const & solver, tchecker::clockbounds::local_lu_map_t & map)
-{
-  if (solver.clock_number() != map.clock_number())
-    throw std::invalid_argument("solver and local LU map have incompatible clock numbers");
-
-  if (solver.loc_number() != map.loc_number())
-    throw std::invalid_argument("solver and local LU map have incompatible location numbers");
-
-  if (!solver.has_solution())
-    throw std::invalid_argument("clock bounds solver has no solution");
-
-  tchecker::loc_id_t loc_nb = solver.loc_number();
-  tchecker::clock_id_t clock_nb = solver.clock_number();
-
-  for (tchecker::loc_id_t loc = 0; loc < loc_nb; ++loc)
-    for (tchecker::clock_id_t clock = 0; clock < clock_nb; ++clock) {
-      map.L(loc)[clock] = solver.L(loc, clock);
-      map.U(loc)[clock] = solver.U(loc, clock);
-    }
-}
-
-void fill_global_m_map(tchecker::clockbounds::df_solver_t const & solver, tchecker::clockbounds::global_m_map_t & map)
-{
-  if (solver.clock_number() != map.clock_number())
-    throw std::invalid_argument("solver and global M map have incomparible clock numbers");
-
-  if (!solver.has_solution())
-    throw std::invalid_argument("clock bounds solver has no solution");
-
-  tchecker::loc_id_t loc_nb = solver.loc_number();
-  tchecker::clock_id_t clock_nb = solver.clock_number();
-
-  for (tchecker::loc_id_t loc = 0; loc < loc_nb; ++loc)
-    for (tchecker::clock_id_t clock = 0; clock < clock_nb; ++clock)
-      map.M()[clock] = std::max(map.M()[clock], std::max(solver.L(loc, clock), solver.U(loc, clock)));
-}
-
-void fill_local_m_map(tchecker::clockbounds::df_solver_t const & solver, tchecker::clockbounds::local_m_map_t & map)
-{
-  if (solver.clock_number() != map.clock_number())
-    throw std::invalid_argument("solver and local M map have incompatible clock numbers");
-
-  if (solver.loc_number() != map.loc_number())
-    throw std::invalid_argument("solver and local M map have incompatible location numbers");
-
-  if (!solver.has_solution())
-    throw std::invalid_argument("clock bounds solver has no solution");
-
-  tchecker::loc_id_t loc_nb = solver.loc_number();
-  tchecker::clock_id_t clock_nb = solver.clock_number();
-
-  for (tchecker::loc_id_t loc = 0; loc < loc_nb; ++loc)
-    for (tchecker::clock_id_t clock = 0; clock < clock_nb; ++clock)
-      map.M(loc)[clock] = std::max(solver.L(loc, clock), solver.U(loc, clock));
-}
-
-bool compute_clockbounds(tchecker::ta::system_t const & system, tchecker::clockbounds::clockbounds_t & clockbounds)
-{
-  // Solve
-  std::shared_ptr<tchecker::clockbounds::df_solver_t> solver = tchecker::clockbounds::solve(system);
-  if (!solver->has_solution())
+  bool const has_solution = solver->solve(*clockbounds.local_lu_map());
+  if (!has_solution)
     return false;
 
-  // Fill the maps
-  tchecker::clockbounds::fill_global_lu_map(*solver, *clockbounds.global_lu_map());
-  tchecker::clockbounds::fill_local_lu_map(*solver, *clockbounds.local_lu_map());
-  tchecker::clockbounds::fill_global_m_map(*solver, *clockbounds.global_m_map());
-  tchecker::clockbounds::fill_local_m_map(*solver, *clockbounds.local_m_map());
+  tchecker::clockbounds::fill_global_lu_map(*clockbounds.global_lu_map(), *clockbounds.local_lu_map());
+  tchecker::clockbounds::fill_local_m_map(*clockbounds.local_m_map(), *clockbounds.local_lu_map());
+  tchecker::clockbounds::fill_global_m_map(*clockbounds.global_m_map(), *clockbounds.local_lu_map());
+
   return true;
 }
 
