@@ -34,7 +34,7 @@ jobs:
 
       - name: Install pre-requesites
         run: |
-          ci-scripts/install-$RUNNER_OS.sh
+          sudo ci-scripts/install-$RUNNER_OS.sh
           ci-scripts/show-config.sh
       - name: Build TChecker
         run: ci-scripts/build.sh
