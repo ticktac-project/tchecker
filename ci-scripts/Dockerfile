@@ -38,7 +38,7 @@ RUN apt-get update && \
     update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-${CLANG_VERSION} 1
 
 FROM ${COMPILER_IMAGE} as target-image
-ARG CATCH2_REV=v3.2.0
+ARG CATCH2_REV=v3.4.0
 ARG CATCH2_REPO=https://github.com/catchorg/Catch2.git
 ARG COMPILER_IMAGE=${COMPILER_IMAGE}
 
