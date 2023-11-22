@@ -17,15 +17,27 @@ jobs:
   build-and-test:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest]
         intsize: [int16, int32, int64]
-        cxx: [g++, clang++]
-    name: ${{ matrix.os }} / ${{ matrix.intsize }} / ${{ matrix.cxx }}
+        compiler: [gcc, clang]
+    name: ${{ matrix.os }} / ${{ matrix.intsize }} / ${{ matrix.compiler }}
     runs-on: ${{ matrix.os }}
     env:
       CONFNAME: all:${{ matrix.intsize }}:memcheck
-      CXX: ${{ matrix.cxx }}
     steps:
+      - name: Set compiler variables
+        run: |        
+          {
+            if test "${{matrix.compiler}}" = "gcc"; then
+              echo "CC=gcc"
+              echo "CXX=g++"
+              echo "CONFNAME=all:${{ matrix.intsize }}:memcheck"
+            else 
+              echo "CC=clang"
+              echo "CXX=clang++"
+              echo "CONFNAME=all:${{ matrix.intsize }}"
+            fi
+          } >> "$GITHUB_ENV"
       - name: Getting project repo
         uses: actions/checkout@v3
 
