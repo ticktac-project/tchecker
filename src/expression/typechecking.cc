@@ -28,7 +28,7 @@ public:
    */
   expression_typechecker_t(tchecker::integer_variables_t const & localvars, tchecker::integer_variables_t const & intvars,
                            tchecker::clock_variables_t const & clocks, std::function<void(std::string const &)> error)
-      : _typed_expr(nullptr), _localvars(localvars), _intvars(intvars), _clocks(clocks), _error(error)
+      : _typed_expr{nullptr}, _localvars{localvars}, _intvars{intvars}, _clocks{clocks}, _error{error}
   {
   }
 
@@ -45,7 +45,7 @@ public:
   /*!
    \brief Destructor
    */
-  virtual ~expression_typechecker_t() { delete _typed_expr; }
+  virtual ~expression_typechecker_t() = default;
 
   /*!
    \brief Assignment operator (DELETED)
@@ -60,14 +60,19 @@ public:
   /*!
    \brief Accessor
    \return typed expression computed by this visitor
-   \note the expression is released by the call, and should be handled by the
-   caller
    */
-  tchecker::typed_expression_t * release()
+  std::shared_ptr<tchecker::typed_expression_t> const & typed_expression() const { return _typed_expr; }
+
+  /*!
+   \brief Get and clear typed expression
+   \return typed expression
+   \post clear internal typed expression
+   */
+  std::shared_ptr<tchecker::typed_expression_t> acquire_typed_expression()
   {
-    auto p = _typed_expr;
+    auto acquired_typed_expr = _typed_expr;
     _typed_expr = nullptr;
-    return p;
+    return acquired_typed_expr;
   }
 
   /*!
@@ -77,7 +82,7 @@ public:
    */
   virtual void visit(tchecker::int_expression_t const & expr)
   {
-    _typed_expr = new tchecker::typed_int_expression_t(tchecker::EXPR_TYPE_INTTERM, expr.value());
+    _typed_expr = std::make_shared<tchecker::typed_int_expression_t>(tchecker::EXPR_TYPE_INTTERM, expr.value());
   }
 
   /*!
@@ -96,18 +101,20 @@ public:
     // bounded integer variable
     if ((type == tchecker::EXPR_TYPE_LOCALINTVAR) || (type == tchecker::EXPR_TYPE_LOCALINTARRAY)) {
       auto const & infos = _localvars.info(id);
-      _typed_expr = new tchecker::typed_bounded_var_expression_t(type, expr.name(), id, size, infos.min(), infos.max());
+      _typed_expr =
+          std::make_shared<tchecker::typed_bounded_var_expression_t>(type, expr.name(), id, size, infos.min(), infos.max());
     }
     else if ((type == tchecker::EXPR_TYPE_INTVAR) || (type == tchecker::EXPR_TYPE_INTARRAY)) {
       auto const & infos = _intvars.info(id);
-      _typed_expr = new tchecker::typed_bounded_var_expression_t(type, expr.name(), id, size, infos.min(), infos.max());
+      _typed_expr =
+          std::make_shared<tchecker::typed_bounded_var_expression_t>(type, expr.name(), id, size, infos.min(), infos.max());
     }
     // clock variable
     else if ((type == tchecker::EXPR_TYPE_CLKVAR) || (type == tchecker::EXPR_TYPE_CLKARRAY))
-      _typed_expr = new tchecker::typed_var_expression_t(type, expr.name(), id, size);
+      _typed_expr = std::make_shared<tchecker::typed_var_expression_t>(type, expr.name(), id, size);
     // otherwise (BAD)
     else
-      _typed_expr = new tchecker::typed_var_expression_t(tchecker::EXPR_TYPE_BAD, expr.name(), id, size);
+      _typed_expr = std::make_shared<tchecker::typed_var_expression_t>(tchecker::EXPR_TYPE_BAD, expr.name(), id, size);
 
     if (type == tchecker::EXPR_TYPE_BAD)
       _error("in expression " + expr.to_string() + ", undeclared variable");
@@ -124,12 +131,12 @@ public:
   {
     // Typecheck variable
     expr.variable().visit(*this);
-    auto const * const typed_variable = dynamic_cast<tchecker::typed_var_expression_t const *>(this->release());
+    auto const typed_variable = std::dynamic_pointer_cast<tchecker::typed_var_expression_t const>(acquire_typed_expression());
     auto const variable_type = typed_variable->type();
 
     // Typecheck offset
     expr.offset().visit(*this);
-    auto const * const typed_offset = this->release();
+    auto const typed_offset = acquire_typed_expression();
     auto const offset_type = typed_offset->type();
 
     // Typed expression
@@ -146,7 +153,7 @@ public:
     else
       expr_type = tchecker::EXPR_TYPE_BAD;
 
-    _typed_expr = new tchecker::typed_array_expression_t(expr_type, typed_variable, typed_offset);
+    _typed_expr = std::make_shared<tchecker::typed_array_expression_t>(expr_type, typed_variable, typed_offset);
 
     // Report bad type
     if (expr_type != tchecker::EXPR_TYPE_BAD)
@@ -170,12 +177,12 @@ public:
   {
     // Sub expression
     expr.expr().visit(*this);
-    tchecker::typed_expression_t * typed_sub_expr = this->release();
+    std::shared_ptr<tchecker::typed_expression_t> const typed_sub_expr{acquire_typed_expression()};
 
     // Typed expression
     enum tchecker::expression_type_t expr_type = type_par(typed_sub_expr->type());
 
-    _typed_expr = new tchecker::typed_par_expression_t(expr_type, typed_sub_expr);
+    _typed_expr = std::make_shared<tchecker::typed_par_expression_t>(expr_type, typed_sub_expr);
 
     // Report bad type
     if (expr_type != tchecker::EXPR_TYPE_BAD)
@@ -194,27 +201,30 @@ public:
   {
     // Operands
     expr.left_operand().visit(*this);
-    tchecker::typed_expression_t * typed_left_operand = this->release();
+    std::shared_ptr<tchecker::typed_expression_t> typed_left_operand{acquire_typed_expression()};
 
     expr.right_operand().visit(*this);
-    tchecker::typed_expression_t * typed_right_operand = this->release();
+    std::shared_ptr<tchecker::typed_expression_t> typed_right_operand{acquire_typed_expression()};
 
     enum tchecker::binary_operator_t op = expr.binary_operator();
 
-    normalize_clock_comparison(&op, &typed_left_operand, &typed_right_operand, expr);
+    normalize_clock_comparison(op, typed_left_operand, typed_right_operand, expr);
 
     // Typed expression
     enum tchecker::expression_type_t expr_type = type_binary(op, typed_left_operand->type(), typed_right_operand->type());
 
     switch (expr_type) {
     case tchecker::EXPR_TYPE_CLKCONSTR_SIMPLE:
-      _typed_expr = new tchecker::typed_simple_clkconstr_expression_t(expr_type, op, typed_left_operand, typed_right_operand);
+      _typed_expr = std::make_shared<tchecker::typed_simple_clkconstr_expression_t>(expr_type, op, typed_left_operand,
+                                                                                    typed_right_operand);
       break;
     case tchecker::EXPR_TYPE_CLKCONSTR_DIAGONAL:
-      _typed_expr = new tchecker::typed_diagonal_clkconstr_expression_t(expr_type, op, typed_left_operand, typed_right_operand);
+      _typed_expr = std::make_shared<tchecker::typed_diagonal_clkconstr_expression_t>(expr_type, op, typed_left_operand,
+                                                                                      typed_right_operand);
       break;
     default:
-      _typed_expr = new tchecker::typed_binary_expression_t(expr_type, op, typed_left_operand, typed_right_operand);
+      _typed_expr =
+          std::make_shared<tchecker::typed_binary_expression_t>(expr_type, op, typed_left_operand, typed_right_operand);
       break;
     }
 
@@ -236,12 +246,12 @@ public:
   {
     // Operand
     expr.operand().visit(*this);
-    tchecker::typed_expression_t * typed_operand = this->release();
+    std::shared_ptr<tchecker::typed_expression_t> const typed_operand{acquire_typed_expression()};
 
     // Typed expression
     enum tchecker::expression_type_t expr_type = type_unary(expr.unary_operator(), typed_operand->type());
 
-    _typed_expr = new tchecker::typed_unary_expression_t(expr_type, expr.unary_operator(), typed_operand);
+    _typed_expr = std::make_shared<tchecker::typed_unary_expression_t>(expr_type, expr.unary_operator(), typed_operand);
 
     // Report bad type
     if (expr_type != tchecker::EXPR_TYPE_BAD)
@@ -260,19 +270,20 @@ public:
   {
     // Operands
     expr.condition().visit(*this);
-    tchecker::typed_expression_t * typed_condition = this->release();
+    std::shared_ptr<tchecker::typed_expression_t> const typed_condition{acquire_typed_expression()};
 
     expr.then_value().visit(*this);
-    tchecker::typed_expression_t * typed_then_value = this->release();
+    std::shared_ptr<tchecker::typed_expression_t> const typed_then_value{acquire_typed_expression()};
 
     expr.else_value().visit(*this);
-    tchecker::typed_expression_t * typed_else_value = this->release();
+    std::shared_ptr<tchecker::typed_expression_t> const typed_else_value{acquire_typed_expression()};
 
     // Typed expression
     enum tchecker::expression_type_t expr_type =
         type_ite(typed_condition->type(), typed_then_value->type(), typed_else_value->type());
     if (expr_type == tchecker::EXPR_TYPE_INTTERM)
-      _typed_expr = new tchecker::typed_ite_expression_t(expr_type, typed_condition, typed_then_value, typed_else_value);
+      _typed_expr =
+          std::make_shared<tchecker::typed_ite_expression_t>(expr_type, typed_condition, typed_then_value, typed_else_value);
 
     // Report bad type
     if (expr_type != tchecker::EXPR_TYPE_BAD)
@@ -358,46 +369,48 @@ protected:
    - in all other cases, either `left op right` is already in normal form (e.g. x<4), or op is not a comparison
    operator (e.g. i+1 or x-y), or the expression is not well typed (e.g. x==y-z)
   */
-  void normalize_clock_comparison(enum tchecker::binary_operator_t * op, tchecker::typed_expression_t ** left,
-                                  tchecker::typed_expression_t ** right, tchecker::binary_expression_t const & expr)
+  void normalize_clock_comparison(enum tchecker::binary_operator_t & op, std::shared_ptr<tchecker::typed_expression_t> & left,
+                                  std::shared_ptr<tchecker::typed_expression_t> & right,
+                                  tchecker::binary_expression_t const & expr)
   {
     // do not do anything if `op` is not a comparator or if not clock is involved on the right-hand side
-    if (!tchecker::predicate(*op) || !tchecker::clock_involved((*right)->type()))
+    if (!tchecker::predicate(op) || !tchecker::clock_involved(right->type()))
       return;
 
     // `op` is a comparator and clocks appear on `right` but not on `left`: swap left/right and reverse op
-    if (!tchecker::clock_involved((*left)->type())) {
-      std::swap(*left, *right);
-      *op = tchecker::reverse_cmp(*op);
+    if (!tchecker::clock_involved(left->type())) {
+      std::swap(left, right);
+      op = tchecker::reverse_cmp(op);
     }
     // `op` is a comparator and clocks appear both on `left` and `right`: rewrite as left-right op 0
     else {
-      enum tchecker::expression_type_t new_left_type = type_binary(tchecker::EXPR_OP_MINUS, (*left)->type(), (*right)->type());
-      *left = new tchecker::typed_binary_expression_t(new_left_type, tchecker::EXPR_OP_MINUS, *left, *right);
-      *right = new tchecker::typed_int_expression_t(tchecker::EXPR_TYPE_INTTERM, 0);
-      if ((*left)->type() == tchecker::EXPR_TYPE_BAD)
+      enum tchecker::expression_type_t new_left_type = type_binary(tchecker::EXPR_OP_MINUS, left->type(), right->type());
+      left = std::make_shared<tchecker::typed_binary_expression_t>(new_left_type, tchecker::EXPR_OP_MINUS, left, right);
+      right = std::make_shared<tchecker::typed_int_expression_t>(tchecker::EXPR_TYPE_INTTERM, 0);
+      if (left->type() == tchecker::EXPR_TYPE_BAD)
         _error("in expression " + expr.to_string() + ", invalid comparison of clock expressions " +
                expr.left_operand().to_string() + " and " + expr.right_operand().to_string());
     }
   }
 
-  tchecker::typed_expression_t * _typed_expr;       /*!< Typed expression */
-  tchecker::integer_variables_t const & _localvars; /*!< Local variables */
-  tchecker::integer_variables_t const & _intvars;   /*!< Integer variables */
-  tchecker::clock_variables_t const & _clocks;      /*!< Clock variables */
-  std::function<void(std::string const &)> _error;  /*!< Error logging func */
+  std::shared_ptr<tchecker::typed_expression_t> _typed_expr; /*!< Typed expression */
+  tchecker::integer_variables_t const & _localvars;          /*!< Local variables */
+  tchecker::integer_variables_t const & _intvars;            /*!< Integer variables */
+  tchecker::clock_variables_t const & _clocks;               /*!< Clock variables */
+  std::function<void(std::string const &)> _error;           /*!< Error logging func */
 };
 
 } // end of namespace details
 
-tchecker::typed_expression_t * typecheck(tchecker::expression_t const & expr, tchecker::integer_variables_t const & localvars,
-                                         tchecker::integer_variables_t const & intvars,
-                                         tchecker::clock_variables_t const & clocks,
-                                         std::function<void(std::string const &)> error)
+std::shared_ptr<tchecker::typed_expression_t> typecheck(tchecker::expression_t const & expr,
+                                                        tchecker::integer_variables_t const & localvars,
+                                                        tchecker::integer_variables_t const & intvars,
+                                                        tchecker::clock_variables_t const & clocks,
+                                                        std::function<void(std::string const &)> error)
 {
   tchecker::details::expression_typechecker_t v(localvars, intvars, clocks, error);
   expr.visit(v);
-  return v.release();
+  return v.typed_expression();
 }
 
 } // end of namespace tchecker

@@ -9,6 +9,7 @@
 #define TCHECKER_EXPRESSION_TYPECHECKING_HH
 
 #include <functional>
+#include <memory>
 #include <string>
 
 #include "tchecker/expression/expression.hh"
@@ -32,9 +33,8 @@ namespace tchecker {
  \param error : error logging function
  \return typed clone of expr
  \post all errors have been reported calling function error
- \note the returned expression should be deleted by the caller
  */
-tchecker::typed_expression_t * typecheck(
+std::shared_ptr<tchecker::typed_expression_t> typecheck(
     tchecker::expression_t const & expr, tchecker::integer_variables_t const & localvars,
     tchecker::integer_variables_t const & intvars, tchecker::clock_variables_t const & clocks,
     std::function<void(std::string const &)> error = [](std::string const &) {});

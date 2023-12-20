@@ -14,28 +14,24 @@ namespace tchecker {
 
 // expression_t
 
-tchecker::expression_t * expression_t::clone() const { return this->do_clone(); }
-
-void expression_t::visit(tchecker::expression_visitor_t & v) const { this->do_visit(v); }
-
 std::string expression_t::to_string() const
 {
   std::stringstream s;
-  this->do_output(s);
+  this->output(s);
   return s.str();
 }
 
-std::ostream & operator<<(std::ostream & os, tchecker::expression_t const & expr) { return expr.do_output(os); }
+std::ostream & operator<<(std::ostream & os, tchecker::expression_t const & expr) { return expr.output(os); }
 
 // int_expression_t
 
 int_expression_t::int_expression_t(tchecker::integer_t value) : _value(value) {}
 
-std::ostream & int_expression_t::do_output(std::ostream & os) const { return os << _value; }
+std::ostream & int_expression_t::output(std::ostream & os) const { return os << _value; }
 
-tchecker::expression_t * int_expression_t::do_clone() const { return (new tchecker::int_expression_t(_value)); }
+tchecker::int_expression_t * int_expression_t::clone() const { return (new tchecker::int_expression_t(_value)); }
 
-void int_expression_t::do_visit(tchecker::expression_visitor_t & v) const { v.visit(*this); }
+void int_expression_t::visit(tchecker::expression_visitor_t & v) const { v.visit(*this); }
 
 // var_expression_t
 
@@ -45,50 +41,56 @@ var_expression_t::var_expression_t(std::string const & name) : _name(name)
     throw std::invalid_argument("empty variable name");
 }
 
-std::ostream & var_expression_t::do_output(std::ostream & os) const { return os << _name; }
+std::ostream & var_expression_t::output(std::ostream & os) const { return os << _name; }
 
-tchecker::expression_t * var_expression_t::do_clone() const { return (new tchecker::var_expression_t(_name)); }
+tchecker::var_expression_t * var_expression_t::clone() const { return (new tchecker::var_expression_t(_name)); }
 
-void var_expression_t::do_visit(tchecker::expression_visitor_t & v) const { v.visit(*this); }
+void var_expression_t::visit(tchecker::expression_visitor_t & v) const { v.visit(*this); }
 
 // array_expression_t
 
-array_expression_t::array_expression_t(tchecker::var_expression_t const * variable, tchecker::expression_t const * offset)
+array_expression_t::array_expression_t(std::shared_ptr<tchecker::var_expression_t const> const & variable,
+                                       std::shared_ptr<tchecker::expression_t const> const & offset)
     : _variable(variable), _offset(offset)
 {
-  if (_offset == nullptr)
+  if (_offset.get() == nullptr)
     throw std::invalid_argument("nullptr offset");
-  if (_variable == nullptr)
+  if (_variable.get() == nullptr)
     throw std::invalid_argument("nullptr variable");
 }
 
-array_expression_t::~array_expression_t()
+array_expression_t::~array_expression_t() = default;
+
+std::ostream & array_expression_t::output(std::ostream & os) const { return os << *_variable << "[" << *_offset << "]"; }
+
+tchecker::array_expression_t * array_expression_t::clone() const
 {
-  delete _variable;
-  delete _offset;
+  std::shared_ptr<tchecker::var_expression_t const> variable_clone{_variable->clone()};
+  std::shared_ptr<tchecker::expression_t const> offset_clone{_offset->clone()};
+  return new tchecker::array_expression_t(variable_clone, offset_clone);
 }
 
-std::ostream & array_expression_t::do_output(std::ostream & os) const { return os << *_variable << "[" << *_offset << "]"; }
-
-tchecker::expression_t * array_expression_t::do_clone() const
-{
-  auto * variable_clone = dynamic_cast<tchecker::var_expression_t *>(_variable->clone());
-  return new tchecker::array_expression_t(variable_clone, _offset->clone());
-}
-
-void array_expression_t::do_visit(tchecker::expression_visitor_t & v) const { v.visit(*this); }
+void array_expression_t::visit(tchecker::expression_visitor_t & v) const { v.visit(*this); }
 
 // par_expression_t
 
-par_expression_t::par_expression_t(tchecker::expression_t const * expr) : _expr(expr) {}
+par_expression_t::par_expression_t(std::shared_ptr<tchecker::expression_t const> const & expr) : _expr(expr)
+{
+  if (_expr.get() == nullptr)
+    throw std::invalid_argument("nullptr sub expression");
+}
 
-par_expression_t::~par_expression_t() { delete _expr; }
+par_expression_t::~par_expression_t() = default;
 
-std::ostream & par_expression_t::do_output(std::ostream & os) const { return os << "(" << *_expr << ")"; }
+std::ostream & par_expression_t::output(std::ostream & os) const { return os << "(" << *_expr << ")"; }
 
-tchecker::expression_t * par_expression_t::do_clone() const { return (new tchecker::par_expression_t(_expr->clone())); }
+tchecker::par_expression_t * par_expression_t::clone() const
+{
+  std::shared_ptr<tchecker::expression_t const> expr_clone{_expr->clone()};
+  return new tchecker::par_expression_t(expr_clone);
+}
 
-void par_expression_t::do_visit(tchecker::expression_visitor_t & v) const { v.visit(*this); }
+void par_expression_t::visit(tchecker::expression_visitor_t & v) const { v.visit(*this); }
 
 // unary_operator_t
 
@@ -106,23 +108,24 @@ std::ostream & operator<<(std::ostream & os, enum unary_operator_t op)
 
 // unary_expression_t
 
-unary_expression_t::unary_expression_t(enum unary_operator_t op, tchecker::expression_t const * expr)
+unary_expression_t::unary_expression_t(enum unary_operator_t op, std::shared_ptr<tchecker::expression_t const> const & expr)
     : _operator(op), _expr(expr)
 {
-  if (_expr == nullptr)
+  if (_expr.get() == nullptr)
     throw std::invalid_argument("nullptr expression");
 }
 
-unary_expression_t::~unary_expression_t() { delete _expr; }
+unary_expression_t::~unary_expression_t() = default;
 
-std::ostream & unary_expression_t::do_output(std::ostream & os) const { return os << _operator << *_expr; }
+std::ostream & unary_expression_t::output(std::ostream & os) const { return os << _operator << *_expr; }
 
-tchecker::expression_t * unary_expression_t::do_clone() const
+tchecker::unary_expression_t * unary_expression_t::clone() const
 {
-  return new tchecker::unary_expression_t(_operator, _expr->clone());
+  std::shared_ptr<tchecker::expression_t const> expr_clone{_expr->clone()};
+  return new tchecker::unary_expression_t(_operator, expr_clone);
 }
 
-void unary_expression_t::do_visit(tchecker::expression_visitor_t & v) const { v.visit(*this); }
+void unary_expression_t::visit(tchecker::expression_visitor_t & v) const { v.visit(*this); }
 
 // binary_operator_t
 
@@ -188,62 +191,59 @@ enum tchecker::binary_operator_t reverse_cmp(enum tchecker::binary_operator_t op
 
 // binary_expression_t
 
-binary_expression_t::binary_expression_t(enum binary_operator_t op, tchecker::expression_t const * left,
-                                         tchecker::expression_t const * right)
+binary_expression_t::binary_expression_t(enum binary_operator_t op, std::shared_ptr<tchecker::expression_t const> const & left,
+                                         std::shared_ptr<tchecker::expression_t const> const & right)
     : _op(op), _left(left), _right(right)
 {
-  if (_left == nullptr)
+  if (_left.get() == nullptr)
     throw std::invalid_argument("nullptr left expression");
-  if (_right == nullptr)
+  if (_right.get() == nullptr)
     throw std::invalid_argument("nullptr right expression");
 }
 
-binary_expression_t::~binary_expression_t()
+binary_expression_t::~binary_expression_t() = default;
+
+std::ostream & binary_expression_t::output(std::ostream & os) const { return os << *_left << _op << *_right; }
+
+tchecker::binary_expression_t * binary_expression_t::clone() const
 {
-  delete _left;
-  delete _right;
+  std::shared_ptr<tchecker::expression_t const> left_clone{_left->clone()};
+  std::shared_ptr<tchecker::expression_t const> right_clone{_right->clone()};
+  return new tchecker::binary_expression_t(_op, left_clone, right_clone);
 }
 
-std::ostream & binary_expression_t::do_output(std::ostream & os) const { return os << *_left << _op << *_right; }
-
-tchecker::expression_t * binary_expression_t::do_clone() const
-{
-  return new tchecker::binary_expression_t(_op, _left->clone(), _right->clone());
-}
-
-void binary_expression_t::do_visit(tchecker::expression_visitor_t & v) const { v.visit(*this); }
+void binary_expression_t::visit(tchecker::expression_visitor_t & v) const { v.visit(*this); }
 
 // ite_expression_t
 
-ite_expression_t::ite_expression_t(tchecker::expression_t const * condition, tchecker::expression_t const * then_value,
-                                   tchecker::expression_t const * else_value)
+ite_expression_t::ite_expression_t(std::shared_ptr<tchecker::expression_t const> const & condition,
+                                   std::shared_ptr<tchecker::expression_t const> const & then_value,
+                                   std::shared_ptr<tchecker::expression_t const> const & else_value)
     : _condition(condition), _then_value(then_value), _else_value(else_value)
 {
-  if (_condition == nullptr)
+  if (_condition.get() == nullptr)
     throw std::invalid_argument("nullptr ite_condition expression");
-  if (_then_value == nullptr)
+  if (_then_value.get() == nullptr)
     throw std::invalid_argument("nullptr then_value expression");
-  if (_else_value == nullptr)
+  if (_else_value.get() == nullptr)
     throw std::invalid_argument("nullptr else_value expression");
 }
 
-ite_expression_t::~ite_expression_t()
-{
-  delete _condition;
-  delete _then_value;
-  delete _else_value;
-}
+ite_expression_t::~ite_expression_t() = default;
 
-std::ostream & ite_expression_t::do_output(std::ostream & os) const
+std::ostream & ite_expression_t::output(std::ostream & os) const
 {
   return os << "if " << condition() << " then " << then_value() << " else " << else_value();
 }
 
-tchecker::expression_t * ite_expression_t::do_clone() const
+tchecker::ite_expression_t * ite_expression_t::clone() const
 {
-  return new tchecker::ite_expression_t(_condition->clone(), _then_value->clone(), _else_value->clone());
+  std::shared_ptr<tchecker::expression_t const> condition_clone{_condition->clone()};
+  std::shared_ptr<tchecker::expression_t const> then_value_clone{_then_value->clone()};
+  std::shared_ptr<tchecker::expression_t const> else_value_clone{_else_value->clone()};
+  return new tchecker::ite_expression_t(condition_clone, then_value_clone, else_value_clone);
 }
 
-void ite_expression_t::do_visit(tchecker::expression_visitor_t & v) const { v.visit(*this); }
+void ite_expression_t::visit(tchecker::expression_visitor_t & v) const { v.visit(*this); }
 
 } // end of namespace tchecker

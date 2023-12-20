@@ -7,6 +7,7 @@
 
 %{
 #include <cstdlib>
+#include <memory>
 #include <sstream>
 
 #include "tchecker/expression/expression.hh"
@@ -21,8 +22,8 @@
 #define YY_DECL \
 tchecker::parsing::program::parser_t::symbol_type ppyylex \
 (std::string const & program_context, \
-tchecker::expression_t * & expr, \
-tchecker::statement_t * & stmt)
+std::shared_ptr<tchecker::expression_t> & expr, \
+std::shared_ptr<tchecker::statement_t> & stmt)
 
 // Work around an incompatibility in flex (at least versions
 // 2.5.31 through 2.5.33): it generates code that does
@@ -110,8 +111,8 @@ namespace tchecker {
 		
 		void parse_program(std::string const & prog_context,
                        std::string const & prog_str,
-                       tchecker::expression_t * & expr,
-                       tchecker::statement_t * & stmt)
+                       std::shared_ptr<tchecker::expression_t> & expr,
+                       std::shared_ptr<tchecker::statement_t> & stmt)
 		{
 			std::size_t old_error_count = tchecker::log_error_count();
       
@@ -134,8 +135,6 @@ namespace tchecker {
 				ppyy_switch_to_buffer(previous_buffer);
 			}
 			catch (...) {
-				delete expr;
-				delete stmt;
 				expr = nullptr;
 				stmt = nullptr;
 				ppyy_delete_buffer(current_buffer);
@@ -144,8 +143,6 @@ namespace tchecker {
 			}
       
 			if (tchecker::log_error_count() > old_error_count) {
-				delete expr;
-				delete stmt;
 				expr = nullptr;
 				stmt = nullptr;
 			}
@@ -154,18 +151,16 @@ namespace tchecker {
 		
 		
 		
-		tchecker::expression_t * parse_expression(std::string const & expr_context, std::string const & expr_str)
+		std::shared_ptr<tchecker::expression_t> parse_expression(std::string const & expr_context, std::string const & expr_str)
 		{
-			tchecker::expression_t * expr = nullptr;
-			tchecker::statement_t * stmt = nullptr;
+			std::shared_ptr<tchecker::expression_t> expr{nullptr};
+			std::shared_ptr<tchecker::statement_t> stmt{nullptr};
 			
 			try {
 				parse_program(expr_context, expr_str, expr, stmt);
-				assert( (expr == nullptr) || (stmt == nullptr) );
-				if (stmt != nullptr) {
-					delete stmt;
+				assert( (expr.get() == nullptr) || (stmt.get() == nullptr) );
+				if (stmt.get() != nullptr)
 					std::cerr << tchecker::log_error << expr_context << " unexpected statement, expression expected" << std::endl;
-				}
 			}
 			catch (...) {
 				throw;
@@ -177,18 +172,16 @@ namespace tchecker {
 		
 		
 		
-		tchecker::statement_t * parse_statement(std::string const & stmt_context, std::string const & stmt_str)
+		std::shared_ptr<tchecker::statement_t> parse_statement(std::string const & stmt_context, std::string const & stmt_str)
 		{
-			tchecker::expression_t * expr = nullptr;
-			tchecker::statement_t * stmt = nullptr;
+			std::shared_ptr<tchecker::expression_t> expr{nullptr};
+			std::shared_ptr<tchecker::statement_t> stmt{nullptr};
 			
 			try {
 				parse_program(stmt_context, stmt_str, expr, stmt);
-				assert( (expr == nullptr) || (stmt == nullptr) );
-				if (expr != nullptr) {
-					delete expr;
+				assert( (expr.get() == nullptr) || (stmt.get() == nullptr) );
+				if (expr.get() != nullptr)
 					std::cerr << tchecker::log_error << stmt_context << " unexpected expression, statement expected" << std::endl;
-				}
 			}
 			catch (...) {
 				throw;

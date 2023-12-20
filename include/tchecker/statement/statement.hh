@@ -9,9 +9,8 @@
 #define TCHECKER_STATEMENT_HH
 
 #include <iostream>
+#include <memory>
 #include <string>
-
-#include <boost/core/noncopyable.hpp>
 
 #include "tchecker/expression/expression.hh"
 
@@ -28,7 +27,7 @@ class statement_visitor_t; // forward declaration
  \class statement_t
  \brief Base class for statements
  */
-class statement_t : private boost::noncopyable {
+class statement_t {
 public:
   /*!
    \brief Constructor
@@ -41,26 +40,22 @@ public:
   virtual ~statement_t() = default;
 
   /*!
-   \brief Assignment operator (DELETED)
-   */
-  tchecker::statement_t & operator=(tchecker::statement_t const &) = delete;
-
-  /*!
-   \brief Move assignment operator (DELETED)
-   */
-  tchecker::statement_t & operator=(tchecker::statement_t &&) = delete;
-
-  /*!
    \brief Clone
    \return A clone of this
    */
-  tchecker::statement_t * clone() const;
+  virtual tchecker::statement_t * clone() const = 0;
 
   /*!
    \brief Visit
    \param v : visitor
    */
-  void visit(tchecker::statement_visitor_t & v) const;
+  virtual void visit(tchecker::statement_visitor_t & v) const = 0;
+
+  /*!
+   \brief Output the statement
+   \param os : output stream
+   */
+  virtual std::ostream & output(std::ostream & os) const = 0;
 
   /*!
    \brief Accessor
@@ -68,24 +63,7 @@ public:
    */
   std::string to_string() const;
 
-protected:
-  /*!
-   \brief Output the statement
-   \param os : output stream
-   */
-  virtual std::ostream & do_output(std::ostream & os) const = 0;
-
-  /*!
-   \brief Clone
-   */
-  virtual tchecker::statement_t * do_clone() const = 0;
-
-  /*!
-   \brief Visit
-   \param v : visitor
-   */
-  virtual void do_visit(tchecker::statement_visitor_t & v) const = 0;
-
+private:
   friend std::ostream & operator<<(std::ostream & os, tchecker::statement_t const & stmt);
 };
 
@@ -114,27 +92,26 @@ public:
    */
   virtual ~nop_statement_t();
 
-protected:
   /*!
    \brief Output the statement
    \param os : output stream
    \post this has been output to os
    \return os after this has been output
    */
-  virtual std::ostream & do_output(std::ostream & os) const;
+  virtual std::ostream & output(std::ostream & os) const override;
 
   /*!
    \brief Clone
    \return A clone of this
    */
-  virtual tchecker::statement_t * do_clone() const;
+  virtual tchecker::nop_statement_t * clone() const override;
 
   /*!
    \brief Visit
    \param v : visitor
    \post v.visit(*this) has been called
    */
-  virtual void do_visit(tchecker::statement_visitor_t & v) const;
+  virtual void visit(tchecker::statement_visitor_t & v) const override;
 };
 
 /*!
@@ -148,10 +125,11 @@ public:
    \param lvalue : left-value expression
    \param rvalue : right-value expression
    \pre lvalue != nullptr and rvalue != nullptr
-   \throw std::invalid_argument : if one of lvalue and rvalue is nullptr
-   \note this takes ownerhsip on lvalue and rvalue
+   \post this assignment statement points to left-value lvalue and right-value rvalue
+   \throw std::invalid_argument : if lvalue or rvalue is nullptr
    */
-  assign_statement_t(tchecker::lvalue_expression_t const * lvalue, tchecker::expression_t const * rvalue);
+  assign_statement_t(std::shared_ptr<tchecker::lvalue_expression_t const> const & lvalue,
+                     std::shared_ptr<tchecker::expression_t const> const & rvalue);
 
   /*!
    \brief Destructor
@@ -162,38 +140,50 @@ public:
    \brief Accessor
    \return Left value
    */
-  inline tchecker::lvalue_expression_t const & lvalue() const { return (*_lvalue); }
+  inline tchecker::lvalue_expression_t const & lvalue() const { return *_lvalue; }
+
+  /*!
+   \brief Accessor
+   \return Shared pointer on left value
+   */
+  inline std::shared_ptr<tchecker::lvalue_expression_t const> const & lvalue_ptr() const { return _lvalue; }
 
   /*!
    \brief Accessor
    \return Right value
    */
-  inline tchecker::expression_t const & rvalue() const { return (*_rvalue); }
+  inline tchecker::expression_t const & rvalue() const { return *_rvalue; }
 
-protected:
+  /*!
+   \brief Accessor
+   \return Shared pointer on right value
+   */
+  inline std::shared_ptr<tchecker::expression_t const> const & rvalue_ptr() const { return _rvalue; }
+
   /*!
    \brief Output the statement
    \param os : output stream
    \post this has been output to os
    \return os after this has been output
    */
-  virtual std::ostream & do_output(std::ostream & os) const;
+  virtual std::ostream & output(std::ostream & os) const override;
 
   /*!
    \brief Clone
    \return A clone of this
    */
-  virtual tchecker::statement_t * do_clone() const;
+  virtual tchecker::assign_statement_t * clone() const override;
 
   /*!
    \brief Visit
    \param v : visitor
    \post v.visit(*this) has been called
    */
-  virtual void do_visit(tchecker::statement_visitor_t & v) const;
+  virtual void visit(tchecker::statement_visitor_t & v) const override;
 
-  tchecker::lvalue_expression_t const * _lvalue; /*!< Left value */
-  tchecker::expression_t const * _rvalue;        /*!< Right value*/
+protected:
+  std::shared_ptr<tchecker::lvalue_expression_t const> _lvalue; /*!< Left value */
+  std::shared_ptr<tchecker::expression_t const> _rvalue;        /*!< Right value*/
 };
 
 /*!
@@ -207,10 +197,12 @@ public:
    \param first : first statement
    \param second : second statement
    \pre first != nullptr and second != nullptr
-   \throw std::invalid_argument : if one of first and second is nullptr
-   \note this takes ownership on first and second
+   \post this spoints to first and to second (i.e. first; second)
+   \throw std::invalid_argument : if first or second is nullptr
+   \note this keeps pointers on first and on second
    */
-  sequence_statement_t(tchecker::statement_t const * first, tchecker::statement_t const * second);
+  sequence_statement_t(std::shared_ptr<tchecker::statement_t const> const & first,
+                       std::shared_ptr<tchecker::statement_t const> const & second);
 
   /*!
    \brief Destructor
@@ -221,44 +213,56 @@ public:
    \brief Accessor
    \return First statement
    */
-  inline tchecker::statement_t const & first() const { return (*_first); }
+  inline tchecker::statement_t const & first() const { return *_first; }
+
+  /*!
+   \brief Accessor
+   \return Shared pointer on first statement
+   */
+  inline std::shared_ptr<tchecker::statement_t const> const & first_ptr() const { return _first; }
 
   /*!
    \brief Accessor
    \return Second statement
    */
-  inline tchecker::statement_t const & second() const { return (*_second); }
+  inline tchecker::statement_t const & second() const { return *_second; }
 
-protected:
+  /*!
+   \brief Accessor
+   \return Shared pointer on second statement
+   */
+  inline std::shared_ptr<tchecker::statement_t const> const & second_ptr() const { return _second; }
+
   /*!
    \brief Output the statement
    \param os : output stream
    \post this has been output to os
    \return os after this has been output
    */
-  virtual std::ostream & do_output(std::ostream & os) const;
+  virtual std::ostream & output(std::ostream & os) const override { return os << *_first << "; " << *_second; }
 
   /*!
    \brief Clone
    \return A clone of this
    */
-  virtual tchecker::statement_t * do_clone() const;
+  virtual tchecker::sequence_statement_t * clone() const override;
 
   /*!
    \brief Visit
    \param v : visitor
    \post v.visit(*this) has been called
    */
-  virtual void do_visit(tchecker::statement_visitor_t & v) const;
+  virtual void visit(tchecker::statement_visitor_t & v) const override;
 
-  tchecker::statement_t const * _first;  /*!< First statement */
-  tchecker::statement_t const * _second; /*!< Second statement */
+protected:
+  std::shared_ptr<tchecker::statement_t const> _first;  /*!< First statement */
+  std::shared_ptr<tchecker::statement_t const> _second; /*!< Second statement */
 };
 
 /*!
  \class if_statement_t
  \brief If-Then-Else statement
- */
+  */
 class if_statement_t : public virtual tchecker::statement_t {
 public:
   /*!
@@ -267,11 +271,12 @@ public:
    \param then_stmt : then statement
    \param else_stmt : else statement
    \pre cond != nullptr and then_stmt != nullptr and else_stmt != nullptr
-   \throw std::invalid_argument : if an parameter is nullptr
-   \note this takes ownership on parameters
+   \post this statement points to cond, to then_stmt and to else_stmt (i.e. if (cond) then then_stmt else else_stmt)
+   \throw std::invalid_argument : if cond, then_stmt or else_stmt is nullptr
    */
-  if_statement_t(tchecker::expression_t const * cond, tchecker::statement_t const * then_stmt,
-                 tchecker::statement_t const * else_stmt);
+  if_statement_t(std::shared_ptr<tchecker::expression_t const> const & cond,
+                 std::shared_ptr<tchecker::statement_t const> const & then_stmt,
+                 std::shared_ptr<tchecker::statement_t const> const & else_stmt);
 
   /*!
    \brief Destructor
@@ -280,47 +285,65 @@ public:
 
   /*!
    \brief Accessor
-   \return Guard of the if statement
+   \return Condition of the if statement
    */
-  inline tchecker::expression_t const & condition() const { return (*_condition); }
+  inline tchecker::expression_t const & condition() const { return *_condition; }
+
+  /*!
+   \brief Accessor
+   \return Shared pointer on condition of the if statement
+   */
+  inline std::shared_ptr<tchecker::expression_t const> const & condition_ptr() const { return _condition; }
 
   /*!
    \brief Accessor
    \return Then statement
    */
-  inline tchecker::statement_t const & then_stmt() const { return (*_then_stmt); }
+  inline tchecker::statement_t const & then_stmt() const { return *_then_stmt; }
+
+  /*!
+   \brief Accessor
+   \return Shared pointer on then statement
+   */
+  inline std::shared_ptr<tchecker::statement_t const> const & then_stmt_ptr() const { return _then_stmt; }
 
   /*!
    \brief Accessor
    \return Second statement
    */
-  inline tchecker::statement_t const & else_stmt() const { return (*_else_stmt); }
+  inline tchecker::statement_t const & else_stmt() const { return *_else_stmt; }
 
-protected:
+  /*!
+   \brief Accessor
+   \return Shared pointer on second statement
+   */
+  inline std::shared_ptr<tchecker::statement_t const> const & else_stmt_ptr() const { return _else_stmt; }
+
   /*!
    \brief Output the statement
    \param os : output stream
    \post this has been output to os
    \return os after this has been output
    */
-  virtual std::ostream & do_output(std::ostream & os) const;
+  virtual std::ostream & output(std::ostream & os) const override;
 
   /*!
    \brief Clone
    \return A clone of this
    */
-  virtual tchecker::statement_t * do_clone() const;
+  virtual tchecker::if_statement_t * clone() const override;
 
   /*!
    \brief Visit
    \param v : visitor
    \post v.visit(*this) has been called
    */
-  virtual void do_visit(tchecker::statement_visitor_t & v) const;
+  virtual void visit(tchecker::statement_visitor_t & v) const override;
 
-  tchecker::expression_t const * _condition; /*!< Guard of the if statement */
-  tchecker::statement_t const * _then_stmt;  /*!< Then statement */
-  tchecker::statement_t const * _else_stmt;  /*!< Else statement */
+protected:
+  std::shared_ptr<tchecker::expression_t const> _condition; /*!< Guard of the if statement */
+  std::shared_ptr<tchecker::statement_t const> _then_stmt;  /*!< Then statement */
+  std::shared_ptr<tchecker::statement_t const> _else_stmt;  /*!< Else statement */
 };
 
 /*!
@@ -333,11 +356,13 @@ public:
    \brief Constructor
    \param cond : condition
    \param stmt : iterated statement
-   \pre cond != nullptr and stmt != nullptr
-   \throw std::invalid_argument : if a parameter is nullptr
-   \note this takes ownership on parameters
+   \pre cond and stmt are not nullptr
+   \post this keeps pointers to cond and to stmt (i.e. while (cond) stmt end)
+   \throw std::invalid_argument : if cond or stmt is nullptr
+   \note this keeps pointers on cond and on stmt
    */
-  while_statement_t(tchecker::expression_t const * cond, tchecker::statement_t const * stmt);
+  while_statement_t(std::shared_ptr<tchecker::expression_t const> const & cond,
+                    std::shared_ptr<tchecker::statement_t const> const & stmt);
 
   /*!
    \brief Destructor
@@ -346,40 +371,52 @@ public:
 
   /*!
    \brief Accessor
-   \return Guard of the if statement
+   \return Condition of the while loop
    */
-  inline tchecker::expression_t const & condition() const { return (*_condition); }
+  inline tchecker::expression_t const & condition() const { return *_condition; }
+
+  /*!
+   \brief Accessor
+   \return Shared pointer on the condition of the while loop
+   */
+  inline std::shared_ptr<tchecker::expression_t const> const & condition_ptr() const { return _condition; }
 
   /*!
    \brief Accessor
    \return Iterated statement
    */
-  inline tchecker::statement_t const & statement() const { return (*_stmt); }
+  inline tchecker::statement_t const & statement() const { return *_stmt; }
 
-protected:
+  /*!
+   \brief Accessor
+   \return Shared pointer on iterated statement
+   */
+  inline std::shared_ptr<tchecker::statement_t const> const & statement_ptr() const { return _stmt; }
+
   /*!
    \brief Output the statement
    \param os : output stream
    \post this has been output to os
    \return os after this has been output
    */
-  virtual std::ostream & do_output(std::ostream & os) const;
+  virtual std::ostream & output(std::ostream & os) const override;
 
   /*!
    \brief Clone
    \return A clone of this
    */
-  virtual tchecker::statement_t * do_clone() const;
+  virtual tchecker::while_statement_t * clone() const override;
 
   /*!
    \brief Visit
    \param v : visitor
    \post v.visit(*this) has been called
    */
-  virtual void do_visit(tchecker::statement_visitor_t & v) const;
+  virtual void visit(tchecker::statement_visitor_t & v) const override;
 
-  tchecker::expression_t const * _condition; /*!< Guard of the if statement */
-  tchecker::statement_t const * _stmt;       /*!< Iterated statement */
+protected:
+  std::shared_ptr<tchecker::expression_t const> _condition; /*!< Guard of the if statement */
+  std::shared_ptr<tchecker::statement_t const> _stmt;       /*!< Iterated statement */
 };
 
 /*!
@@ -390,22 +427,23 @@ class local_var_statement_t : public virtual tchecker::statement_t {
 public:
   /*!
    \brief Constructor
-   \param var : the new local variable
-   \pre var != nullptr
-   \throw std::invalid_argument : if an parameter is nullptr
-   \note this takes ownership on parameterss
+   \param variable : the new local variable
+   \pre variable != nullptr
+   \post this local variable points to variable and has initial value 0
+   \throw std::invalid_argument : if varibale is nullptr
    */
-  local_var_statement_t(tchecker::var_expression_t const * var);
+  local_var_statement_t(std::shared_ptr<tchecker::var_expression_t const> const & variable);
 
   /*!
    \brief Constructor
-   \param var : the new local variable
-   \param init : initial value assigned to var
-   \pre var != nullptr and init != nullptr
-   \throw std::invalid_argument : if an parameter is nullptr
-   \note this takes ownership on parameters
+   \param variable : the new local variable
+   \param init : initial value assigned to variable
+   \pre variable != nullptr and init != nullptr
+   \post this keeps pointers to variable and to init (i.e. variable initialized to init)
+   \throw std::invalid_argument : if variable of init is nullptr
    */
-  local_var_statement_t(tchecker::var_expression_t const * var, tchecker::expression_t const * init);
+  local_var_statement_t(std::shared_ptr<tchecker::var_expression_t const> const & variable,
+                        std::shared_ptr<tchecker::expression_t const> const & init);
 
   /*!
    \brief Destructor
@@ -420,51 +458,64 @@ public:
 
   /*!
    \brief Accessor
+   \return Shared pointer to the variable
+   */
+  inline std::shared_ptr<tchecker::var_expression_t const> const & variable_ptr() const { return _variable; }
+
+  /*!
+   \brief Accessor
    \return The initial value of the local variable
    */
   inline tchecker::expression_t const & initial_value() const { return *_initial_value; }
 
-protected:
+  /*!
+   \brief Accessor
+   \return Shared pointer to the initial value of the local variable
+   */
+  inline std::shared_ptr<tchecker::expression_t const> const & initial_value_ptr() const { return _initial_value; }
+
   /*!
    \brief Output the statement
    \param os : output stream
    \post this has been output to os
    \return os after this has been output
    */
-  virtual std::ostream & do_output(std::ostream & os) const;
+  virtual std::ostream & output(std::ostream & os) const override;
 
   /*!
    \brief Clone
    \return A clone of this
    */
-  virtual tchecker::statement_t * do_clone() const;
+  virtual tchecker::local_var_statement_t * clone() const override;
 
   /*!
    \brief Visit
    \param v : visitor
    \post v.visit(*this) has been called
    */
-  virtual void do_visit(tchecker::statement_visitor_t & v) const;
+  virtual void visit(tchecker::statement_visitor_t & v) const override;
 
-  tchecker::var_expression_t const * _variable;  /*!< Variable  */
-  tchecker::expression_t const * _initial_value; /*!< Initial value */
+protected:
+  std::shared_ptr<tchecker::var_expression_t const> _variable;  /*!< Variable  */
+  std::shared_ptr<tchecker::expression_t const> _initial_value; /*!< Initial value */
 };
 
 /*!
- \class local_statement_t
- \brief local declaration
+ \class local_array_statement_t
+ \brief local array declaration
  */
 class local_array_statement_t : public virtual tchecker::statement_t {
 public:
   /*!
    \brief Constructor
-   \param variable: the new local variable
+   \param variable: the new local array variable
    \param size: size expression
    \pre variable != nullptr and size != nullptr
+   \post this keeps pointers to variable and to size (i.e. variable[size])
    \throw std::invalid_argument : if an parameter is nullptr
-   \note this takes ownership on parameters
    */
-  local_array_statement_t(tchecker::var_expression_t const * variable, tchecker::expression_t const * size);
+  local_array_statement_t(std::shared_ptr<tchecker::var_expression_t const> const & variable,
+                          std::shared_ptr<tchecker::expression_t const> const & size);
 
   /*!
    \brief Destructor
@@ -473,9 +524,15 @@ public:
 
   /*!
    \brief Accessor
-   \return Right value
+   \return Variable expression
    */
   inline tchecker::var_expression_t const & variable() const { return (*_variable); }
+
+  /*!
+   \brief Accessor
+   \return Shared pointer to variable expression
+   */
+  inline std::shared_ptr<tchecker::var_expression_t const> const & variable_ptr() const { return _variable; }
 
   /*!
    \brief Accessor
@@ -483,30 +540,36 @@ public:
    */
   inline tchecker::expression_t const & size() const { return (*_size); }
 
-protected:
+  /*!
+   \brief Accessor
+   \return Shared pointer to size expression
+   */
+  inline std::shared_ptr<tchecker::expression_t const> const & size_ptr() const { return _size; }
+
   /*!
    \brief Output the statement
    \param os : output stream
    \post this has been output to os
    \return os after this has been output
    */
-  virtual std::ostream & do_output(std::ostream & os) const;
+  virtual std::ostream & output(std::ostream & os) const override;
 
   /*!
    \brief Clone
    \return A clone of this
    */
-  virtual tchecker::statement_t * do_clone() const;
+  virtual tchecker::local_array_statement_t * clone() const override;
 
   /*!
    \brief Visit
    \param v : visitor
    \post v.visit(*this) has been called
    */
-  virtual void do_visit(tchecker::statement_visitor_t & v) const;
+  virtual void visit(tchecker::statement_visitor_t & v) const override;
 
-  tchecker::var_expression_t const * _variable; /*!< Variable  */
-  tchecker::expression_t const * _size;         /*!< Size of the array*/
+protected:
+  std::shared_ptr<tchecker::var_expression_t const> _variable; /*!< Variable  */
+  std::shared_ptr<tchecker::expression_t const> _size;         /*!< Size of the array*/
 };
 
 /*!

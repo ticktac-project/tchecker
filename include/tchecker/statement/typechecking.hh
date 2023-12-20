@@ -9,6 +9,7 @@
 #define TCHECKER_STATEMENT_TYPECHECKING_HH
 
 #include <functional>
+#include <memory>
 #include <string>
 
 #include "tchecker/statement/statement.hh"
@@ -33,7 +34,7 @@ namespace tchecker {
  \return typed clone of stmt
  \post errors have been reported calling function error
  */
-tchecker::typed_statement_t * typecheck(
+std::shared_ptr<tchecker::typed_statement_t> typecheck(
     tchecker::statement_t const & stmt, tchecker::integer_variables_t const & localvars,
     tchecker::integer_variables_t const & intvars, tchecker::clock_variables_t const & clocks,
     std::function<void(std::string const &)> error = [](std::string const &) {});

@@ -593,16 +593,18 @@ public:
     expr.offset().visit(*this);
 
     // add base variables depending on const evaluation of offset
+    tchecker::typed_var_expression_t const & expr_variable = expr.variable();
     tchecker::integer_t offset;
     try {
       offset = tchecker::const_evaluate(expr.offset());
     }
     catch (...) {
-      for (offset = 0; offset < (tchecker::integer_t)expr.variable().size(); ++offset)
-        extract_variable_with_type(expr.variable().id() + offset, expr.variable().type());
+      tchecker::integer_t size = static_cast<tchecker::integer_t>(expr_variable.size());
+      for (offset = 0; offset < size; ++offset)
+        extract_variable_with_type(expr_variable.id() + offset, expr_variable.type());
       return;
     }
-    extract_variable_with_type(expr.variable().id() + offset, expr.variable().type());
+    extract_variable_with_type(expr_variable.id() + offset, expr_variable.type());
   }
 
   /* Other visitors (recursion) */

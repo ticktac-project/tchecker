@@ -282,12 +282,12 @@ void from_string(tchecker::clock_constraint_container_t & c, tchecker::clock_var
     return;
 
   // parse str as a typed expression
-  std::unique_ptr<tchecker::expression_t> expr{tchecker::parsing::parse_expression("", str)};
+  std::shared_ptr<tchecker::expression_t> expr{tchecker::parsing::parse_expression("", str)};
   if (expr.get() == nullptr)
     throw std::invalid_argument("syntax error in " + str);
 
   tchecker::integer_variables_t no_integer_variables;
-  std::unique_ptr<tchecker::typed_expression_t> typed_expr{
+  std::shared_ptr<tchecker::typed_expression_t> typed_expr{
       tchecker::typecheck(*expr, no_integer_variables, no_integer_variables, clocks,
                           [](std::string const & err) { std::cerr << tchecker::log_error << err << std::endl; })};
   if (typed_expr.get() == nullptr)

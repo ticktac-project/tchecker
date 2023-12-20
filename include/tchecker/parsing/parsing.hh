@@ -9,6 +9,7 @@
 #define TCHECKER_PARSING_HH
 
 #include <cstdio>
+#include <memory>
 #include <string>
 
 #include "tchecker/expression/expression.hh"
@@ -47,7 +48,7 @@ tchecker::parsing::system_declaration_t * parse_system_declaration(std::FILE * f
  \note expr_context is used in error messages to provide context
  information regarding expr_str. It is ignored if empty
  */
-tchecker::expression_t * parse_expression(std::string const & expr_context, std::string const & expr_str);
+std::shared_ptr<tchecker::expression_t> parse_expression(std::string const & expr_context, std::string const & expr_str);
 
 /*!
  \brief Parser for statements
@@ -58,7 +59,7 @@ tchecker::expression_t * parse_expression(std::string const & expr_context, std:
  \note stmt_context is used in error messages to provide context
  information regarding stmt_str. It is ignored if empty
  */
-tchecker::statement_t * parse_statement(std::string const & stmt_context, std::string const & stmt_str);
+std::shared_ptr<tchecker::statement_t> parse_statement(std::string const & stmt_context, std::string const & stmt_str);
 
 /*!
  \class attributes_parser_t

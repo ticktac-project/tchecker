@@ -346,7 +346,7 @@ public:
 
     tchecker::typed_var_expression_t ref_clock(tchecker::EXPR_TYPE_CLKVAR, tchecker::REFCLOCK_NAME, tchecker::REFCLOCK_ID, 1);
 
-    compile_clock_predicate(expr.clock(), ref_clock, expr.bound(), operator_to_instruction(expr.binary_operator()));
+    compile_clock_predicate(expr.clock(), ref_clock, expr.bound_ptr(), operator_to_instruction(expr.binary_operator()));
   }
 
   /*
@@ -357,7 +357,7 @@ public:
     if (expr.type() != tchecker::EXPR_TYPE_CLKCONSTR_DIAGONAL)
       invalid_expression(expr, "a diagonal clock constraint");
 
-    compile_clock_predicate(expr.first_clock(), expr.second_clock(), expr.bound(),
+    compile_clock_predicate(expr.first_clock(), expr.second_clock(), expr.bound_ptr(),
                             operator_to_instruction(expr.binary_operator()));
   }
 
@@ -427,7 +427,7 @@ private:
     }
   }
 
-  /*
+  /*!
    \brief Compiler for clock predicate of the form
    clock1 - clock2 # bound   where # is <,<=,==,>=,> depending on instruction
 
@@ -436,23 +436,23 @@ private:
    \throw std::invalid_argument : if the precondition is violated
    */
   void compile_clock_predicate(tchecker::typed_expression_t const & clock1, tchecker::typed_expression_t const & clock2,
-                               tchecker::typed_expression_t const & bound, enum tchecker::instruction_t instruction)
+                               std::shared_ptr<tchecker::typed_expression_t const> const & bound,
+                               enum tchecker::instruction_t instruction)
   {
     // bound negation
-    auto * bound_clone = dynamic_cast<tchecker::typed_expression_t *>(bound.clone());
-    tchecker::typed_unary_expression_t neg_bound(tchecker::type_neg(bound.type()), tchecker::EXPR_OP_NEG, bound_clone);
+    tchecker::typed_unary_expression_t neg_bound(tchecker::type_neg(bound->type()), tchecker::EXPR_OP_NEG, bound);
 
     // write bytecode
     if (instruction == tchecker::VM_LT)
-      compile_clock_constraint(clock1, clock2, tchecker::LT, bound);
+      compile_clock_constraint(clock1, clock2, tchecker::LT, *bound);
     else if (instruction == tchecker::VM_LE)
-      compile_clock_constraint(clock1, clock2, tchecker::LE, bound);
+      compile_clock_constraint(clock1, clock2, tchecker::LE, *bound);
     else if (instruction == tchecker::VM_GE)
       compile_clock_constraint(clock2, clock1, tchecker::LE, neg_bound);
     else if (instruction == tchecker::VM_GT)
       compile_clock_constraint(clock2, clock1, tchecker::LT, neg_bound);
     else if (instruction == tchecker::VM_EQ) {
-      compile_clock_constraint(clock1, clock2, tchecker::LE, bound);
+      compile_clock_constraint(clock1, clock2, tchecker::LE, *bound);
       compile_clock_constraint(clock2, clock1, tchecker::LE, neg_bound);
       _bytecode_back_inserter = tchecker::VM_LAND;
     }
@@ -460,8 +460,8 @@ private:
       throw std::invalid_argument("invalid instruction");
   }
 
-  /*
-   Compile clock constraint: first - second </<= bound
+  /*!
+   \brief Compile clock constraint: first - second </<= bound
 
    insert first bytecode
    insert second bytecode

@@ -143,48 +143,41 @@ void system_t::compute_from_syncprod_system()
     throw std::invalid_argument("Transitions over weakly synchronized events should not have guards");
 }
 
-static tchecker::expression_t *
+static std::shared_ptr<tchecker::expression_t>
 conjunction_from_attributes(tchecker::range_t<tchecker::system::attributes_t::const_iterator_t> const & attributes,
                             tchecker::integer_variables_t const & localvars, tchecker::integer_variables_t const & intvars,
                             tchecker::clock_variables_t clocks)
 {
-  tchecker::expression_t * expr = nullptr;
+  std::shared_ptr<tchecker::expression_t> expr{nullptr};
 
   for (auto && attr : attributes) {
     // parse
-    tchecker::expression_t * value_expr =
-        tchecker::parsing::parse_expression(attr.parsing_position().value_position(), attr.value());
+    std::shared_ptr<tchecker::expression_t> value_expr{
+        tchecker::parsing::parse_expression(attr.parsing_position().value_position(), attr.value())};
 
-    if (value_expr == nullptr) {
-      delete expr;
+    if (value_expr.get() == nullptr)
       return nullptr;
-    }
 
     // type check
-    tchecker::typed_expression_t * typed_value_expr = tchecker::typecheck(*value_expr, localvars, intvars, clocks);
+    std::shared_ptr<tchecker::typed_expression_t> typed_value_expr{
+        tchecker::typecheck(*value_expr, localvars, intvars, clocks)};
 
     if (!tchecker::bool_valued(typed_value_expr->type())) {
-      delete expr;
-      delete value_expr;
-      delete typed_value_expr;
-
       std::stringstream oss;
       oss << attr.parsing_position().value_position() << " expression is not bool valued";
       throw std::invalid_argument(oss.str());
     }
 
-    delete typed_value_expr;
-
     // aggregate
-    if (expr != nullptr)
-      expr = new tchecker::binary_expression_t(tchecker::EXPR_OP_LAND, expr, value_expr);
+    if (expr.get() != nullptr)
+      expr = std::make_shared<tchecker::binary_expression_t>(tchecker::EXPR_OP_LAND, expr, value_expr);
     else
       expr = value_expr;
   }
 
   // empty list of attributes
-  if (expr == nullptr)
-    expr = new tchecker::int_expression_t(1);
+  if (expr.get() == nullptr)
+    expr = std::make_shared<tchecker::int_expression_t>(1);
 
   return expr;
 }
@@ -248,41 +241,37 @@ void system_t::set_guards(tchecker::edge_id_t id,
   }
 }
 
-static tchecker::statement_t *
+static std::shared_ptr<tchecker::statement_t>
 sequence_from_attributes(tchecker::range_t<tchecker::system::attributes_t::const_iterator_t> const & attributes,
                          tchecker::integer_variables_t const & localvars, tchecker::integer_variables_t const & intvars,
                          tchecker::clock_variables_t const & clocks)
 {
-  tchecker::statement_t * stmt = nullptr;
+  std::shared_ptr<tchecker::statement_t> stmt{nullptr};
 
   for (auto && attr : attributes) {
     // parse
-    tchecker::statement_t * value_stmt =
-        tchecker::parsing::parse_statement(attr.parsing_position().value_position(), attr.value());
+    std::shared_ptr<tchecker::statement_t> value_stmt{
+        tchecker::parsing::parse_statement(attr.parsing_position().value_position(), attr.value())};
 
-    if (value_stmt == nullptr) {
-      delete stmt;
+    if (value_stmt.get() == nullptr)
       return nullptr;
-    }
 
     // type check
-    tchecker::typed_statement_t * typed_value_stmt =
+    std::shared_ptr<tchecker::typed_statement_t> typed_value_stmt{
         tchecker::typecheck(*value_stmt, localvars, intvars, clocks, [&](std::string const & e) {
           std::cerr << tchecker::log_error << attr.parsing_position().value_position() << " " << e << std::endl;
-        });
-
-    delete typed_value_stmt;
+        })};
 
     // aggregate
-    if (stmt != nullptr)
-      stmt = new tchecker::sequence_statement_t(stmt, value_stmt);
+    if (stmt.get() != nullptr)
+      stmt = std::make_shared<tchecker::sequence_statement_t>(stmt, value_stmt);
     else
       stmt = value_stmt;
   }
 
   // empty list of statements
-  if (stmt == nullptr)
-    stmt = new tchecker::nop_statement_t;
+  if (stmt.get() == nullptr)
+    stmt = std::make_shared<tchecker::nop_statement_t>();
 
   return stmt;
 }
