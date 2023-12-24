@@ -146,10 +146,10 @@ std::ostream & dot_output(std::ostream & os, tchecker::tck_liveness::zg_ndfs::ce
 /* run */
 
 std::tuple<tchecker::algorithms::ndfs::stats_t, std::shared_ptr<tchecker::tck_liveness::zg_ndfs::graph_t>>
-run(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl, std::string const & labels,
-    std::size_t block_size, std::size_t table_size)
+run(tchecker::parsing::system_declaration_t const & sysdecl, std::string const & labels, std::size_t block_size,
+    std::size_t table_size)
 {
-  std::shared_ptr<tchecker::ta::system_t const> system{new tchecker::ta::system_t{*sysdecl}};
+  std::shared_ptr<tchecker::ta::system_t const> system{new tchecker::ta::system_t{sysdecl}};
   if (!tchecker::system::every_process_has_initial_location(system->as_system_system()))
     std::cerr << tchecker::log_warning << "system has no initial state" << std::endl;
 

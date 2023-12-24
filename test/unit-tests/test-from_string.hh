@@ -42,9 +42,9 @@ TEST_CASE("vloc from string", "[from_string]")
   \n\
   sync:P1@a1:P2@a2\n";
 
-  std::unique_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model)};
+  std::shared_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model)};
 
-  REQUIRE(sysdecl.get() != nullptr);
+  REQUIRE(sysdecl != nullptr);
 
   tchecker::system::system_t system{*sysdecl};
   tchecker::process_id_t const processes_count = static_cast<tchecker::process_id_t>(system.processes_count());
@@ -119,9 +119,9 @@ TEST_CASE("intval from string", "[from_string]")
   \n\
   sync:P1@a1:P2@a2\n";
 
-  std::unique_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model)};
+  std::shared_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model)};
 
-  REQUIRE(sysdecl.get() != nullptr);
+  REQUIRE(sysdecl != nullptr);
 
   tchecker::system::system_t system{*sysdecl};
   unsigned short const flatvars_count = static_cast<unsigned short>(system.integer_variables().flattened().size());
@@ -236,9 +236,9 @@ TEST_CASE("clock constraints from string", "[from_string]")
   \n\
   sync:P1@a1:P2@a2\n";
 
-  std::unique_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model)};
+  std::shared_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model)};
 
-  REQUIRE(sysdecl.get() != nullptr);
+  REQUIRE(sysdecl != nullptr);
 
   tchecker::system::system_t system{*sysdecl};
   tchecker::clock_constraint_container_t c;

@@ -230,8 +230,8 @@ public:
  \return statistics on the run and the liveness graph
  */
 std::tuple<tchecker::algorithms::couvscc::stats_t, std::shared_ptr<tchecker::tck_liveness::zg_couvscc::graph_t>>
-run(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl, std::string const & labels = "",
-    std::size_t block_size = 10000, std::size_t table_size = 65536);
+run(tchecker::parsing::system_declaration_t const & sysdecl, std::string const & labels = "", std::size_t block_size = 10000,
+    std::size_t table_size = 65536);
 
 } // namespace zg_couvscc
 

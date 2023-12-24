@@ -16,7 +16,6 @@
 
 TEST_CASE("Empty access map", "[access map]")
 {
-
   tchecker::variable_access_map_t m;
 
   SECTION("has no shared variable") { REQUIRE(!m.has_shared_variable()); }
@@ -36,7 +35,6 @@ TEST_CASE("Empty access map", "[access map]")
 
 TEST_CASE("Non empty access map", "[access map]")
 {
-
   tchecker::variable_access_map_t m;
   m.add(0, tchecker::VTYPE_CLOCK, tchecker::VACCESS_READ, 1);
   m.add(0, tchecker::VTYPE_INTVAR, tchecker::VACCESS_WRITE, 2);
@@ -124,7 +122,7 @@ TEST_CASE("variable access map computation - empty system", "[access map]")
   std::string declarations = "system:access_map_empty \n\
   ";
 
-  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(declarations);
+  std::shared_ptr<tchecker::parsing::system_declaration_t> sysdecl{tchecker::test::parse(declarations)};
 
   REQUIRE(sysdecl != nullptr);
 
@@ -132,8 +130,6 @@ TEST_CASE("variable access map computation - empty system", "[access map]")
   tchecker::variable_access_map_t map = tchecker::variable_access(system);
 
   REQUIRE(!map.has_shared_variable());
-
-  delete sysdecl;
 }
 
 TEST_CASE("variable access map computation - 1 process", "[access map]")
@@ -150,7 +146,7 @@ TEST_CASE("variable access map computation - 1 process", "[access map]")
   edge:P:l0:l1:a{provided: i>0 : do: x=0} \n\
   ";
 
-  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(declarations);
+  std::shared_ptr<tchecker::parsing::system_declaration_t> sysdecl{tchecker::test::parse(declarations)};
 
   REQUIRE(sysdecl != nullptr);
 
@@ -261,8 +257,6 @@ TEST_CASE("variable access map computation - 1 process", "[access map]")
     auto range = map.accessed_variables(P + 1, tchecker::VTYPE_INTVAR, tchecker::VACCESS_READ);
     REQUIRE(std::distance(range.begin(), range.end()) == 0);
   }
-
-  delete sysdecl;
 }
 
 TEST_CASE("variable access map computation - 2 processes, no shared variable", "[access map]")
@@ -284,7 +278,7 @@ TEST_CASE("variable access map computation - 2 processes, no shared variable", "
   edge:P2:l0:l0:a{provided: i<=3} \n\
   ";
 
-  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(declarations);
+  std::shared_ptr<tchecker::parsing::system_declaration_t> sysdecl{tchecker::test::parse(declarations)};
 
   REQUIRE(sysdecl != nullptr);
 
@@ -450,8 +444,6 @@ TEST_CASE("variable access map computation - 2 processes, no shared variable", "
     auto range = map.accessed_variables(P2, tchecker::VTYPE_CLOCK, tchecker::VACCESS_WRITE);
     REQUIRE(std::distance(range.begin(), range.end()) == 0);
   }
-
-  delete sysdecl;
 }
 
 TEST_CASE("variable access map computation - 3 processes, array, shared variables", "[access map]")
@@ -481,7 +473,7 @@ TEST_CASE("variable access map computation - 3 processes, array, shared variable
   edge:P3:l1:l2:a{do: y[i+1]=0; i=1} \n\
   ";
 
-  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(declarations);
+  std::shared_ptr<tchecker::parsing::system_declaration_t> sysdecl{tchecker::test::parse(declarations)};
 
   REQUIRE(sysdecl != nullptr);
 
@@ -914,6 +906,4 @@ TEST_CASE("variable access map computation - 3 processes, array, shared variable
     for (long i = 0; i < y_size; ++i)
       REQUIRE(access_y[i]);
   }
-
-  delete sysdecl;
 }

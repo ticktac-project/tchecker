@@ -27,7 +27,7 @@ namespace parsing {
  \return The system declaration read from filename, nullptr if parsing failed
  \post All errors and warnings have been reported on std::cerr
  */
-tchecker::parsing::system_declaration_t * parse_system_declaration(std::string const & filename);
+std::shared_ptr<tchecker::parsing::system_declaration_t> parse_system_declaration(std::string const & filename);
 
 /*!
  \brief Parser for systems
@@ -37,7 +37,7 @@ tchecker::parsing::system_declaration_t * parse_system_declaration(std::string c
  \post All errors and warnings have been reported on std::cerr
  \note filename is used as context for error/warning messages
  */
-tchecker::parsing::system_declaration_t * parse_system_declaration(std::FILE * f, std::string const & filename);
+std::shared_ptr<tchecker::parsing::system_declaration_t> parse_system_declaration(std::FILE * f, std::string const & filename);
 
 /*!
  \brief Parser for expression
@@ -105,15 +105,14 @@ public:
   inline void parse(tchecker::parsing::attributes_t const & attributes)
   {
     for (tchecker::parsing::attr_t const & attr : attributes)
-      do_attr(attr);
+      parse(attr);
   }
 
-protected:
   /*!
    \brief Attribute parser
    \param attr : attribute
    */
-  virtual void do_attr(tchecker::parsing::attr_t const & attr) = 0;
+  virtual void parse(tchecker::parsing::attr_t const & attr) = 0;
 };
 
 } // namespace parsing

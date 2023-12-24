@@ -168,9 +168,9 @@ int parse_command_line(int argc, char * argv[])
  of errors
  \post all errors have been reported to std::cerr
 */
-tchecker::parsing::system_declaration_t * load_system_declaration(std::string const & filename)
+std::shared_ptr<tchecker::parsing::system_declaration_t> load_system_declaration(std::string const & filename)
 {
-  tchecker::parsing::system_declaration_t * sysdecl = nullptr;
+  std::shared_ptr<tchecker::parsing::system_declaration_t> sysdecl{nullptr};
   try {
     sysdecl = tchecker::parsing::parse_system_declaration(filename);
     if (sysdecl == nullptr)
@@ -189,7 +189,7 @@ tchecker::parsing::system_declaration_t * load_system_declaration(std::string co
  the system declared by sysdecl have been output to standard output.
  A certification has been output if required.
 */
-void reach(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl)
+void reach(tchecker::parsing::system_declaration_t const & sysdecl)
 {
   auto && [stats, graph] = tchecker::tck_reach::zg_reach::run(sysdecl, labels, search_order, block_size, table_size);
 
@@ -201,20 +201,20 @@ void reach(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysd
 
   // certificate
   if (certificate == CERTIFICATE_GRAPH)
-    tchecker::tck_reach::zg_reach::dot_output(*os, *graph, sysdecl->name());
+    tchecker::tck_reach::zg_reach::dot_output(*os, *graph, sysdecl.name());
   else if ((certificate == CERTIFICATE_CONCRETE) && stats.reachable()) {
     std::unique_ptr<tchecker::tck_reach::zg_reach::cex::concrete_cex_t> cex{
         tchecker::tck_reach::zg_reach::cex::concrete_counter_example(*graph)};
     if (cex->empty())
       throw std::runtime_error("Unable to compute a concrete counter example");
-    tchecker::tck_reach::zg_reach::cex::dot_output(*os, *cex, sysdecl->name());
+    tchecker::tck_reach::zg_reach::cex::dot_output(*os, *cex, sysdecl.name());
   }
   else if ((certificate == CERTIFICATE_SYMBOLIC) && stats.reachable()) {
     std::unique_ptr<tchecker::tck_reach::zg_reach::cex::symbolic_cex_t> cex{
         tchecker::tck_reach::zg_reach::cex::symbolic_counter_example(*graph)};
     if (cex->empty())
       throw std::runtime_error("Unable to compute a symbolic counter example");
-    tchecker::tck_reach::zg_reach::cex::dot_output(*os, *cex, sysdecl->name());
+    tchecker::tck_reach::zg_reach::cex::dot_output(*os, *cex, sysdecl.name());
   }
 }
 
@@ -228,7 +228,7 @@ void reach(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysd
  Srivathsan, Igor Walukiewicz: "Revisiting Local Time Semantics for Networks of
  Timed Automata". CONCUR 2019: 16:1-16:15
 */
-void concur19(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl)
+void concur19(tchecker::parsing::system_declaration_t const & sysdecl)
 {
   tchecker::algorithms::covreach::stats_t stats;
   std::shared_ptr<tchecker::tck_reach::concur19::graph_t> graph;
@@ -250,13 +250,13 @@ void concur19(std::shared_ptr<tchecker::parsing::system_declaration_t> const & s
 
   // certificate
   if (certificate == CERTIFICATE_GRAPH)
-    tchecker::tck_reach::concur19::dot_output(*os, *graph, sysdecl->name());
+    tchecker::tck_reach::concur19::dot_output(*os, *graph, sysdecl.name());
   else if ((certificate == CERTIFICATE_SYMBOLIC) && stats.reachable()) {
     std::unique_ptr<tchecker::tck_reach::concur19::cex::symbolic::cex_t> cex{
         tchecker::tck_reach::concur19::cex::symbolic::counter_example(*graph)};
     if (cex->empty())
       throw std::runtime_error("Unable to compute a symbolic counter example");
-    tchecker::tck_reach::concur19::cex::symbolic::dot_output(*os, *cex, sysdecl->name());
+    tchecker::tck_reach::concur19::cex::symbolic::dot_output(*os, *cex, sysdecl.name());
   }
 }
 
@@ -267,7 +267,7 @@ void concur19(std::shared_ptr<tchecker::parsing::system_declaration_t> const & s
  labels in the system declared by sysdecl have been output to standard output.
  A certification has been output if required.
 */
-void covreach(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl)
+void covreach(tchecker::parsing::system_declaration_t const & sysdecl)
 {
   tchecker::algorithms::covreach::stats_t stats;
   std::shared_ptr<tchecker::tck_reach::zg_covreach::graph_t> graph;
@@ -287,20 +287,20 @@ void covreach(std::shared_ptr<tchecker::parsing::system_declaration_t> const & s
 
   // certificate
   if (certificate == CERTIFICATE_GRAPH)
-    tchecker::tck_reach::zg_covreach::dot_output(*os, *graph, sysdecl->name());
+    tchecker::tck_reach::zg_covreach::dot_output(*os, *graph, sysdecl.name());
   else if ((certificate == CERTIFICATE_CONCRETE) && stats.reachable()) {
     std::unique_ptr<tchecker::tck_reach::zg_covreach::cex::concrete_cex_t> cex{
         tchecker::tck_reach::zg_covreach::cex::concrete_counter_example(*graph)};
     if (cex->empty())
       throw std::runtime_error("Unable to compute a concrete counter example");
-    tchecker::tck_reach::zg_covreach::cex::dot_output(*os, *cex, sysdecl->name());
+    tchecker::tck_reach::zg_covreach::cex::dot_output(*os, *cex, sysdecl.name());
   }
   else if ((certificate == CERTIFICATE_SYMBOLIC) && stats.reachable()) {
     std::unique_ptr<tchecker::tck_reach::zg_covreach::cex::symbolic_cex_t> cex{
         tchecker::tck_reach::zg_covreach::cex::symbolic_counter_example(*graph)};
     if (cex->empty())
       throw std::runtime_error("Unable to compute a symbolic counter example");
-    tchecker::tck_reach::zg_covreach::cex::dot_output(*os, *cex, sysdecl->name());
+    tchecker::tck_reach::zg_covreach::cex::dot_output(*os, *cex, sysdecl.name());
   }
 }
 
@@ -350,13 +350,13 @@ int main(int argc, char * argv[])
 
     switch (algorithm) {
     case ALGO_REACH:
-      reach(sysdecl);
+      reach(*sysdecl);
       break;
     case ALGO_CONCUR19:
-      concur19(sysdecl);
+      concur19(*sysdecl);
       break;
     case ALGO_COVREACH:
-      covreach(sysdecl);
+      covreach(*sysdecl);
       break;
     default:
       throw std::runtime_error("No algorithm specified");

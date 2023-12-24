@@ -90,7 +90,7 @@ TEST_CASE("Reference clock variables from system - no array", "[reference clock 
   edge:P2:l0:l0:a{provided: i<=3} \n\
   ";
 
-  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(declarations);
+  std::shared_ptr<tchecker::parsing::system_declaration_t> sysdecl{tchecker::test::parse(declarations)};
 
   REQUIRE(sysdecl != nullptr);
 
@@ -133,7 +133,6 @@ TEST_CASE("Reference clock variables from system - no array", "[reference clock 
     REQUIRE(reference_clocks.refmap()[xx] == P1);
     REQUIRE(reference_clocks.refmap()[yy] == P1);
   }
-  delete sysdecl;
 }
 
 TEST_CASE("Offset clock variables from system - array", "[offset clock variables]")
@@ -164,7 +163,7 @@ TEST_CASE("Offset clock variables from system - array", "[offset clock variables
   edge:P3:l1:l2:a{do: z=1+z} \n\
   ";
 
-  tchecker::parsing::system_declaration_t const * sysdecl = tchecker::test::parse(declarations);
+  std::shared_ptr<tchecker::parsing::system_declaration_t> sysdecl{tchecker::test::parse(declarations)};
 
   REQUIRE(sysdecl != nullptr);
 
@@ -222,7 +221,6 @@ TEST_CASE("Offset clock variables from system - array", "[offset clock variables
     REQUIRE(reference_clocks.refmap()[yy1] == P3);
     REQUIRE(reference_clocks.refmap()[zz] == P3);
   }
-  delete sysdecl;
 }
 
 TEST_CASE("translation of clock constraints", "[clocks]")

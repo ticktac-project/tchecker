@@ -246,7 +246,7 @@ public:
  \return statistics on the run and the reachability graph
  */
 std::tuple<tchecker::algorithms::reach::stats_t, std::shared_ptr<tchecker::tck_reach::zg_reach::graph_t>>
-run(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl, std::string const & labels = "",
+run(tchecker::parsing::system_declaration_t const & sysdecl, std::string const & labels = "",
     std::string const & search_order = "bfs", std::size_t block_size = 10000, std::size_t table_size = 65536);
 
 } // end of namespace zg_reach

@@ -36,7 +36,7 @@ public:
    */
   virtual void visit(tchecker::parsing::system_declaration_t const & d)
   {
-    for (tchecker::parsing::declaration_t const * decl : d.declarations())
+    for (std::shared_ptr<tchecker::parsing::declaration_t> const & decl : d.declarations())
       decl->visit(*this);
   }
 
@@ -99,7 +99,7 @@ public:
   virtual void visit(tchecker::parsing::sync_declaration_t const & d)
   {
     std::vector<tchecker::system::sync_constraint_t> v;
-    for (tchecker::parsing::sync_constraint_t const * c : d.sync_constraints()) {
+    for (std::shared_ptr<tchecker::parsing::sync_constraint_t> const & c : d.sync_constraints()) {
       tchecker::process_id_t pid = _system.process_id(c->process().name());
       tchecker::event_id_t event = _system.event_id(c->event().name());
       v.emplace_back(pid, event, c->strength());

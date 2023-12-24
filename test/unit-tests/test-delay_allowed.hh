@@ -34,7 +34,7 @@ TEST_CASE("delay allowed for all reference clocks", "[delay_allowed]")
   location:P3:l0{initial:} \n\
   ";
 
-  std::unique_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model)};
+  std::shared_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model)};
   assert(sysdecl != nullptr);
 
   tchecker::ta::system_t system{*sysdecl};
@@ -95,7 +95,7 @@ TEST_CASE("delay allowed for some reference clocks", "[delay_allowed]")
   location:P3:l0{initial: : urgent:} \n\
   ";
 
-  std::unique_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model)};
+  std::shared_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model)};
   assert(sysdecl != nullptr);
 
   tchecker::ta::system_t system{*sysdecl};
@@ -158,7 +158,7 @@ TEST_CASE("delay allowed for no reference clock", "[delay_allowed]")
   location:P3:l0{initial: : urgent:} \n\
   ";
 
-  std::unique_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model)};
+  std::shared_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model)};
   assert(sysdecl != nullptr);
 
   tchecker::ta::system_t system{*sysdecl};

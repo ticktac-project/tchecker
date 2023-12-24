@@ -18,10 +18,10 @@ TEST_CASE("system with only one clock", "[clockbounds]")
   std::string model = "system:only_one_clock \n\
   clock:1:x\n";
 
-  std::unique_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model)};
+  std::shared_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model)};
   tchecker::ta::system_t system{*sysdecl};
 
-  std::unique_ptr<tchecker::clockbounds::clockbounds_t> clockbounds{tchecker::clockbounds::compute_clockbounds(system)};
+  std::shared_ptr<tchecker::clockbounds::clockbounds_t> clockbounds{tchecker::clockbounds::compute_clockbounds(system)};
   REQUIRE(clockbounds.get() != nullptr);
 
   SECTION("Global LU clock bounds")
@@ -66,10 +66,10 @@ TEST_CASE("system with one process", "[clockbounds]")
   edge:P:q0:q2:a{provided: x>1} \n\
   edge:P:q2:q3:a\n";
 
-  std::unique_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model)};
+  std::shared_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model)};
   tchecker::ta::system_t system{*sysdecl};
 
-  std::unique_ptr<tchecker::clockbounds::clockbounds_t> clockbounds{tchecker::clockbounds::compute_clockbounds(system)};
+  std::shared_ptr<tchecker::clockbounds::clockbounds_t> clockbounds{tchecker::clockbounds::compute_clockbounds(system)};
   REQUIRE(clockbounds.get() != nullptr);
 
   tchecker::process_id_t const P = system.process_id("P");
@@ -177,10 +177,10 @@ TEST_CASE("system with clock array", "[clockbounds]")
   edge:P:q0:q2:a{provided: x[1]>1} \n\
   edge:P:q2:q3:a{provided: x[1]<7}\n";
 
-  std::unique_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model)};
+  std::shared_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model)};
   tchecker::ta::system_t system{*sysdecl};
 
-  std::unique_ptr<tchecker::clockbounds::clockbounds_t> clockbounds{tchecker::clockbounds::compute_clockbounds(system)};
+  std::shared_ptr<tchecker::clockbounds::clockbounds_t> clockbounds{tchecker::clockbounds::compute_clockbounds(system)};
   REQUIRE(clockbounds.get() != nullptr);
 
   tchecker::process_id_t const P = system.process_id("P");
@@ -313,10 +313,10 @@ TEST_CASE("system with two processes, no shared clocks", "[clockbounds]")
   edge:Q:q0:q1:a{provided: z > 0} \n\
   edge:Q:q1:q2:a{do: z = 0} \n ";
 
-  std::unique_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model)};
+  std::shared_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model)};
   tchecker::ta::system_t system{*sysdecl};
 
-  std::unique_ptr<tchecker::clockbounds::clockbounds_t> clockbounds{tchecker::clockbounds::compute_clockbounds(system)};
+  std::shared_ptr<tchecker::clockbounds::clockbounds_t> clockbounds{tchecker::clockbounds::compute_clockbounds(system)};
   REQUIRE(clockbounds.get() != nullptr);
 
   tchecker::process_id_t const P = system.process_id("P");
@@ -501,10 +501,10 @@ TEST_CASE("system with two processes, with shared clocks", "[clockbounds]")
   edge:A2:n1:n2:a{provided: z<8 : do: x=3+z; z=0} \n\
   edge:A2:n2:n1:a{provided: z>=4} \n ";
 
-  std::unique_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model)};
+  std::shared_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model)};
   tchecker::ta::system_t system{*sysdecl};
 
-  std::unique_ptr<tchecker::clockbounds::clockbounds_t> clockbounds{tchecker::clockbounds::compute_clockbounds(system)};
+  std::shared_ptr<tchecker::clockbounds::clockbounds_t> clockbounds{tchecker::clockbounds::compute_clockbounds(system)};
   REQUIRE(clockbounds.get() != nullptr);
 
   tchecker::process_id_t const A1 = system.process_id("A1");
@@ -670,10 +670,10 @@ TEST_CASE("system with two processes, shared clocks, and sequential assignments"
   \n\
   sync:P@a:Q@a \n";
 
-  std::unique_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model)};
+  std::shared_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model)};
   tchecker::ta::system_t system{*sysdecl};
 
-  std::unique_ptr<tchecker::clockbounds::clockbounds_t> clockbounds{tchecker::clockbounds::compute_clockbounds(system)};
+  std::shared_ptr<tchecker::clockbounds::clockbounds_t> clockbounds{tchecker::clockbounds::compute_clockbounds(system)};
   REQUIRE(clockbounds.get() != nullptr);
 
   tchecker::process_id_t const P = system.process_id("P");
