@@ -87,6 +87,16 @@ static std::size_t block_size = 10000;                    /*!< Size of allocated
 static std::size_t table_size = 65536;                    /*!< Size of hash tables */
 
 /*!
+ \brief Check if expected certificate is a path
+ \param ctype : certificate type
+ \return true if ctype is a path, false otherwise
+ */
+static bool is_certificate_path(enum certificate_t ctype)
+{
+  return (ctype == CERTIFICATE_SYMBOLIC || ctype == CERTIFICATE_CONCRETE);
+}
+
+/*!
  \brief Parse command-line arguments
  \param argc : number of arguments
  \param argv : array of arguments
@@ -237,8 +247,8 @@ void concur19(std::shared_ptr<tchecker::parsing::system_declaration_t> const & s
     throw std::runtime_error("Concrete counter-example is not available for concur19 algorithm");
 
   tchecker::algorithms::covreach::covering_t covering =
-      (certificate == CERTIFICATE_GRAPH ? tchecker::algorithms::covreach::COVERING_FULL
-                                        : tchecker::algorithms::covreach::COVERING_LEAF_NODES);
+      (is_certificate_path(certificate) ? tchecker::algorithms::covreach::COVERING_LEAF_NODES
+                                        : tchecker::algorithms::covreach::COVERING_FULL);
 
   std::tie(stats, graph) = tchecker::tck_reach::concur19::run(sysdecl, labels, search_order, covering, block_size, table_size);
 
@@ -273,8 +283,8 @@ void covreach(std::shared_ptr<tchecker::parsing::system_declaration_t> const & s
   std::shared_ptr<tchecker::tck_reach::zg_covreach::graph_t> graph;
 
   tchecker::algorithms::covreach::covering_t covering =
-      (certificate == CERTIFICATE_GRAPH ? tchecker::algorithms::covreach::COVERING_FULL
-                                        : tchecker::algorithms::covreach::COVERING_LEAF_NODES);
+      (is_certificate_path(certificate) ? tchecker::algorithms::covreach::COVERING_LEAF_NODES
+                                        : tchecker::algorithms::covreach::COVERING_FULL);
 
   std::tie(stats, graph) =
       tchecker::tck_reach::zg_covreach::run(sysdecl, labels, search_order, covering, block_size, table_size);

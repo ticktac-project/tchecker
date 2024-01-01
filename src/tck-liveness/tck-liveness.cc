@@ -81,6 +81,13 @@ static std::size_t block_size = 10000;                    /*!< Size of allocated
 static std::size_t table_size = 65536;                    /*!< Size of hash tables */
 
 /*!
+ \brief Check if expected certificate is a path
+ \param ctype : certificate type
+ \return true if ctype is a path, false otherwise
+ */
+static bool is_certificate_path(enum certificate_t ctype) { return (ctype == CERTIFICATE_SYMBOLIC); }
+
+/*!
  \brief Parse command-line arguments
  \param argc : number of arguments
  \param argv : array of arguments
@@ -209,7 +216,7 @@ void couvscc(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sy
 {
   std::string::difference_type labels_count = std::count(labels.begin(), labels.end(), ',') + 1;
 
-  if (certificate == CERTIFICATE_SYMBOLIC && labels_count > 1)
+  if (is_certificate_path(certificate) && labels_count > 1)
     throw std::runtime_error(
         "*** tck_liveness: cannot compute symbolic counter example with more than 1 label (use graph instead)");
 
