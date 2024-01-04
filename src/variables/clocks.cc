@@ -164,7 +164,9 @@ public:
   {
     try {
       tchecker::clock_id_t clock = clock_id(e.clock());
-      tchecker::integer_t value = tchecker::const_evaluate(e.bound());
+      auto && [evaluated, value] = tchecker::const_evaluate(e.bound());
+      if (!evaluated)
+        throw;
       add_constraints(clock, tchecker::REFCLOCK_ID, e.binary_operator(), value);
     }
     catch (...) {
@@ -180,7 +182,9 @@ public:
     try {
       tchecker::clock_id_t first = clock_id(e.first_clock());
       tchecker::clock_id_t second = clock_id(e.second_clock());
-      tchecker::integer_t value = tchecker::const_evaluate(e.bound());
+      auto && [evaluated, value] = tchecker::const_evaluate(e.bound());
+      if (!evaluated)
+        throw;
       add_constraints(first, second, e.binary_operator(), value);
     }
     catch (...) {

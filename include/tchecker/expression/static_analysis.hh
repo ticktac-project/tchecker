@@ -25,22 +25,22 @@ namespace tchecker {
 // Constant expression evaluation
 
 /*!
- \brief Evaluate a constant expression
- \param expr : expression to evaluate
- \return value of expr
- \throw std::invalid_argument : if expr is not a constant expression (i.e. it contains variables)
- \throw std::runtime_error : should never happen (code safety)
+ \brief Evaluate an expression
+ \param expr : expression
+ \return a pair <evaluated, value> where `evaluated` is true if `expr` can be evaluated (i.e. does not
+ contains any variable), false otherwise.
+ `value` containes the value of `expr` if it can be evaluated
  */
-tchecker::integer_t const_evaluate(tchecker::expression_t const & expr);
+std::tuple<bool, tchecker::integer_t> const_evaluate(tchecker::expression_t const & expr);
 
 /*!
  \brief Evaluate a constant expression
  \param expr : expression to evaluate
- \param value : a value
- \return value of expr if expr is a constant expression (i.e. it does not contain any variable), value otherwise
- \throw std::runtime_error : should never happen (code safety)
+ \param default_value : default value
+ \return the value of expr if expr is a constant expression (i.e. it does not contain any variable),
+ default_value otherwise
  */
-tchecker::integer_t const_evaluate(tchecker::expression_t const & expr, tchecker::integer_t value);
+tchecker::integer_t const_evaluate(tchecker::expression_t const & expr, tchecker::integer_t default_value);
 
 // Variable IDs extraction
 

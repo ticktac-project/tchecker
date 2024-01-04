@@ -205,30 +205,23 @@ protected:
 
 /* const_evaluate */
 
-tchecker::integer_t const_evaluate(tchecker::expression_t const & expr)
+std::tuple<bool, tchecker::integer_t> const_evaluate(tchecker::expression_t const & expr)
 {
   tchecker::details::const_expression_evaluator_t evaluator;
 
   try {
     expr.visit(evaluator);
-    return evaluator.value();
+    return std::make_tuple(true, evaluator.value());
   }
   catch (...) {
-    throw;
   }
+  return std::make_tuple(false, 0);
 }
 
-tchecker::integer_t const_evaluate(tchecker::expression_t const & expr, tchecker::integer_t value)
+tchecker::integer_t const_evaluate(tchecker::expression_t const & expr, tchecker::integer_t default_value)
 {
-  try {
-    return const_evaluate(expr);
-  }
-  catch (std::invalid_argument const & e) {
-    return value;
-  }
-  catch (...) {
-    throw;
-  }
+  auto && [evaluated, computed_value] = const_evaluate(expr);
+  return (evaluated ? computed_value : default_value);
 }
 
 // Base variable extraction
@@ -344,14 +337,10 @@ public:
   {
     expr.variable().visit(*this);
     // adjust the range of IDs if the offset of expr can be statically computed
-    try {
-      tchecker::integer_t offset = tchecker::const_evaluate(expr.offset());
-      if ((0 <= offset) && (offset < (tchecker::integer_t)_size)) {
-        _first += offset;
-        _size = 1;
-      }
-    }
-    catch (...) {
+    auto && [evaluated, offset] = tchecker::const_evaluate(expr.offset());
+    if (evaluated && (0 <= offset) && (offset < (tchecker::integer_t)_size)) {
+      _first += offset;
+      _size = 1;
     }
     _variable_type = expr.variable().type();
   }
@@ -594,17 +583,14 @@ public:
 
     // add base variables depending on const evaluation of offset
     tchecker::typed_var_expression_t const & expr_variable = expr.variable();
-    tchecker::integer_t offset;
-    try {
-      offset = tchecker::const_evaluate(expr.offset());
-    }
-    catch (...) {
+    auto && [evaluated, offset] = tchecker::const_evaluate(expr.offset());
+    if (evaluated)
+      extract_variable_with_type(expr_variable.id() + offset, expr_variable.type());
+    else {
       tchecker::integer_t size = static_cast<tchecker::integer_t>(expr_variable.size());
       for (offset = 0; offset < size; ++offset)
         extract_variable_with_type(expr_variable.id() + offset, expr_variable.type());
-      return;
     }
-    extract_variable_with_type(expr_variable.id() + offset, expr_variable.type());
   }
 
   /* Other visitors (recursion) */

@@ -271,15 +271,14 @@ public:
       _error("local variable already exists as a global one: " + name);
     }
     else {
-      try {
-        auto size = tchecker::const_evaluate(stmt.size());
+      auto && [evaluated, size] = tchecker::const_evaluate(stmt.size());
+      if (evaluated) {
         stmt_type = tchecker::STMT_TYPE_LOCAL_ARRAY;
         szexpr = std::make_shared<tchecker::typed_int_expression_t>(EXPR_TYPE_INTTERM, size);
         _localvars.declare(name, size, tchecker::int_minval, tchecker::int_maxval, 0);
       }
-      catch (...) {
+      else
         _error("can't compute array size:" + stmt.to_string());
-      }
     }
     auto variable = std::dynamic_pointer_cast<tchecker::typed_var_expression_t const>(
         tchecker::typecheck(stmt.variable(), _localvars, _intvars, _clocks, _error));
