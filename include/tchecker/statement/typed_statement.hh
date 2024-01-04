@@ -296,9 +296,21 @@ public:
 
   /*!
    \brief Accessor
+   \return shared pointer to clock expression x in x:=c
+   */
+  std::shared_ptr<tchecker::lvalue_expression_t const> clock_ptr() const;
+
+  /*!
+   \brief Accessor
    \return value expression (i.e. c in x:=c)
    */
   tchecker::typed_expression_t const & value() const;
+
+  /*!
+   \brief Accessor
+   \return shared pointer to value expression c in x:=c
+   */
+  std::shared_ptr<tchecker::typed_expression_t const> value_ptr() const;
 
   /*!
    \brief Clone
@@ -354,9 +366,21 @@ public:
 
   /*!
    \brief Accessor
+   \return shared pointer to lvalue clock expression x in x:=y
+   */
+  std::shared_ptr<tchecker::typed_lvalue_expression_t const> lclock_ptr() const;
+
+  /*!
+   \brief Accessor
    \return rvalue value expression (i.e. y in x:=y)
    */
   tchecker::typed_lvalue_expression_t const & rclock() const;
+
+  /*!
+   \brief Accessor
+   \return shared pointer to rvalue clock expression y in x:=y
+   */
+  std::shared_ptr<tchecker::typed_lvalue_expression_t const> rclock_ptr() const;
 
   /*!
    \brief Clone
@@ -412,15 +436,33 @@ public:
 
   /*!
    \brief Accessor
+   \return shared pointer to lvalue clock expression x in x:=c+y
+   */
+  std::shared_ptr<tchecker::typed_lvalue_expression_t const> lclock_ptr() const;
+
+  /*!
+   \brief Accessor
    \return rvalue clock expression (i.e. y in x:=c+y)
    */
   tchecker::typed_lvalue_expression_t const & rclock() const;
 
   /*!
    \brief Accessor
+   \return shared pointer to lvalue clock expression y in x:=c+y
+   */
+  std::shared_ptr<tchecker::typed_lvalue_expression_t const> rclock_ptr() const;
+
+  /*!
+   \brief Accessor
    \return value expression (i.e. c in x:=c+y)
    */
   tchecker::typed_expression_t const & value() const;
+
+  /*!
+   \brief Accessor
+   \return shared pointer to value expression c in x:=c+y
+   */
+  std::shared_ptr<tchecker::typed_expression_t const> value_ptr() const;
 
   /*!
    \brief Clone

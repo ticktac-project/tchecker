@@ -128,9 +128,19 @@ tchecker::typed_lvalue_expression_t const & typed_int_to_clock_assign_statement_
   return dynamic_cast<tchecker::typed_lvalue_expression_t const &>(lvalue());
 }
 
+std::shared_ptr<tchecker::lvalue_expression_t const> typed_int_to_clock_assign_statement_t::clock_ptr() const
+{
+  return lvalue_ptr();
+}
+
 tchecker::typed_expression_t const & typed_int_to_clock_assign_statement_t::value() const
 {
   return dynamic_cast<tchecker::typed_expression_t const &>(rvalue());
+}
+
+std::shared_ptr<tchecker::typed_expression_t const> typed_int_to_clock_assign_statement_t::value_ptr() const
+{
+  return rvalue_ptr();
 }
 
 tchecker::typed_int_to_clock_assign_statement_t * typed_int_to_clock_assign_statement_t::clone() const
@@ -166,9 +176,19 @@ tchecker::typed_lvalue_expression_t const & typed_clock_to_clock_assign_statemen
   return dynamic_cast<tchecker::typed_lvalue_expression_t const &>(lvalue());
 }
 
+std::shared_ptr<tchecker::typed_lvalue_expression_t const> typed_clock_to_clock_assign_statement_t::lclock_ptr() const
+{
+  return lvalue_ptr();
+}
+
 tchecker::typed_lvalue_expression_t const & typed_clock_to_clock_assign_statement_t::rclock() const
 {
   return dynamic_cast<tchecker::typed_lvalue_expression_t const &>(rvalue());
+}
+
+std::shared_ptr<tchecker::typed_lvalue_expression_t const> typed_clock_to_clock_assign_statement_t::rclock_ptr() const
+{
+  return std::dynamic_pointer_cast<tchecker::typed_lvalue_expression_t const>(rvalue_ptr());
 }
 
 tchecker::typed_clock_to_clock_assign_statement_t * typed_clock_to_clock_assign_statement_t::clone() const
@@ -204,16 +224,33 @@ tchecker::typed_lvalue_expression_t const & typed_sum_to_clock_assign_statement_
   return dynamic_cast<tchecker::typed_lvalue_expression_t const &>(lvalue());
 }
 
+std::shared_ptr<tchecker::typed_lvalue_expression_t const> typed_sum_to_clock_assign_statement_t::lclock_ptr() const
+{
+  return lvalue_ptr();
+}
+
 tchecker::typed_lvalue_expression_t const & typed_sum_to_clock_assign_statement_t::rclock() const
 {
   auto const & sum = dynamic_cast<tchecker::typed_binary_expression_t const &>(rvalue());
   return dynamic_cast<tchecker::typed_lvalue_expression_t const &>(sum.right_operand());
 }
 
+std::shared_ptr<tchecker::typed_lvalue_expression_t const> typed_sum_to_clock_assign_statement_t::rclock_ptr() const
+{
+  auto const & sum = dynamic_cast<tchecker::typed_binary_expression_t const &>(rvalue());
+  return std::dynamic_pointer_cast<tchecker::typed_lvalue_expression_t const>(sum.right_operand_ptr());
+}
+
 tchecker::typed_expression_t const & typed_sum_to_clock_assign_statement_t::value() const
 {
   auto const & sum = dynamic_cast<tchecker::typed_binary_expression_t const &>(rvalue());
   return dynamic_cast<tchecker::typed_expression_t const &>(sum.left_operand());
+}
+
+std::shared_ptr<tchecker::typed_expression_t const> typed_sum_to_clock_assign_statement_t::value_ptr() const
+{
+  auto const & sum = dynamic_cast<tchecker::typed_binary_expression_t const &>(rvalue());
+  return std::dynamic_pointer_cast<tchecker::typed_expression_t const>(sum.left_operand_ptr());
 }
 
 tchecker::typed_sum_to_clock_assign_statement_t * typed_sum_to_clock_assign_statement_t::clone() const
