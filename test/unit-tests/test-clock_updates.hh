@@ -25,8 +25,8 @@
 bool contains(tchecker::clock_updates_list_t const & l, tchecker::clock_id_t x, tchecker::integer_t c, int count = 1)
 {
   for (tchecker::clock_update_t const & upd : l) {
-    auto && [evaluated, value] = tchecker::const_evaluate(upd.value());
-    if (upd.clock_id() == x && evaluated && value == c)
+    tchecker::integer_t value = tchecker::const_evaluate(upd.value());
+    if (upd.clock_id() == x && value == c)
       --count;
   }
   return (count == 0);

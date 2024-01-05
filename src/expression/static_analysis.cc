@@ -203,6 +203,19 @@ protected:
 
 } // end of namespace details
 
+/* has_const_value */
+
+bool has_const_value(tchecker::expression_t const & expr)
+{
+  try {
+    const_evaluate(expr);
+  }
+  catch (...) {
+    return false;
+  }
+  return true;
+}
+
 /* const_evaluate */
 
 tchecker::integer_t const_evaluate(tchecker::expression_t const & expr)

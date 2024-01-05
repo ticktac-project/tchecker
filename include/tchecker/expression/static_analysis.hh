@@ -25,6 +25,13 @@ namespace tchecker {
 // Constant expression evaluation
 
 /*!
+ \brief Checks if an expression has a constant value
+ \param expr : expression
+ \return true if expr has a constant value, false otherwise
+ */
+bool has_const_value(tchecker::expression_t const & expr);
+
+/*!
  \brief Evaluate a constant expression
  \param expr : expression to evaluate
  \return value of expr

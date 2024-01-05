@@ -595,8 +595,7 @@ private:
                                        std::shared_ptr<tchecker::expression_t const> const & c)
   {
     tchecker::range_t<tchecker::variable_id_t> x_instances = tchecker::extract_lvalue_variable_ids(x);
-    auto && [evaluated, value] = tchecker::const_evaluate(*c);
-    if (evaluated) {
+    if (tchecker::has_const_value(*c)) {
       tchecker::clock_update_t x_upd{tchecker::REFCLOCK_ID, c};
       for (tchecker::clock_id_t z = x_instances.begin(); z != x_instances.end(); ++z)
         _u[z].absorbing_push_back(x_upd);
