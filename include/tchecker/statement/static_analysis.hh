@@ -11,6 +11,7 @@
 #include <unordered_set>
 
 #include "tchecker/basictypes.hh"
+#include "tchecker/statement/clock_updates.hh"
 #include "tchecker/statement/typed_statement.hh"
 
 /*!
@@ -71,6 +72,17 @@ struct has_clock_resets_t {
  \return types of clock resets contained in stmt
  */
 tchecker::has_clock_resets_t has_clock_resets(tchecker::typed_statement_t const & stmt);
+
+/*!
+ \brief Compute clock updates in a statement
+ \param clock_nb : number of clocks
+ \param stmt : statement
+ \pre every clock identifier in stmt is less than clock_nb
+ \return the clock updates map that associate to each clock in [0..clock_nb) the list of it potential updates
+ after execution of stmt. The list is empty if updates cannot be determined
+ \throw std::invalid_argument : if some clock identifier in stmt is bigger than or equal to clock_nb
+ */
+tchecker::clock_updates_map_t compute_clock_updates(std::size_t clock_nb, tchecker::typed_statement_t const & stmt);
 
 } // end of namespace tchecker
 
