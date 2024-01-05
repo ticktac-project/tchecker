@@ -23,9 +23,12 @@ bool has_guarded_weakly_synchronized_event(tchecker::ta::system_t const & system
 
   for (tchecker::system::edge_const_shared_ptr_t const & edge : system.edges()) {
     if (weakly_sync_map.contains(edge->pid(), edge->event_id())) {
-      auto && [evaluated, value] = tchecker::const_evaluate(system.guard(edge->id()));
-      if (!evaluated)
+      try {
+        tchecker::const_evaluate(system.guard(edge->id()));
+      }
+      catch (...) {
         return true;
+      }
     }
   }
   return false;
