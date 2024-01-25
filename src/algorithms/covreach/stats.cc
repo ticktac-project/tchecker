@@ -14,7 +14,7 @@ namespace tchecker {
 namespace algorithms {
 namespace covreach {
 
-stats_t::stats_t() : _visited_states(0), _visited_transitions(0), _covered_states(0), _reachable(false) {}
+stats_t::stats_t() : _visited_states(0), _visited_transitions(0), _covered_states(0), _stored_states(0), _reachable(false) {}
 
 unsigned long & stats_t::visited_states() { return _visited_states; }
 

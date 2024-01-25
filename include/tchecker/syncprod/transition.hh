@@ -51,9 +51,9 @@ public:
   transition_t(tchecker::syncprod::transition_t const &) = delete;
 
   /*!
-   \brief Move constructor (deleted)
+   \brief Move constructor
    */
-  transition_t(tchecker::syncprod::transition_t &&) = delete;
+  transition_t(tchecker::syncprod::transition_t &&) = default;
 
   /*!
    \brief Destructor
@@ -63,10 +63,10 @@ public:
   /*!
    \brief Assignment operator (deleted)
    */
-  tchecker::syncprod::transition_t & operator=(tchecker::syncprod::transition_t const &) = default;
+  tchecker::syncprod::transition_t & operator=(tchecker::syncprod::transition_t const &) = delete;
 
   /*!
-   \brief Move-assignment operator (deleted)
+   \brief Move-assignment operator
    */
   tchecker::syncprod::transition_t & operator=(tchecker::syncprod::transition_t &&) = default;
 
