@@ -191,7 +191,7 @@ public:
   virtual void remove_first()
   {
     remove_non_waiting_first();
-    assert(!empty());
+    assert(!_w.empty());
     _w.first()->_status = tchecker::waiting::NOT_WAITING;
     _w.remove_first();
   }
@@ -204,7 +204,7 @@ public:
   virtual typename W::element_t const & first()
   {
     remove_non_waiting_first();
-    assert(!empty());
+    assert(!_w.empty());
     assert(_w.first()->_status == tchecker::waiting::WAITING);
     return _w.first();
   }

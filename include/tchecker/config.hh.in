@@ -9,5 +9,6 @@
 #define TCHECKER_CONFIG_HH
 
 #cmakedefine INTEGER_T_SIZE @INTEGER_T_SIZE@
+#cmakedefine USE_BOOST_JSON @USE_BOOST_JSON@
 
 #endif // TCHECKER_CONFIG_HH

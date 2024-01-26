@@ -85,7 +85,7 @@ public:
   /*!
    \brief Destructor
    */
-  ~attributes_parser_t() = default;
+  virtual ~attributes_parser_t() = default;
 
   /*!
    \brief Assignment operator

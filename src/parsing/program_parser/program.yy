@@ -27,11 +27,11 @@
   #include <string>
   #include <tuple>
   
-  #include "tchecker/basictypes.hh"
   #include "tchecker/expression/expression.hh"
   #include "tchecker/parsing/parsing.hh"
   #include "tchecker/statement/statement.hh"
   #include "tchecker/utils/log.hh"
+  #include "tchecker/basictypes.hh"
 }
 
 

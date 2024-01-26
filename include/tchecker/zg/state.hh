@@ -76,9 +76,9 @@ public:
   state_t(tchecker::zg::state_t const &) = delete;
 
   /*!
-   \brief Move constructor (deleted)
+   \brief Move constructor
    */
-  state_t(tchecker::zg::state_t &&) = delete;
+  state_t(tchecker::zg::state_t &&) = default;
 
   /*!
    \brief Destructor
@@ -88,10 +88,10 @@ public:
   /*!
    \brief Assignment operator (deleted)
    */
-  tchecker::zg::state_t & operator=(tchecker::zg::state_t const &) = default;
+  tchecker::zg::state_t & operator=(tchecker::zg::state_t const &) = delete;
 
   /*!
-   \brief Move-assignment operator (deleted)
+   \brief Move-assignment operator
    */
   tchecker::zg::state_t & operator=(tchecker::zg::state_t &&) = default;
 

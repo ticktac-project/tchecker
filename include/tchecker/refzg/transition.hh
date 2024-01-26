@@ -26,7 +26,47 @@ namespace refzg {
  */
 class transition_t : public tchecker::ta::transition_t {
 public:
-  using tchecker::ta::transition_t::transition_t;
+  /*!
+   \brief Constructor
+   \param vedge : tuple of edges
+   \pre vedge must not point to nullptr (checked by assertion)
+   */
+  explicit transition_t(tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge);
+
+  /*!
+   \brief Partial copy constructor
+   \param t : a transition
+   \param vedge : tuple of edges
+   \pre vedge must not point to nullptr (checked by assertion)
+   \note the transition is copied from t, except the tuple of edges which is initialized from vedge
+   */
+  transition_t(tchecker::refzg::transition_t const & t,
+               tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge);
+
+  /*!
+   \brief Copy constructor (deleted)
+   */
+  transition_t(tchecker::refzg::transition_t const &) = delete;
+
+  /*!
+   \brief Move constructor
+   */
+  transition_t(tchecker::refzg::transition_t &&) = default;
+
+  /*!
+   \brief Destructor
+   */
+  ~transition_t() = default;
+
+  /*!
+   \brief Assignment operator (deleted)
+   */
+  tchecker::refzg::transition_t & operator=(tchecker::refzg::transition_t const &) = delete;
+
+  /*!
+   \brief Move-assignment operator
+   */
+  tchecker::refzg::transition_t & operator=(tchecker::refzg::transition_t &&) = default;
 };
 
 /*!
