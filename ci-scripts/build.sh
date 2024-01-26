@@ -6,6 +6,14 @@ fi
 
 set -eu
 
+SCRIPTDIR=$(cd $(dirname $0); pwd)
+SOURCEDIR=$(cd ${SCRIPTDIR}/..; pwd)
+
+if test $# = 1; then
+  BUILDDIR=$1
+else
+  BUILDDIR=build
+fi
 
 nbbits="32"
 memcheck="OFF"
@@ -50,13 +58,13 @@ TEST_CONF="${TEST_CONF} -DTCK_ENABLE_BUGFIXES_TESTS=${bugfixes}"
 
 echo "TEST_CONF=${TEST_CONF}"
 
-mkdir build || true
-cd build
+mkdir -p ${BUILDDIR} || true
+cd ${BUILDDIR}
 cmake -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} \
       -DCMAKE_CXX_COMPILER=${CXX} \
       -DCMAKE_BUILD_TYPE=${TCHECKER_BUILD_TYPE} \
       ${TEST_CONF} \
-      ..
+      ${SOURCEDIR}
 
 NB_CPUS=$(getconf _NPROCESSORS_CONF)
 exec make -j ${NB_CPUS}

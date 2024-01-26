@@ -230,7 +230,7 @@ public:
       auto && ok = _info.insert(std::make_pair(id, info)).second;
       if (!ok) {
         _index.erase(id);
-        throw;
+        throw std::invalid_argument("Variable " + name + " cannot be declared");
       }
     }
     catch (std::exception const & e) {

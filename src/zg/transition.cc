@@ -17,6 +17,21 @@ namespace tchecker {
 
 namespace zg {
 
+/* transition_t */
+
+transition_t::transition_t(tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge)
+    : tchecker::ta::transition_t(vedge)
+{
+}
+
+transition_t::transition_t(tchecker::zg::transition_t const & t,
+                           tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge)
+    : tchecker::ta::transition_t(t, vedge)
+{
+}
+
+/* functions */
+
 bool operator==(tchecker::zg::transition_t const & t1, tchecker::zg::transition_t const & t2)
 {
   return tchecker::ta::operator==(t1, t2);

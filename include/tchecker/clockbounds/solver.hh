@@ -164,17 +164,17 @@ public:
   void add_upper_bound_guard(tchecker::loc_id_t l, tchecker::clock_id_t x, tchecker::integer_t c);
 
   /*!
-  \brief Add a constraint for assignment y := x + c
+  \brief Add a constraint for assignment x := y + c
   \param l1 : source location ID
   \param l2 : target location ID
-  \param y : lvalue clock ID
-  \param x : rvalue clock ID
+  \param x : lvalue clock ID
+  \param y : rvalue clock ID
   \param c : constant
   \pre 0 <= l1, l2 < _loc_number (checked by assertion) and 0 <= y, x < _clock_number (checked by assertion)
-  \post The constraints L_{x,l1} >= L_{y,l2} - c   and   U_{x,l1} >= U_{y,l2} - c have been added to the
+  \post The constraints L_{y,l1} >= L_{x,l2} - c   and   U_{y,l1} >= U_{x,l2} - c have been added to the
   system of inequations
   */
-  void add_assignment(tchecker::loc_id_t l1, tchecker::loc_id_t l2, tchecker::clock_id_t y, tchecker::clock_id_t x,
+  void add_assignment(tchecker::loc_id_t l1, tchecker::loc_id_t l2, tchecker::clock_id_t x, tchecker::clock_id_t y,
                       tchecker::integer_t c);
 
   /*!

@@ -19,6 +19,17 @@ namespace ta {
 
 /* transition_t */
 
+transition_t::transition_t(tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge)
+    : tchecker::syncprod::transition_t(vedge)
+{
+}
+
+transition_t::transition_t(tchecker::ta::transition_t const & t,
+                           tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge)
+    : tchecker::syncprod::transition_t(t, vedge)
+{
+}
+
 tchecker::range_t<tchecker::clock_constraint_container_const_iterator_t> transition_t::src_invariant() const
 {
   return tchecker::make_range(_src_invariant.begin(), _src_invariant.end());
