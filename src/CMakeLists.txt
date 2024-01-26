@@ -7,7 +7,14 @@ set(Boost_USE_DEBUG_LIBS        OFF)  # ignore debug libs and
 set(Boost_USE_RELEASE_LIBS       ON)  # only find release libs
 set(Boost_USE_MULTITHREADED     OFF)
 set(Boost_USE_STATIC_RUNTIME    OFF)
-find_package(Boost REQUIRED COMPONENTS json)
+find_package(Boost OPTIONAL_COMPONENTS json)
+
+if(boost_json_DIR)
+  set(USE_BOOST_JSON 1)
+else()
+  message(NOTICE "*** JSON-based features are disabled")
+  set(USE_BOOST_JSON 0)
+endif()
 
 option(LIBTCHECKER_ENABLE_SHARED "Build TChecker shared library" OFF)
 

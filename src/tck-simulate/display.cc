@@ -4,8 +4,10 @@
  * See files AUTHORS and LICENSE for copyright details.
  *
  */
-
+#include "tchecker/config.hh"
+#if USE_BOOST_JSON
 #include <boost/json.hpp>
+#endif
 
 #include "display.hh"
 
@@ -64,7 +66,7 @@ void hr_display_t::output(tchecker::zg::const_transition_sptr_t const & t)
 }
 
 /* json_display_t */
-
+#if USE_BOOST_JSON
 /*!
  \brief JSON representation of a state
  \param zg : zone graph
@@ -165,6 +167,7 @@ void json_display_t::output_next(tchecker::zg::const_state_sptr_t const & s, std
 {
   _os << tchecker::tck_simulate::json_next(*_zg, s, v) << std::endl;
 }
+#endif
 
 /* factory */
 
@@ -174,8 +177,10 @@ tchecker::tck_simulate::display_t * display_factory(enum tchecker::tck_simulate:
   switch (display_type) {
   case tchecker::tck_simulate::HUMAN_READABLE_DISPLAY:
     return new tchecker::tck_simulate::hr_display_t{os, zg};
+#if USE_BOOST_JSON
   case tchecker::tck_simulate::JSON_DISPLAY:
     return new tchecker::tck_simulate::json_display_t{os, zg};
+#endif
   default:
     throw std::runtime_error("This should never occur: switch statement is not complete");
   }

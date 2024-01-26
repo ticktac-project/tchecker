@@ -5,6 +5,7 @@
  *
  */
 
+#include "tchecker/config.hh"
 #include <cstring>
 #include <fstream>
 #include <getopt.h>
@@ -12,22 +13,27 @@
 #include <map>
 #include <memory>
 #include <string>
-
+#if USE_BOOST_JSON
 #include <boost/json.hpp>
-
+#endif
 #include "simulate.hh"
-#include "tchecker/parsing/parsing.hh"
-#include "tchecker/utils/log.hh"
 
 /*!
  \file tck-simulate.cc
  \brief Command-line simulator for TChecker timed automata models
  */
 
-static struct option long_options[] = {
-    {"interactive", no_argument, 0, 'i'}, {"json", no_argument, 0, 0},           {"random", required_argument, 0, 'r'},
-    {"onestep", no_argument, 0, '1'},     {"output", required_argument, 0, 'o'}, {"state", required_argument, 0, 's'},
-    {"trace", no_argument, 0, 't'},       {"help", no_argument, 0, 'h'},         {0, 0, 0, 0}};
+static struct option long_options[] = {{"interactive", no_argument, 0, 'i'},
+                                       {"random", required_argument, 0, 'r'},
+                                       {"onestep", no_argument, 0, '1'},
+                                       {"output", required_argument, 0, 'o'},
+                                       {"trace", no_argument, 0, 't'},
+                                       {"help", no_argument, 0, 'h'},
+#if USE_BOOST_JSON
+                                       {"state", required_argument, 0, 's'},
+                                       {"json", no_argument, 0, 0},
+#endif
+                                       {0, 0, 0, 0}};
 
 static char * const options = (char *)"1ir:ho:s:t";
 
@@ -39,13 +45,15 @@ void usage(char * progname)
   std::cerr << "Usage: " << progname << " [options] [file]" << std::endl;
   std::cerr << "   -1          one-step simulation (output initial or next states if combined with -s)" << std::endl;
   std::cerr << "   -i          interactive simulation (default)" << std::endl;
-  std::cerr << "   --json      display states/transitions in JSON format" << std::endl;
   std::cerr << "   -r N        randomized simulation, N steps" << std::endl;
   std::cerr << "   -o file     output file for simulation trace (default: stdout)" << std::endl;
+#if USE_BOOST_JSON
+  std::cerr << "   --json      display states/transitions in JSON format" << std::endl;
   std::cerr << "   -s state    starting state, specified as a JSON object with keys vloc, intval and zone" << std::endl;
   std::cerr << "               vloc: comma-separated list of location names (one per process), in-between < and >" << std::endl;
   std::cerr << "               intval: comma-separated list of assignments (one per integer variable)" << std::endl;
   std::cerr << "               zone: conjunction of clock-constraints (following TChecker expression syntax)" << std::endl;
+#endif
   std::cerr << "   -t          output simulation trace, incompatible with -1" << std::endl;
   std::cerr << "   -h          help" << std::endl;
   std::cerr << "reads from standard input if file is not provided" << std::endl;
@@ -123,9 +131,11 @@ int parse_command_line(int argc, char * argv[])
       }
     }
     else {
+#if USE_BOOST_JSON
       if (strcmp(long_options[long_option_index].name, "json") == 0)
         display_type = tchecker::tck_simulate::JSON_DISPLAY;
       else
+#endif
         throw std::runtime_error("This also should never be executed");
     }
   }
@@ -154,6 +164,7 @@ std::shared_ptr<tchecker::parsing::system_declaration_t> load_system(std::string
   return std::shared_ptr<tchecker::parsing::system_declaration_t>(sysdecl);
 }
 
+#if USE_BOOST_JSON
 /*!
  \brief Parse JSON description of state as a map of attributes
  \param state_json : JSON description of state
@@ -188,6 +199,7 @@ std::map<std::string, std::string> parse_state_json(std::string const & state_js
   attributes["zone"] = value_as_string(json_obj, "zone");
   return attributes;
 }
+#endif
 
 /*!
  \brief Main function
@@ -226,9 +238,10 @@ int main(int argc, char * argv[])
       os = new std::ofstream(output_filename, std::ios::out);
 
     std::map<std::string, std::string> starting_state_attributes;
+#if USE_BOOST_JSON
     if (starting_state_json != "")
       starting_state_attributes = parse_state_json(starting_state_json);
-
+#endif
     std::shared_ptr<tchecker::tck_simulate::graph_t> g{nullptr};
     if (simulation_type == INTERACTIVE_SIMULATION)
       g = tchecker::tck_simulate::interactive_simulation(*sysdecl, display_type, starting_state_attributes);
