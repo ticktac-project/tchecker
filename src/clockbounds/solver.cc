@@ -11,7 +11,9 @@
 
 #include "tchecker/clockbounds/solver.hh"
 #include "tchecker/expression/static_analysis.hh"
-
+#include "tchecker/statement/clock_updates.hh"
+#include "tchecker/statement/static_analysis.hh"
+#include "tchecker/utils/log.hh"
 namespace tchecker {
 
 namespace clockbounds {
@@ -152,10 +154,19 @@ void df_solver_t::add_assignment(tchecker::loc_id_t l1, tchecker::loc_id_t l2, t
   assert(l1 < _loc_number);
   assert(l2 < _loc_number);
   assert(x < _clock_number);
-  assert(y < _clock_number);
+  assert(y < _clock_number || y == tchecker::REFCLOCK_ID);
+
+  // If const assignment, nothing to do
+  if (y == tchecker::REFCLOCK_ID)
+    return;
+
   // Propagation over the edge: L_{l2,x} - L_{l1,y} <= c / U_{l2,x} - U_{l1,xy} <= c
   updateL(index(l2, x), index(l1, y), tchecker::LE, c);
   updateU(index(l2, x), index(l1, y), tchecker::LE, c);
+
+  // We need to propagate shared variables only when x != y
+  if (x == y)
+    return;
 
   // Propagation across processes: L_{m,x} - L_{l1,y} <= c / U_{m,x} - U_{l1,y} <= c
   // for every location m in another process
@@ -164,16 +175,6 @@ void df_solver_t::add_assignment(tchecker::loc_id_t l1, tchecker::loc_id_t l2, t
       updateL(index(m, x), index(l1, y), tchecker::LE, c);
       updateU(index(m, x), index(l1, y), tchecker::LE, c);
     }
-}
-
-void df_solver_t::add_no_assignement(tchecker::loc_id_t l1, tchecker::loc_id_t l2, tchecker::clock_id_t x)
-{
-  assert(l1 < _loc_number);
-  assert(l2 < _loc_number);
-  assert(x < _clock_number);
-  // L_{l2,x} - L_{l1,x} <= 0
-  updateL(index(l2, x), index(l1, x), tchecker::LE, 0);
-  updateU(index(l2, x), index(l1, x), tchecker::LE, 0);
 }
 
 bool df_solver_t::solve(tchecker::clockbounds::local_lu_map_t & map)
@@ -261,11 +262,11 @@ bool df_solver_t::ensure_tight()
 }
 
 /*!
-\class df_solver_updater_t
-\brief Update solver constraints from expressions and statements
+\class df_solver_expr_updater_t
+\brief Update solver constraints from expressions
 \see tchecker::clockbounds::df_solver_t for constraints generated from expressions
 */
-class df_solver_updater_t : public tchecker::typed_expression_visitor_t, public tchecker::typed_statement_visitor_t {
+class df_solver_expr_updater_t : public tchecker::typed_expression_visitor_t {
 public:
   /*!
   \brief Constructor
@@ -274,8 +275,8 @@ public:
   \param solver : a solver
   \note this updates constraints in solver for locations src and tgt
   */
-  df_solver_updater_t(tchecker::loc_id_t src, tchecker::loc_id_t tgt,
-                      std::shared_ptr<tchecker::clockbounds::df_solver_t> const & solver)
+  df_solver_expr_updater_t(tchecker::loc_id_t src, tchecker::loc_id_t tgt,
+                           std::shared_ptr<tchecker::clockbounds::df_solver_t> const & solver)
       : _src(src), _tgt(tgt), _solver(solver)
   {
   }
@@ -285,7 +286,7 @@ public:
   \param updater : an updater
   \post this is a copy of updater
   */
-  df_solver_updater_t(tchecker::clockbounds::df_solver_updater_t const & updater)
+  df_solver_expr_updater_t(tchecker::clockbounds::df_solver_expr_updater_t const & updater)
       : _src(updater._src), _tgt(updater._tgt), _solver(updater._solver)
   {
   }
@@ -295,7 +296,7 @@ public:
   \param updater : an updater
   \post updater has been moved to this
   */
-  df_solver_updater_t(tchecker::clockbounds::df_solver_updater_t && updater)
+  df_solver_expr_updater_t(tchecker::clockbounds::df_solver_expr_updater_t && updater)
       : _src(std::move(updater._src)), _tgt(std::move(updater._tgt)), _solver(std::move(updater._solver))
   {
   }
@@ -303,7 +304,7 @@ public:
   /*!
   \brief Destructor
   */
-  ~df_solver_updater_t() = default;
+  virtual ~df_solver_expr_updater_t() = default;
 
   /*!
   \brief Assignment operator
@@ -311,7 +312,7 @@ public:
   \post this is a copy of updater
   \return this
   */
-  tchecker::clockbounds::df_solver_updater_t & operator=(tchecker::clockbounds::df_solver_updater_t const & updater)
+  tchecker::clockbounds::df_solver_expr_updater_t & operator=(tchecker::clockbounds::df_solver_expr_updater_t const & updater)
   {
     if (this != &updater) {
       _src = updater._src;
@@ -327,7 +328,7 @@ public:
   \post updater has been moved to this
   \return this
   */
-  tchecker::clockbounds::df_solver_updater_t & operator=(tchecker::clockbounds::df_solver_updater_t && updater)
+  tchecker::clockbounds::df_solver_expr_updater_t & operator=(tchecker::clockbounds::df_solver_expr_updater_t && updater)
   {
     if (this != &updater) {
       _src = std::move(updater._src);
@@ -341,7 +342,7 @@ public:
   \brief Visitor
   \post left and right operand have been visited if expr is a logical-and expression
   */
-  virtual void visit(tchecker::typed_binary_expression_t const & expr)
+  virtual void visit(tchecker::typed_binary_expression_t const & expr) override
   {
     if (expr.binary_operator() == tchecker::EXPR_OP_LAND) {
       expr.left_operand().visit(*this);
@@ -353,7 +354,7 @@ public:
   \brief Visitor
   \post sub-expression has been visited
   */
-  virtual void visit(tchecker::typed_par_expression_t const & expr) { expr.expr().visit(*this); }
+  virtual void visit(tchecker::typed_par_expression_t const & expr) override { expr.expr().visit(*this); }
 
   /*!
   \brief Visitor
@@ -362,7 +363,7 @@ public:
   an upper-bound guard (x<c, x<=c, x==c), then a constraint on clock upper bounds has been added to _solver for
   every clock x (x could be an array) w.r.t. bound c (using method add_upper_bound_guard).
   */
-  virtual void visit(tchecker::typed_simple_clkconstr_expression_t const & expr)
+  virtual void visit(tchecker::typed_simple_clkconstr_expression_t const & expr) override
   {
     tchecker::range_t<tchecker::clock_id_t> clocks = tchecker::extract_lvalue_variable_ids(expr.clock());
     tchecker::integer_t bound = tchecker::const_evaluate(expr.bound(), tchecker::clockbounds::MAX_BOUND);
@@ -384,92 +385,18 @@ public:
   \brief Visitor
   \throw std::runtime_error : as diagonal constraints are not supported by diagonal-free solver
   */
-  virtual void visit(tchecker::typed_diagonal_clkconstr_expression_t const & expr)
+  virtual void visit(tchecker::typed_diagonal_clkconstr_expression_t const & expr) override
   {
     throw std::runtime_error("unsupported diagonal constraints");
   }
 
-  // Other visitors on expressions
-  virtual void visit(tchecker::typed_int_expression_t const &) {}
-  virtual void visit(tchecker::typed_var_expression_t const &) {}
-  virtual void visit(tchecker::typed_bounded_var_expression_t const &) {}
-  virtual void visit(tchecker::typed_array_expression_t const &) {}
-  virtual void visit(tchecker::typed_unary_expression_t const &) {}
-  virtual void visit(tchecker::typed_ite_expression_t const &) {}
-
-  /*!
-  \brief Visitor
-  \post first and second statements have been visited
-  */
-  virtual void visit(tchecker::typed_sequence_statement_t const & stmt)
-  {
-    stmt.first().visit(*this);
-    stmt.second().visit(*this);
-  }
-
-  /*!
-  \brief Visitor
-  \post condition expression, then_stmt, else_stmt are visited
-  */
-  virtual void visit(tchecker::typed_if_statement_t const & stmt)
-  {
-    stmt.condition().visit(*this);
-    stmt.then_stmt().visit(*this);
-    stmt.else_stmt().visit(*this);
-  }
-
-  /*!
-  \brief Visitor
-  \post condition expression and stmt statement are visited
-  */
-  virtual void visit(tchecker::typed_while_statement_t const & stmt)
-  {
-    stmt.condition().visit(*this);
-    stmt.statement().visit(*this);
-  }
-
-  /*!
-  \brief Visitor
-  \post No constraint generated for clock assignment x:=c
-  */
-  virtual void visit(tchecker::typed_int_to_clock_assign_statement_t const &) {}
-
-  /*!
-  \brief Visitor
-  \post For assignment x:=y, a constraint for every clock x (x could be an array) and every clock y (y could be
-  an array) has been added to _solver using method add_assignment
-  */
-  virtual void visit(tchecker::typed_clock_to_clock_assign_statement_t const & stmt)
-  {
-    tchecker::range_t<tchecker::clock_id_t> lclocks = tchecker::extract_lvalue_variable_ids(stmt.lclock());
-    tchecker::range_t<tchecker::clock_id_t> rclocks = tchecker::extract_lvalue_variable_ids(stmt.rclock());
-
-    for (tchecker::clock_id_t lclock = lclocks.begin(); lclock != lclocks.end(); ++lclock)
-      for (tchecker::clock_id_t rclock = rclocks.begin(); rclock != rclocks.end(); ++rclock)
-        _solver->add_assignment(_src, _tgt, lclock, rclock, 0);
-  }
-
-  /*!
-  \brief Visitor
-  \post For assignment x:=y+c, a constraint for every clock x (x could be an array) and every clock y (y could be
-  an array) using value c has been added to _solver using method add_assignment
-  */
-  virtual void visit(tchecker::typed_sum_to_clock_assign_statement_t const & stmt)
-  {
-    tchecker::range_t<tchecker::clock_id_t> lclocks = tchecker::extract_lvalue_variable_ids(stmt.lclock());
-    tchecker::range_t<tchecker::clock_id_t> rclocks = tchecker::extract_lvalue_variable_ids(stmt.rclock());
-    tchecker::integer_t value = tchecker::const_evaluate(stmt.value(), 0); // 0 is worst estimation w.r.t. constraints
-
-    for (tchecker::clock_id_t lclock = lclocks.begin(); lclock != lclocks.end(); ++lclock)
-      for (tchecker::clock_id_t rclock = rclocks.begin(); rclock != rclocks.end(); ++rclock)
-        _solver->add_assignment(_src, _tgt, lclock, rclock, value);
-  }
-
-  // Other visitors on statements
-  virtual void visit(tchecker::typed_nop_statement_t const &) {}
-  virtual void visit(tchecker::typed_assign_statement_t const &) {}
-  virtual void visit(tchecker::typed_local_var_statement_t const & stmt) {}
-  virtual void visit(tchecker::typed_local_array_statement_t const & stmt) {}
+  // Other visitors
+  virtual void visit(tchecker::typed_int_expression_t const &) override {}
+  virtual void visit(tchecker::typed_var_expression_t const &) override {}
+  virtual void visit(tchecker::typed_bounded_var_expression_t const &) override {}
+  virtual void visit(tchecker::typed_array_expression_t const &) override {}
+  virtual void visit(tchecker::typed_unary_expression_t const &) override {}
+  virtual void visit(tchecker::typed_ite_expression_t const &) override {}
 
 protected:
   tchecker::loc_id_t _src;                                     /*!< Source location ID */
@@ -477,123 +404,12 @@ protected:
   std::shared_ptr<tchecker::clockbounds::df_solver_t> _solver; /*!< Solver */
 };
 
-/*!
-  \class assigned_clocks_extractor_t
-  \brief Computes the set of clock IDs that are *surely* assigned in a statement. While it is possible to determine
-  the ID of a clocks that is assigned when the lvalue is a single clock (i.e. x := e), this is not possible when the
-  lvalue base variable is an array (i.e. y[e] := f). This class computes the set of clocks that are assigned and that
-  can be identified. In the example above, x is such a clock, while y is not, unless expression e is a constant
-  expression that can be evaluated statically, then we can identify which cell of array y is assigned
-*/
-template <class INSERT_ITERATOR> class assigned_clocks_extractor_t : public tchecker::typed_statement_visitor_t {
-public:
-  /*!
-  \brief Constructor
-  */
-  assigned_clocks_extractor_t(INSERT_ITERATOR & inserter) : _inserter(inserter) {}
-
-  /*!
-  \brief Copy constructor
-  */
-  assigned_clocks_extractor_t(tchecker::clockbounds::assigned_clocks_extractor_t<INSERT_ITERATOR> const &) = default;
-
-  /*!
-  \brief Move constructor
-  */
-  assigned_clocks_extractor_t(tchecker::clockbounds::assigned_clocks_extractor_t<INSERT_ITERATOR> &&) = default;
-
-  /*!
-  \brief Destructor
-  */
-  virtual ~assigned_clocks_extractor_t() = default;
-
-  /*!
-  \brief Assignment operator
-  */
-  tchecker::clockbounds::assigned_clocks_extractor_t<INSERT_ITERATOR> &
-  operator=(tchecker::clockbounds::assigned_clocks_extractor_t<INSERT_ITERATOR> const &) = default;
-
-  /*!
-  \brief Move assignment operator
-  */
-  tchecker::clockbounds::assigned_clocks_extractor_t<INSERT_ITERATOR> &
-  operator=(tchecker::clockbounds::assigned_clocks_extractor_t<INSERT_ITERATOR> &&) = default;
-
-  /*!
-  \brief Visitor
-  \post first and second statements have been visited
-  */
-  virtual void visit(tchecker::typed_sequence_statement_t const & stmt)
-  {
-    stmt.first().visit(*this);
-    stmt.second().visit(*this);
-  }
-
-  /*!
-  \brief Visitor
-  \post then_stmt and else_stmt statements have been visited
-  */
-  virtual void visit(tchecker::typed_if_statement_t const & stmt)
-  {
-    stmt.then_stmt().visit(*this);
-    stmt.else_stmt().visit(*this);
-  }
-
-  /*!
-  \brief Visitor
-  \post stmt statement has been visited
-  */
-  virtual void visit(tchecker::typed_while_statement_t const & stmt) { stmt.statement().visit(*this); }
-
-  /*!
-  \brief Visitor
-  \post the base clock of the lvalue of stmt has been inserted if its ID can be determined
-  */
-  virtual void visit(tchecker::typed_int_to_clock_assign_statement_t const & stmt)
-  {
-    tchecker::range_t<tchecker::variable_id_t> range = tchecker::extract_lvalue_variable_ids(stmt.clock());
-    if (range.begin() + 1 == range.end())
-      _inserter = range.begin();
-  }
-
-  /*!
-  \brief Visitor
-  \post the base clock of the lvalue of stmt has been inserted if its ID can be determined
-  */
-  virtual void visit(tchecker::typed_clock_to_clock_assign_statement_t const & stmt)
-  {
-    tchecker::range_t<tchecker::variable_id_t> range = tchecker::extract_lvalue_variable_ids(stmt.lclock());
-    if (range.begin() + 1 == range.end())
-      _inserter = range.begin();
-  }
-
-  /*!
-  \brief Visitor
-  \post the base clock of the lvalue of stmt has been inserted if its ID can be determined
-  */
-  virtual void visit(tchecker::typed_sum_to_clock_assign_statement_t const & stmt)
-  {
-    tchecker::range_t<tchecker::variable_id_t> range = tchecker::extract_lvalue_variable_ids(stmt.lclock());
-    if (range.begin() + 1 == range.end())
-      _inserter = range.begin();
-  }
-
-  // Other visitors
-  virtual void visit(tchecker::typed_nop_statement_t const &) {}
-  virtual void visit(tchecker::typed_assign_statement_t const &) {}
-  virtual void visit(tchecker::typed_local_var_statement_t const & stmt) {}
-  virtual void visit(tchecker::typed_local_array_statement_t const & stmt) {}
-
-protected:
-  INSERT_ITERATOR & _inserter; /*!< Inserter for assigned clock IDs */
-};
-
 /* add location/edge constraints to solver */
 
 void add_location_constraints(tchecker::typed_expression_t const & inv, tchecker::loc_id_t loc,
                               std::shared_ptr<tchecker::clockbounds::df_solver_t> const & solver)
 {
-  tchecker::clockbounds::df_solver_updater_t updater(loc, loc, solver);
+  tchecker::clockbounds::df_solver_expr_updater_t updater(loc, loc, solver);
   inv.visit(updater);
 }
 
@@ -601,39 +417,46 @@ void add_edge_constraints(tchecker::typed_expression_t const & guard, tchecker::
                           tchecker::loc_id_t src, tchecker::loc_id_t tgt,
                           std::shared_ptr<tchecker::clockbounds::df_solver_t> const & solver)
 {
-  // guard and statement
-  tchecker::clockbounds::df_solver_updater_t updater(src, tgt, solver);
+  // guard
+  tchecker::clockbounds::df_solver_expr_updater_t updater(src, tgt, solver);
   guard.visit(updater);
-  stmt.visit(updater);
 
-  // unassigned clocks
-  std::unordered_set<tchecker::clock_id_t> assigned_clocks;
-  auto assigned_clocks_inserter = std::inserter(assigned_clocks, assigned_clocks.begin());
-  tchecker::clockbounds::assigned_clocks_extractor_t extractor(assigned_clocks_inserter);
-  stmt.visit(extractor);
+  // clock updates from statement
+  tchecker::clock_id_t const clock_nb = solver->clock_number();
+  tchecker::clock_updates_map_t clock_updates = tchecker::compute_clock_updates(clock_nb, stmt);
 
-  tchecker::clock_id_t clock_number = solver->clock_number();
-  for (tchecker::clock_id_t clock = 0; clock < clock_number; ++clock)
-    if (assigned_clocks.find(clock) == assigned_clocks.end()) // clock is not assigned
-      solver->add_no_assignement(src, tgt, clock);
+  for (tchecker::clock_id_t x = 0; x < clock_nb; ++x) {
+    if (clock_updates[x].empty())
+      throw std::runtime_error("Cannot compute clock updates from statement");
+    for (auto && up : clock_updates[x]) {
+      tchecker::integer_t v = tchecker::const_evaluate(up.value(), 0); // 0 yields the strongest constraint on clock bounds
+      solver->add_assignment(src, tgt, x, up.clock_id(), v);
+    }
+  }
 }
 
 /* compute_clockbounds */
 
 bool compute_clockbounds(tchecker::ta::system_t const & system, tchecker::clockbounds::clockbounds_t & clockbounds)
 {
-  std::shared_ptr<tchecker::clockbounds::df_solver_t> solver{new tchecker::clockbounds::df_solver_t{system}};
+  try {
+    std::shared_ptr<tchecker::clockbounds::df_solver_t> solver{new tchecker::clockbounds::df_solver_t{system}};
 
-  for (tchecker::system::loc_const_shared_ptr_t const & loc : system.locations())
-    tchecker::clockbounds::add_location_constraints(system.invariant(loc->id()), loc->id(), solver);
+    for (tchecker::system::loc_const_shared_ptr_t const & loc : system.locations())
+      tchecker::clockbounds::add_location_constraints(system.invariant(loc->id()), loc->id(), solver);
 
-  for (tchecker::system::edge_const_shared_ptr_t const & edge : system.edges())
-    tchecker::clockbounds::add_edge_constraints(system.guard(edge->id()), system.statement(edge->id()), edge->src(),
-                                                edge->tgt(), solver);
+    for (tchecker::system::edge_const_shared_ptr_t const & edge : system.edges())
+      tchecker::clockbounds::add_edge_constraints(system.guard(edge->id()), system.statement(edge->id()), edge->src(),
+                                                  edge->tgt(), solver);
 
-  bool const has_solution = solver->solve(*clockbounds.local_lu_map());
-  if (!has_solution)
+    bool const has_solution = solver->solve(*clockbounds.local_lu_map());
+    if (!has_solution)
+      return false;
+  }
+  catch (std::exception const & e) {
+    std::cerr << tchecker::log_error << e.what() << std::endl;
     return false;
+  }
 
   tchecker::clockbounds::fill_global_lu_map(*clockbounds.global_lu_map(), *clockbounds.local_lu_map());
   tchecker::clockbounds::fill_local_m_map(*clockbounds.local_m_map(), *clockbounds.local_lu_map());

@@ -147,23 +147,17 @@ public:
   \param x : lvalue clock ID
   \param y : rvalue clock ID
   \param c : constant
-  \pre 0 <= l1, l2 < _loc_number (checked by assertion) and 0 <= y, x < _clock_number (checked by assertion)
+  \pre 0 <= l1, l2 < _loc_number (checked by assertion)
+  \pre 0 <= x < _clock_number (checked by assertion)
+  \pre 0 <= y < _clock_number or y == tchecker::REFCLOCK_ID (checked by assertion)
   \post The constraints L_{y,l1} >= L_{x,l2} - c   and   U_{y,l1} >= U_{x,l2} - c have been added to the
-  system of inequations
+  system of inequations if not const assignment (i.e. y != tchecker::REFCLOCK_ID)
+  The constraints L_{y,l1} >= L_{x,m} - c   and   U_{y,l1} >= U_{x,m} - c have been added to the
+  system of inequations for any location m that does not belong to the same process than l1, if not consr
+  assignment (y != tchecker::REFCLOCK_ID) and not identity (i.e. y!=x or c!=0)
   */
   void add_assignment(tchecker::loc_id_t l1, tchecker::loc_id_t l2, tchecker::clock_id_t x, tchecker::clock_id_t y,
                       tchecker::integer_t c);
-
-  /*!
-  \brief Add a constraint no assignment
-  \param l1 : source location
-  \param l2 : target location
-  \param x : clock ID
-  \pre 0 <= l1, l2 < _loc_number (checked by assertion) and 0 <= x < _clock_number (checked by assertion)
-  \post the constraints L_{x,l1} >= L_{x,l2} and U_{x,l1} >= U_{x,l2} have been added to the system of
-  inequations
-  */
-  void add_no_assignement(tchecker::loc_id_t l1, tchecker::loc_id_t l2, tchecker::clock_id_t x);
 
   /*!
    \brief Solve amd fill local LU bounds map
@@ -262,6 +256,7 @@ protected:
  \param loc : location identifier
  \param solver : clock bounds solver
  \post All clock bound constraints from invariant inv in location loc have been added to solver
+ \throw std:runtime_error : if inv contains a diagonal clock constraint
  */
 void add_location_constraints(tchecker::typed_expression_t const & inv, tchecker::loc_id_t loc,
                               std::shared_ptr<tchecker::clockbounds::df_solver_t> const & solver);
@@ -274,6 +269,8 @@ void add_location_constraints(tchecker::typed_expression_t const & inv, tchecker
  \param tgt : target location
  \param solver : clock bounds solver
  \post All clock bound constraints from guard and stmt on edge src -> tgt have been added to solver
+ \throw std::runtime_error : if guard contains a diagonal clock constraint, or if clock updates cannot
+ be computed from stmt (e.g. non-constant clock reset in a while statement, etc)
 */
 void add_edge_constraints(tchecker::typed_expression_t const & guard, tchecker::typed_statement_t const & stmt,
                           tchecker::loc_id_t src, tchecker::loc_id_t tgt,
