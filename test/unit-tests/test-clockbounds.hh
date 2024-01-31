@@ -493,7 +493,7 @@ TEST_CASE("system with two processes, with shared clocks", "[clockbounds]")
   edge:A1:l2:l3:a{do: z=1+y} \n\
   edge:A1:l3:l2:a{provided: y>=5 : do: x=0} \n\
   edge:A1:l3:l4:a{do: y=0} \n\
-  edge:A1:l4:l1:a{provided: y>=1000000} \n\
+  edge:A1:l4:l1:a{provided: y>=10000} \n\
   \n\
   process:A2 \n\
   location:A2:n1{initial: true} \n\
@@ -558,7 +558,7 @@ TEST_CASE("system with two processes, with shared clocks", "[clockbounds]")
     clockbounds->local_lu(l4, *L, *U);
     REQUIRE((*L)[x] == tchecker::clockbounds::NO_BOUND);
     REQUIRE((*U)[x] == 14);
-    REQUIRE((*L)[y] == 1000000);
+    REQUIRE((*L)[y] == 10000);
     REQUIRE((*U)[y] == 10);
     REQUIRE((*L)[z] == tchecker::clockbounds::NO_BOUND);
     REQUIRE((*U)[z] == tchecker::clockbounds::NO_BOUND);
@@ -587,7 +587,7 @@ TEST_CASE("system with two processes, with shared clocks", "[clockbounds]")
     clockbounds->global_lu(*L, *U);
     REQUIRE((*L)[x] == tchecker::clockbounds::NO_BOUND);
     REQUIRE((*U)[x] == 14);
-    REQUIRE((*L)[y] == 1000000);
+    REQUIRE((*L)[y] == 10000);
     REQUIRE((*U)[y] == 10);
     REQUIRE((*L)[z] == 4);
     REQUIRE((*U)[z] == 11);
@@ -616,7 +616,7 @@ TEST_CASE("system with two processes, with shared clocks", "[clockbounds]")
     // l4
     clockbounds->local_m(l4, *M);
     REQUIRE((*M)[x] == 14);
-    REQUIRE((*M)[y] == 1000000);
+    REQUIRE((*M)[y] == 10000);
     REQUIRE((*M)[z] == tchecker::clockbounds::NO_BOUND);
 
     // n1
@@ -636,7 +636,7 @@ TEST_CASE("system with two processes, with shared clocks", "[clockbounds]")
   {
     clockbounds->global_m(*M);
     REQUIRE((*M)[x] == 14);
-    REQUIRE((*M)[y] == 1000000);
+    REQUIRE((*M)[y] == 10000);
     REQUIRE((*M)[z] == 11);
   }
 
