@@ -26,6 +26,7 @@ set(TEST_SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/test-db.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-dbm.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-delay_allowed.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/test-deterministic.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-extract_variables.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-finite-path.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/test-from_string.hh

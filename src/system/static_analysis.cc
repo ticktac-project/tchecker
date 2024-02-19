@@ -5,8 +5,10 @@
  *
  */
 
-#include "tchecker/system/static_analysis.hh"
+#include <boost/dynamic_bitset/dynamic_bitset.hpp>
+
 #include "tchecker/basictypes.hh"
+#include "tchecker/system/static_analysis.hh"
 #include "tchecker/system/synchronization.hh"
 
 namespace tchecker {
@@ -49,6 +51,20 @@ bool every_process_has_initial_location(tchecker::system::system_t const & syste
   for (tchecker::process_id_t pid = 0; pid < procs_count; ++pid)
     if (system.initial_locations(pid).empty())
       return false;
+  return true;
+}
+
+bool is_deterministic(tchecker::system::system_t const & system)
+{
+  boost::dynamic_bitset<> outevents(system.events_count(), 0);
+  for (tchecker::system::loc_const_shared_ptr_t l : system.locations()) {
+    outevents.reset();
+    for (tchecker::system::edge_const_shared_ptr_t e : system.outgoing_edges(l->id())) {
+      if (outevents[e->event_id()])
+        return false;
+      outevents[e->event_id()] = 1;
+    }
+  }
   return true;
 }
 

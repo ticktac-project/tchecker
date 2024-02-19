@@ -15,6 +15,7 @@
 #include "test-db.hh"
 #include "test-dbm.hh"
 #include "test-delay_allowed.hh"
+#include "test-deterministic.hh"
 #include "test-extract_variables.hh"
 #include "test-finite-path.hh"
 #include "test-from_string.hh"
