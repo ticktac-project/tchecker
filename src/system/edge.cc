@@ -197,7 +197,7 @@ void edges_t::add_edge(tchecker::process_id_t pid, tchecker::loc_id_t src, tchec
   tchecker::edge_id_t id = _edges.size();
 
   if (!tchecker::valid_edge_id(id))
-    throw std::runtime_error("add_edge: invalid location identifier");
+    throw std::runtime_error("add_edge: invalid edge identifier");
 
   tchecker::system::edge_shared_ptr_t edge(new tchecker::system::edge_t(pid, id, src, tgt, event_id, attributes));
   _edges.push_back(edge);
