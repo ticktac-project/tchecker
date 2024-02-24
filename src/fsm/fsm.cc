@@ -49,7 +49,7 @@ tchecker::fsm::final_range_t final_edges(tchecker::ta::system_t const & system, 
 // Final state
 
 tchecker::state_status_t final(tchecker::ta::system_t const & system, tchecker::vloc_sptr_t const & vloc,
-                               tchecker::intval_sptr_t const & intval, tchecker::vedge_sptr_t & vedge,
+                               tchecker::intval_sptr_t const & intval, tchecker::vedge_sptr_t const & vedge,
                                tchecker::sync_id_t & sync_id, tchecker::fsm::final_value_t const & final_value)
 {
   tchecker::state_status_t status =
