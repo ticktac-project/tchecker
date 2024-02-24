@@ -21,15 +21,13 @@ static tchecker::clock_reset_container_t place_holder_clkreset;
 
 /* Semantics functions */
 
-tchecker::state_status_t initial(tchecker::ta::system_t const & system,
-                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                                 tchecker::clock_constraint_container_t & invariant,
+tchecker::state_status_t initial(tchecker::ta::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                                 tchecker::intval_sptr_t const & intval, tchecker::vedge_sptr_t const & vedge,
+                                 tchecker::sync_id_t & sync_id, tchecker::clock_constraint_container_t & invariant,
                                  tchecker::ta::initial_value_t const & initial_range)
 {
   // intialize vloc and vedge
-  auto status = tchecker::syncprod::initial(system.as_syncprod_system(), vloc, vedge, initial_range);
+  auto status = tchecker::syncprod::initial(system.as_syncprod_system(), vloc, vedge, sync_id, initial_range);
   if (status != STATE_OK)
     return status;
 
@@ -57,17 +55,15 @@ tchecker::ta::final_range_t final_edges(tchecker::ta::system_t const & system, b
   return tchecker::make_range(it, tchecker::past_the_end_iterator);
 }
 
-tchecker::state_status_t final(tchecker::ta::system_t const & system,
-                               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                               tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                               tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                               tchecker::clock_constraint_container_t & invariant,
+tchecker::state_status_t final(tchecker::ta::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                               tchecker::intval_sptr_t const & intval, tchecker::vedge_sptr_t const & vedge,
+                               tchecker::sync_id_t & sync_id, tchecker::clock_constraint_container_t & invariant,
                                tchecker::ta::final_value_t const & final_value)
 {
   auto && [edges, valuation] = final_value;
 
   // compute vloc and vedge from final edges
-  auto status = tchecker::syncprod::final(system.as_syncprod_system(), vloc, vedge, edges);
+  auto status = tchecker::syncprod::final(system.as_syncprod_system(), vloc, vedge, sync_id, edges);
   if (status != STATE_OK)
     return status;
 
@@ -93,14 +89,12 @@ tchecker::state_status_t final(tchecker::ta::system_t const & system,
   return tchecker::STATE_OK;
 }
 
-tchecker::state_status_t next(tchecker::ta::system_t const & system,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                              tchecker::clock_constraint_container_t & src_invariant,
+tchecker::state_status_t next(tchecker::ta::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                              tchecker::intval_sptr_t const & intval, tchecker::vedge_sptr_t const & vedge,
+                              tchecker::sync_id_t & sync_id, tchecker::clock_constraint_container_t & src_invariant,
                               tchecker::clock_constraint_container_t & guard, tchecker::clock_reset_container_t & reset,
                               tchecker::clock_constraint_container_t & tgt_invariant,
-                              tchecker::ta::outgoing_edges_value_t const & edges)
+                              tchecker::ta::outgoing_edges_value_t const & sync_edges)
 {
   tchecker::vm_t & vm = system.vm();
 
@@ -112,19 +106,19 @@ tchecker::state_status_t next(tchecker::ta::system_t const & system,
   }
 
   // compute next vloc
-  auto status = tchecker::syncprod::next(system.as_syncprod_system(), vloc, vedge, edges);
+  auto status = tchecker::syncprod::next(system.as_syncprod_system(), vloc, vedge, sync_id, sync_edges);
   if (status != tchecker::STATE_OK)
     return status;
 
   // check guards
-  for (tchecker::system::edge_const_shared_ptr_t const & edge : edges) {
+  for (tchecker::system::edge_const_shared_ptr_t const & edge : sync_edges.edges) {
     if (vm.run(system.guard_bytecode(edge->id()), *intval, guard, place_holder_clkreset) == 0)
       return tchecker::STATE_INTVARS_GUARD_VIOLATED;
     assert(place_holder_clkreset.empty());
   }
 
   // apply statements
-  for (tchecker::system::edge_const_shared_ptr_t const & edge : edges) {
+  for (tchecker::system::edge_const_shared_ptr_t const & edge : sync_edges.edges) {
     if (vm.run(system.statement_bytecode(edge->id()), *intval, place_holder_clkconstr, reset) == 0)
       return tchecker::STATE_INTVARS_STATEMENT_FAILED;
     assert(place_holder_clkconstr.empty());
@@ -140,9 +134,8 @@ tchecker::state_status_t next(tchecker::ta::system_t const & system,
   return tchecker::STATE_OK;
 }
 
-tchecker::ta::incoming_edges_range_t
-incoming_edges(tchecker::ta::system_t const & system,
-               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc)
+tchecker::ta::incoming_edges_range_t incoming_edges(tchecker::ta::system_t const & system,
+                                                    tchecker::const_vloc_sptr_t const & vloc)
 {
   tchecker::ta::incoming_edges_iterator_t it{
       tchecker::syncprod::incoming_edges(system.as_syncprod_system(), vloc),
@@ -196,16 +189,14 @@ static bool operator!=(tchecker::intval_t const & intval, std::vector<tchecker::
   return false;
 }
 
-tchecker::state_status_t prev(tchecker::ta::system_t const & system,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                              tchecker::clock_constraint_container_t & src_invariant,
+tchecker::state_status_t prev(tchecker::ta::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                              tchecker::intval_sptr_t const & intval, tchecker::vedge_sptr_t const & vedge,
+                              tchecker::sync_id_t & sync_id, tchecker::clock_constraint_container_t & src_invariant,
                               tchecker::clock_constraint_container_t & guard, tchecker::clock_reset_container_t & reset,
                               tchecker::clock_constraint_container_t & tgt_invariant,
                               tchecker::ta::incoming_edges_value_t const & v)
 {
-  auto && [edges, valuation] = v;
+  auto && [sync_edges, valuation] = v;
 
   // Make a copy of target vloc and intval
   std::vector<tchecker::loc_id_t> vloc_tgt(vloc->capacity());
@@ -214,7 +205,7 @@ tchecker::state_status_t prev(tchecker::ta::system_t const & system,
   copy(intval_tgt, *intval);
 
   // Update vloc and intval to source according to v
-  for (tchecker::system::edge_const_shared_ptr_t const & e : edges)
+  for (tchecker::system::edge_const_shared_ptr_t const & e : sync_edges.edges)
     (*vloc)[e->pid()] = e->src();
   tchecker::intvar_id_t id = 0;
   for (tchecker::integer_t i : valuation) {
@@ -230,7 +221,7 @@ tchecker::state_status_t prev(tchecker::ta::system_t const & system,
 
   // Apply transition forward to check enabledness and target state
   tchecker::state_status_t status =
-      tchecker::ta::next(system, vloc, intval, vedge, src_invariant, guard, reset, tgt_invariant, edges);
+      tchecker::ta::next(system, vloc, intval, vedge, sync_id, src_invariant, guard, reset, tgt_invariant, sync_edges);
   if (status != tchecker::STATE_OK)
     return status;
 
@@ -331,15 +322,13 @@ void attributes(tchecker::ta::system_t const & system, tchecker::ta::transition_
 
 /* initialize */
 
-tchecker::state_status_t initialize(tchecker::ta::system_t const & system,
-                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                                    tchecker::clock_constraint_container_t & invariant,
+tchecker::state_status_t initialize(tchecker::ta::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                                    tchecker::intval_sptr_t const & intval, tchecker::vedge_sptr_t const & vedge,
+                                    tchecker::sync_id_t & sync_id, tchecker::clock_constraint_container_t & invariant,
                                     std::map<std::string, std::string> const & attributes)
 {
   // intialize vloc and vedge from syncprod
-  auto status = tchecker::syncprod::initialize(system.as_syncprod_system(), vloc, vedge, attributes);
+  auto status = tchecker::syncprod::initialize(system.as_syncprod_system(), vloc, vedge, sync_id, attributes);
   if (status != STATE_OK)
     return status;
 

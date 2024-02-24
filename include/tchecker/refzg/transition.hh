@@ -28,20 +28,26 @@ class transition_t : public tchecker::ta::transition_t {
 public:
   /*!
    \brief Constructor
+   \param sync_id synchronization identifier
    \param vedge : tuple of edges
    \pre vedge must not point to nullptr (checked by assertion)
+   \pre if sync_id is tchecker::NO_SYNC then vedge is a single edge (checked by assertion)
+   \pre if sync_id is not tchecker::NO_SYNC, then vedge is an instance of sync_id
    */
-  explicit transition_t(tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge);
+  explicit transition_t(tchecker::sync_id_t sync_id, tchecker::vedge_sptr_t const & vedge);
 
   /*!
    \brief Partial copy constructor
    \param t : a transition
+   \param sync_id : synchronization identifier
    \param vedge : tuple of edges
    \pre vedge must not point to nullptr (checked by assertion)
-   \note the transition is copied from t, except the tuple of edges which is initialized from vedge
+   \pre if sync_id is tchecker::NO_SYNC then vedge is a single edge (checked by assertion)
+   \pre if sync_id is not tchecker::NO_SYNC, then vedge is an instance of sync_id
+   \note the transition is copied from t, except the synchronization identifier which is set to sync_id,
+   and the tuple of edges which is initialized from vedge
    */
-  transition_t(tchecker::refzg::transition_t const & t,
-               tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge);
+  transition_t(tchecker::refzg::transition_t const & t, tchecker::sync_id_t sync_id, tchecker::vedge_sptr_t const & vedge);
 
   /*!
    \brief Copy constructor (deleted)

@@ -216,6 +216,16 @@ private:
 
 } // end of namespace system
 
+/*!
+ \brief String representation of a synchronization
+ \param sync_id : synchronization identifier
+ \param system : system of processes
+ \pre sync_id is a valid synchronization identifier in system
+ \return a string representation of synchronization sync_id in system
+ \throw std::invalid_argument : if id is not a valid synchronization identifier in system
+ */
+std::string to_string(tchecker::sync_id_t sync_id, tchecker::system::system_t const & system);
+
 } // end of namespace tchecker
 
 #endif // TCHECKER_SYSTEM_HH

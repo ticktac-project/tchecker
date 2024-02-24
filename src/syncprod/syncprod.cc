@@ -8,6 +8,7 @@
 #include <sstream>
 
 #include "tchecker/syncprod/syncprod.hh"
+#include "tchecker/system/system.hh"
 
 namespace tchecker {
 
@@ -26,9 +27,8 @@ tchecker::syncprod::initial_range_t initial_edges(tchecker::syncprod::system_t c
   return tchecker::make_range(begin, tchecker::past_the_end_iterator);
 }
 
-tchecker::state_status_t initial(tchecker::syncprod::system_t const & system,
-                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+tchecker::state_status_t initial(tchecker::syncprod::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                                 tchecker::vedge_sptr_t const & vedge, tchecker::sync_id_t & sync_id,
                                  tchecker::syncprod::initial_value_t const & initial_range)
 {
   auto size = vloc->size();
@@ -45,6 +45,8 @@ tchecker::state_status_t initial(tchecker::syncprod::system_t const & system,
   }
   if (pid != size)
     throw std::invalid_argument("initial range has incompatible size");
+
+  sync_id = tchecker::NO_SYNC;
 
   return tchecker::STATE_OK;
 }
@@ -110,9 +112,8 @@ tchecker::syncprod::final_range_t final_edges(tchecker::syncprod::system_t const
   return tchecker::make_range(tchecker::syncprod::final_iterator_t{system, labels}, tchecker::past_the_end_iterator);
 }
 
-tchecker::state_status_t final(tchecker::syncprod::system_t const & system,
-                               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                               tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+tchecker::state_status_t final(tchecker::syncprod::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                               tchecker::vedge_sptr_t const & vedge, tchecker::sync_id_t & sync_id,
                                tchecker::syncprod::final_value_t const & v)
 {
   auto size = vloc->size();
@@ -129,6 +130,8 @@ tchecker::state_status_t final(tchecker::syncprod::system_t const & system,
   }
   if (pid != size)
     throw std::invalid_argument("tchecker::syncprod::final: v has incompatible size");
+
+  sync_id = tchecker::NO_SYNC;
 
   return tchecker::STATE_OK;
 }
@@ -157,7 +160,7 @@ bool outgoing_edges_iterator_t::operator==(tchecker::syncprod::outgoing_edges_it
 
 bool outgoing_edges_iterator_t::operator==(tchecker::end_iterator_t const & it) const { return at_end(); }
 
-tchecker::range_t<tchecker::syncprod::edges_iterator_t> outgoing_edges_iterator_t::operator*()
+tchecker::syncprod::outgoing_edges_iterator_t::sync_edges_t outgoing_edges_iterator_t::operator*()
 {
   assert(!at_end());
   return *_it;
@@ -176,7 +179,7 @@ void outgoing_edges_iterator_t::advance_while_not_enabled()
   if (!_committed)
     return;
   while (!at_end()) {
-    if (involves_committed_process(*_it))
+    if (involves_committed_process((*_it).edges))
       return;
     ++_it;
   }
@@ -195,9 +198,8 @@ bool outgoing_edges_iterator_t::at_end() const { return _it == tchecker::past_th
 
 /* outgoing edges */
 
-tchecker::syncprod::outgoing_edges_range_t
-outgoing_edges(tchecker::syncprod::system_t const & system,
-               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc)
+tchecker::syncprod::outgoing_edges_range_t outgoing_edges(tchecker::syncprod::system_t const & system,
+                                                          tchecker::const_vloc_sptr_t const & vloc)
 {
   tchecker::range_t<tchecker::syncprod::vloc_synchronized_edges_iterator_t, tchecker::end_iterator_t> sync_edges(
       tchecker::syncprod::outgoing_synchronized_edges(system, vloc));
@@ -213,10 +215,9 @@ outgoing_edges(tchecker::syncprod::system_t const & system,
 
 /* next state computation */
 
-tchecker::state_status_t next(tchecker::syncprod::system_t const & system,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                              tchecker::syncprod::outgoing_edges_value_t const & edges)
+tchecker::state_status_t next(tchecker::syncprod::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                              tchecker::vedge_sptr_t const & vedge, tchecker::sync_id_t & sync_id,
+                              tchecker::syncprod::outgoing_edges_value_t const & sync_edges)
 {
   auto size = vloc->size();
   if (size != vedge->size())
@@ -225,7 +226,7 @@ tchecker::state_status_t next(tchecker::syncprod::system_t const & system,
   for (tchecker::process_id_t pid = 0; pid < size; ++pid)
     (*vedge)[pid] = tchecker::NO_EDGE;
 
-  for (tchecker::system::edge_const_shared_ptr_t const & edge : edges) {
+  for (tchecker::system::edge_const_shared_ptr_t const & edge : sync_edges.edges) {
     if (edge->pid() >= size)
       throw std::invalid_argument("incompatible edges");
     if ((*vloc)[edge->pid()] != edge->src())
@@ -233,6 +234,9 @@ tchecker::state_status_t next(tchecker::syncprod::system_t const & system,
     (*vloc)[edge->pid()] = edge->tgt();
     (*vedge)[edge->pid()] = edge->id();
   }
+
+  sync_id = sync_edges.sync_id;
+
   return tchecker::STATE_OK;
 }
 
@@ -262,7 +266,7 @@ bool incoming_edges_iterator_t::operator==(tchecker::syncprod::incoming_edges_it
 
 bool incoming_edges_iterator_t::operator==(tchecker::end_iterator_t const & it) const { return at_end(); }
 
-tchecker::range_t<tchecker::syncprod::edges_iterator_t> incoming_edges_iterator_t::operator*()
+tchecker::syncprod::incoming_edges_iterator_t::sync_edges_t incoming_edges_iterator_t::operator*()
 {
   assert(!at_end());
   return *_it;
@@ -279,7 +283,7 @@ tchecker::syncprod::incoming_edges_iterator_t & incoming_edges_iterator_t::opera
 void incoming_edges_iterator_t::advance_while_not_enabled()
 {
   while (!at_end()) {
-    if (enabled_wrt_committed_processes(*_it))
+    if (enabled_wrt_committed_processes((*_it).edges))
       return;
     ++_it;
   }
@@ -303,9 +307,8 @@ bool incoming_edges_iterator_t::at_end() const { return _it == tchecker::past_th
 
 /* incoming edges */
 
-tchecker::syncprod::incoming_edges_range_t
-incoming_edges(tchecker::syncprod::system_t const & system,
-               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc)
+tchecker::syncprod::incoming_edges_range_t incoming_edges(tchecker::syncprod::system_t const & system,
+                                                          tchecker::const_vloc_sptr_t const & vloc)
 {
   tchecker::range_t<tchecker::syncprod::vloc_synchronized_edges_iterator_t, tchecker::end_iterator_t> sync_edges(
       tchecker::syncprod::incoming_synchronized_edges(system, vloc));
@@ -319,10 +322,9 @@ incoming_edges(tchecker::syncprod::system_t const & system,
   return tchecker::make_range(begin, tchecker::past_the_end_iterator);
 }
 
-tchecker::state_status_t prev(tchecker::syncprod::system_t const & system,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                              tchecker::syncprod::incoming_edges_value_t const & edges)
+tchecker::state_status_t prev(tchecker::syncprod::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                              tchecker::vedge_sptr_t const & vedge, tchecker::sync_id_t & sync_id,
+                              tchecker::syncprod::incoming_edges_value_t const & sync_edges)
 {
   auto size = vloc->size();
   if (size != vedge->size())
@@ -331,7 +333,7 @@ tchecker::state_status_t prev(tchecker::syncprod::system_t const & system,
   for (tchecker::process_id_t pid = 0; pid < size; ++pid)
     (*vedge)[pid] = tchecker::NO_EDGE;
 
-  for (tchecker::system::edge_const_shared_ptr_t const & edge : edges) {
+  for (tchecker::system::edge_const_shared_ptr_t const & edge : sync_edges.edges) {
     if (edge->pid() >= size)
       throw std::invalid_argument("tchecker::syncprod::prec: incompatible edges");
     if ((*vloc)[edge->pid()] != edge->tgt())
@@ -339,13 +341,16 @@ tchecker::state_status_t prev(tchecker::syncprod::system_t const & system,
     (*vloc)[edge->pid()] = edge->src();
     (*vedge)[edge->pid()] = edge->id();
   }
+
+  sync_id = sync_edges.sync_id;
+
   return tchecker::STATE_OK;
 }
 
 /* computed processes */
 
 boost::dynamic_bitset<> committed_processes(tchecker::syncprod::system_t const & system,
-                                            tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc)
+                                            tchecker::const_vloc_sptr_t const & vloc)
 {
   boost::dynamic_bitset<> committed(system.processes_count());
   committed.reset();
@@ -420,19 +425,20 @@ void attributes(tchecker::syncprod::system_t const & system, tchecker::syncprod:
                 std::map<std::string, std::string> & m)
 {
   m["vedge"] = tchecker::to_string(t.vedge(), system.as_system_system());
+  m["sync"] = (t.sync_id() == tchecker::NO_SYNC ? "" : tchecker::to_string(t.sync_id(), system.as_system_system()));
 }
 
 /* initialize */
 
-tchecker::state_status_t initialize(tchecker::syncprod::system_t const & system,
-                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+tchecker::state_status_t initialize(tchecker::syncprod::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                                    tchecker::vedge_sptr_t const & vedge, tchecker::sync_id_t & sync_id,
                                     std::map<std::string, std::string> const & attributes)
 {
   try {
     tchecker::from_string(*vloc, system.as_system_system(), attributes.at("vloc"));
     for (tchecker::process_id_t pid = 0; pid < system.processes_count(); ++pid)
       (*vedge)[pid] = tchecker::NO_EDGE;
+    sync_id = tchecker::NO_SYNC;
     return tchecker::STATE_OK;
   }
   catch (...) {

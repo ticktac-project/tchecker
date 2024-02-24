@@ -6,6 +6,7 @@
  */
 
 #include <limits>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -197,5 +198,24 @@ bool system_t::has_variable(std::string const & name)
 }
 
 } // end of namespace system
+
+std::string to_string(tchecker::sync_id_t sync_id, tchecker::system::system_t const & system)
+{
+  tchecker::system::synchronization_t sync = system.synchronization(sync_id);
+
+  std::stringstream ss;
+  ss << "<";
+  auto r = sync.synchronization_constraints();
+  for (auto it = r.begin(); it != r.end(); ++it) {
+    if (it != r.begin())
+      ss << ",";
+    tchecker::system::sync_constraint_t const & constr = *it;
+    ss << system.process_name(constr.pid()) << "@" << system.event_name(constr.event_id());
+    if (constr.strength() == tchecker::SYNC_WEAK)
+      ss << "?";
+  }
+  ss << ">";
+  return ss.str();
+}
 
 } // end of namespace tchecker

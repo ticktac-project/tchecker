@@ -25,6 +25,12 @@ tchecker::edge_id_t const NO_EDGE = std::numeric_limits<tchecker::edge_id_t>::ma
 
 bool valid_edge_id(tchecker::edge_id_t id) { return (id != tchecker::NO_EDGE); }
 
+/* sync_id_t  */
+
+tchecker::edge_id_t const NO_SYNC = std::numeric_limits<tchecker::sync_id_t>::max();
+
+bool valid_sync_id(tchecker::sync_id_t id) { return id != tchecker::NO_SYNC; }
+
 /* sync_strength_t */
 
 std::ostream & operator<<(std::ostream & os, enum tchecker::sync_strength_t s)

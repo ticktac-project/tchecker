@@ -7,6 +7,7 @@
 
 #include <algorithm>
 
+#include "tchecker/basictypes.hh"
 #include "tchecker/system/synchronization.hh"
 
 namespace tchecker {
@@ -32,6 +33,9 @@ synchronization_t::synchronization_t(tchecker::sync_id_t id, std::vector<tchecke
                                      tchecker::system::attributes_t const & attributes)
     : _id(id), _attributes(attributes)
 {
+  if (!tchecker::valid_sync_id(id))
+    throw std::invalid_argument("synchronization::synchronization_t: invalid synchronization identifier");
+
   for (tchecker::system::sync_constraint_t const & c : v)
     add_synchronization_constraint(c);
 }

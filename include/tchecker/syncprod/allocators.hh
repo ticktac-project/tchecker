@@ -293,7 +293,8 @@ public:
    */
   template <class... ARGS> tchecker::intrusive_shared_ptr_t<TRANSITION> construct(ARGS &&... args)
   {
-    return tchecker::ts::transition_pool_allocator_t<TRANSITION>::construct(args..., _vedge_pool.construct(_vedge_capacity));
+    return tchecker::ts::transition_pool_allocator_t<TRANSITION>::construct(tchecker::NO_SYNC,
+                                                                            _vedge_pool.construct(_vedge_capacity), args...);
   }
 
   /*!
@@ -388,8 +389,8 @@ protected:
   tchecker::intrusive_shared_ptr_t<TRANSITION> construct_from_transition(TRANSITION const & t, ARGS &&... args)
 
   {
-    return tchecker::ts::transition_pool_allocator_t<TRANSITION>::construct_from_transition(t, args...,
-                                                                                            _vedge_pool.construct(t.vedge()));
+    return tchecker::ts::transition_pool_allocator_t<TRANSITION>::construct_from_transition(
+        t, t.sync_id(), _vedge_pool.construct(t.vedge()), args...);
   }
 
   std::size_t _vedge_capacity;                            /*!< Capacity of tuples of edges */

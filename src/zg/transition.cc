@@ -19,14 +19,14 @@ namespace zg {
 
 /* transition_t */
 
-transition_t::transition_t(tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge)
-    : tchecker::ta::transition_t(vedge)
+transition_t::transition_t(tchecker::sync_id_t sync_id, tchecker::vedge_sptr_t const & vedge)
+    : tchecker::ta::transition_t(sync_id, vedge)
 {
 }
 
-transition_t::transition_t(tchecker::zg::transition_t const & t,
-                           tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge)
-    : tchecker::ta::transition_t(t, vedge)
+transition_t::transition_t(tchecker::zg::transition_t const & t, tchecker::sync_id_t sync_id,
+                           tchecker::vedge_sptr_t const & vedge)
+    : tchecker::ta::transition_t(t, sync_id, vedge)
 {
 }
 

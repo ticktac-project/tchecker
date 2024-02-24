@@ -52,6 +52,18 @@ void vedge_destruct_and_deallocate(tchecker::vedge_t * vedge)
   delete[] reinterpret_cast<char *>(vedge);
 }
 
+bool is_asynchronous(tchecker::vedge_t const & vedge)
+{
+  size_t count_edges = 0;
+  for (tchecker::edge_id_t edge_id : vedge) {
+    if (edge_id != tchecker::NO_EDGE)
+      ++count_edges;
+    if (count_edges > 1)
+      return false;
+  }
+  return true;
+}
+
 std::ostream & output(std::ostream & os, tchecker::vedge_t const & vedge, tchecker::system::system_t const & system)
 {
   auto begin = vedge.begin(), end = vedge.end();

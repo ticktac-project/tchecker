@@ -31,19 +31,26 @@ class transition_t : public tchecker::syncprod::transition_t {
 public:
   /*!
    \brief Constructor
+   \param sync_id synchronization identifier
    \param vedge : tuple of edges
    \pre vedge must not point to nullptr (checked by assertion)
+   \pre if sync_id is tchecker::NO_SYNC then vedge is a single edge (checked by assertion)
+   \pre if sync_id is not tchecker::NO_SYNC, then vedge is an instance of sync_id
    */
-  explicit transition_t(tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge);
+  explicit transition_t(tchecker::sync_id_t sync_id, tchecker::vedge_sptr_t const & vedge);
 
   /*!
    \brief Partial copy constructor
    \param t : a transition
+   \param sync_id : synchronization identifier
    \param vedge : tuple of edges
    \pre vedge must not point to nullptr (checked by assertion)
-   \note the transition is copied from t, except the tuple of edges which is initialized from vedge
+   \pre if sync_id is tchecker::NO_SYNC then vedge is a single edge (checked by assertion)
+   \pre if sync_id is not tchecker::NO_SYNC, then vedge is an instance of sync_id
+   \note the transition is copied from t, except the synchronization identifier which is set to sync_id,
+   and the tuple of edges which is initialized from vedge
    */
-  transition_t(tchecker::ta::transition_t const & t, tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge);
+  transition_t(tchecker::ta::transition_t const & t, tchecker::sync_id_t sync_id, tchecker::vedge_sptr_t const & vedge);
 
   /*!
    \brief Copy constructor (deleted)
@@ -157,8 +164,8 @@ protected:
  \brief Equality check
  \param t1 : transition
  \param t2 : transition
- \return true if t1 and t2 have same tuple of edges, same source invariant, same guard, same resets and same target invariant,
- false otherwise
+ \return true if t1 and t2 have same synchronization identifier, the same tuple of edges, same source invariant, same guard,
+ same resets and same target invariant, false otherwise
  */
 bool operator==(tchecker::ta::transition_t const & t1, tchecker::ta::transition_t const & t2);
 
@@ -166,8 +173,8 @@ bool operator==(tchecker::ta::transition_t const & t1, tchecker::ta::transition_
  \brief Disequality check
  \param t1 : transition
  \param t2 : transition
- \return true if t1 and t2 have different tuples of edges or differene source invariants, or different guard or difference
- resets or different taget invariant, false otherwise
+ \return true if t1 and t2 have different synchronization identifiers, or different tuples of edges or differene source
+ invariants, or different guard or difference resets or different taget invariant, false otherwise
  */
 inline bool operator!=(tchecker::ta::transition_t const & t1, tchecker::ta::transition_t const & t2) { return !(t1 == t2); }
 
@@ -175,10 +182,10 @@ inline bool operator!=(tchecker::ta::transition_t const & t1, tchecker::ta::tran
  \brief Equality check for shared transitions
  \param t1 : transition
  \param t2 : transition
- \return true if t1 and t2 have same tuple of edges, same source invariant, same guard, same resets and same target invariant,
- false otherwise
- \note note this should only be used on transitions that have shared internal components: this
- function checks pointer equality (not values equality)
+ \return true if t1 and t2 have same synchronization identifier, and poinr to the same tuple of edges, same source invariant,
+ same guard, same resets and same target invariant, false otherwise
+ \note note this should only be used on transitions that have shared internal components: this function checks pointer equality
+ (not values equality)
  */
 bool shared_equal_to(tchecker::ta::transition_t const & t1, tchecker::ta::transition_t const & t2);
 
