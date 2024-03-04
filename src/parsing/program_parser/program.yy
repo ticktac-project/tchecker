@@ -162,7 +162,7 @@
 
 
 %printer { yyoutput << $$; }                <*>;
-%printer { yyoutput << * $$; }              assignment
+%printer { $$->output(yyoutput); }          assignment
                                             atomic_formula
                                             conjunctive_formula
                                             non_atomic_conjunctive_formula

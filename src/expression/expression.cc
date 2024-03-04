@@ -61,7 +61,13 @@ array_expression_t::array_expression_t(std::shared_ptr<tchecker::var_expression_
 
 array_expression_t::~array_expression_t() = default;
 
-std::ostream & array_expression_t::output(std::ostream & os) const { return os << *_variable << "[" << *_offset << "]"; }
+std::ostream & array_expression_t::output(std::ostream & os) const {
+  _variable->output(os);
+  os << "[";
+  _offset->output(os);
+  os << "]";
+  return os;
+}
 
 tchecker::array_expression_t * array_expression_t::clone() const
 {
@@ -82,7 +88,13 @@ par_expression_t::par_expression_t(std::shared_ptr<tchecker::expression_t const>
 
 par_expression_t::~par_expression_t() = default;
 
-std::ostream & par_expression_t::output(std::ostream & os) const { return os << "(" << *_expr << ")"; }
+std::ostream & par_expression_t::output(std::ostream & os) const
+{
+  os << "(";
+  _expr->output(os);
+  os << ")";
+  return os;
+}
 
 tchecker::par_expression_t * par_expression_t::clone() const
 {
@@ -117,7 +129,12 @@ unary_expression_t::unary_expression_t(enum unary_operator_t op, std::shared_ptr
 
 unary_expression_t::~unary_expression_t() = default;
 
-std::ostream & unary_expression_t::output(std::ostream & os) const { return os << _operator << *_expr; }
+std::ostream & unary_expression_t::output(std::ostream & os) const
+{
+  os << _operator;
+  _expr->output(os);
+  return os;
+}
 
 tchecker::unary_expression_t * unary_expression_t::clone() const
 {
@@ -203,7 +220,13 @@ binary_expression_t::binary_expression_t(enum binary_operator_t op, std::shared_
 
 binary_expression_t::~binary_expression_t() = default;
 
-std::ostream & binary_expression_t::output(std::ostream & os) const { return os << *_left << _op << *_right; }
+std::ostream & binary_expression_t::output(std::ostream & os) const
+{
+  _left->output(os);
+  os << _op;
+  _right->output(os);
+  return os;
+}
 
 tchecker::binary_expression_t * binary_expression_t::clone() const
 {
@@ -233,7 +256,13 @@ ite_expression_t::~ite_expression_t() = default;
 
 std::ostream & ite_expression_t::output(std::ostream & os) const
 {
-  return os << "if " << condition() << " then " << then_value() << " else " << else_value();
+  os << "if ";
+  condition().output(os);
+  os << " then ";
+  then_value().output(os);
+  os << " else ";
+  else_value().output(os);
+  return os;
 }
 
 tchecker::ite_expression_t * ite_expression_t::clone() const

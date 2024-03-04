@@ -239,7 +239,7 @@ public:
    \post this has been output to os
    \return os after this has been output
    */
-  virtual std::ostream & output(std::ostream & os) const override { return os << *_first << "; " << *_second; }
+  virtual std::ostream & output(std::ostream & os) const override;
 
   /*!
    \brief Clone

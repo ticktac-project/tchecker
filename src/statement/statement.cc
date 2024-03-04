@@ -49,7 +49,13 @@ assign_statement_t::assign_statement_t(std::shared_ptr<tchecker::lvalue_expressi
 
 assign_statement_t::~assign_statement_t() = default;
 
-std::ostream & assign_statement_t::output(std::ostream & os) const { return os << *_lvalue << "=" << *_rvalue; }
+std::ostream & assign_statement_t::output(std::ostream & os) const
+{
+  _lvalue->output(os);
+  os << "=";
+  _rvalue->output(os);
+  return os;
+}
 
 tchecker::assign_statement_t * assign_statement_t::clone() const
 {
@@ -83,6 +89,14 @@ tchecker::sequence_statement_t * sequence_statement_t::clone() const
 
 void sequence_statement_t::visit(tchecker::statement_visitor_t & v) const { v.visit(*this); }
 
+std::ostream & sequence_statement_t::output(std::ostream & os) const
+{
+  _first->output(os);
+  os << "; ";
+  _second->output(os);
+  return os;
+}
+
 // if_statement_t
 
 if_statement_t::if_statement_t(std::shared_ptr<tchecker::expression_t const> const & cond,
@@ -102,7 +116,14 @@ if_statement_t::~if_statement_t() = default;
 
 std::ostream & if_statement_t::output(std::ostream & os) const
 {
-  return os << "if " << *_condition << " then " << *_then_stmt << " else " << *_else_stmt << "endif";
+  os << "if ";
+  _condition->output(os);
+  os <<  " then ";
+  _then_stmt->output(os);
+  os << " else ";
+  _else_stmt->output(os);
+  os  << " endif";
+  return os;
 }
 
 tchecker::if_statement_t * if_statement_t::clone() const
@@ -131,7 +152,12 @@ while_statement_t::~while_statement_t() = default;
 
 std::ostream & while_statement_t::output(std::ostream & os) const
 {
-  return os << "while " << *_condition << " do " << *_stmt << " done";
+  os << "while ";
+  _condition->output(os);
+  os << " do ";
+  _stmt->output(os);
+  os << " done";
+  return os;
 }
 
 tchecker::while_statement_t * while_statement_t::clone() const
@@ -166,7 +192,11 @@ local_var_statement_t::~local_var_statement_t() = default;
 
 std::ostream & local_var_statement_t::output(std::ostream & os) const
 {
-  return os << "local " << (*_variable) << " = " << (*_initial_value);
+  os << "local ";
+  _variable->output(os);
+  os << " = ";
+  _initial_value->output(os);
+  return os;
 }
 
 tchecker::local_var_statement_t * local_var_statement_t::clone() const
@@ -194,7 +224,12 @@ local_array_statement_t::~local_array_statement_t() = default;
 
 std::ostream & local_array_statement_t::output(std::ostream & os) const
 {
-  return os << "local " << *_variable << "[" << *_size << "]";
+  os << "local ";
+  _variable->output(os);
+  os << "[";
+  _size->output(os);
+  os << "]";
+  return os;
 }
 
 tchecker::local_array_statement_t * local_array_statement_t::clone() const
