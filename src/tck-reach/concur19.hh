@@ -101,6 +101,7 @@ public:
   \brief Constructor
   \param system : a system of timed processes
   \note this computes the clock bpunds on system
+  \throw std::runtime_error : if clock bounds cannot be computed for system
   */
   node_le_t(tchecker::ta::system_t const & system);
 
@@ -173,6 +174,7 @@ public:
    \param block_size : number of objects allocated in a block
    \param table_size : size of hash table
    \note this keeps a shared pointer on refzg
+   \throw std::runtime_error : if clock bounds cannot be computed for the underlying system in refzg
   */
   graph_t(std::shared_ptr<tchecker::refzg::refzg_t> const & refzg, std::size_t block_size, std::size_t table_size);
 
@@ -283,6 +285,7 @@ public:
  \pre labels must appear as node attributes in sysdecl
  search_order must be either "dfs" or "bfs"
  \return statistics on the run and the covering reachability graph
+ \throw std::runtime_error : if clock bounds cannot be computed for the system modeled as sysdecl
  */
 std::tuple<tchecker::algorithms::covreach::stats_t, std::shared_ptr<tchecker::tck_reach::concur19::graph_t>>
 run(tchecker::parsing::system_declaration_t const & sysdecl, std::string const & labels = "",

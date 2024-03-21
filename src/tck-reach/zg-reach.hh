@@ -244,6 +244,7 @@ public:
  \pre labels must appear as node attributes in sysdecl
  search_order must be either "dfs" or "bfs"
  \return statistics on the run and the reachability graph
+ \throw std::runtime_error : if clock bounds cannot be computed for the system modeled by sysdecls
  */
 std::tuple<tchecker::algorithms::reach::stats_t, std::shared_ptr<tchecker::tck_reach::zg_reach::graph_t>>
 run(tchecker::parsing::system_declaration_t const & sysdecl, std::string const & labels = "",

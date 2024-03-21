@@ -437,45 +437,42 @@ void add_edge_constraints(tchecker::typed_expression_t const & guard, tchecker::
 
 /* compute_clockbounds */
 
-bool compute_clockbounds(tchecker::ta::system_t const & system, tchecker::clockbounds::clockbounds_t & clockbounds)
+void compute_clockbounds(tchecker::ta::system_t const & system, tchecker::clockbounds::clockbounds_t & clockbounds)
 {
-  try {
-    std::shared_ptr<tchecker::clockbounds::df_solver_t> solver{new tchecker::clockbounds::df_solver_t{system}};
+  std::shared_ptr<tchecker::clockbounds::df_solver_t> solver{new tchecker::clockbounds::df_solver_t{system}};
 
-    for (tchecker::system::loc_const_shared_ptr_t const & loc : system.locations())
-      tchecker::clockbounds::add_location_constraints(system.invariant(loc->id()), loc->id(), solver);
+  for (tchecker::system::loc_const_shared_ptr_t const & loc : system.locations())
+    tchecker::clockbounds::add_location_constraints(system.invariant(loc->id()), loc->id(), solver);
 
-    for (tchecker::system::edge_const_shared_ptr_t const & edge : system.edges())
-      tchecker::clockbounds::add_edge_constraints(system.guard(edge->id()), system.statement(edge->id()), edge->src(),
-                                                  edge->tgt(), solver);
+  for (tchecker::system::edge_const_shared_ptr_t const & edge : system.edges())
+    tchecker::clockbounds::add_edge_constraints(system.guard(edge->id()), system.statement(edge->id()), edge->src(),
+                                                edge->tgt(), solver);
 
-    bool const has_solution = solver->solve(*clockbounds.local_lu_map());
-    if (!has_solution)
-      return false;
-  }
-  catch (std::exception const & e) {
-    std::cerr << tchecker::log_error << e.what() << std::endl;
-    return false;
-  }
+  bool const has_solution = solver->solve(*clockbounds.local_lu_map());
+  if (!has_solution)
+    throw std::runtime_error("compute_clockbounds: clock bounds cannot be computed");
 
   tchecker::clockbounds::fill_global_lu_map(*clockbounds.global_lu_map(), *clockbounds.local_lu_map());
   tchecker::clockbounds::fill_local_m_map(*clockbounds.local_m_map(), *clockbounds.local_lu_map());
   tchecker::clockbounds::fill_global_m_map(*clockbounds.global_m_map(), *clockbounds.local_lu_map());
-
-  return true;
 }
 
 tchecker::clockbounds::clockbounds_t * compute_clockbounds(tchecker::ta::system_t const & system)
 {
-  tchecker::clockbounds::clockbounds_t * clockbounds =
-      new tchecker::clockbounds::clockbounds_t{static_cast<tchecker::loc_id_t>(system.locations_count()),
-                                               static_cast<tchecker::clock_id_t>(system.clocks_count(tchecker::VK_FLATTENED))};
+  tchecker::clockbounds::clockbounds_t * clockbounds = nullptr;
+  try {
+    clockbounds = new tchecker::clockbounds::clockbounds_t{
+        static_cast<tchecker::loc_id_t>(system.locations_count()),
+        static_cast<tchecker::clock_id_t>(system.clocks_count(tchecker::VK_FLATTENED))};
 
-  if (tchecker::clockbounds::compute_clockbounds(system, *clockbounds))
+    tchecker::clockbounds::compute_clockbounds(system, *clockbounds);
+
     return clockbounds;
-
-  delete clockbounds;
-  return nullptr;
+  }
+  catch (...) {
+    delete clockbounds;
+    throw;
+  }
 }
 
 } // end of namespace clockbounds

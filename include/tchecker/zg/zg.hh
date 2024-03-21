@@ -1002,6 +1002,8 @@ next(tchecker::zg::zg_t & zg, tchecker::zg::const_state_sptr_t const & s, tcheck
  defined from semantics_type and extrapolation_type, and allocation of
  block_size objects at a time, nullptr if clock bounds cannot be inferred from
  system
+ \throw std::runtime_error : if clock bounds cannot be computed for system (only if extrapolation_type requires
+ clock bounds computation from system)
  */
 tchecker::zg::zg_t * factory(std::shared_ptr<tchecker::ta::system_t const> const & system,
                              enum tchecker::ts::sharing_type_t sharing_type, enum tchecker::zg::semantics_type_t semantics_type,
