@@ -466,7 +466,7 @@ void system_declaration_t::visit(tchecker::parsing::declaration_visitor_t & v) c
 std::ostream & system_declaration_t::output(std::ostream & os) const
 {
   os << "system:" << _name << _attr << std::endl;
-  for (std::shared_ptr<tchecker::parsing::inner_declaration_t const> const & d : _decl)
+  for (std::shared_ptr<tchecker::parsing::inner_declaration_t> const & d : _decl)
     os << *d << std::endl;
   return os;
 }
