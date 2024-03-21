@@ -228,6 +228,7 @@ public:
  \param table_size : size of hash tables
  \pre labels must appear as node attributes in sysdecl
  \return statistics on the run and the liveness graph
+ \throw std::runtime_error : if clock bounds cannot be computed for the system modeled by sysdecl
  */
 std::tuple<tchecker::algorithms::couvscc::stats_t, std::shared_ptr<tchecker::tck_liveness::zg_couvscc::graph_t>>
 run(tchecker::parsing::system_declaration_t const & sysdecl, std::string const & labels = "", std::size_t block_size = 10000,

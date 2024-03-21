@@ -1862,6 +1862,5 @@ TEST_CASE("system with 1 process and non-const clock updates in a while", "[cloc
   std::shared_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model)};
   tchecker::ta::system_t system{*sysdecl};
 
-  std::shared_ptr<tchecker::clockbounds::clockbounds_t> clockbounds{tchecker::clockbounds::compute_clockbounds(system)};
-  REQUIRE(clockbounds.get() == nullptr);
+  REQUIRE_THROWS_AS(tchecker::clockbounds::compute_clockbounds(system), std::runtime_error);
 }

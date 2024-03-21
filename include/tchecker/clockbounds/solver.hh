@@ -281,17 +281,17 @@ void add_edge_constraints(tchecker::typed_expression_t const & guard, tchecker::
  \param system : a system of timed processes
  \param clockbounds : clock bound maps
  \pre clockbounds maps have the same numbers of clocks and locations as system
- \return true if system has computable clock bounds and all clock bounds map have been
- filled, false otherwise
- \post if system has a solution, then clockbounds has been filled with the computed clock
+ \post if clock bounds can be computed for system, then clockbounds has been filled with the computed clock
  bounds, otherwise, clockbounds is empty
+ \throw std::runtime_error : if clock bounds cannot be computed for system
  */
-bool compute_clockbounds(tchecker::ta::system_t const & system, tchecker::clockbounds::clockbounds_t & clockbounds);
+void compute_clockbounds(tchecker::ta::system_t const & system, tchecker::clockbounds::clockbounds_t & clockbounds);
 
 /*!
  \brief Allocates and computes clock bound maps from a system of timed processes
  \param system : a system of timed processes
- \return clock bounds maps for system, nullptr if clock bounds computation failed
+ \return clock bounds maps for system, if they clock bounds can be computed
+ \throw std::runtme_error : if clock bounds cannot be computed for system
  */
 tchecker::clockbounds::clockbounds_t * compute_clockbounds(tchecker::ta::system_t const & system);
 
