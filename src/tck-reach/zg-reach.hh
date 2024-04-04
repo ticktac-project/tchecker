@@ -141,6 +141,12 @@ public:
                                                tchecker::tck_reach::zg_reach::node_hash_t,
                                                tchecker::tck_reach::zg_reach::node_equal_to_t>::attributes;
 
+  /*!
+   \brief Checks if an edge is an actual edge in the graph
+   \return true (all edges are actual edges in the reachability graph)
+   */
+  bool is_actual_edge(edge_sptr_t const &) const { return true; }
+
 protected:
   /*!
    \brief Accessor to node attributes

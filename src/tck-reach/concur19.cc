@@ -138,6 +138,8 @@ void graph_t::attributes(tchecker::tck_reach::concur19::edge_t const & e, std::m
   m["vedge"] = tchecker::to_string(e.vedge(), _refzg->system().as_system_system());
 }
 
+bool graph_t::is_actual_edge(edge_sptr_t const & e) const { return edge_type(e) == tchecker::graph::subsumption::EDGE_ACTUAL; }
+
 /* dot_output */
 
 /*!

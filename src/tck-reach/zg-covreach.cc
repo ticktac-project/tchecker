@@ -72,6 +72,8 @@ graph_t::~graph_t()
                                         tchecker::tck_reach::zg_covreach::node_le_t>::clear();
 }
 
+bool graph_t::is_actual_edge(edge_sptr_t const & e) const { return edge_type(e) == tchecker::graph::subsumption::EDGE_ACTUAL; }
+
 void graph_t::attributes(tchecker::tck_reach::zg_covreach::node_t const & n, std::map<std::string, std::string> & m) const
 {
   _zg->attributes(n.state_ptr(), m);

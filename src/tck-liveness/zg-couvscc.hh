@@ -136,6 +136,12 @@ public:
   */
   inline std::shared_ptr<tchecker::zg::zg_t> zg_ptr() const { return _zg; }
 
+  /*!
+   \brief Checks if an edge is an actual edge in the graph
+   \return true (all edges are actual edges in the reachability graph)
+   */
+  bool is_actual_edge(edge_sptr_t const &) const { return true; }
+
 protected:
   /*!
    \brief Accessor to node attributes

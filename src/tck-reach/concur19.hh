@@ -199,6 +199,13 @@ public:
                                               tchecker::tck_reach::concur19::node_hash_t,
                                               tchecker::tck_reach::concur19::node_le_t>::attributes;
 
+  /*!
+   \brief Checks is an edge is an actual edge (not a subsumption edge)
+   \param e : an edge
+   \return true if e is an actual edge, false otherwise (e is a subsumption edge)
+   */
+  bool is_actual_edge(edge_sptr_t const & e) const;
+
 protected:
   /*!
    \brief Accessor to node attributes

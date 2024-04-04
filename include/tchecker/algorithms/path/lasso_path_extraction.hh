@@ -74,14 +74,15 @@ public:
    and such that cycle contains a node that satisfies filter_final,
    the empty lasso path if no such sequences of edges exist
   */
-  lasso_edges_t run(GRAPH const & g, std::function<bool(node_sptr_t)> && filter_first,
-                    std::function<bool(node_sptr_t)> && filter_final, std::function<bool(edge_sptr_t)> && filter_edge)
+  lasso_edges_t run(GRAPH const & g, std::function<bool(GRAPH const &, node_sptr_t)> && filter_first,
+                    std::function<bool(GRAPH const &, node_sptr_t)> && filter_final,
+                    std::function<bool(GRAPH const &, edge_sptr_t)> && filter_edge)
   {
     std::unordered_set<node_sptr_t> cyan, blue, red;
 
     auto r = g.nodes();
     for (node_sptr_t n : r) {
-      if (!filter_first(n))
+      if (!filter_first(g, n))
         continue;
       lasso_edges_t lasso_edges = find_lasso_edges(g, n, std::move(filter_final), std::move(filter_edge), cyan, blue, red);
       if (!lasso_edges.empty())
@@ -155,9 +156,11 @@ private:
    \post all nodes visited during the search have been added to cyan, blue or red depending on
    the nested DFS algorithm
   */
-  lasso_edges_t find_lasso_edges(GRAPH const & g, node_sptr_t const & n, std::function<bool(node_sptr_t)> && filter_final,
-                                 std::function<bool(edge_sptr_t)> && filter_edge, std::unordered_set<node_sptr_t> & cyan,
-                                 std::unordered_set<node_sptr_t> & blue, std::unordered_set<node_sptr_t> & red)
+  lasso_edges_t find_lasso_edges(GRAPH const & g, node_sptr_t const & n,
+                                 std::function<bool(GRAPH const &, node_sptr_t)> && filter_final,
+                                 std::function<bool(GRAPH const &, edge_sptr_t)> && filter_edge,
+                                 std::unordered_set<node_sptr_t> & cyan, std::unordered_set<node_sptr_t> & blue,
+                                 std::unordered_set<node_sptr_t> & red)
   {
     lasso_edges_t lasso_edges;
 
@@ -203,9 +206,11 @@ private:
    The source node of the first edge is n, and the target node of the last edge is the loop root node of the
    lasso path
    */
-  std::vector<edge_sptr_t> blue_dfs(GRAPH const & g, node_sptr_t const & n, std::function<bool(node_sptr_t)> && filter_final,
-                                    std::function<bool(edge_sptr_t)> && filter_edge, std::unordered_set<node_sptr_t> & cyan,
-                                    std::unordered_set<node_sptr_t> & blue, std::unordered_set<node_sptr_t> & red)
+  std::vector<edge_sptr_t> blue_dfs(GRAPH const & g, node_sptr_t const & n,
+                                    std::function<bool(GRAPH const &, node_sptr_t)> && filter_final,
+                                    std::function<bool(GRAPH const &, edge_sptr_t)> && filter_edge,
+                                    std::unordered_set<node_sptr_t> & cyan, std::unordered_set<node_sptr_t> & blue,
+                                    std::unordered_set<node_sptr_t> & red)
   {
     std::stack<ndfs_entry_t> stack;
     std::vector<edge_sptr_t> edges;
@@ -220,7 +225,7 @@ private:
         edge_sptr_t edge = entry.current_edge();
         entry.next();
 
-        if (!filter_edge(edge))
+        if (!filter_edge(g, edge))
           continue;
 
         node_sptr_t next = g.edge_tgt(edge);
@@ -231,7 +236,7 @@ private:
         }
       }
       else {
-        if (filter_final(entry.node())) {
+        if (filter_final(g, entry.node())) {
           std::vector<edge_sptr_t> red_edges = red_dfs(g, entry.node(), std::move(filter_edge), cyan, blue, red);
           if (!red_edges.empty()) { // lasso path found
             for (edge_sptr_t e : red_edges)
@@ -263,7 +268,8 @@ private:
    \return a sequence of edges, all satisfying filter_edge, from n to a cyan n ode ifsuch a path exists,
    the empty sequence of edges otherwise
    */
-  std::vector<edge_sptr_t> red_dfs(GRAPH const & g, node_sptr_t const & n, std::function<bool(edge_sptr_t)> && filter_edge,
+  std::vector<edge_sptr_t> red_dfs(GRAPH const & g, node_sptr_t const & n,
+                                   std::function<bool(GRAPH const &, edge_sptr_t)> && filter_edge,
                                    std::unordered_set<node_sptr_t> & cyan, std::unordered_set<node_sptr_t> & blue,
                                    std::unordered_set<node_sptr_t> & red)
   {
@@ -285,7 +291,7 @@ private:
         edge_sptr_t edge = entry.current_edge();
         entry.next();
 
-        if (!filter_edge(edge))
+        if (!filter_edge(g, edge))
           continue;
 
         node_sptr_t next = g.edge_tgt(edge);
