@@ -99,8 +99,8 @@ bool every_process_has_initial_location(tchecker::system::system_t const & syste
 /*!
  \brief Checks if every process is deterministic
  \param system : a system of processes
- \return true if every process is deterministic (every location has at most one outgoing edge of every event),
- false otherwise
+ \return true if every process is deterministic (only one initial location, and every location has
+ at most one outgoing edge of every event), false otherwise
  */
 bool is_deterministic(tchecker::system::system_t const & system);
 

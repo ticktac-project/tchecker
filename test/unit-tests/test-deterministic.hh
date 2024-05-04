@@ -121,3 +121,20 @@ TEST_CASE("system with a non-deterministic process", "[dterministic]")
 
   REQUIRE(!tchecker::system::is_deterministic(system));
 }
+
+TEST_CASE("system with a process with more than one initial location", "[dterministic]")
+{
+  std::string model = "system:non_deterministic_three \n\
+  \n\
+  process:P1 \n\
+  location:P1:l0{initial: true} \n\
+  location:P1:l1{initial: true} \n\
+  ";
+
+  std::shared_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model)};
+  assert(sysdecl != nullptr);
+
+  tchecker::system::system_t system{*sysdecl};
+
+  REQUIRE(!tchecker::system::is_deterministic(system));
+}
