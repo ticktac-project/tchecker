@@ -112,7 +112,8 @@ tchecker::state_status_t initial(tchecker::ta::system_t const & system, tchecker
  \param semantics : a zone semantics
  \param extrapolation : an extrapolation
  \param v : initial iterator value
- \post s has been initialized from v, and t is an empty transition
+ \post s has been initialized from v, and t stores the invariant in s in its target invariant
+ container (and has empty vedge, no sync identifier, empty guard and empty source invariant)
  \return tchecker::STATE_OK if initialization of s and t succeeded, see
  tchecker::zg::initial for returned values when initialization fails
  \throw std::invalid_argument : if s and v have incompatible sizes
@@ -122,7 +123,7 @@ inline tchecker::state_status_t initial(tchecker::ta::system_t const & system, t
                                         tchecker::zg::extrapolation_t & extrapolation, tchecker::zg::initial_value_t const & v)
 {
   return tchecker::zg::initial(system, s.vloc_ptr(), s.intval_ptr(), s.zone_ptr(), t.vedge_ptr(), t.sync_id(),
-                               t.src_invariant_container(), semantics, extrapolation, v);
+                               t.tgt_invariant_container(), semantics, extrapolation, v);
 }
 
 // Final edges
@@ -200,7 +201,8 @@ tchecker::state_status_t final(tchecker::ta::system_t const & system, tchecker::
  \param semantics : a zone semantics
  \param extrapolation : an extrapolation
  \param v : final iterator value
- \post s has been initialized from v, and t is an empty transition
+ \post s has been initialized from v, and t stores the invariant in in its
+ target invariant container (and has empty vedge, no sync identifier, empty guard and empty source invariant)
  \return tchecker::STATE_OK if initialization of s and t succeeded, see
  tchecker::zg::final for returned values when computation fails
  \throw std::invalid_argument : if s and v have incompatible sizes
@@ -210,7 +212,7 @@ inline tchecker::state_status_t final(tchecker::ta::system_t const & system, tch
                                       tchecker::zg::extrapolation_t & extrapolation, tchecker::zg::final_value_t const & v)
 {
   return tchecker::zg::final(system, s.vloc_ptr(), s.intval_ptr(), s.zone_ptr(), t.vedge_ptr(), t.sync_id(),
-                             t.src_invariant_container(), semantics, extrapolation, v);
+                             t.tgt_invariant_container(), semantics, extrapolation, v);
 }
 
 // Outgoing edges
@@ -565,7 +567,7 @@ tchecker::state_status_t initialize(tchecker::ta::system_t const & system, tchec
  \param t : transition
  \param attributes : map of attributes
  \post s and t have been initialized from attributes["vloc"], attributes["intval"] and attributes["zone"]
- the src invariant container in t contains the invariant of state s
+ the target invariant container in t contains the invariant of state s
  \return tchecker::STATE_OK if initialization succeeded
  tchecker::STATE_BAD otherwise
  tchecker::STATE_INTVARS_SRC_INVARIANT_VIOLATED if attributes["intval"] does not satisfy the invariant in
@@ -578,7 +580,7 @@ inline tchecker::state_status_t initialize(tchecker::ta::system_t const & system
                                            std::map<std::string, std::string> const & attributes)
 {
   return tchecker::zg::initialize(system, s.vloc_ptr(), s.intval_ptr(), s.zone_ptr(), t.vedge_ptr(), t.sync_id(),
-                                  t.src_invariant_container(), attributes);
+                                  t.tgt_invariant_container(), attributes);
 }
 
 // zg_t
@@ -840,7 +842,7 @@ public:
    \post a triple <status, s, t> has been pushed to v (if status matches mask), where the vector of
    locations in s has been initialized from attributes["vloc"], the integer valuation in s has been
    initialized from attributes["intval"], the zone in s has been initialized from attributes["zone"]
-   and the invariant in the vector of locations in s, the vector of edges in t is empty and the source
+   and the invariant in the vector of locations in s, the vector of edges in t is empty and the target
    invariant in t has been initialized to the invariant in vloc
   */
   virtual void build(std::map<std::string, std::string> const & attributes, std::vector<sst_t> & v,

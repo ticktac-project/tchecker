@@ -88,7 +88,8 @@ tchecker::state_status_t initial(tchecker::ta::system_t const & system, tchecker
 \param s : state
 \param t : transition
 \param v : initial iterator value
-\post s has been initialized from v, and t is an empty transition
+\post s has been initialized from v, and t contains an empty tuple of edges and a sync_id initialized
+to tchecker::NO_SYNC
 \return tchecker::STATE_OK if initialization succeeded
 tchecker::STATE_INTVARS_SRC_INVARIANT_VIOLATED if the initial value of the bounded integer
 variables does not satisfy the invariant in s
@@ -162,7 +163,8 @@ tchecker::state_status_t final(tchecker::ta::system_t const & system, tchecker::
  \param s : state
  \param t : transition
  \param v : final iterator value
- \post s has been initialized from v, and t is an empty transition
+ \post s has been initialized from v, and t contains an empty tuple of edges and a sync_id initialized
+ to tchecker::NO_SYNC
  \return tchecker::STATE_OK if computation succeeded
  tchecker::STATE_INTVARS_TGT_INVARIANT_VIOLATED if the invariant in vloc is violated by the value of bounded integer variables
  in intval
@@ -415,7 +417,8 @@ tchecker::state_status_t initialize(tchecker::ta::system_t const & system, tchec
  \param s : state
  \param t : transition
  \param attributes : map of attributes
- \post s and t have been initialized from attributes["vloc"] and attributes["intval"]
+ \post s has been initialized from attributes["vloc"] and attributes["intval"], and t contains
+ an empty tuple of edges and a sync_id initialized to tchecker::NO_SYNC
  \return tchecker::STATE_OK if initialization succeeded
  tchecker::STATE_BAD otherwise
  tchecker::STATE_INTVARS_SRC_INVARIANT_VIOLATED if attributes["intval"] does not satisfy the invariant in
