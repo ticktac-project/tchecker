@@ -497,8 +497,7 @@ tchecker::reference_clock_variables_t single_reference_clocks(tchecker::flat_clo
 
   tchecker::reference_clock_variables_t reference_clocks(proc_refname_map);
 
-  tchecker::clock_id_t clocks_count = flat_clocks.size();
-  for (tchecker::clock_id_t clock_id = 0; clock_id < clocks_count; ++clock_id) {
+  for (tchecker::clock_id_t const clock_id : flat_clocks.identifiers()) {
     std::string const & clock_name = flat_clocks.index().value(clock_id);
     reference_clocks.declare(clock_name, zero_clock_name);
   }

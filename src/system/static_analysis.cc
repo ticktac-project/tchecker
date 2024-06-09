@@ -47,8 +47,7 @@ tchecker::system::process_events_map_t weakly_synchronized_events(tchecker::syst
 
 bool every_process_has_initial_location(tchecker::system::system_t const & system)
 {
-  tchecker::process_id_t procs_count = system.processes_count();
-  for (tchecker::process_id_t pid = 0; pid < procs_count; ++pid)
+  for (tchecker::process_id_t const pid : system.processes_identifiers())
     if (system.initial_locations(pid).empty())
       return false;
   return true;
@@ -57,8 +56,7 @@ bool every_process_has_initial_location(tchecker::system::system_t const & syste
 bool is_deterministic(tchecker::system::system_t const & system)
 {
   // Check that each process has only one initial location
-  tchecker::process_id_t const process_count = system.processes_count();
-  for (tchecker::process_id_t pid = 0; pid < process_count; ++pid) {
+  for (tchecker::process_id_t const pid : system.processes_identifiers()) {
     auto initial_locations = system.initial_locations(pid);
     if (std::distance(initial_locations.begin(), initial_locations.end()) > 1)
       return false;

@@ -209,6 +209,11 @@ void edges_t::add_edge(tchecker::process_id_t pid, tchecker::loc_id_t src, tchec
   _proc_edges_map.add_edge(pid, edge);
 }
 
+tchecker::system::edges_t::edges_identifiers_range_t edges_t::edges_identifiers() const
+{
+  return tchecker::make_integer_range<tchecker::event_id_t>(0, edges_count());
+}
+
 tchecker::range_t<tchecker::system::edges_t::const_iterator_t> edges_t::edges() const
 {
   return tchecker::make_range(const_iterator_t(_edges.begin()), const_iterator_t(_edges.end()));

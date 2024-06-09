@@ -14,6 +14,7 @@
 #include "tchecker/basictypes.hh"
 #include "tchecker/system/attribute.hh"
 #include "tchecker/utils/index.hh"
+#include "tchecker/utils/iterator.hh"
 
 /*!
  \file event.hh
@@ -44,9 +45,20 @@ public:
   /*!
    \brief Accessor
    \return number of events
-   \note 0..events_count() is the range of identifiers
+   \note all integers in 0..events_count()-1 are valid event identifiers
    */
   inline std::size_t events_count() const { return _events_attributes.size(); }
+
+  /*!
+   \brief Type of range of events identifiers
+   */
+  using events_identifiers_range_t = tchecker::integer_range_t<tchecker::event_id_t>;
+
+  /*!
+  \brief Accesor
+  \return range of clock identifiers 0..events_count()-1
+  */
+  events_identifiers_range_t events_identifiers() const;
 
   /*!
    \brief Accessor

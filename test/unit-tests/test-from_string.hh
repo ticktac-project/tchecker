@@ -55,7 +55,7 @@ TEST_CASE("vloc from string", "[from_string]")
     REQUIRE_NOTHROW(tchecker::from_string(*vloc, system, "<l0,l1,l0>"));
 
     tchecker::loc_id_t loc_ids[3] = {0, 3, 4};
-    for (tchecker::process_id_t pid = 0; pid < processes_count; ++pid)
+    for (tchecker::process_id_t const pid : system.processes_identifiers())
       REQUIRE((*vloc)[pid] == loc_ids[pid]);
   }
 

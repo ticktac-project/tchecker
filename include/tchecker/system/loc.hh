@@ -169,8 +169,20 @@ public:
   /*!
    \brief Accessor
    \return number of locations
+   \note all integers in 0..locations_count()-1 are valid location identifiers
    */
   inline std::size_t locations_count() const { return _locs.size(); }
+
+  /*!
+   \brief Type of range of locations identifiers
+   */
+  using locations_identifiers_range_t = tchecker::integer_range_t<tchecker::loc_id_t>;
+
+  /*!
+   \brief Accessor
+   \return range of locations identifiers 0..locations_count()-1
+   */
+  locations_identifiers_range_t locations_identifiers() const;
 
   /*!
    \brief Accessor

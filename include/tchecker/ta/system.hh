@@ -102,6 +102,7 @@ public:
   using tchecker::syncprod::system_t::clock_name;
   using tchecker::syncprod::system_t::clock_variables;
   using tchecker::syncprod::system_t::clocks_count;
+  using tchecker::syncprod::system_t::clocks_identifiers;
   using tchecker::syncprod::system_t::is_clock;
 
   // Edges
@@ -110,6 +111,7 @@ public:
   using tchecker::syncprod::system_t::edge;
   using tchecker::syncprod::system_t::edges;
   using tchecker::syncprod::system_t::edges_count;
+  using tchecker::syncprod::system_t::edges_identifiers;
   using tchecker::syncprod::system_t::incoming_edges;
   using tchecker::syncprod::system_t::incoming_edges_maps;
   using tchecker::syncprod::system_t::incoming_event;
@@ -156,6 +158,7 @@ public:
   using tchecker::syncprod::system_t::event_id;
   using tchecker::syncprod::system_t::event_name;
   using tchecker::syncprod::system_t::events_count;
+  using tchecker::syncprod::system_t::events_identifiers;
   using tchecker::syncprod::system_t::is_event;
 
   // Bounded integer variables
@@ -164,6 +167,7 @@ public:
   using tchecker::syncprod::system_t::intvar_id;
   using tchecker::syncprod::system_t::intvar_name;
   using tchecker::syncprod::system_t::intvars_count;
+  using tchecker::syncprod::system_t::intvars_identifiers;
   using tchecker::syncprod::system_t::is_intvar;
 
   // Labels
@@ -172,6 +176,7 @@ public:
   using tchecker::syncprod::system_t::label_name;
   using tchecker::syncprod::system_t::labels;
   using tchecker::syncprod::system_t::labels_count;
+  using tchecker::syncprod::system_t::labels_identifiers;
 
   // Locations
   using tchecker::syncprod::system_t::committed_locations;
@@ -182,6 +187,7 @@ public:
   using tchecker::syncprod::system_t::location;
   using tchecker::syncprod::system_t::locations;
   using tchecker::syncprod::system_t::locations_count;
+  using tchecker::syncprod::system_t::locations_identifiers;
 
   /*!
    \brief Accessor
@@ -213,11 +219,13 @@ public:
   using tchecker::syncprod::system_t::process_id;
   using tchecker::syncprod::system_t::process_name;
   using tchecker::syncprod::system_t::processes_count;
+  using tchecker::syncprod::system_t::processes_identifiers;
 
   // Synchronizations
   using tchecker::syncprod::system_t::synchronization;
   using tchecker::syncprod::system_t::synchronizations;
   using tchecker::syncprod::system_t::synchronizations_count;
+  using tchecker::syncprod::system_t::synchronizations_identifiers;
 
   // Virtual machine
   inline tchecker::vm_t & vm() const { return _vm; }

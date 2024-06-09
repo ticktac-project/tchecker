@@ -127,13 +127,13 @@ void system_t::compute_from_syncprod_system()
   _statements.resize(edges_count);
   _urgent.resize(locations_count);
 
-  for (tchecker::loc_id_t id = 0; id < locations_count; ++id) {
+  for (tchecker::loc_id_t const id : this->locations_identifiers()) {
     auto const & attributes = tchecker::syncprod::system_t::location(id)->attributes();
     set_invariant(id, attributes.range("invariant"));
     set_urgent(id, attributes.range("urgent"));
   }
 
-  for (tchecker::edge_id_t id = 0; id < edges_count; ++id) {
+  for (tchecker::edge_id_t const id : this->edges_identifiers()) {
     auto const & attributes = tchecker::syncprod::system_t::edge(id)->attributes();
     set_guards(id, attributes.range("provided"));
     set_statements(id, attributes.range("do"));

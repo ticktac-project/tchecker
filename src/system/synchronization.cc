@@ -60,6 +60,12 @@ void synchronizations_t::add_synchronization(std::vector<tchecker::system::sync_
   _syncs.emplace_back(id, v, attr);
 }
 
+tchecker::system::synchronizations_t::synchronizations_identifiers_range_t
+synchronizations_t::synchronizations_identifiers() const
+{
+  return tchecker::make_integer_range<tchecker::sync_id_t>(0, synchronizations_count());
+}
+
 tchecker::system::synchronization_t const & synchronizations_t::synchronization(tchecker::sync_id_t id) const
 {
   if (id >= _syncs.size())

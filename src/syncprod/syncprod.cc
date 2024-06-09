@@ -18,10 +18,8 @@ namespace syncprod {
 
 tchecker::syncprod::initial_range_t initial_edges(tchecker::syncprod::system_t const & system)
 {
-  tchecker::process_id_t processes_count = system.processes_count();
-
   tchecker::syncprod::initial_iterator_t begin;
-  for (tchecker::process_id_t pid = 0; pid < processes_count; ++pid)
+  for (tchecker::process_id_t const pid : system.processes_identifiers())
     begin.push_back(system.initial_locations(pid));
 
   return tchecker::make_range(begin, tchecker::past_the_end_iterator);
@@ -57,8 +55,7 @@ final_iterator_t::final_iterator_t(tchecker::syncprod::system_t const & system, 
     : _system(system), _final_labels(final_labels)
 {
   // Build cartesian iterator tuple of locations in system
-  tchecker::process_id_t processes_count = system.processes_count();
-  for (tchecker::process_id_t pid = 0; pid < processes_count; ++pid)
+  for (tchecker::process_id_t const pid : system.processes_identifiers())
     _it.push_back(system.locations(pid));
 
   advance_while_not_final();
@@ -436,7 +433,7 @@ tchecker::state_status_t initialize(tchecker::syncprod::system_t const & system,
 {
   try {
     tchecker::from_string(*vloc, system.as_system_system(), attributes.at("vloc"));
-    for (tchecker::process_id_t pid = 0; pid < system.processes_count(); ++pid)
+    for (tchecker::process_id_t const pid : system.processes_identifiers())
       (*vedge)[pid] = tchecker::NO_EDGE;
     sync_id = tchecker::NO_SYNC;
     return tchecker::STATE_OK;

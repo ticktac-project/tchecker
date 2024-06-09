@@ -14,6 +14,7 @@
 
 #include "tchecker/basictypes.hh"
 #include "tchecker/system/attribute.hh"
+#include "tchecker/utils/iterator.hh"
 #include "tchecker/variables/clocks.hh"
 
 /*!
@@ -48,8 +49,23 @@ public:
    \param kind : kind of variable declaration
    \return number of declared clock variables if kind = tchecker::VK_DECLARED,
    number of flattened clock variables if kind = tchecker::VK_FLATTENED
+   \note all integers in 0..clocks_count(tchecker::VK_FLATTENED)-1 are valid flattened clock identifiers
+   \note 0..clocks_count(tchecker::VK_DECLARED)-1 is NOT the range of declared clock identifiers: use
+   clocks_identifiers(tchecker::VK_DECLARED) for that purpose
    */
   inline std::size_t clocks_count(enum tchecker::variable_kind_t kind) const { return _clock_variables.size(kind); }
+
+  /*!
+   \brief Accessor
+   \param kind : kind of variable declaration
+   \return range of declared clock variables identifiers if kind = tchecker::VK_DECLARED,
+   range of flattened clock variables identifiers if kind = tchecker::VK_FLATTENED
+   \note if kind = tchecker::VK_FLATTENED, then the returned range is 0..clocks_count(tchecker::VK_FLATTENED)-1
+   */
+  inline tchecker::clock_variables_t::identifiers_range_t clocks_identifiers(enum tchecker::variable_kind_t kind) const
+  {
+    return _clock_variables.identifiers(kind);
+  }
 
   /*!
    \brief Accessor

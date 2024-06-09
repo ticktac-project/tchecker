@@ -35,8 +35,7 @@ tchecker::intvar_values_range_t intvar_values_range(tchecker::intvar_info_t cons
 {
   if (intvar_info.max() == std::numeric_limits<tchecker::integer_t>::max())
     throw std::overflow_error("tchecker::intvar_values_range: cannot build range");
-  return tchecker::make_range(tchecker::integer_iterator_t{intvar_info.min()},
-                              tchecker::integer_iterator_t{static_cast<tchecker::integer_t>(intvar_info.max() + 1)});
+  return tchecker::make_integer_range(intvar_info.min(), static_cast<tchecker::integer_t>(intvar_info.max() + 1));
 }
 
 /* integer_variables_t */

@@ -223,8 +223,20 @@ public:
   /*!
    \brief Accessor
    \return number of synchronizations
+   \note all integers in 0..synchronizations_count()-1 are valid synchronization identifiers
    */
   inline std::size_t synchronizations_count() const { return _syncs.size(); }
+
+  /*!
+   \brief Type of range of synchronizations identifiers
+   */
+  using synchronizations_identifiers_range_t = tchecker::integer_range_t<tchecker::sync_id_t>;
+
+  /*!
+   \brief Accessor
+   \return range of synchronizations identifiers 0..synchronizations_count()-1
+   */
+  synchronizations_identifiers_range_t synchronizations_identifiers() const;
 
   /*!
    \brief Accessor

@@ -40,9 +40,20 @@ public:
   /*!
    \brief Accessor
    \return number of labels
-   \note 0..labels_count() is the range of label identifiers
+   \note 0..labels_count()-1 is the range of label identifiers
    */
   inline std::size_t labels_count() const { return _labels_index.size(); }
+
+  /*!
+   \brief Type of range of labels identifiers
+   */
+  using labels_identifiers_range_t = tchecker::integer_range_t<tchecker::label_id_t>;
+
+  /*!
+   \brief Accessor
+   \return range of labels identifiers 0..labels_count()-1
+   */
+  labels_identifiers_range_t labels_identifiers() const;
 
   /*!
    \brief Accessor

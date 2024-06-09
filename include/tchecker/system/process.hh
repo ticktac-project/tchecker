@@ -44,8 +44,20 @@ public:
   /*!
    \brief Accessor
    \return number of processes
+   \note all integers in 0..processes_count()-1 are valid process indeitifiers
    */
   inline std::size_t processes_count() const { return _procs_attributes.size(); }
+
+  /*!
+   \brief Type of range of processes identifiers
+   */
+  using processes_identifiers_range_t = tchecker::integer_range_t<tchecker::process_id_t>;
+
+  /*!
+   \brief Accessor
+   \return range of processes identifiers 0..processes_count()-1
+   */
+  processes_identifiers_range_t processes_identifiers() const;
 
   /*!
    \brief Accessor

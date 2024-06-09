@@ -115,6 +115,7 @@ public:
   using tchecker::system::clocks_t::clock_name;
   using tchecker::system::clocks_t::clock_variables;
   using tchecker::system::clocks_t::clocks_count;
+  using tchecker::system::clocks_t::clocks_identifiers;
   using tchecker::system::clocks_t::is_clock;
 
   // Edges
@@ -129,6 +130,7 @@ public:
   using tchecker::system::edges_t::edge;
   using tchecker::system::edges_t::edges;
   using tchecker::system::edges_t::edges_count;
+  using tchecker::system::edges_t::edges_identifiers;
   using tchecker::system::edges_t::incoming_edges;
   using tchecker::system::edges_t::incoming_edges_maps;
   using tchecker::system::edges_t::incoming_event;
@@ -143,6 +145,7 @@ public:
   using tchecker::system::events_t::event_id;
   using tchecker::system::events_t::event_name;
   using tchecker::system::events_t::events_count;
+  using tchecker::system::events_t::events_identifiers;
   using tchecker::system::events_t::is_event;
 
   // Bounded integer variables
@@ -162,6 +165,7 @@ public:
   using tchecker::system::intvars_t::intvar_id;
   using tchecker::system::intvars_t::intvar_name;
   using tchecker::system::intvars_t::intvars_count;
+  using tchecker::system::intvars_t::intvars_identifiers;
   using tchecker::system::intvars_t::is_intvar;
 
   // Locations
@@ -180,6 +184,7 @@ public:
   using tchecker::system::locs_t::location;
   using tchecker::system::locs_t::locations;
   using tchecker::system::locs_t::locations_count;
+  using tchecker::system::locs_t::locations_identifiers;
 
   // Processes
   using tchecker::system::processes_t::add_process;
@@ -188,6 +193,7 @@ public:
   using tchecker::system::processes_t::process_id;
   using tchecker::system::processes_t::process_name;
   using tchecker::system::processes_t::processes_count;
+  using tchecker::system::processes_t::processes_identifiers;
 
   // Synchronizations
 
@@ -201,6 +207,7 @@ public:
   using tchecker::system::synchronizations_t::synchronization;
   using tchecker::system::synchronizations_t::synchronizations;
   using tchecker::system::synchronizations_t::synchronizations_count;
+  using tchecker::system::synchronizations_t::synchronizations_identifiers;
 
 private:
   /*!
