@@ -21,15 +21,13 @@ namespace refzg {
 
 /* Semantics functions */
 
-tchecker::state_status_t initial(tchecker::ta::system_t const & system,
-                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                                 tchecker::intrusive_shared_ptr_t<tchecker::refzg::shared_zone_t> const & zone,
-                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+tchecker::state_status_t initial(tchecker::ta::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                                 tchecker::intval_sptr_t const & intval, tchecker::refzg::zone_sptr_t const & zone,
+                                 tchecker::vedge_sptr_t const & vedge, tchecker::sync_id_t & sync_id,
                                  tchecker::clock_constraint_container_t & invariant, tchecker::refzg::semantics_t & semantics,
                                  tchecker::integer_t spread, tchecker::refzg::initial_value_t const & initial_range)
 {
-  tchecker::state_status_t status = tchecker::ta::initial(system, vloc, intval, vedge, invariant, initial_range);
+  tchecker::state_status_t status = tchecker::ta::initial(system, vloc, intval, vedge, sync_id, invariant, initial_range);
   if (status != tchecker::STATE_OK)
     return status;
 
@@ -42,15 +40,13 @@ tchecker::state_status_t initial(tchecker::ta::system_t const & system,
   return semantics.initial(rdbm, *r, delay_allowed, invariant, spread);
 }
 
-tchecker::state_status_t final(tchecker::ta::system_t const & system,
-                               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                               tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                               tchecker::intrusive_shared_ptr_t<tchecker::refzg::shared_zone_t> const & zone,
-                               tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+tchecker::state_status_t final(tchecker::ta::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                               tchecker::intval_sptr_t const & intval, tchecker::refzg::zone_sptr_t const & zone,
+                               tchecker::vedge_sptr_t const & vedge, tchecker::sync_id_t & sync_id,
                                tchecker::clock_constraint_container_t & invariant, tchecker::refzg::semantics_t & semantics,
                                tchecker::integer_t spread, tchecker::refzg::final_value_t const & final_range)
 {
-  tchecker::state_status_t status = tchecker::ta::final(system, vloc, intval, vedge, invariant, final_range);
+  tchecker::state_status_t status = tchecker::ta::final(system, vloc, intval, vedge, sync_id, invariant, final_range);
   if (status != tchecker::STATE_OK)
     return status;
 
@@ -63,22 +59,20 @@ tchecker::state_status_t final(tchecker::ta::system_t const & system,
   return semantics.final(rdbm, *r, delay_allowed, invariant, spread);
 }
 
-tchecker::state_status_t next(tchecker::ta::system_t const & system,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                              tchecker::intrusive_shared_ptr_t<tchecker::refzg::shared_zone_t> const & zone,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+tchecker::state_status_t next(tchecker::ta::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                              tchecker::intval_sptr_t const & intval, tchecker::refzg::zone_sptr_t const & zone,
+                              tchecker::vedge_sptr_t const & vedge, tchecker::sync_id_t & sync_id,
                               tchecker::clock_constraint_container_t & src_invariant,
                               tchecker::clock_constraint_container_t & guard, tchecker::clock_reset_container_t & reset,
                               tchecker::clock_constraint_container_t & tgt_invariant, tchecker::refzg::semantics_t & semantics,
-                              tchecker::integer_t spread, tchecker::refzg::outgoing_edges_value_t const & edges)
+                              tchecker::integer_t spread, tchecker::refzg::outgoing_edges_value_t const & sync_edges)
 {
   std::shared_ptr<tchecker::reference_clock_variables_t const> r = zone->reference_clock_variables();
 
   boost::dynamic_bitset<> const src_delay_allowed = tchecker::ta::delay_allowed(system, *r, *vloc);
 
   tchecker::state_status_t status =
-      tchecker::ta::next(system, vloc, intval, vedge, src_invariant, guard, reset, tgt_invariant, edges);
+      tchecker::ta::next(system, vloc, intval, vedge, sync_id, src_invariant, guard, reset, tgt_invariant, sync_edges);
   if (status != tchecker::STATE_OK)
     return status;
 
@@ -90,22 +84,20 @@ tchecker::state_status_t next(tchecker::ta::system_t const & system,
                         tgt_invariant, spread);
 }
 
-tchecker::state_status_t prev(tchecker::ta::system_t const & system,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                              tchecker::intrusive_shared_ptr_t<tchecker::refzg::shared_zone_t> const & zone,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+tchecker::state_status_t prev(tchecker::ta::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                              tchecker::intval_sptr_t const & intval, tchecker::refzg::zone_sptr_t const & zone,
+                              tchecker::vedge_sptr_t const & vedge, tchecker::sync_id_t & sync_id,
                               tchecker::clock_constraint_container_t & src_invariant,
                               tchecker::clock_constraint_container_t & guard, tchecker::clock_reset_container_t & reset,
                               tchecker::clock_constraint_container_t & tgt_invariant, tchecker::refzg::semantics_t & semantics,
-                              tchecker::integer_t spread, tchecker::refzg::incoming_edges_value_t const & edges)
+                              tchecker::integer_t spread, tchecker::refzg::incoming_edges_value_t const & v)
 {
   std::shared_ptr<tchecker::reference_clock_variables_t const> r = zone->reference_clock_variables();
 
   boost::dynamic_bitset<> const tgt_delay_allowed = tchecker::ta::delay_allowed(system, *r, *vloc);
 
   tchecker::state_status_t status =
-      tchecker::ta::prev(system, vloc, intval, vedge, src_invariant, guard, reset, tgt_invariant, edges);
+      tchecker::ta::prev(system, vloc, intval, vedge, sync_id, src_invariant, guard, reset, tgt_invariant, v);
   if (status != tchecker::STATE_OK)
     return status;
 
@@ -160,16 +152,14 @@ void attributes(tchecker::ta::system_t const & system, tchecker::refzg::transiti
 
 /* initialize */
 
-tchecker::state_status_t initialize(tchecker::ta::system_t const & system,
-                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                                    tchecker::intrusive_shared_ptr_t<tchecker::refzg::shared_zone_t> const & zone,
-                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+tchecker::state_status_t initialize(tchecker::ta::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                                    tchecker::intval_sptr_t const & intval, tchecker::refzg::zone_sptr_t const & zone,
+                                    tchecker::vedge_sptr_t const & vedge, tchecker::sync_id_t & sync_id,
                                     tchecker::clock_constraint_container_t & invariant, tchecker::integer_t spread,
                                     std::map<std::string, std::string> const & attributes)
 {
   // initialize vloc, intval and vedge from ta
-  auto state_status = tchecker::ta::initialize(system, vloc, intval, vedge, invariant, attributes);
+  auto state_status = tchecker::ta::initialize(system, vloc, intval, vedge, sync_id, invariant, attributes);
   if (state_status != STATE_OK)
     return state_status;
 

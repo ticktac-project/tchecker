@@ -17,7 +17,7 @@ namespace tchecker {
 
 namespace test {
 
-tchecker::parsing::system_declaration_t const * parse(std::string const & model)
+std::shared_ptr<tchecker::parsing::system_declaration_t> parse(std::string const & model)
 {
   // Create the temporary file from model
   std::FILE * f = tmpfile();
@@ -28,13 +28,13 @@ tchecker::parsing::system_declaration_t const * parse(std::string const & model)
   std::fseek(f, 0, SEEK_SET);
 
   // Parse the model from the temporary file
-  tchecker::parsing::system_declaration_t const * sysdecl = nullptr;
+  std::shared_ptr<tchecker::parsing::system_declaration_t> sysdecl{nullptr};
 
   try {
     sysdecl = tchecker::parsing::parse_system_declaration(f, "");
   }
   catch (...) {
-    delete sysdecl;
+    sysdecl = nullptr;
     std::fclose(f);
     return nullptr;
   }

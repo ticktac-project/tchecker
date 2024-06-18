@@ -141,6 +141,12 @@ public:
                                                tchecker::tck_reach::zg_reach::node_hash_t,
                                                tchecker::tck_reach::zg_reach::node_equal_to_t>::attributes;
 
+  /*!
+   \brief Checks if an edge is an actual edge in the graph
+   \return true (all edges are actual edges in the reachability graph)
+   */
+  bool is_actual_edge(edge_sptr_t const &) const { return true; }
+
 protected:
   /*!
    \brief Accessor to node attributes
@@ -244,9 +250,10 @@ public:
  \pre labels must appear as node attributes in sysdecl
  search_order must be either "dfs" or "bfs"
  \return statistics on the run and the reachability graph
+ \throw std::runtime_error : if clock bounds cannot be computed for the system modeled by sysdecls
  */
 std::tuple<tchecker::algorithms::reach::stats_t, std::shared_ptr<tchecker::tck_reach::zg_reach::graph_t>>
-run(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl, std::string const & labels = "",
+run(tchecker::parsing::system_declaration_t const & sysdecl, std::string const & labels = "",
     std::string const & search_order = "bfs", std::size_t block_size = 10000, std::size_t table_size = 65536);
 
 } // end of namespace zg_reach

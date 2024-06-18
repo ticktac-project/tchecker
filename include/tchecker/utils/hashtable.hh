@@ -749,13 +749,28 @@ public:
   const_iterator_t end() const { return _table.cend(); }
 
   /*!
-    \brief Remove an element
+    \brief Remove an element from iterator
     \param it : iterator
     \pre it can be dereferenced
     \post the element pointed by it has been removed from this hash table
     \return iterator to the next object in the table
   */
   iterator_t remove(iterator_t const & it) { return _table.erase(it); }
+
+  /*!
+   \brief Remove an element
+   \param o : an element
+   \return true if o has been removed, false otherwise (o was not in this hash table)
+   \post o has been removed from this hash table
+   */
+  bool remove(SPTR const & o)
+  {
+    auto it = _table.find(o);
+    if (it == _table.end())
+      return false;
+    remove(it);
+    return true;
+  }
 
 protected:
   std::unordered_set<SPTR, HASH, EQUAL> _table; /*!< Container */

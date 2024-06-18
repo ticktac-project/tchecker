@@ -130,10 +130,9 @@ void system_t::extract_asynchronous_edges()
 
 void system_t::compute_committed_locations()
 {
-  tchecker::loc_id_t locations_count = this->locations_count();
-  _committed.resize(locations_count, false);
+  _committed.resize(this->locations_count(), false);
 
-  for (tchecker::loc_id_t id = 0; id < locations_count; ++id) {
+  for (tchecker::loc_id_t const id : this->locations_identifiers()) {
     auto const & attr = tchecker::syncprod::system_t::location(id)->attributes();
     set_committed(id, attr.range("committed"));
   }
@@ -151,11 +150,11 @@ static void labels_from_attrs(tchecker::range_t<tchecker::system::attributes_t::
 
 void system_t::compute_labels()
 {
-  tchecker::loc_id_t const locations_count = this->locations_count();
+  tchecker::system::locs_t::locations_identifiers_range_t const locations_identifiers = this->locations_identifiers();
 
   // Compute labels index
   std::vector<std::string> labels;
-  for (tchecker::loc_id_t loc_id = 0; loc_id < locations_count; ++loc_id) {
+  for (tchecker::loc_id_t const loc_id : locations_identifiers) {
     auto const & attr = tchecker::syncprod::system_t::location(loc_id)->attributes();
     labels_from_attrs(attr.range("labels"), labels);
   }
@@ -169,9 +168,9 @@ void system_t::compute_labels()
   tchecker::label_id_t const & labels_count = this->labels_count();
 
   _labels.clear();
-  _labels.resize(locations_count);
+  _labels.resize(this->locations_count());
 
-  for (tchecker::loc_id_t loc_id = 0; loc_id < locations_count; ++loc_id) {
+  for (tchecker::loc_id_t const loc_id : locations_identifiers) {
     _labels[loc_id].resize(labels_count);
     _labels[loc_id].reset();
     auto const & attr = tchecker::syncprod::system_t::location(loc_id)->attributes();
@@ -314,7 +313,7 @@ private:
    */
   void integer_variables()
   {
-    for (tchecker::intvar_id_t id = 0; id < _system->intvars_count(tchecker::VK_DECLARED); ++id) {
+    for (tchecker::intvar_id_t const id : _system->intvars_identifiers(tchecker::VK_DECLARED)) {
       tchecker::intvar_info_t const & info = _system->integer_variables().info(id);
       _product.add_intvar(_system->intvar_name(id), info.size(), info.min(), info.max(), info.initial_value(),
                           _system->intvar_attributes(id));
@@ -326,7 +325,7 @@ private:
    */
   void clock_variables()
   {
-    for (tchecker::clock_id_t id = 0; id < _system->clocks_count(tchecker::VK_DECLARED); ++id) {
+    for (tchecker::clock_id_t const id : _system->clocks_identifiers(tchecker::VK_DECLARED)) {
       tchecker::clock_info_t const & info = _system->clock_variables().info(id);
       _product.add_clock(_system->clock_name(id), info.size(), _system->clock_attributes(id));
     }

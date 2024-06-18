@@ -9,6 +9,7 @@
 #define TCHECKER_PARSING_HH
 
 #include <cstdio>
+#include <memory>
 #include <string>
 
 #include "tchecker/expression/expression.hh"
@@ -26,7 +27,7 @@ namespace parsing {
  \return The system declaration read from filename, nullptr if parsing failed
  \post All errors and warnings have been reported on std::cerr
  */
-tchecker::parsing::system_declaration_t * parse_system_declaration(std::string const & filename);
+std::shared_ptr<tchecker::parsing::system_declaration_t> parse_system_declaration(std::string const & filename);
 
 /*!
  \brief Parser for systems
@@ -36,7 +37,7 @@ tchecker::parsing::system_declaration_t * parse_system_declaration(std::string c
  \post All errors and warnings have been reported on std::cerr
  \note filename is used as context for error/warning messages
  */
-tchecker::parsing::system_declaration_t * parse_system_declaration(std::FILE * f, std::string const & filename);
+std::shared_ptr<tchecker::parsing::system_declaration_t> parse_system_declaration(std::FILE * f, std::string const & filename);
 
 /*!
  \brief Parser for expression
@@ -47,7 +48,7 @@ tchecker::parsing::system_declaration_t * parse_system_declaration(std::FILE * f
  \note expr_context is used in error messages to provide context
  information regarding expr_str. It is ignored if empty
  */
-tchecker::expression_t * parse_expression(std::string const & expr_context, std::string const & expr_str);
+std::shared_ptr<tchecker::expression_t> parse_expression(std::string const & expr_context, std::string const & expr_str);
 
 /*!
  \brief Parser for statements
@@ -58,7 +59,7 @@ tchecker::expression_t * parse_expression(std::string const & expr_context, std:
  \note stmt_context is used in error messages to provide context
  information regarding stmt_str. It is ignored if empty
  */
-tchecker::statement_t * parse_statement(std::string const & stmt_context, std::string const & stmt_str);
+std::shared_ptr<tchecker::statement_t> parse_statement(std::string const & stmt_context, std::string const & stmt_str);
 
 /*!
  \class attributes_parser_t
@@ -104,15 +105,14 @@ public:
   inline void parse(tchecker::parsing::attributes_t const & attributes)
   {
     for (tchecker::parsing::attr_t const & attr : attributes)
-      do_attr(attr);
+      parse(attr);
   }
 
-protected:
   /*!
    \brief Attribute parser
    \param attr : attribute
    */
-  virtual void do_attr(tchecker::parsing::attr_t const & attr) = 0;
+  virtual void parse(tchecker::parsing::attr_t const & attr) = 0;
 };
 
 } // namespace parsing

@@ -162,9 +162,9 @@ int parse_command_line(int argc, char * argv[])
  of errors
  \post all errors have been reported to std::cerr
 */
-tchecker::parsing::system_declaration_t * load_system_declaration(std::string const & filename)
+std::shared_ptr<tchecker::parsing::system_declaration_t> load_system_declaration(std::string const & filename)
 {
-  tchecker::parsing::system_declaration_t * sysdecl = nullptr;
+  std::shared_ptr<tchecker::parsing::system_declaration_t> sysdecl{nullptr};
   try {
     sysdecl = tchecker::parsing::parse_system_declaration(filename);
     if (sysdecl == nullptr)
@@ -183,7 +183,7 @@ tchecker::parsing::system_declaration_t * load_system_declaration(std::string co
  the system declared by sysdecl have been output to standard output.
  A certificate has been output if required.
 */
-void ndfs(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl)
+void ndfs(tchecker::parsing::system_declaration_t const & sysdecl)
 {
   auto && [stats, graph] = tchecker::tck_liveness::zg_ndfs::run(sysdecl, labels, block_size, table_size);
 
@@ -195,13 +195,13 @@ void ndfs(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysde
 
   // certificate
   if (certificate == CERTIFICATE_GRAPH)
-    tchecker::tck_liveness::zg_ndfs::dot_output(*os, *graph, sysdecl->name());
+    tchecker::tck_liveness::zg_ndfs::dot_output(*os, *graph, sysdecl.name());
   else if ((certificate == CERTIFICATE_SYMBOLIC) && stats.cycle()) {
     std::unique_ptr<tchecker::tck_liveness::zg_ndfs::cex::symbolic_cex_t> cex{
         tchecker::tck_liveness::zg_ndfs::cex::symbolic_counter_example(*graph)};
     if (cex->empty())
       throw std::runtime_error("*** tck_liveness: unable to compute a symbolic counter example for ndfs algorithm");
-    tchecker::tck_liveness::zg_ndfs::cex::dot_output(*os, *cex, sysdecl->name());
+    tchecker::tck_liveness::zg_ndfs::cex::dot_output(*os, *cex, sysdecl.name());
   }
 }
 
@@ -212,7 +212,7 @@ void ndfs(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysde
  the system declared by sysdecl have been output to standard output.
  A certificate has been output if required.
 */
-void couvscc(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl)
+void couvscc(tchecker::parsing::system_declaration_t const & sysdecl)
 {
   std::string::difference_type labels_count = std::count(labels.begin(), labels.end(), ',') + 1;
 
@@ -230,13 +230,13 @@ void couvscc(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sy
 
   // certificate
   if (certificate == CERTIFICATE_GRAPH)
-    tchecker::tck_liveness::zg_couvscc::dot_output(*os, *graph, sysdecl->name());
+    tchecker::tck_liveness::zg_couvscc::dot_output(*os, *graph, sysdecl.name());
   else if ((certificate == CERTIFICATE_SYMBOLIC) && stats.cycle()) {
     std::unique_ptr<tchecker::tck_liveness::zg_couvscc::cex::symbolic_cex_t> cex{
         tchecker::tck_liveness::zg_couvscc::cex::symbolic_counter_example(*graph)};
     if (cex->empty())
       throw std::runtime_error("*** tck_liveness: unable to compute a symbolic counter example for couvscc algorithm");
-    tchecker::tck_liveness::zg_couvscc::cex::dot_output(*os, *cex, sysdecl->name());
+    tchecker::tck_liveness::zg_couvscc::cex::dot_output(*os, *cex, sysdecl.name());
   }
 }
 
@@ -261,7 +261,7 @@ int main(int argc, char * argv[])
 
     std::string input_file = (optindex == argc ? "" : argv[optindex]);
 
-    std::shared_ptr<tchecker::parsing::system_declaration_t> sysdecl{load_system_declaration(input_file)};
+    std::shared_ptr<tchecker::parsing::system_declaration_t const> sysdecl{load_system_declaration(input_file)};
 
     if (tchecker::log_error_count() > 0)
       return EXIT_FAILURE;
@@ -281,10 +281,10 @@ int main(int argc, char * argv[])
 
     switch (algorithm) {
     case ALGO_NDFS:
-      ndfs(sysdecl);
+      ndfs(*sysdecl);
       break;
     case ALGO_COUVSCC:
-      couvscc(sysdecl);
+      couvscc(*sysdecl);
       break;
     default:
       throw std::runtime_error("No algorithm specified");

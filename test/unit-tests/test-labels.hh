@@ -31,7 +31,7 @@ TEST_CASE("Labels in tuple of locations", "[labels]")
   location:P3:l1{initial: : labels: b,c,d} \n\
   ";
 
-  std::unique_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model)};
+  std::shared_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model)};
   assert(sysdecl != nullptr);
 
   tchecker::syncprod::system_t system{*sysdecl};
@@ -132,7 +132,7 @@ TEST_CASE("Labels from comma-separated strings", "[labels]")
   location:P3:l1{initial: : labels: b,c,d} \n\
   ";
 
-  std::unique_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model)};
+  std::shared_ptr<tchecker::parsing::system_declaration_t const> sysdecl{tchecker::test::parse(model)};
   assert(sysdecl != nullptr);
 
   tchecker::syncprod::system_t system{*sysdecl};

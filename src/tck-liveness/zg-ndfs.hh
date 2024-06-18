@@ -135,6 +135,12 @@ public:
   */
   inline std::shared_ptr<tchecker::zg::zg_t> zg_ptr() const { return _zg; }
 
+  /*!
+   \brief Checks if an edge is an actual edge in the graph
+   \return true (all edges are actual edges in the reachability graph)
+   */
+  bool is_actual_edge(edge_sptr_t const &) const { return true; }
+
 protected:
   /*!
    \brief Accessor to node attributes
@@ -213,10 +219,11 @@ public:
  \param table_size : size of hash tables
  \pre labels must appear as node attributes in sysdecl
  \return statistics on the run and the liveness graph
+ \throw std::runtime_error : if clock bounds cannot be computed for the system modeled by sysdecl
  */
 std::tuple<tchecker::algorithms::ndfs::stats_t, std::shared_ptr<tchecker::tck_liveness::zg_ndfs::graph_t>>
-run(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl, std::string const & labels = "",
-    std::size_t block_size = 10000, std::size_t table_size = 65536);
+run(tchecker::parsing::system_declaration_t const & sysdecl, std::string const & labels = "", std::size_t block_size = 10000,
+    std::size_t table_size = 65536);
 
 } // namespace zg_ndfs
 

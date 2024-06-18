@@ -282,12 +282,12 @@ void from_string(tchecker::clock_constraint_container_t & c, tchecker::clock_var
     return;
 
   // parse str as a typed expression
-  std::unique_ptr<tchecker::expression_t> expr{tchecker::parsing::parse_expression("", str)};
+  std::shared_ptr<tchecker::expression_t> expr{tchecker::parsing::parse_expression("", str)};
   if (expr.get() == nullptr)
     throw std::invalid_argument("syntax error in " + str);
 
   tchecker::integer_variables_t no_integer_variables;
-  std::unique_ptr<tchecker::typed_expression_t> typed_expr{
+  std::shared_ptr<tchecker::typed_expression_t> typed_expr{
       tchecker::typecheck(*expr, no_integer_variables, no_integer_variables, clocks,
                           [](std::string const & err) { std::cerr << tchecker::log_error << err << std::endl; })};
   if (typed_expr.get() == nullptr)
@@ -497,8 +497,7 @@ tchecker::reference_clock_variables_t single_reference_clocks(tchecker::flat_clo
 
   tchecker::reference_clock_variables_t reference_clocks(proc_refname_map);
 
-  tchecker::clock_id_t clocks_count = flat_clocks.size();
-  for (tchecker::clock_id_t clock_id = 0; clock_id < clocks_count; ++clock_id) {
+  for (tchecker::clock_id_t const clock_id : flat_clocks.identifiers()) {
     std::string const & clock_name = flat_clocks.index().value(clock_id);
     reference_clocks.declare(clock_name, zero_clock_name);
   }

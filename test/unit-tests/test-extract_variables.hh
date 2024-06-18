@@ -5,6 +5,7 @@
  *
  */
 
+#include <memory>
 #include <string>
 #include <unordered_set>
 
@@ -41,12 +42,12 @@ TEST_CASE("expression with no array variables", "[extract_variables]")
 
   SECTION("single variable")
   {
-    std::string expr_str{"x"};
-    tchecker::expression_t * expr = tchecker::parsing::parse_expression("", expr_str);
+    std::string const expr_str{"x"};
+    std::shared_ptr<tchecker::expression_t> expr{tchecker::parsing::parse_expression("", expr_str)};
     REQUIRE(expr != nullptr);
 
     tchecker::integer_variables_t lvars;
-    tchecker::typed_expression_t * typed_expr = tchecker::typecheck(*expr, lvars, intvars, clocks);
+    std::shared_ptr<tchecker::typed_expression_t> typed_expr{tchecker::typecheck(*expr, lvars, intvars, clocks)};
     REQUIRE(typed_expr != nullptr);
 
     std::unordered_set<tchecker::clock_id_t> expr_clocks;
@@ -58,20 +59,17 @@ TEST_CASE("expression with no array variables", "[extract_variables]")
 
     REQUIRE(expr_clocks.size() == 1);
     REQUIRE(expr_clocks.find(x) != expr_clocks.end());
-
-    delete expr;
-    delete typed_expr;
   }
 
   SECTION("simple comparison")
   {
-    std::string expr_str{"x < i"};
+    std::string const expr_str{"x < i"};
 
-    tchecker::expression_t * expr = tchecker::parsing::parse_expression("", expr_str);
+    std::shared_ptr<tchecker::expression_t> expr{tchecker::parsing::parse_expression("", expr_str)};
     REQUIRE(expr != nullptr);
 
     tchecker::integer_variables_t lvars;
-    tchecker::typed_expression_t * typed_expr = tchecker::typecheck(*expr, lvars, intvars, clocks);
+    std::shared_ptr<tchecker::typed_expression_t> typed_expr{tchecker::typecheck(*expr, lvars, intvars, clocks)};
     REQUIRE(typed_expr != nullptr);
 
     std::unordered_set<tchecker::clock_id_t> expr_clocks;
@@ -84,20 +82,17 @@ TEST_CASE("expression with no array variables", "[extract_variables]")
 
     REQUIRE(expr_clocks.size() == 1);
     REQUIRE(expr_clocks.find(x) != expr_clocks.end());
-
-    delete expr;
-    delete typed_expr;
   }
 
   SECTION("complex comparison")
   {
-    std::string expr_str{"x - y < i + 3 * j"};
+    std::string const expr_str{"x - y < i + 3 * j"};
 
-    tchecker::expression_t * expr = tchecker::parsing::parse_expression("", expr_str);
+    std::shared_ptr<tchecker::expression_t> expr{tchecker::parsing::parse_expression("", expr_str)};
     REQUIRE(expr != nullptr);
 
     tchecker::integer_variables_t lvars;
-    tchecker::typed_expression_t * typed_expr = tchecker::typecheck(*expr, lvars, intvars, clocks);
+    std::shared_ptr<tchecker::typed_expression_t> typed_expr{tchecker::typecheck(*expr, lvars, intvars, clocks)};
     REQUIRE(typed_expr != nullptr);
 
     std::unordered_set<tchecker::clock_id_t> expr_clocks;
@@ -112,20 +107,17 @@ TEST_CASE("expression with no array variables", "[extract_variables]")
     REQUIRE(expr_clocks.size() == 2);
     REQUIRE(expr_clocks.find(x) != expr_clocks.end());
     REQUIRE(expr_clocks.find(y) != expr_clocks.end());
-
-    delete expr;
-    delete typed_expr;
   }
 
   SECTION("conjunction")
   {
-    std::string expr_str{"x - y < i + 3 * j && k < i && y >= k - (j / i)"};
+    std::string const expr_str{"x - y < i + 3 * j && k < i && y >= k - (j / i)"};
 
-    tchecker::expression_t * expr = tchecker::parsing::parse_expression("", expr_str);
+    std::shared_ptr<tchecker::expression_t> expr{tchecker::parsing::parse_expression("", expr_str)};
     REQUIRE(expr != nullptr);
 
     tchecker::integer_variables_t lvars;
-    tchecker::typed_expression_t * typed_expr = tchecker::typecheck(*expr, lvars, intvars, clocks);
+    std::shared_ptr<tchecker::typed_expression_t> typed_expr{tchecker::typecheck(*expr, lvars, intvars, clocks)};
     REQUIRE(typed_expr != nullptr);
 
     std::unordered_set<tchecker::clock_id_t> expr_clocks;
@@ -141,9 +133,6 @@ TEST_CASE("expression with no array variables", "[extract_variables]")
     REQUIRE(expr_clocks.size() == 2);
     REQUIRE(expr_clocks.find(x) != expr_clocks.end());
     REQUIRE(expr_clocks.find(y) != expr_clocks.end());
-
-    delete expr;
-    delete typed_expr;
   }
 }
 
@@ -169,13 +158,13 @@ TEST_CASE("expression with array variables", "[extract_variables]")
 
   SECTION("single array variable with const index")
   {
-    std::string expr_str{"t[1]"};
+    std::string const expr_str{"t[1]"};
 
-    tchecker::expression_t * expr = tchecker::parsing::parse_expression("", expr_str);
+    std::shared_ptr<tchecker::expression_t> expr{tchecker::parsing::parse_expression("", expr_str)};
     REQUIRE(expr != nullptr);
 
     tchecker::integer_variables_t lvars;
-    tchecker::typed_expression_t * typed_expr = tchecker::typecheck(*expr, lvars, intvars, clocks);
+    std::shared_ptr<tchecker::typed_expression_t> typed_expr{tchecker::typecheck(*expr, lvars, intvars, clocks)};
     REQUIRE(typed_expr != nullptr);
 
     std::unordered_set<tchecker::clock_id_t> expr_clocks;
@@ -187,20 +176,17 @@ TEST_CASE("expression with array variables", "[extract_variables]")
     REQUIRE(expr_intvars.find(t + 1) != expr_intvars.end());
 
     REQUIRE(expr_clocks.empty());
-
-    delete expr;
-    delete typed_expr;
   }
 
   SECTION("single array variable with non-const index")
   {
-    std::string expr_str{"y[i-7*j]"};
+    std::string const expr_str{"y[i-7*j]"};
 
-    tchecker::expression_t * expr = tchecker::parsing::parse_expression("", expr_str);
+    std::shared_ptr<tchecker::expression_t> expr{tchecker::parsing::parse_expression("", expr_str)};
     REQUIRE(expr != nullptr);
 
     tchecker::integer_variables_t lvars;
-    tchecker::typed_expression_t * typed_expr = tchecker::typecheck(*expr, lvars, intvars, clocks);
+    std::shared_ptr<tchecker::typed_expression_t> typed_expr{tchecker::typecheck(*expr, lvars, intvars, clocks)};
     REQUIRE(typed_expr != nullptr);
 
     std::unordered_set<tchecker::clock_id_t> expr_clocks;
@@ -216,20 +202,17 @@ TEST_CASE("expression with array variables", "[extract_variables]")
     REQUIRE(expr_clocks.size() == y_size);
     for (std::size_t idx = 0; idx < y_size; ++idx)
       REQUIRE(expr_clocks.find(static_cast<tchecker::clock_id_t>(y + idx)) != expr_clocks.end());
-
-    delete expr;
-    delete typed_expr;
   }
 
   SECTION("single array variable with nested array access")
   {
-    std::string expr_str{"y[t[7*i] + u[2]]"};
+    std::string const expr_str{"y[t[7*i] + u[2]]"};
 
-    tchecker::expression_t * expr = tchecker::parsing::parse_expression("", expr_str);
+    std::shared_ptr<tchecker::expression_t> expr{tchecker::parsing::parse_expression("", expr_str)};
     REQUIRE(expr != nullptr);
 
     tchecker::integer_variables_t lvars;
-    tchecker::typed_expression_t * typed_expr = tchecker::typecheck(*expr, lvars, intvars, clocks);
+    std::shared_ptr<tchecker::typed_expression_t> typed_expr{tchecker::typecheck(*expr, lvars, intvars, clocks)};
     REQUIRE(typed_expr != nullptr);
 
     std::unordered_set<tchecker::clock_id_t> expr_clocks;
@@ -248,20 +231,17 @@ TEST_CASE("expression with array variables", "[extract_variables]")
     REQUIRE(expr_clocks.size() == y_size);
     for (std::size_t idx = 0; idx < y_size; ++idx)
       REQUIRE(expr_clocks.find(static_cast<tchecker::clock_id_t>(y + idx)) != expr_clocks.end());
-
-    delete expr;
-    delete typed_expr;
   }
 
   SECTION("complex expression with arrays")
   {
-    std::string expr_str{"y[u[2]] < u[0] && x - y[1] == i - 4*j && u[0] == t[j]"};
+    std::string const expr_str{"y[u[2]] < u[0] && x - y[1] == i - 4*j && u[0] == t[j]"};
 
-    tchecker::expression_t * expr = tchecker::parsing::parse_expression("", expr_str);
+    std::shared_ptr<tchecker::expression_t> expr{tchecker::parsing::parse_expression("", expr_str)};
     REQUIRE(expr != nullptr);
 
     tchecker::integer_variables_t lvars;
-    tchecker::typed_expression_t * typed_expr = tchecker::typecheck(*expr, lvars, intvars, clocks);
+    std::shared_ptr<tchecker::typed_expression_t> typed_expr = tchecker::typecheck(*expr, lvars, intvars, clocks);
     REQUIRE(typed_expr != nullptr);
 
     std::unordered_set<tchecker::clock_id_t> expr_clocks;
@@ -283,9 +263,6 @@ TEST_CASE("expression with array variables", "[extract_variables]")
     REQUIRE(expr_clocks.find(x) != expr_clocks.end());
     for (std::size_t idx = 0; idx < y_size; ++idx)
       REQUIRE(expr_clocks.find(static_cast<tchecker::clock_id_t>(y + idx)) != expr_clocks.end());
-
-    delete expr;
-    delete typed_expr;
   }
 }
 
@@ -311,13 +288,13 @@ TEST_CASE("statements with no array variable", "[extract_variables]")
 
   SECTION("single constant to clock assignment")
   {
-    std::string stmt_str{"x = 0"};
+    std::string const stmt_str{"x = 0"};
 
-    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str);
+    std::shared_ptr<tchecker::statement_t> stmt{tchecker::parsing::parse_statement("", stmt_str)};
     REQUIRE(stmt != nullptr);
 
     tchecker::integer_variables_t lvars;
-    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, lvars, intvars, clocks);
+    std::shared_ptr<tchecker::typed_statement_t> typed_stmt{tchecker::typecheck(*stmt, lvars, intvars, clocks)};
     REQUIRE(typed_stmt != nullptr);
 
     std::unordered_set<tchecker::clock_id_t> read_clocks;
@@ -334,20 +311,17 @@ TEST_CASE("statements with no array variable", "[extract_variables]")
     REQUIRE(written_clocks.size() == 1);
     REQUIRE(written_clocks.find(x) != written_clocks.end());
     REQUIRE(written_intvars.empty());
-
-    delete stmt;
-    delete typed_stmt;
   }
 
   SECTION("single integer variable to clock assignment")
   {
-    std::string stmt_str{"x = i"};
+    std::string const stmt_str{"x = i"};
 
-    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str);
+    std::shared_ptr<tchecker::statement_t> stmt{tchecker::parsing::parse_statement("", stmt_str)};
     REQUIRE(stmt != nullptr);
 
     tchecker::integer_variables_t lvars;
-    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, lvars, intvars, clocks);
+    std::shared_ptr<tchecker::typed_statement_t> typed_stmt{tchecker::typecheck(*stmt, lvars, intvars, clocks)};
     REQUIRE(typed_stmt != nullptr);
 
     std::unordered_set<tchecker::clock_id_t> read_clocks;
@@ -365,20 +339,17 @@ TEST_CASE("statements with no array variable", "[extract_variables]")
     REQUIRE(written_clocks.size() == 1);
     REQUIRE(written_clocks.find(x) != written_clocks.end());
     REQUIRE(written_intvars.empty());
-
-    delete stmt;
-    delete typed_stmt;
   }
 
   SECTION("single clock to clock assignment")
   {
-    std::string stmt_str{"y = x"};
+    std::string const stmt_str{"y = x"};
 
-    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str);
+    std::shared_ptr<tchecker::statement_t> stmt{tchecker::parsing::parse_statement("", stmt_str)};
     REQUIRE(stmt != nullptr);
 
     tchecker::integer_variables_t lvars;
-    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, lvars, intvars, clocks);
+    std::shared_ptr<tchecker::typed_statement_t> typed_stmt{tchecker::typecheck(*stmt, lvars, intvars, clocks)};
     REQUIRE(typed_stmt != nullptr);
 
     std::unordered_set<tchecker::clock_id_t> read_clocks;
@@ -396,20 +367,17 @@ TEST_CASE("statements with no array variable", "[extract_variables]")
     REQUIRE(written_clocks.size() == 1);
     REQUIRE(written_clocks.find(y) != written_clocks.end());
     REQUIRE(written_intvars.empty());
-
-    delete stmt;
-    delete typed_stmt;
   }
 
   SECTION("single clock sum to clock assignment")
   {
-    std::string stmt_str{"x = j * k + y"};
+    std::string const stmt_str{"x = j * k + y"};
 
-    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str);
+    std::shared_ptr<tchecker::statement_t> stmt{tchecker::parsing::parse_statement("", stmt_str)};
     REQUIRE(stmt != nullptr);
 
     tchecker::integer_variables_t lvars;
-    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, lvars, intvars, clocks);
+    std::shared_ptr<tchecker::typed_statement_t> typed_stmt{tchecker::typecheck(*stmt, lvars, intvars, clocks)};
     REQUIRE(typed_stmt != nullptr);
 
     std::unordered_set<tchecker::clock_id_t> read_clocks;
@@ -429,20 +397,17 @@ TEST_CASE("statements with no array variable", "[extract_variables]")
     REQUIRE(written_clocks.size() == 1);
     REQUIRE(written_clocks.find(x) != written_clocks.end());
     REQUIRE(written_intvars.empty());
-
-    delete stmt;
-    delete typed_stmt;
   }
 
   SECTION("single constant to integer variable assignment")
   {
-    std::string stmt_str{"j = 0"};
+    std::string const stmt_str{"j = 0"};
 
-    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str);
+    std::shared_ptr<tchecker::statement_t> stmt{tchecker::parsing::parse_statement("", stmt_str)};
     REQUIRE(stmt != nullptr);
 
     tchecker::integer_variables_t lvars;
-    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, lvars, intvars, clocks);
+    std::shared_ptr<tchecker::typed_statement_t> typed_stmt{tchecker::typecheck(*stmt, lvars, intvars, clocks)};
     REQUIRE(typed_stmt != nullptr);
 
     std::unordered_set<tchecker::clock_id_t> read_clocks;
@@ -459,20 +424,17 @@ TEST_CASE("statements with no array variable", "[extract_variables]")
     REQUIRE(written_clocks.empty());
     REQUIRE(written_intvars.size() == 1);
     REQUIRE(written_intvars.find(j) != written_intvars.end());
-
-    delete stmt;
-    delete typed_stmt;
   }
 
   SECTION("single integer expression to integer variable assignment")
   {
-    std::string stmt_str{"i = 3 * j - k * i"};
+    std::string const stmt_str{"i = 3 * j - k * i"};
 
-    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str);
+    std::shared_ptr<tchecker::statement_t> stmt{tchecker::parsing::parse_statement("", stmt_str)};
     REQUIRE(stmt != nullptr);
 
     tchecker::integer_variables_t lvars;
-    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, lvars, intvars, clocks);
+    std::shared_ptr<tchecker::typed_statement_t> typed_stmt{tchecker::typecheck(*stmt, lvars, intvars, clocks)};
     REQUIRE(typed_stmt != nullptr);
 
     std::unordered_set<tchecker::clock_id_t> read_clocks;
@@ -492,20 +454,17 @@ TEST_CASE("statements with no array variable", "[extract_variables]")
     REQUIRE(written_clocks.empty());
     REQUIRE(written_intvars.size() == 1);
     REQUIRE(written_intvars.find(i) != written_intvars.end());
-
-    delete stmt;
-    delete typed_stmt;
   }
 
   SECTION("multiple assignments to clock variables")
   {
-    std::string stmt_str{"x = 1; y = i + 3 * j; z = 1 + z"};
+    std::string const stmt_str{"x = 1; y = i + 3 * j; z = 1 + z"};
 
-    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str);
+    std::shared_ptr<tchecker::statement_t> stmt{tchecker::parsing::parse_statement("", stmt_str)};
     REQUIRE(stmt != nullptr);
 
     tchecker::integer_variables_t lvars;
-    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, lvars, intvars, clocks);
+    std::shared_ptr<tchecker::typed_statement_t> typed_stmt{tchecker::typecheck(*stmt, lvars, intvars, clocks)};
     REQUIRE(typed_stmt != nullptr);
 
     std::unordered_set<tchecker::clock_id_t> read_clocks;
@@ -527,20 +486,17 @@ TEST_CASE("statements with no array variable", "[extract_variables]")
     REQUIRE(written_clocks.find(y) != written_clocks.end());
     REQUIRE(written_clocks.find(z) != written_clocks.end());
     REQUIRE(written_intvars.empty());
-
-    delete stmt;
-    delete typed_stmt;
   }
 
   SECTION("multiple assignments to bounded integer variables")
   {
-    std::string stmt_str{"i = i + 1; j = 7; k = j - 3 + i"};
+    std::string const stmt_str{"i = i + 1; j = 7; k = j - 3 + i"};
 
-    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str);
+    std::shared_ptr<tchecker::statement_t> stmt{tchecker::parsing::parse_statement("", stmt_str)};
     REQUIRE(stmt != nullptr);
 
     tchecker::integer_variables_t lvars;
-    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, lvars, intvars, clocks);
+    std::shared_ptr<tchecker::typed_statement_t> typed_stmt{tchecker::typecheck(*stmt, lvars, intvars, clocks)};
     REQUIRE(typed_stmt != nullptr);
 
     std::unordered_set<tchecker::clock_id_t> read_clocks;
@@ -561,20 +517,17 @@ TEST_CASE("statements with no array variable", "[extract_variables]")
     REQUIRE(written_intvars.find(i) != written_intvars.end());
     REQUIRE(written_intvars.find(j) != written_intvars.end());
     REQUIRE(written_intvars.find(k) != written_intvars.end());
-
-    delete stmt;
-    delete typed_stmt;
   }
 
   SECTION("multiple mixed assignments")
   {
-    std::string stmt_str{"i = i + 1; x = i; j = 7; y = 3; z = 6 + y; k = k + j"};
+    std::string const stmt_str{"i = i + 1; x = i; j = 7; y = 3; z = 6 + y; k = k + j"};
 
-    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str);
+    std::shared_ptr<tchecker::statement_t> stmt{tchecker::parsing::parse_statement("", stmt_str)};
     REQUIRE(stmt != nullptr);
 
     tchecker::integer_variables_t lvars;
-    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, lvars, intvars, clocks);
+    std::shared_ptr<tchecker::typed_statement_t> typed_stmt{tchecker::typecheck(*stmt, lvars, intvars, clocks)};
     REQUIRE(typed_stmt != nullptr);
 
     std::unordered_set<tchecker::clock_id_t> read_clocks;
@@ -600,9 +553,6 @@ TEST_CASE("statements with no array variable", "[extract_variables]")
     REQUIRE(written_intvars.find(i) != written_intvars.end());
     REQUIRE(written_intvars.find(j) != written_intvars.end());
     REQUIRE(written_intvars.find(k) != written_intvars.end());
-
-    delete stmt;
-    delete typed_stmt;
   }
 }
 
@@ -630,13 +580,13 @@ TEST_CASE("statements with array variables", "[extract_variables]")
 
   SECTION("single constant to clock array assignment, const index")
   {
-    std::string stmt_str{"y[0] = 1"};
+    std::string const stmt_str{"y[0] = 1"};
 
-    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str);
+    std::shared_ptr<tchecker::statement_t> stmt{tchecker::parsing::parse_statement("", stmt_str)};
     REQUIRE(stmt != nullptr);
 
     tchecker::integer_variables_t lvars;
-    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, lvars, intvars, clocks);
+    std::shared_ptr<tchecker::typed_statement_t> typed_stmt{tchecker::typecheck(*stmt, lvars, intvars, clocks)};
     REQUIRE(typed_stmt != nullptr);
 
     std::unordered_set<tchecker::clock_id_t> read_clocks;
@@ -653,20 +603,17 @@ TEST_CASE("statements with array variables", "[extract_variables]")
     REQUIRE(written_clocks.size() == 1);
     REQUIRE(written_clocks.find(y + 0) != written_clocks.end());
     REQUIRE(written_intvars.empty());
-
-    delete stmt;
-    delete typed_stmt;
   }
 
   SECTION("single clock to clock array assignment, non const index")
   {
-    std::string stmt_str{"y[i+3*j] = 0"};
+    std::string const stmt_str{"y[i+3*j] = 0"};
 
-    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str);
+    std::shared_ptr<tchecker::statement_t> stmt{tchecker::parsing::parse_statement("", stmt_str)};
     REQUIRE(stmt != nullptr);
 
     tchecker::integer_variables_t lvars;
-    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, lvars, intvars, clocks);
+    std::shared_ptr<tchecker::typed_statement_t> typed_stmt{tchecker::typecheck(*stmt, lvars, intvars, clocks)};
     REQUIRE(typed_stmt != nullptr);
 
     std::unordered_set<tchecker::clock_id_t> read_clocks;
@@ -686,20 +633,17 @@ TEST_CASE("statements with array variables", "[extract_variables]")
     for (std::size_t idx = 0; idx < clocks.info(y).size(); ++idx)
       REQUIRE(written_clocks.find(static_cast<tchecker::clock_id_t>(y + idx)) != written_clocks.end());
     REQUIRE(written_intvars.empty());
-
-    delete stmt;
-    delete typed_stmt;
   }
 
   SECTION("single constant to clock array assignment")
   {
-    std::string stmt_str{"y[i] = z[3*j]"};
+    std::string const stmt_str{"y[i] = z[3*j]"};
 
-    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str);
+    std::shared_ptr<tchecker::statement_t> stmt{tchecker::parsing::parse_statement("", stmt_str)};
     REQUIRE(stmt != nullptr);
 
     tchecker::integer_variables_t lvars;
-    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, lvars, intvars, clocks);
+    std::shared_ptr<tchecker::typed_statement_t> typed_stmt{tchecker::typecheck(*stmt, lvars, intvars, clocks)};
     REQUIRE(typed_stmt != nullptr);
 
     std::unordered_set<tchecker::clock_id_t> read_clocks;
@@ -721,20 +665,17 @@ TEST_CASE("statements with array variables", "[extract_variables]")
     for (std::size_t idx = 0; idx < clocks.info(y).size(); ++idx)
       REQUIRE(written_clocks.find(static_cast<tchecker::clock_id_t>(y + idx)) != written_clocks.end());
     REQUIRE(written_intvars.empty());
-
-    delete stmt;
-    delete typed_stmt;
   }
 
   SECTION("single constant to integer variable array assignment, const index")
   {
-    std::string stmt_str{"t[2] = 4"};
+    std::string const stmt_str{"t[2] = 4"};
 
-    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str);
+    std::shared_ptr<tchecker::statement_t> stmt{tchecker::parsing::parse_statement("", stmt_str)};
     REQUIRE(stmt != nullptr);
 
     tchecker::integer_variables_t lvars;
-    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, lvars, intvars, clocks);
+    std::shared_ptr<tchecker::typed_statement_t> typed_stmt{tchecker::typecheck(*stmt, lvars, intvars, clocks)};
     REQUIRE(typed_stmt != nullptr);
 
     std::unordered_set<tchecker::clock_id_t> read_clocks;
@@ -751,20 +692,17 @@ TEST_CASE("statements with array variables", "[extract_variables]")
     REQUIRE(written_clocks.empty());
     REQUIRE(written_intvars.size() == 1);
     REQUIRE(written_intvars.find(t + 2) != written_intvars.end());
-
-    delete stmt;
-    delete typed_stmt;
   }
 
   SECTION("single constant to integer variable array assignment, non const index")
   {
-    std::string stmt_str{"t[7 * i - 4 * u[0]] = 4"};
+    std::string const stmt_str{"t[7 * i - 4 * u[0]] = 4"};
 
-    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str);
+    std::shared_ptr<tchecker::statement_t> stmt{tchecker::parsing::parse_statement("", stmt_str)};
     REQUIRE(stmt != nullptr);
 
     tchecker::integer_variables_t lvars;
-    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, lvars, intvars, clocks);
+    std::shared_ptr<tchecker::typed_statement_t> typed_stmt{tchecker::typecheck(*stmt, lvars, intvars, clocks)};
     REQUIRE(typed_stmt != nullptr);
 
     std::unordered_set<tchecker::clock_id_t> read_clocks;
@@ -784,20 +722,17 @@ TEST_CASE("statements with array variables", "[extract_variables]")
     REQUIRE(written_intvars.size() == intvars.info(t).size());
     for (tchecker::intvar_id_t id = 0; id < intvars.info(t).size(); ++id)
       REQUIRE(written_intvars.find(t + id) != written_intvars.end());
-
-    delete stmt;
-    delete typed_stmt;
   }
 
   SECTION("multiple assignments with array variables")
   {
-    std::string stmt_str{"i = 1; j = j + 1; x = 0; y[2] = i + x; t[2] = j; u[3*j-t[i]] = t[j] - i; z[u[j]] = y[1]"};
+    std::string const stmt_str{"i = 1; j = j + 1; x = 0; y[2] = i + x; t[2] = j; u[3*j-t[i]] = t[j] - i; z[u[j]] = y[1]"};
 
-    tchecker::statement_t * stmt = tchecker::parsing::parse_statement("", stmt_str);
+    std::shared_ptr<tchecker::statement_t> stmt{tchecker::parsing::parse_statement("", stmt_str)};
     REQUIRE(stmt != nullptr);
 
     tchecker::integer_variables_t lvars;
-    tchecker::typed_statement_t * typed_stmt = tchecker::typecheck(*stmt, lvars, intvars, clocks);
+    std::shared_ptr<tchecker::typed_statement_t> typed_stmt{tchecker::typecheck(*stmt, lvars, intvars, clocks)};
     REQUIRE(typed_stmt != nullptr);
 
     std::unordered_set<tchecker::clock_id_t> read_clocks;
@@ -832,8 +767,5 @@ TEST_CASE("statements with array variables", "[extract_variables]")
     REQUIRE(written_intvars.find(t + 2) != written_intvars.end());
     for (tchecker::intvar_id_t id = 0; id < intvars.info(u).size(); ++id)
       REQUIRE(written_intvars.find(u + id) != written_intvars.end());
-
-    delete stmt;
-    delete typed_stmt;
   }
 }

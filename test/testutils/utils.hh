@@ -8,6 +8,7 @@
 #ifndef TCHECKER_TESTUTILS_UTILS_HH
 #define TCHECKER_TESTUTILS_UTILS_HH
 
+#include <memory>
 #include <string>
 
 #include "tchecker/parsing/declaration.hh"
@@ -29,7 +30,7 @@ namespace test {
  a temporary file cannot be created
  \post errors and warnings in model have been reported to std::cerr
  */
-tchecker::parsing::system_declaration_t const * parse(std::string const & model);
+std::shared_ptr<tchecker::parsing::system_declaration_t> parse(std::string const & model);
 
 } // end of namespace test
 

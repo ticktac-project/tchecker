@@ -6,6 +6,7 @@
  */
 
 #include <limits>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -36,7 +37,7 @@ public:
    */
   virtual void visit(tchecker::parsing::system_declaration_t const & d)
   {
-    for (tchecker::parsing::declaration_t const * decl : d.declarations())
+    for (std::shared_ptr<tchecker::parsing::declaration_t> const decl : d.declarations())
       decl->visit(*this);
   }
 
@@ -99,7 +100,7 @@ public:
   virtual void visit(tchecker::parsing::sync_declaration_t const & d)
   {
     std::vector<tchecker::system::sync_constraint_t> v;
-    for (tchecker::parsing::sync_constraint_t const * c : d.sync_constraints()) {
+    for (std::shared_ptr<tchecker::parsing::sync_constraint_t> const & c : d.sync_constraints()) {
       tchecker::process_id_t pid = _system.process_id(c->process().name());
       tchecker::event_id_t event = _system.event_id(c->event().name());
       v.emplace_back(pid, event, c->strength());
@@ -197,5 +198,24 @@ bool system_t::has_variable(std::string const & name)
 }
 
 } // end of namespace system
+
+std::string to_string(tchecker::sync_id_t sync_id, tchecker::system::system_t const & system)
+{
+  tchecker::system::synchronization_t sync = system.synchronization(sync_id);
+
+  std::stringstream ss;
+  ss << "<";
+  auto r = sync.synchronization_constraints();
+  for (auto it = r.begin(); it != r.end(); ++it) {
+    if (it != r.begin())
+      ss << ",";
+    tchecker::system::sync_constraint_t const & constr = *it;
+    ss << system.process_name(constr.pid()) << "@" << system.event_name(constr.event_id());
+    if (constr.strength() == tchecker::SYNC_WEAK)
+      ss << "?";
+  }
+  ss << ">";
+  return ss.str();
+}
 
 } // end of namespace tchecker

@@ -7,6 +7,7 @@
 
 #include <tuple>
 
+#include "tchecker/expression/type_inference.hh"
 #include "tchecker/statement/typed_statement.hh"
 
 namespace tchecker {
@@ -47,167 +48,447 @@ std::ostream & operator<<(std::ostream & os, enum tchecker::statement_type_t typ
 
 typed_statement_t::typed_statement_t(enum tchecker::statement_type_t type) : _type(type) {}
 
-void typed_statement_t::visit(tchecker::typed_statement_visitor_t & v) const { this->do_visit(v); }
+typed_statement_t::~typed_statement_t() = default;
 
 /* typed_nop_statement_t */
 
-tchecker::statement_t * typed_nop_statement_t::do_clone() const { return new typed_nop_statement_t(_type); }
+typed_nop_statement_t::typed_nop_statement_t(enum tchecker::statement_type_t type) : tchecker::typed_statement_t(type) {}
 
-void typed_nop_statement_t::do_visit(tchecker::typed_statement_visitor_t & v) const { v.visit(*this); }
+typed_nop_statement_t::~typed_nop_statement_t() = default;
+
+tchecker::typed_nop_statement_t * typed_nop_statement_t::clone() const { return new typed_nop_statement_t(_type); }
+
+void typed_nop_statement_t::visit(tchecker::typed_statement_visitor_t & v) const { v.visit(*this); }
+
+void typed_nop_statement_t::visit(tchecker::statement_visitor_t & v) const { v.visit(*this); }
 
 /* typed_assign_statement_t */
 
 typed_assign_statement_t::typed_assign_statement_t(enum tchecker::statement_type_t type,
-                                                   tchecker::typed_lvalue_expression_t const * lvalue,
-                                                   tchecker::typed_expression_t const * rvalue)
-    : tchecker::make_typed_statement_t<tchecker::assign_statement_t>(type, lvalue, rvalue)
+                                                   std::shared_ptr<tchecker::typed_lvalue_expression_t const> const & lvalue,
+                                                   std::shared_ptr<tchecker::typed_expression_t const> const & rvalue)
+    : tchecker::typed_statement_t(type), tchecker::assign_statement_t(lvalue, rvalue)
 {
   if (lvalue->size() != 1)
     throw std::invalid_argument("invalid lvalue expression");
 }
 
-tchecker::statement_t * typed_assign_statement_t::do_clone() const
+typed_assign_statement_t::~typed_assign_statement_t() = default;
+
+tchecker::typed_lvalue_expression_t const & typed_assign_statement_t::lvalue() const
 {
-  auto * const lvalue_clone = dynamic_cast<tchecker::typed_lvalue_expression_t *>(_lvalue->clone());
-  auto * const rvalue_clone = dynamic_cast<tchecker::typed_expression_t *>(_rvalue->clone());
+  return dynamic_cast<tchecker::typed_lvalue_expression_t const &>(tchecker::assign_statement_t::lvalue());
+}
+
+std::shared_ptr<tchecker::typed_lvalue_expression_t const> typed_assign_statement_t::lvalue_ptr() const
+{
+  return std::dynamic_pointer_cast<tchecker::typed_lvalue_expression_t const>(tchecker::assign_statement_t::lvalue_ptr());
+}
+
+tchecker::typed_expression_t const & typed_assign_statement_t::rvalue() const
+{
+  return dynamic_cast<tchecker::typed_expression_t const &>(tchecker::assign_statement_t::rvalue());
+}
+
+std::shared_ptr<tchecker::typed_expression_t const> typed_assign_statement_t::rvalue_ptr() const
+{
+  return std::dynamic_pointer_cast<tchecker::typed_expression_t const>(tchecker::assign_statement_t::rvalue_ptr());
+}
+
+tchecker::typed_assign_statement_t * typed_assign_statement_t::clone() const
+{
+  std::shared_ptr<tchecker::typed_lvalue_expression_t const> lvalue_clone{lvalue().clone()};
+  std::shared_ptr<tchecker::typed_expression_t const> rvalue_clone{rvalue().clone()};
   return new typed_assign_statement_t(_type, lvalue_clone, rvalue_clone);
 }
 
-void typed_assign_statement_t::do_visit(tchecker::typed_statement_visitor_t & v) const { v.visit(*this); }
+void typed_assign_statement_t::visit(tchecker::typed_statement_visitor_t & v) const { v.visit(*this); }
+
+void typed_assign_statement_t::visit(tchecker::statement_visitor_t & v) const { v.visit(*this); }
 
 /* typed_int_to_clock_assign_statement_t */
 
-typed_int_to_clock_assign_statement_t::typed_int_to_clock_assign_statement_t(enum tchecker::statement_type_t type,
-                                                                             tchecker::typed_lvalue_expression_t const * lvalue,
-                                                                             tchecker::typed_expression_t const * rvalue)
+typed_int_to_clock_assign_statement_t::typed_int_to_clock_assign_statement_t(
+    enum tchecker::statement_type_t type, std::shared_ptr<tchecker::typed_lvalue_expression_t const> const & lvalue,
+    std::shared_ptr<tchecker::typed_expression_t const> const & rvalue)
     : tchecker::typed_assign_statement_t(type, lvalue, rvalue)
 {
+  if (lvalue->size() != 1)
+    throw std::invalid_argument("lvalue of size > 1 is not assignable");
+  if (!tchecker::clock_assignable(lvalue->type()))
+    throw std::invalid_argument("lvalue is not an assignable clock");
+  if (!tchecker::integer_valued(rvalue->type()))
+    throw std::invalid_argument("rvalue is not integer valued");
 }
 
-void typed_int_to_clock_assign_statement_t::do_visit(tchecker::typed_statement_visitor_t & v) const { v.visit(*this); }
+typed_int_to_clock_assign_statement_t::~typed_int_to_clock_assign_statement_t() = default;
+
+tchecker::typed_lvalue_expression_t const & typed_int_to_clock_assign_statement_t::clock() const
+{
+  return dynamic_cast<tchecker::typed_lvalue_expression_t const &>(lvalue());
+}
+
+std::shared_ptr<tchecker::lvalue_expression_t const> typed_int_to_clock_assign_statement_t::clock_ptr() const
+{
+  return lvalue_ptr();
+}
+
+tchecker::typed_expression_t const & typed_int_to_clock_assign_statement_t::value() const
+{
+  return dynamic_cast<tchecker::typed_expression_t const &>(rvalue());
+}
+
+std::shared_ptr<tchecker::typed_expression_t const> typed_int_to_clock_assign_statement_t::value_ptr() const
+{
+  return rvalue_ptr();
+}
+
+tchecker::typed_int_to_clock_assign_statement_t * typed_int_to_clock_assign_statement_t::clone() const
+{
+  std::shared_ptr<tchecker::typed_lvalue_expression_t const> lvalue_clone{lvalue().clone()};
+  std::shared_ptr<tchecker::typed_expression_t const> rvalue_clone{rvalue().clone()};
+  return new tchecker::typed_int_to_clock_assign_statement_t{_type, lvalue_clone, rvalue_clone};
+}
+
+void typed_int_to_clock_assign_statement_t::visit(tchecker::typed_statement_visitor_t & v) const { v.visit(*this); }
+
+void typed_int_to_clock_assign_statement_t::visit(tchecker::statement_visitor_t & v) const { v.visit(*this); }
 
 /* typed_clock_to_clock_assign_statement_t */
 
 typed_clock_to_clock_assign_statement_t::typed_clock_to_clock_assign_statement_t(
-    enum tchecker::statement_type_t type, tchecker::typed_lvalue_expression_t const * lvalue,
-    tchecker::typed_lvalue_expression_t const * rvalue)
+    enum tchecker::statement_type_t type, std::shared_ptr<tchecker::typed_lvalue_expression_t const> const & lvalue,
+    std::shared_ptr<tchecker::typed_lvalue_expression_t const> const & rvalue)
     : tchecker::typed_assign_statement_t(type, lvalue, rvalue)
 {
+  if (lvalue->size() != 1)
+    throw std::invalid_argument("lvalue of size > 1 is not assignable");
+  if (!tchecker::clock_assignable(lvalue->type()))
+    throw std::invalid_argument("lvalue is not an assignable clock");
+  if (!tchecker::clock_valued(rvalue->type()))
+    throw std::invalid_argument("rvalue is not clock valued");
 }
 
-void typed_clock_to_clock_assign_statement_t::do_visit(tchecker::typed_statement_visitor_t & v) const { v.visit(*this); }
+typed_clock_to_clock_assign_statement_t::~typed_clock_to_clock_assign_statement_t() = default;
+
+tchecker::typed_lvalue_expression_t const & typed_clock_to_clock_assign_statement_t::lclock() const
+{
+  return dynamic_cast<tchecker::typed_lvalue_expression_t const &>(lvalue());
+}
+
+std::shared_ptr<tchecker::typed_lvalue_expression_t const> typed_clock_to_clock_assign_statement_t::lclock_ptr() const
+{
+  return lvalue_ptr();
+}
+
+tchecker::typed_lvalue_expression_t const & typed_clock_to_clock_assign_statement_t::rclock() const
+{
+  return dynamic_cast<tchecker::typed_lvalue_expression_t const &>(rvalue());
+}
+
+std::shared_ptr<tchecker::typed_lvalue_expression_t const> typed_clock_to_clock_assign_statement_t::rclock_ptr() const
+{
+  return std::dynamic_pointer_cast<tchecker::typed_lvalue_expression_t const>(rvalue_ptr());
+}
+
+tchecker::typed_clock_to_clock_assign_statement_t * typed_clock_to_clock_assign_statement_t::clone() const
+{
+  std::shared_ptr<tchecker::typed_lvalue_expression_t const> lvalue_clone{lvalue().clone()};
+  std::shared_ptr<tchecker::typed_lvalue_expression_t const> rvalue_clone{rclock().clone()};
+  return new tchecker::typed_clock_to_clock_assign_statement_t{_type, lvalue_clone, rvalue_clone};
+}
+
+void typed_clock_to_clock_assign_statement_t::visit(tchecker::typed_statement_visitor_t & v) const { v.visit(*this); }
+
+void typed_clock_to_clock_assign_statement_t::visit(tchecker::statement_visitor_t & v) const { v.visit(*this); }
 
 /* typed_sum_to_clock_assign_statement_t */
 
-typed_sum_to_clock_assign_statement_t::typed_sum_to_clock_assign_statement_t(enum tchecker::statement_type_t type,
-                                                                             tchecker::typed_lvalue_expression_t const * lvalue,
-                                                                             tchecker::typed_expression_t const * rvalue)
+typed_sum_to_clock_assign_statement_t::typed_sum_to_clock_assign_statement_t(
+    enum tchecker::statement_type_t type, std::shared_ptr<tchecker::typed_lvalue_expression_t const> const & lvalue,
+    std::shared_ptr<tchecker::typed_expression_t const> const & rvalue)
     : tchecker::typed_assign_statement_t(type, lvalue, rvalue)
 {
+  if (lvalue->size() != 1)
+    throw std::invalid_argument("lvalue of size > 1 is not assignable");
+  if (!tchecker::clock_assignable(lvalue->type()))
+    throw std::invalid_argument("lvalue is not an assignable clock");
   if (rvalue->type() != tchecker::EXPR_TYPE_INTCLKSUM)
-    throw std::invalid_argument("rvalue should have type tchecker::EXPR_TYPE_INTCLKSUM");
+    throw std::invalid_argument("rvalue is not the sum of an int-clock sum");
 }
 
-void typed_sum_to_clock_assign_statement_t::do_visit(tchecker::typed_statement_visitor_t & v) const { v.visit(*this); }
+typed_sum_to_clock_assign_statement_t::~typed_sum_to_clock_assign_statement_t() = default;
+
+tchecker::typed_lvalue_expression_t const & typed_sum_to_clock_assign_statement_t::lclock() const
+{
+  return dynamic_cast<tchecker::typed_lvalue_expression_t const &>(lvalue());
+}
+
+std::shared_ptr<tchecker::typed_lvalue_expression_t const> typed_sum_to_clock_assign_statement_t::lclock_ptr() const
+{
+  return lvalue_ptr();
+}
+
+tchecker::typed_lvalue_expression_t const & typed_sum_to_clock_assign_statement_t::rclock() const
+{
+  auto const & sum = dynamic_cast<tchecker::typed_binary_expression_t const &>(rvalue());
+  return dynamic_cast<tchecker::typed_lvalue_expression_t const &>(sum.right_operand());
+}
+
+std::shared_ptr<tchecker::typed_lvalue_expression_t const> typed_sum_to_clock_assign_statement_t::rclock_ptr() const
+{
+  auto const & sum = dynamic_cast<tchecker::typed_binary_expression_t const &>(rvalue());
+  return std::dynamic_pointer_cast<tchecker::typed_lvalue_expression_t const>(sum.right_operand_ptr());
+}
+
+tchecker::typed_expression_t const & typed_sum_to_clock_assign_statement_t::value() const
+{
+  auto const & sum = dynamic_cast<tchecker::typed_binary_expression_t const &>(rvalue());
+  return dynamic_cast<tchecker::typed_expression_t const &>(sum.left_operand());
+}
+
+std::shared_ptr<tchecker::typed_expression_t const> typed_sum_to_clock_assign_statement_t::value_ptr() const
+{
+  auto const & sum = dynamic_cast<tchecker::typed_binary_expression_t const &>(rvalue());
+  return std::dynamic_pointer_cast<tchecker::typed_expression_t const>(sum.left_operand_ptr());
+}
+
+tchecker::typed_sum_to_clock_assign_statement_t * typed_sum_to_clock_assign_statement_t::clone() const
+{
+  std::shared_ptr<typed_lvalue_expression_t const> lvalue_clone{lvalue().clone()};
+  std::shared_ptr<typed_expression_t const> rvalue_clone{rvalue().clone()};
+  return new tchecker::typed_sum_to_clock_assign_statement_t{_type, lvalue_clone, rvalue_clone};
+}
+
+void typed_sum_to_clock_assign_statement_t::visit(tchecker::typed_statement_visitor_t & v) const { v.visit(*this); }
+
+void typed_sum_to_clock_assign_statement_t::visit(tchecker::statement_visitor_t & v) const { v.visit(*this); }
 
 /* typed_sequence_statement_t */
 
 typed_sequence_statement_t::typed_sequence_statement_t(enum tchecker::statement_type_t type,
-                                                       tchecker::typed_statement_t const * first,
-                                                       tchecker::typed_statement_t const * second)
-    : tchecker::make_typed_statement_t<tchecker::sequence_statement_t>(type, first, second)
+                                                       std::shared_ptr<tchecker::typed_statement_t const> const & first,
+                                                       std::shared_ptr<tchecker::typed_statement_t const> const & second)
+    : tchecker::typed_statement_t(type), tchecker::sequence_statement_t(first, second)
 {
 }
 
-tchecker::statement_t * typed_sequence_statement_t::do_clone() const
+typed_sequence_statement_t::~typed_sequence_statement_t() = default;
+
+tchecker::typed_statement_t const & typed_sequence_statement_t::first() const
 {
-  tchecker::typed_statement_t * const first_clone = dynamic_cast<tchecker::typed_statement_t *>(_first->clone());
-  tchecker::typed_statement_t * const second_clone = dynamic_cast<tchecker::typed_statement_t *>(_second->clone());
-  return new typed_sequence_statement_t(_type, first_clone, second_clone);
+  return dynamic_cast<tchecker::typed_statement_t const &>(tchecker::sequence_statement_t::first());
 }
 
-void typed_sequence_statement_t::do_visit(tchecker::typed_statement_visitor_t & v) const { v.visit(*this); }
+std::shared_ptr<tchecker::typed_statement_t const> typed_sequence_statement_t::first_ptr() const
+{
+  return std::dynamic_pointer_cast<tchecker::typed_statement_t const>(tchecker::sequence_statement_t::first_ptr());
+}
+
+tchecker::typed_statement_t const & typed_sequence_statement_t::second() const
+{
+  return dynamic_cast<tchecker::typed_statement_t const &>(tchecker::sequence_statement_t::second());
+}
+
+std::shared_ptr<tchecker::typed_statement_t const> typed_sequence_statement_t::second_ptr() const
+{
+  return std::dynamic_pointer_cast<tchecker::typed_statement_t const>(tchecker::sequence_statement_t::second_ptr());
+}
+
+tchecker::typed_sequence_statement_t * typed_sequence_statement_t::clone() const
+{
+  std::shared_ptr<tchecker::typed_statement_t const> first_clone{first().clone()};
+  std::shared_ptr<tchecker::typed_statement_t const> second_clone{second().clone()};
+  return new tchecker::typed_sequence_statement_t(_type, first_clone, second_clone);
+}
+
+void typed_sequence_statement_t::visit(tchecker::typed_statement_visitor_t & v) const { v.visit(*this); }
+
+void typed_sequence_statement_t::visit(tchecker::statement_visitor_t & v) const { v.visit(*this); }
 
 /* typed_if_statement_t */
 
-typed_if_statement_t::typed_if_statement_t(enum tchecker::statement_type_t type, tchecker::typed_expression_t const * cond,
-                                           tchecker::typed_statement_t const * then_stmt,
-                                           tchecker::typed_statement_t const * else_stmt)
-    : tchecker::make_typed_statement_t<tchecker::if_statement_t>(type, cond, then_stmt, else_stmt)
+typed_if_statement_t::typed_if_statement_t(enum tchecker::statement_type_t type,
+                                           std::shared_ptr<tchecker::typed_expression_t const> const & cond,
+                                           std::shared_ptr<tchecker::typed_statement_t const> const & then_stmt,
+                                           std::shared_ptr<tchecker::typed_statement_t const> const & else_stmt)
+    : tchecker::typed_statement_t(type), tchecker::if_statement_t(cond, then_stmt, else_stmt)
 {
 }
 
-tchecker::statement_t * typed_if_statement_t::do_clone() const
+typed_if_statement_t::~typed_if_statement_t() = default;
+
+tchecker::typed_expression_t const & typed_if_statement_t::condition() const
 {
-  tchecker::typed_expression_t * const cond_clone = dynamic_cast<tchecker::typed_expression_t *>(_condition->clone());
-  tchecker::typed_statement_t * const then_clone = dynamic_cast<tchecker::typed_statement_t *>(_then_stmt->clone());
-  tchecker::typed_statement_t * const else_clone = dynamic_cast<tchecker::typed_statement_t *>(_else_stmt->clone());
-  return new typed_if_statement_t(_type, cond_clone, then_clone, else_clone);
+  return dynamic_cast<tchecker::typed_expression_t const &>(tchecker::if_statement_t::condition());
 }
 
-void typed_if_statement_t::do_visit(tchecker::typed_statement_visitor_t & v) const { v.visit(*this); }
+std::shared_ptr<tchecker::typed_expression_t const> typed_if_statement_t::condition_ptr() const
+{
+  return std::dynamic_pointer_cast<tchecker::typed_expression_t const>(tchecker::if_statement_t::condition_ptr());
+}
+
+tchecker::typed_statement_t const & typed_if_statement_t::then_stmt() const
+{
+  return dynamic_cast<tchecker::typed_statement_t const &>(tchecker::if_statement_t::then_stmt());
+}
+
+std::shared_ptr<tchecker::typed_statement_t const> typed_if_statement_t::then_stmt_ptr() const
+{
+  return std::dynamic_pointer_cast<tchecker::typed_statement_t const>(tchecker::if_statement_t::then_stmt_ptr());
+}
+
+tchecker::typed_statement_t const & typed_if_statement_t::else_stmt() const
+{
+  return dynamic_cast<tchecker::typed_statement_t const &>(tchecker::if_statement_t::else_stmt());
+}
+
+std::shared_ptr<tchecker::typed_statement_t const> typed_if_statement_t::else_stmt_ptr() const
+{
+  return std::dynamic_pointer_cast<tchecker::typed_statement_t const>(tchecker::if_statement_t::else_stmt_ptr());
+}
+
+tchecker::typed_if_statement_t * typed_if_statement_t::clone() const
+{
+  std::shared_ptr<tchecker::typed_expression_t const> cond_clone{condition().clone()};
+  std::shared_ptr<tchecker::typed_statement_t const> then_clone{then_stmt().clone()};
+  std::shared_ptr<tchecker::typed_statement_t const> else_clone{else_stmt().clone()};
+  return new tchecker::typed_if_statement_t(_type, cond_clone, then_clone, else_clone);
+}
+
+void typed_if_statement_t::visit(tchecker::typed_statement_visitor_t & v) const { v.visit(*this); }
+
+void typed_if_statement_t::visit(tchecker::statement_visitor_t & v) const { v.visit(*this); }
 
 /* typed_while_statement_t */
 
 typed_while_statement_t::typed_while_statement_t(enum tchecker::statement_type_t type,
-                                                 tchecker::typed_expression_t const * cond,
-                                                 tchecker::typed_statement_t const * stmt)
-    : tchecker::make_typed_statement_t<tchecker::while_statement_t>(type, cond, stmt)
+                                                 std::shared_ptr<tchecker::typed_expression_t const> const & cond,
+                                                 std::shared_ptr<tchecker::typed_statement_t const> const & stmt)
+    : tchecker::typed_statement_t(type), tchecker::while_statement_t(cond, stmt)
 {
 }
 
-tchecker::statement_t * typed_while_statement_t::do_clone() const
+typed_while_statement_t::~typed_while_statement_t() = default;
+
+tchecker::typed_expression_t const & typed_while_statement_t::condition() const
 {
-  tchecker::typed_expression_t * const cond_clone = dynamic_cast<tchecker::typed_expression_t *>(_condition->clone());
-  tchecker::typed_statement_t * const stmt_clone = dynamic_cast<tchecker::typed_statement_t *>(_stmt->clone());
-  return new typed_while_statement_t(_type, cond_clone, stmt_clone);
+  return dynamic_cast<tchecker::typed_expression_t const &>(tchecker::while_statement_t::condition());
 }
 
-void typed_while_statement_t::do_visit(tchecker::typed_statement_visitor_t & v) const { v.visit(*this); }
+std::shared_ptr<tchecker::typed_expression_t const> typed_while_statement_t::condition_ptr() const
+{
+  return std::dynamic_pointer_cast<tchecker::typed_expression_t const>(tchecker::while_statement_t::condition_ptr());
+}
+
+tchecker::typed_statement_t const & typed_while_statement_t::statement() const
+{
+  return dynamic_cast<tchecker::typed_statement_t const &>(tchecker::while_statement_t::statement());
+}
+
+std::shared_ptr<tchecker::typed_statement_t const> typed_while_statement_t::statement_ptr() const
+{
+  return std::dynamic_pointer_cast<tchecker::typed_statement_t const>(tchecker::while_statement_t::statement_ptr());
+}
+
+tchecker::typed_while_statement_t * typed_while_statement_t::clone() const
+{
+  std::shared_ptr<tchecker::typed_expression_t const> cond_clone{condition().clone()};
+  std::shared_ptr<tchecker::typed_statement_t const> stmt_clone{statement().clone()};
+  return new tchecker::typed_while_statement_t(_type, cond_clone, stmt_clone);
+}
+
+void typed_while_statement_t::visit(tchecker::typed_statement_visitor_t & v) const { v.visit(*this); }
+
+void typed_while_statement_t::visit(tchecker::statement_visitor_t & v) const { v.visit(*this); }
 
 /* typed_local_var_statement_t */
 
-typed_local_var_statement_t::typed_local_var_statement_t(enum tchecker::statement_type_t type,
-                                                         tchecker::typed_var_expression_t const * variable)
-    : tchecker::make_typed_statement_t<tchecker::local_var_statement_t>(type, variable)
+typed_local_var_statement_t::typed_local_var_statement_t(
+    enum tchecker::statement_type_t type, std::shared_ptr<tchecker::typed_var_expression_t const> const & variable)
+    : tchecker::typed_statement_t(type), tchecker::local_var_statement_t(variable)
 {
 }
 
-typed_local_var_statement_t::typed_local_var_statement_t(enum tchecker::statement_type_t type,
-                                                         tchecker::typed_var_expression_t const * variable,
-                                                         tchecker::typed_expression_t const * init)
-    : tchecker::make_typed_statement_t<tchecker::local_var_statement_t>(type, variable, init)
+typed_local_var_statement_t::typed_local_var_statement_t(
+    enum tchecker::statement_type_t type, std::shared_ptr<tchecker::typed_var_expression_t const> const & variable,
+    std::shared_ptr<tchecker::typed_expression_t const> const & init)
+    : tchecker::typed_statement_t(type), tchecker::local_var_statement_t(variable, init)
 {
 }
 
-tchecker::statement_t * typed_local_var_statement_t::do_clone() const
-{
-  auto var = dynamic_cast<typed_var_expression_t const *>(_variable->clone());
-  auto init = dynamic_cast<typed_expression_t const *>(_initial_value->clone());
+typed_local_var_statement_t::~typed_local_var_statement_t() = default;
 
-  return new typed_local_var_statement_t(_type, var, init);
+tchecker::typed_var_expression_t const & typed_local_var_statement_t::variable() const
+{
+  return dynamic_cast<tchecker::typed_var_expression_t const &>(tchecker::local_var_statement_t::variable());
 }
 
-void typed_local_var_statement_t::do_visit(tchecker::typed_statement_visitor_t & v) const { v.visit(*this); }
+std::shared_ptr<tchecker::typed_var_expression_t const> typed_local_var_statement_t::variable_ptr() const
+{
+  return std::dynamic_pointer_cast<tchecker::typed_var_expression_t const>(tchecker::local_var_statement_t::variable_ptr());
+}
+
+tchecker::typed_expression_t const & typed_local_var_statement_t::initial_value() const
+{
+  return dynamic_cast<tchecker::typed_expression_t const &>(tchecker::local_var_statement_t::initial_value());
+}
+
+std::shared_ptr<tchecker::typed_expression_t const> typed_local_var_statement_t::initial_value_ptr() const
+{
+  return std::dynamic_pointer_cast<tchecker::typed_expression_t const>(tchecker::local_var_statement_t::initial_value_ptr());
+}
+
+tchecker::typed_local_var_statement_t * typed_local_var_statement_t::clone() const
+{
+  std::shared_ptr<tchecker::typed_var_expression_t const> variable_clone{variable().clone()};
+  std::shared_ptr<tchecker::typed_expression_t const> initial_value_clone{initial_value().clone()};
+  return new tchecker::typed_local_var_statement_t(_type, variable_clone, initial_value_clone);
+}
+
+void typed_local_var_statement_t::visit(tchecker::typed_statement_visitor_t & v) const { v.visit(*this); }
+
+void typed_local_var_statement_t::visit(tchecker::statement_visitor_t & v) const { v.visit(*this); }
 
 /* typed_local_array_statement_t */
 
-typed_local_array_statement_t::typed_local_array_statement_t(enum tchecker::statement_type_t type,
-                                                             tchecker::typed_var_expression_t const * variable,
-                                                             tchecker::typed_expression_t const * size)
-
-    : tchecker::make_typed_statement_t<tchecker::local_array_statement_t>(type, variable, size)
+typed_local_array_statement_t::typed_local_array_statement_t(
+    enum tchecker::statement_type_t type, std::shared_ptr<tchecker::typed_var_expression_t const> const & variable,
+    std::shared_ptr<tchecker::typed_expression_t const> const & size)
+    : tchecker::typed_statement_t(type), tchecker::local_array_statement_t(variable, size)
 {
 }
 
-tchecker::statement_t * typed_local_array_statement_t::do_clone() const
-{
-  tchecker::typed_var_expression_t * const variable = dynamic_cast<tchecker::typed_var_expression_t *>(_variable->clone());
-  tchecker::typed_expression_t * const size = dynamic_cast<tchecker::typed_expression_t *>(_size->clone());
+typed_local_array_statement_t::~typed_local_array_statement_t() = default;
 
-  return new typed_local_array_statement_t(_type, variable, size);
+tchecker::typed_var_expression_t const & typed_local_array_statement_t::variable() const
+{
+  return dynamic_cast<tchecker::typed_var_expression_t const &>(tchecker::local_array_statement_t::variable());
 }
 
-void typed_local_array_statement_t::do_visit(tchecker::typed_statement_visitor_t & v) const { v.visit(*this); }
+std::shared_ptr<tchecker::typed_var_expression_t const> typed_local_array_statement_t::variable_ptr() const
+{
+  return std::dynamic_pointer_cast<tchecker::typed_var_expression_t const>(tchecker::local_array_statement_t::variable_ptr());
+}
+
+tchecker::typed_expression_t const & typed_local_array_statement_t::size() const
+{
+  return dynamic_cast<tchecker::typed_expression_t const &>(tchecker::local_array_statement_t::size());
+}
+std::shared_ptr<tchecker::typed_expression_t const> typed_local_array_statement_t::size_ptr() const
+{
+  return std::dynamic_pointer_cast<tchecker::typed_expression_t const>(tchecker::local_array_statement_t::size_ptr());
+}
+
+tchecker::typed_local_array_statement_t * typed_local_array_statement_t::clone() const
+{
+  std::shared_ptr<tchecker::typed_var_expression_t const> variable_clone{variable().clone()};
+  std::shared_ptr<tchecker::typed_expression_t const> size_clone{size().clone()};
+  return new tchecker::typed_local_array_statement_t(_type, variable_clone, size_clone);
+}
+
+void typed_local_array_statement_t::visit(tchecker::typed_statement_visitor_t & v) const { v.visit(*this); }
+
+void typed_local_array_statement_t::visit(tchecker::statement_visitor_t & v) const { v.visit(*this); }
 
 } // end of namespace tchecker

@@ -92,6 +92,11 @@ void locs_t::add_location(tchecker::process_id_t pid, std::string const & name,
   assert(_locs.back()->id() == _locs.size() - 1);
 }
 
+tchecker::system::locs_t::locations_identifiers_range_t locs_t::locations_identifiers() const
+{
+  return tchecker::make_integer_range<tchecker::loc_id_t>(0, locations_count());
+}
+
 void locs_t::add_locations(tchecker::system::locs_t const & locs)
 {
   for (tchecker::system::loc_const_shared_ptr_t loc : locs._locs)

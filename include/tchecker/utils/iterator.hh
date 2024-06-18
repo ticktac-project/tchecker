@@ -11,6 +11,7 @@
 #include <cassert>
 #include <functional>
 #include <iterator>
+#include <limits>
 #include <tuple>
 #include <vector>
 
@@ -874,25 +875,28 @@ namespace tchecker {
 
 /*!
  \class integer_iterator_t
+ \tparam I : type of integer values
  \brief Iterator over integer values
 */
-class integer_iterator_t {
+template <typename I = tchecker::integer_t> class integer_iterator_t {
+  static_assert(std::numeric_limits<I>::is_integer, "I must be an integer type");
+
 public:
   /*!
    \brief Constructor
    \param value : initial value
   */
-  integer_iterator_t(tchecker::integer_t value = 0);
+  integer_iterator_t(I value = 0) : _current(value) {}
 
   /*!
    \brief Copy constructor
   */
-  integer_iterator_t(tchecker::integer_iterator_t const &) = default;
+  integer_iterator_t(tchecker::integer_iterator_t<I> const &) = default;
 
   /*!
    \brief Move constructor
   */
-  integer_iterator_t(tchecker::integer_iterator_t &&) = default;
+  integer_iterator_t(tchecker::integer_iterator_t<I> &&) = default;
 
   /*!
    \brief Destructor
@@ -902,73 +906,104 @@ public:
   /*!
    \brief Assignment operator
   */
-  tchecker::integer_iterator_t & operator=(tchecker::integer_iterator_t const &) = default;
+  tchecker::integer_iterator_t<I> & operator=(tchecker::integer_iterator_t<I> const &) = default;
 
   /*!
    \brief Assignment operator
   */
-  tchecker::integer_iterator_t & operator=(tchecker::integer_t const &);
+  tchecker::integer_iterator_t<I> & operator=(I value)
+  {
+    _current = value;
+    return *this;
+  }
 
   /*!
    \brief Move-ssignment operator
   */
-  tchecker::integer_iterator_t & operator=(tchecker::integer_iterator_t &&) = default;
+  tchecker::integer_iterator_t<I> & operator=(tchecker::integer_iterator_t<I> &&) = default;
 
   /*!
    \brief Equality check
    \param it : iterator
    \return true if this iterator and it have the same current value, false otherwise
   */
-  bool operator==(tchecker::integer_iterator_t const & it) const;
+  bool operator==(tchecker::integer_iterator_t<I> const & it) const { return _current == it._current; }
 
   /*!
    \brief Equality check
    \param value : integer value
    \return true if this current value is equal to value, false otherwise
   */
-  bool operator==(tchecker::integer_t value) const;
+  bool operator==(I value) const { return _current == value; }
 
   /*!
    \brief Disequality check
   */
-  bool operator!=(tchecker::integer_iterator_t const & it) const;
+  bool operator!=(tchecker::integer_iterator_t<I> const & it) const { return !(*this == it); }
 
   /*!
    \brief Disequality check
   */
-  bool operator!=(tchecker::integer_t value) const;
+  bool operator!=(I value) const { return !(*this == value); }
 
   /*!
    \brief Dereference operator
    \return current value of this iterator
   */
-  tchecker::integer_t operator*() const;
+  inline I operator*() const { return _current; }
 
   /*!
    \brief Increment operator
    \post this iterator points to the next integer according to modular arithmetic
   */
-  tchecker::integer_iterator_t & operator++();
+  tchecker::integer_iterator_t<I> & operator++()
+  {
+    ++_current;
+    return *this;
+  }
 
   /*!
    \brief Decrement operator
    \post this iterator points to the previous integer according to modular arithmetic
   */
-  tchecker::integer_iterator_t & operator--();
+  tchecker::integer_iterator_t<I> & operator--()
+  {
+    --_current;
+    return *this;
+  }
 
 private:
   tchecker::integer_t _current; /*!< Current integer value */
 };
+
+/*!
+ \brief Type of range over integers
+ \tparam I : type of integer values
+ */
+template <typename I = tchecker::integer_t> using integer_range_t = tchecker::range_t<tchecker::integer_iterator_t<I>>;
+
+/*!
+ \brief Make a range of integers
+ \tparam I : type of integer values
+ \param begin : first integer
+ \param end : past-the-end integer
+ \return range over [begin,end)
+ */
+template <typename I = tchecker::integer_t> tchecker::integer_range_t<I> make_integer_range(I begin, I end)
+{
+  static_assert(std::numeric_limits<I>::is_integer, "I must be an integer tyoe");
+  return tchecker::integer_range_t<I>(tchecker::integer_iterator_t<I>{begin}, tchecker::integer_iterator_t<I>{end});
+}
 
 } // namespace tchecker
 
 /*!
  \brief Iterator traits for integer_iterator_t
  */
-template <> struct std::iterator_traits<tchecker::integer_iterator_t> {
-  using difference_type = tchecker::integer_t;
+template <typename I> struct std::iterator_traits<tchecker::integer_iterator_t<I>> {
+  using difference_type = I;
 
-  using value_type = tchecker::integer_t;
+  using value_type = I;
 
   using pointer = value_type *;
 

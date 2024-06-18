@@ -143,6 +143,13 @@ public:
       tchecker::tck_reach::zg_covreach::node_t, tchecker::tck_reach::zg_covreach::edge_t,
       tchecker::tck_reach::zg_covreach::node_hash_t, tchecker::tck_reach::zg_covreach::node_le_t>::attributes;
 
+  /*!
+   \brief Checks is an edge is an actual edge (not a subsumption edge)
+   \param e : an edge
+   \return true if e is an actual edge, false otherwise (e is a subsumption edge)
+   */
+  bool is_actual_edge(edge_sptr_t const & e) const;
+
 protected:
   /*!
    \brief Accessor to node attributes
@@ -250,9 +257,10 @@ public:
  \pre labels must appear as node attributes in sysdecl
  search_order must be either "dfs" or "bfs"
  \return statistics on the run and the covering reachability graph
+ \throw std::runtime_error : if clock bounds cannot be computed for the system modeled by sysdecl
  */
 std::tuple<tchecker::algorithms::covreach::stats_t, std::shared_ptr<tchecker::tck_reach::zg_covreach::graph_t>>
-run(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl, std::string const & labels = "",
+run(tchecker::parsing::system_declaration_t const & sysdecl, std::string const & labels = "",
     std::string const & search_order = "bfs",
     tchecker::algorithms::covreach::covering_t covering = tchecker::algorithms::covreach::COVERING_FULL,
     std::size_t block_size = 10000, std::size_t table_size = 65536);

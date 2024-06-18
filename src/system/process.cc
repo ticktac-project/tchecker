@@ -20,6 +20,11 @@ void processes_t::add_process(std::string const & name, tchecker::system::attrib
   _procs_attributes.emplace_back(attributes);
 }
 
+tchecker::system::processes_t::processes_identifiers_range_t processes_t::processes_identifiers() const
+{
+  return tchecker::make_integer_range<tchecker::process_id_t>(0, processes_count());
+}
+
 tchecker::system::attributes_t const & processes_t::process_attributes(tchecker::process_id_t id) const
 {
   if (id >= processes_count())

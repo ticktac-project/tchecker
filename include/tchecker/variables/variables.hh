@@ -91,13 +91,14 @@ protected:
 /*!
  \class variables_t
  \brief Definition of variables (of unspecified type)
- \tparam ID : type of variable identifiers
+ \tparam ID : type of variable identifiers, should be an integer type
  \tparam INFO : type of variable informations
  \tparam INDEX : type of variable index, should derive from tchecker::index_t
  */
 template <class ID, class INFO, class INDEX> class variables_t {
 
   static_assert(std::is_base_of<tchecker::index_t<ID, std::string>, INDEX>::value, "Bad template parameter INDEX");
+  static_assert(std::numeric_limits<ID>::is_integer, "ID musr be an integer type");
 
 protected:
   /*!
@@ -238,19 +239,30 @@ public:
     }
   }
 
+  /*!
+   \brief Type of range over variable identifiers
+   */
+  using identifiers_range_t = typename INDEX::keys_range_t;
+
+  /*!
+   \brief Accessor
+   \return range of variable identifiers
+   */
+  identifiers_range_t identifiers() const { return _index.keys(); }
+
 protected:
   INDEX _index;     /*!< Index of variables */
   info_map_t _info; /*!< Map variable ID -> informations */
 };
 
 /*!
- \brief Declare flat variables corresponding to a variable
+ \brief Declare flattened variables corresponding to a variable with size
  \tparam ID : type of variable identifier
  \tparam INFO : type of variable information, should derive from tchecker::size_info_t
  \param id : variable identifier
  \param name : variable name
  \param info : variable informations
- \param declare : declaration function
+ \param declare : flat variable declaration function
  \pre same preconditions as function `declare`
  \post info.size() consecutive flat variables have been declared from identifier `id`.
  Each flat variable has information `info`, except for `size` which has been set to 1.
@@ -280,14 +292,6 @@ void declare_flattened_variable(ID id, std::string const & name, INFO const & in
 }
 
 /*!
-\brief Type of variable
-*/
-enum variable_kind_t {
-  VK_DECLARED,  /*!< As declared */
-  VK_FLATTENED, /*!< Flattedned */
-};
-
-/*!
  \class size_variables_t
  \brief Definition of variables with a size (arrays)
  \tparam ID : type of variable identifiers
@@ -299,9 +303,7 @@ enum variable_kind_t {
 template <class ID, class INFO, class INDEX> class size_variables_t : public tchecker::variables_t<ID, INFO, INDEX> {
 
   static_assert(std::is_base_of<tchecker::size_info_t, INFO>::value, "INFO must provide variable size");
-
   static_assert(std::numeric_limits<ID>::min() <= std::numeric_limits<typename INFO::size_t>::min(), "ID type is too small");
-
   static_assert(std::numeric_limits<ID>::max() >= std::numeric_limits<typename INFO::size_t>::max(), "ID type is too small");
 
 public:
@@ -385,33 +387,6 @@ public:
     if ((id < _first_id) || (_first_id == _next_id))
       _first_id = id;
     _next_id = id + size;
-  }
-
-  /*!
-   \brief Accessor
-   \return Range (begin, end) of variable identifiers, `begin` is the first used
-   identifier and `end` immediately follows the last used identifier
-   \note The returned range may contained unused identifiers if variables have
-   not been declared with consecutive identifiers
-   */
-  inline constexpr tchecker::range_t<ID> identifiers() const { return tchecker::make_range(_first_id, _next_id); }
-
-  /*!
-   \brief Accessor
-   \param kind : kind of variables
-   \return Number of declared variables if kind = tchecker::DECLARED,
-    numer of flattened variables if kind = tchecker::FLATTENED
-   */
-  inline constexpr std::size_t size(enum tchecker::variable_kind_t kind) const
-  {
-    switch (kind) {
-    case tchecker::VK_DECLARED:
-      return tchecker::variables_t<ID, INFO, INDEX>::size();
-    case tchecker::VK_FLATTENED:
-      return _next_id;
-    default:
-      throw std::runtime_error("Unknown variable kind");
-    }
   }
 
 protected:
@@ -520,18 +495,16 @@ public:
     tchecker::size_variables_t<ID, INFO, INDEX>::declare(id, name, info);
   }
 
-  /*!
-   \brief Accessor
-   \return Number of variables
-   */
-  inline constexpr std::size_t size() const
-  {
-    return tchecker::size_variables_t<ID, INFO, INDEX>::size(tchecker::VK_FLATTENED);
-  }
-
 private:
   using tchecker::size_variables_t<ID, INFO, INDEX>::declare;
-  using tchecker::size_variables_t<ID, INFO, INDEX>::size;
+};
+
+/*!
+\brief Type of variable
+*/
+enum variable_kind_t {
+  VK_DECLARED,  /*!< As declared */
+  VK_FLATTENED, /*!< Flattedned */
 };
 
 /*!
@@ -594,6 +567,50 @@ public:
                                                      _flattened_variables.declare(flat_id, flat_name, flat_info);
                                                    });
     return id;
+  }
+
+  /*!
+   \brief Accessor
+   \param kind : kind of variables
+   \return Number of declared variables if kind = tchecker::DECLARED,
+    numer of flattened variables if kind = tchecker::FLATTENED
+   */
+  inline constexpr std::size_t size(enum tchecker::variable_kind_t kind) const
+  {
+    switch (kind) {
+    case tchecker::VK_DECLARED:
+      return tchecker::size_variables_t<ID, INFO, INDEX>::size();
+    case tchecker::VK_FLATTENED:
+      return _flattened_variables.size();
+    default:
+      throw std::runtime_error("Unknown variable kind");
+    }
+  }
+
+  /*!
+   \brief Type of range of identifiers
+   */
+  using identifiers_range_t = typename tchecker::array_variables_t<ID, INFO, INDEX>::identifiers_range_t;
+
+  /*!
+   \brief Accessor
+   \param kind : kind of variables
+   \return Range (begin, end) of variable identifiers, `begin` is the first used
+   identifier and `end` immediately follows the last used identifier
+   The returned range corresponds to the identifiers of the declared variables if kind = tchecker::DECLARED,
+   and the identifiers of the flattened variables if kind = tchecker::FLATTENED
+   \note The identifiers in the returned range are sorted, but they may not be consecutive
+   */
+  inline identifiers_range_t identifiers(enum tchecker::variable_kind_t kind) const
+  {
+    switch (kind) {
+    case tchecker::VK_DECLARED:
+      return tchecker::size_variables_t<ID, INFO, INDEX>::identifiers();
+    case tchecker::VK_FLATTENED:
+      return _flattened_variables.identifiers();
+    default:
+      throw std::runtime_error("Unknown variable kind");
+    }
   }
 
   /*!

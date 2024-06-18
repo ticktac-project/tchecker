@@ -29,13 +29,12 @@ tchecker::fsm::initial_range_t initial_edges(tchecker::ta::system_t const & syst
 
 // Initial state
 
-tchecker::state_status_t initial(tchecker::ta::system_t const & system,
-                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                                 tchecker::fsm::initial_value_t const & initial_range)
+tchecker::state_status_t initial(tchecker::ta::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                                 tchecker::intval_sptr_t const & intval, tchecker::vedge_sptr_t const & vedge,
+                                 tchecker::sync_id_t & sync_id, tchecker::fsm::initial_value_t const & initial_range)
 {
-  tchecker::state_status_t status = tchecker::ta::initial(system, vloc, intval, vedge, place_holder_clkconstr, initial_range);
+  tchecker::state_status_t status =
+      tchecker::ta::initial(system, vloc, intval, vedge, sync_id, place_holder_clkconstr, initial_range);
   place_holder_clkconstr.clear();
   return status;
 }
@@ -49,37 +48,33 @@ tchecker::fsm::final_range_t final_edges(tchecker::ta::system_t const & system, 
 
 // Final state
 
-tchecker::state_status_t final(tchecker::ta::system_t const & system,
-                               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                               tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                               tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                               tchecker::fsm::final_value_t const & final_value)
+tchecker::state_status_t final(tchecker::ta::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                               tchecker::intval_sptr_t const & intval, tchecker::vedge_sptr_t const & vedge,
+                               tchecker::sync_id_t & sync_id, tchecker::fsm::final_value_t const & final_value)
 {
-  tchecker::state_status_t status = tchecker::ta::final(system, vloc, intval, vedge, place_holder_clkconstr, final_value);
+  tchecker::state_status_t status =
+      tchecker::ta::final(system, vloc, intval, vedge, sync_id, place_holder_clkconstr, final_value);
   place_holder_clkconstr.clear();
   return status;
 }
 
 // Outgoing edges
 
-tchecker::fsm::outgoing_edges_range_t
-outgoing_edges(tchecker::ta::system_t const & system,
-               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc)
+tchecker::fsm::outgoing_edges_range_t outgoing_edges(tchecker::ta::system_t const & system,
+                                                     tchecker::const_vloc_sptr_t const & vloc)
 {
   return tchecker::ta::outgoing_edges(system, vloc);
 }
 
 // Next state
 
-tchecker::state_status_t next(tchecker::ta::system_t const & system,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                              tchecker::fsm::outgoing_edges_value_t const & edges)
+tchecker::state_status_t next(tchecker::ta::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                              tchecker::intval_sptr_t const & intval, tchecker::vedge_sptr_t const & vedge,
+                              tchecker::sync_id_t & sync_id, tchecker::fsm::outgoing_edges_value_t const & sync_edges)
 {
   tchecker::state_status_t status =
-      tchecker::ta::next(system, vloc, intval, vedge, place_holder_clkconstr, place_holder_clkconstr, place_holder_clkreset,
-                         place_holder_clkconstr, edges);
+      tchecker::ta::next(system, vloc, intval, vedge, sync_id, place_holder_clkconstr, place_holder_clkconstr,
+                         place_holder_clkreset, place_holder_clkconstr, sync_edges);
   place_holder_clkconstr.clear();
   place_holder_clkreset.clear();
   return status;
@@ -87,24 +82,21 @@ tchecker::state_status_t next(tchecker::ta::system_t const & system,
 
 // Incoming edges
 
-tchecker::fsm::incoming_edges_range_t
-incoming_edges(tchecker::ta::system_t const & system,
-               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc)
+tchecker::fsm::incoming_edges_range_t incoming_edges(tchecker::ta::system_t const & system,
+                                                     tchecker::const_vloc_sptr_t const & vloc)
 {
   return tchecker::ta::incoming_edges(system, vloc);
 }
 
 // Previous state
 
-tchecker::state_status_t prev(tchecker::ta::system_t const & system,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                              tchecker::fsm::incoming_edges_value_t const & v)
+tchecker::state_status_t prev(tchecker::ta::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                              tchecker::intval_sptr_t const & intval, tchecker::vedge_sptr_t const & vedge,
+                              tchecker::sync_id_t & sync_id, tchecker::fsm::incoming_edges_value_t const & v)
 {
   tchecker::state_status_t status =
-      tchecker::ta::prev(system, vloc, intval, vedge, place_holder_clkconstr, place_holder_clkconstr, place_holder_clkreset,
-                         place_holder_clkconstr, v);
+      tchecker::ta::prev(system, vloc, intval, vedge, sync_id, place_holder_clkconstr, place_holder_clkconstr,
+                         place_holder_clkreset, place_holder_clkconstr, v);
   place_holder_clkconstr.clear();
   place_holder_clkreset.clear();
   return status;
@@ -146,13 +138,12 @@ void attributes(tchecker::ta::system_t const & system, tchecker::fsm::transition
 
 /* initialize */
 
-tchecker::state_status_t initialize(tchecker::ta::system_t const & system,
-                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                                    std::map<std::string, std::string> const & attributes)
+tchecker::state_status_t initialize(tchecker::ta::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                                    tchecker::intval_sptr_t const & intval, tchecker::vedge_sptr_t const & vedge,
+                                    tchecker::sync_id_t & sync_id, std::map<std::string, std::string> const & attributes)
 {
-  tchecker::state_status_t status = tchecker::ta::initialize(system, vloc, intval, vedge, place_holder_clkconstr, attributes);
+  tchecker::state_status_t status =
+      tchecker::ta::initialize(system, vloc, intval, vedge, sync_id, place_holder_clkconstr, attributes);
   place_holder_clkconstr.clear();
   return status;
 }

@@ -32,7 +32,7 @@ namespace tck_liveness {
  \param n : a node
  \return true if n is an initial node, false otherwise
 */
-template <class GRAPH> bool initial_node(typename GRAPH::node_sptr_t const & n) { return n->initial(); }
+template <class GRAPH> bool initial_node(GRAPH const &, typename GRAPH::node_sptr_t const & n) { return n->initial(); }
 
 /*!
  \brief Check is a node is final
@@ -40,15 +40,16 @@ template <class GRAPH> bool initial_node(typename GRAPH::node_sptr_t const & n) 
  \param n : a node
  \return true if n is a final node, false otherwise
 */
-template <class GRAPH> bool final_node(typename GRAPH::node_sptr_t const & n) { return n->final(); }
+template <class GRAPH> bool final_node(GRAPH const &, typename GRAPH::node_sptr_t const & n) { return n->final(); }
 
 /*!
- \brief True predicate over edges
+ \brief Check if an edge is an actual edge
  \tparam GRAPH : type of graph
+ \param g : a graph
  \param e : an edge
- \return true
-*/
-template <class GRAPH> bool true_edge(typename GRAPH::edge_sptr_t const & e) { return true; }
+ \return true if e is an actual edge in g, false otherwise
+ */
+template <class GRAPH> bool actual_edge(GRAPH const & g, typename GRAPH::edge_sptr_t const & e) { return g.is_actual_edge(e); }
 
 /*!
  \brief Compute a symbolic counter example of a zone graph
@@ -63,7 +64,7 @@ template <class GRAPH> tchecker::zg::path::symbolic::lasso_path_t * symbolic_cou
 
   typename tchecker::algorithms::lasso_path_extraction_algorithm_t<GRAPH>::lasso_edges_t lasso_edges =
       algorithm.run(g, &tchecker::tck_liveness::initial_node<GRAPH>, &tchecker::tck_liveness::final_node<GRAPH>,
-                    &tchecker::tck_liveness::true_edge<GRAPH>);
+                    &tchecker::tck_liveness::actual_edge<GRAPH>);
 
   if (lasso_edges.empty())
     return new tchecker::zg::path::symbolic::lasso_path_t{g.zg_ptr()};

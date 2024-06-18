@@ -136,7 +136,7 @@ int parse_command_line(int argc, char * argv[])
 */
 std::shared_ptr<tchecker::parsing::system_declaration_t> load_system(std::string const & filename)
 {
-  tchecker::parsing::system_declaration_t * sysdecl = nullptr;
+  std::shared_ptr<tchecker::parsing::system_declaration_t> sysdecl{nullptr};
   try {
     sysdecl = tchecker::parsing::parse_system_declaration(filename);
   }
@@ -147,7 +147,7 @@ std::shared_ptr<tchecker::parsing::system_declaration_t> load_system(std::string
   if (sysdecl == nullptr)
     tchecker::log_output_count(std::cout);
 
-  return std::shared_ptr<tchecker::parsing::system_declaration_t>(sysdecl);
+  return sysdecl;
 }
 
 /*!

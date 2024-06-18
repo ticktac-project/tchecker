@@ -36,7 +36,7 @@
 
 
 %param { std::string const & filename }
-%param { tchecker::parsing::system_declaration_t * & system_declaration }
+%param { std::shared_ptr<tchecker::parsing::system_declaration_t> & system_declaration }
 
 
 %locations
@@ -46,7 +46,7 @@
   // Declare the lexer for the parser's sake.
   tchecker::parsing::system::parser_t::symbol_type spyylex
   (std::string const & filename,
-  tchecker::parsing::system_declaration_t * & system_declaration);
+  std::shared_ptr<tchecker::parsing::system_declaration_t> & system_declaration);
   
   // Error detection
   static unsigned int old_error_count;
@@ -81,26 +81,27 @@
 %token <std::string>  TOK_TEXT           "text value"
 
 
-%type <unsigned int>                                                uinteger
-%type <tchecker::integer_t>										                      integer
-%type <std::vector<tchecker::parsing::sync_constraint_t const *>>   sync_constraint_list
-%type <tchecker::parsing::sync_constraint_t *>                      sync_constraint
-%type <tchecker::parsing::attr_t *>                                 attr
-%type <tchecker::parsing::attributes_t>                             attr_list
-                                                                    non_empty_attr_list
-%type <std::string>                                                 text_or_empty
-%type <enum tchecker::sync_strength_t>                              sync_strength
+%type <unsigned int>                                                       uinteger
+%type <tchecker::integer_t>										                             integer
+%type <std::vector<std::shared_ptr<tchecker::parsing::sync_constraint_t>>> sync_constraint_list
+%type <std::shared_ptr<tchecker::parsing::sync_constraint_t>>              sync_constraint
+%type <std::shared_ptr<tchecker::parsing::attr_t>>                         attr
+%type <tchecker::parsing::attributes_t>                                    attr_list
+                                                                           non_empty_attr_list
+%type <std::string>                                                        text_or_empty
+%type <enum tchecker::sync_strength_t>                                     sync_strength
 
-%printer { yyoutput << $$; }                                        <*>;
-%printer { yyoutput << * $$; }                                      attr
-                                                                    sync_constraint;
+%printer { yyoutput << $$; }                                               <*>;
+%printer { yyoutput << * $$; }                                             attr
+                                                                           sync_constraint;
+
 %printer {
   for (auto it = $$.begin(); it != $$.end(); ++it) {
     if (it != $$.begin())
       yyoutput << ",";
-    yyoutput << **it;
+    yyoutput << *it;
   }
-}                                                                   sync_constraint_list;
+}                                                                          sync_constraint_list;
 
 %start system
 
@@ -110,18 +111,15 @@ system:
 eol_sequence TOK_SYSTEM ":" TOK_ID attr_list end_declaration {
   std::stringstream loc;
   loc << @$;
-  system_declaration = new system_declaration_t($4, std::move($5), loc.str());
+  system_declaration = std::make_shared<tchecker::parsing::system_declaration_t>($4, $5, loc.str());
 }
 declaration_list
 {
-  if (tchecker::log_error_count() > old_error_count) {
-    delete system_declaration;
+  if (tchecker::log_error_count() > old_error_count)
     system_declaration = nullptr;
-  }
 }
 | error TOK_EOF
 {
-  delete system_declaration;
   system_declaration = nullptr;
 }
 ;
@@ -146,22 +144,20 @@ eol_sequence declaration
 declaration:
 TOK_CLOCK ":" uinteger ":" TOK_ID attr_list end_declaration
 {
-  auto const * d = system_declaration->get_clock_declaration($5);
-  if (d != nullptr)
+  auto exist_d = system_declaration->get_clock_declaration($5);
+  if (exist_d != nullptr)
     std::cerr << tchecker::log_error << @5 << " multiple declarations of clock " << $5 << std::endl;
   else {
-    auto const * intd = system_declaration->get_int_declaration($5);
+    auto intd = system_declaration->get_int_declaration($5);
     if (intd != nullptr)
       std::cerr << tchecker::log_error << @5 << " variable " << $5 << " already declared as an int" << std::endl;
     else {
       try {
         std::stringstream loc;
         loc << @$;
-        d = new tchecker::parsing::clock_declaration_t($5, $3, std::move($6), loc.str());
-        if ( ! system_declaration->insert_clock_declaration(d) ) {
+        auto d = std::make_shared<tchecker::parsing::clock_declaration_t>($5, $3, $6, loc.str());
+        if ( ! system_declaration->insert_clock_declaration(d) )
           std::cerr << tchecker::log_error << @$ << " insertion of clock declaration failed" << std::endl;
-          delete d;
-        }
       }
       catch (std::exception const & e) {
         std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
@@ -172,29 +168,29 @@ TOK_CLOCK ":" uinteger ":" TOK_ID attr_list end_declaration
 
 | TOK_EDGE ":" TOK_ID ":" TOK_ID ":" TOK_ID ":" TOK_ID attr_list end_declaration
 {
-  auto const * proc = system_declaration->get_process_declaration($3);
+  auto proc = system_declaration->get_process_declaration($3);
   if (proc == nullptr)
     std::cerr << tchecker::log_error << @3 << " process " << $3 << " is not declared" << std::endl;
   else {
-    auto const * src = system_declaration->get_location_declaration($3, $5);
+    auto src = system_declaration->get_location_declaration($3, $5);
     if (src == nullptr)
       std::cerr << tchecker::log_error << @5 << " location " << $5 << " is not declared in process " << $3 << std::endl;
     else {
-      auto const * tgt = system_declaration->get_location_declaration($3, $7);
+      auto tgt = system_declaration->get_location_declaration($3, $7);
       if (tgt == nullptr)
         std::cerr << tchecker::log_error << @7 << " location " << $7 << " is not declared in process " << $3 << std::endl;
       else {
-        auto const * event = system_declaration->get_event_declaration($9);
+        auto event = system_declaration->get_event_declaration($9);
         if (event == nullptr)
           std::cerr << tchecker::log_error << @9 << " event " << $9 << " is not declared" << std::endl;
         else {
           try {
             std::stringstream loc;
             loc << @$;
-            auto * d = new tchecker::parsing::edge_declaration_t(*proc, *src, *tgt, *event, std::move($10), loc.str());
+            auto d = std::make_shared<tchecker::parsing::edge_declaration_t>(proc, src, tgt, event, $10, loc.str());
             if ( ! system_declaration->insert_edge_declaration(d) ) {
               std::cerr << tchecker::log_error << @$ << " insertion of edge declaration failed" << std::endl;
-              delete d;
+              d = nullptr;
             }
           }
           catch (std::exception const & e) {
@@ -208,17 +204,17 @@ TOK_CLOCK ":" uinteger ":" TOK_ID attr_list end_declaration
 
 | TOK_EVENT ":" TOK_ID attr_list end_declaration
 {
-  auto const * d = system_declaration->get_event_declaration($3);
-  if (d != nullptr)
+  auto exist_d = system_declaration->get_event_declaration($3);
+  if (exist_d != nullptr)
     std::cerr << tchecker::log_error << @3 << " multiple declarations of event " << $3 << std::endl;
   else {
     try {
       std::stringstream loc;
       loc << @$;
-      d = new tchecker::parsing::event_declaration_t($3, std::move($4), loc.str());
+      auto d = std::make_shared<tchecker::parsing::event_declaration_t>($3, $4, loc.str());
       if ( ! system_declaration->insert_event_declaration(d) ) {
         std::cerr << tchecker::log_error << @$ << " insertion of event declaration failed" << std::endl;
-        delete d;
+        d = nullptr;
       }
     }
     catch (std::exception const & e) {
@@ -229,21 +225,21 @@ TOK_CLOCK ":" uinteger ":" TOK_ID attr_list end_declaration
 
 | TOK_INT ":" uinteger ":" integer ":" integer ":" integer ":" TOK_ID attr_list end_declaration
 {
-  auto const * d = system_declaration->get_int_declaration($11);
-  if (d != nullptr)
+  auto exist_d = system_declaration->get_int_declaration($11);
+  if (exist_d != nullptr)
     std::cerr << tchecker::log_error << @11 << " multiple declarations of int variable " << $11 << std::endl;
   else {
-    auto const * clockd = system_declaration->get_clock_declaration($11);
+    auto clockd = system_declaration->get_clock_declaration($11);
     if (clockd != nullptr)
       std::cerr << tchecker::log_error << @11 << " variable " << $11 << " already declared as a clock" << std::endl;
     else {
       try {
         std::stringstream loc;
         loc << @$;
-        d = new tchecker::parsing::int_declaration_t($11, $3, $5, $7, $9, std::move($12), loc.str());
+        auto d = std::make_shared<tchecker::parsing::int_declaration_t>($11, $3, $5, $7, $9, $12, loc.str());
         if ( ! system_declaration->insert_int_declaration(d) ) {
           std::cerr << tchecker::log_error << @$ << " insertion of int declaration failed" << std::endl;
-          delete d;
+          d = nullptr;
         }
       }
       catch (std::exception const & e) {
@@ -255,21 +251,21 @@ TOK_CLOCK ":" uinteger ":" TOK_ID attr_list end_declaration
 
 | TOK_LOCATION ":" TOK_ID ":" TOK_ID attr_list end_declaration
 {
-  auto const * d = system_declaration->get_location_declaration($3, $5);
-  if (d != nullptr)
+  auto exist_d = system_declaration->get_location_declaration($3, $5);
+  if (exist_d != nullptr)
     std::cerr << tchecker::log_error << @5 << " multiple declarations of location " << $5 << " in process " << $3 << std::endl;
   else {
-    auto const * proc = system_declaration->get_process_declaration($3);
+    auto proc = system_declaration->get_process_declaration($3);
     if (proc == nullptr)
       std::cerr << tchecker::log_error << @3 << " process " << $3 << " is not declared" << std::endl;
     else {
       try {
         std::stringstream loc;
         loc << @$;
-        d = new location_declaration_t($5, *proc, std::move($6), loc.str());
+        auto d = std::make_shared<location_declaration_t>($5, proc, $6, loc.str());
         if ( ! system_declaration->insert_location_declaration(d) ) {
           std::cerr << tchecker::log_error << @$ << " insertion of location declaration failed" << std::endl;
-          delete d;
+          d = nullptr;
         }
       }
       catch (std::exception const & e) {
@@ -281,17 +277,17 @@ TOK_CLOCK ":" uinteger ":" TOK_ID attr_list end_declaration
 
 | TOK_PROCESS ":" TOK_ID attr_list end_declaration
 {
-  auto const * d = system_declaration->get_process_declaration($3);
-  if (d != nullptr)
+  auto exist_d = system_declaration->get_process_declaration($3);
+  if (exist_d != nullptr)
     std::cerr << tchecker::log_error << @3 << " multiple declarations of process " << $3 << std::endl;
   else {
     try {
       std::stringstream loc;
       loc << @$;
-      d = new tchecker::parsing::process_declaration_t($3, std::move($4), loc.str());
+      auto d = std::make_shared<tchecker::parsing::process_declaration_t>($3, $4, loc.str());
       if ( ! system_declaration->insert_process_declaration(d) ) {
         std::cerr << tchecker::log_error << @5 << " insertion of process declaration failed" << std::endl;
-        delete d;
+        d = nullptr;
       }
     }
     catch (std::exception const & e) {
@@ -305,10 +301,10 @@ TOK_CLOCK ":" uinteger ":" TOK_ID attr_list end_declaration
   try {
     std::stringstream loc;
     loc << @$;
-    auto const * d = new tchecker::parsing::sync_declaration_t(std::move($3), std::move($4), loc.str());
+    auto d = std::make_shared<tchecker::parsing::sync_declaration_t>($3, $4, loc.str());
     if ( ! system_declaration->insert_sync_declaration(d) ) {
       std::cerr << tchecker::log_error << @$ << " insertion of sync declaration failed" << std::endl;
-      delete d;
+      d = nullptr;
     }
   }
   catch (std::exception const & e) {
@@ -333,13 +329,11 @@ attr_list:
 non_empty_attr_list:
 attr
 {
-  if ($1 != nullptr)
-    $$.insert($1);
+  $$.insert($1);
 }
 | non_empty_attr_list ":" attr
 {
-  if ($3 != nullptr)
-    $1.insert($3);
+  $1.insert($3);
   $$ = std::move($1);
 }
 ;
@@ -348,16 +342,13 @@ attr
 attr:
 TOK_ID ":" text_or_empty
 {
-  $$ = nullptr;
   if ($1 == "")
-    std::cerr << tchecker::log_error << @1 << " empty attribute key" << std::endl;
-  else {
-    std::stringstream key_loc, value_loc;
-    key_loc << @1;
-    value_loc << @3;
-    boost::trim($3);
-    $$ = new tchecker::parsing::attr_t($1, $3, tchecker::parsing::attr_parsing_position_t{key_loc.str(), value_loc.str()});
-  }
+    throw std::runtime_error("empty tokens should not be accepted by the parser");
+  std::stringstream key_loc, value_loc;
+  key_loc << @1;
+  value_loc << @3;
+  boost::trim($3);
+  $$ = std::make_shared<tchecker::parsing::attr_t>($1, $3, tchecker::parsing::attr_parsing_position_t{key_loc.str(), value_loc.str()});
 }
 ;
 
@@ -374,12 +365,12 @@ sync_constraint_list:
 sync_constraint
 {
   if ($1 != nullptr)
-  $$.push_back($1);
+    $$.push_back($1);
 }
 | sync_constraint_list ":" sync_constraint
 {
   if ($3 != nullptr)
-  $1.push_back($3);
+    $1.push_back($3);
   $$ = std::move($1);
 }
 ;
@@ -388,22 +379,15 @@ sync_constraint
 sync_constraint:
 TOK_ID "@" TOK_ID sync_strength
 {
-  $$ = nullptr;
-  auto const * proc = system_declaration->get_process_declaration($1);
+  auto proc = system_declaration->get_process_declaration($1);
   if (proc == nullptr)
     std::cerr << tchecker::log_error << @1 << " process " << $1 << " is not declared" << std::endl;
   else {
-    auto const * event = system_declaration->get_event_declaration($3);
+    auto event = system_declaration->get_event_declaration($3);
     if (event == nullptr)
       std::cerr << tchecker::log_error << @3 << " event " << $3 << " is not declared" << std::endl;
-    else {
-      try {
-        $$ = new tchecker::parsing::sync_constraint_t(*proc, *event, $4);
-      }
-      catch (std::exception const & e) {
-        std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
-      }
-    }
+    else
+      $$ = std::make_shared<tchecker::parsing::sync_constraint_t>(proc, event, $4);
   }
 }
 ;

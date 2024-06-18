@@ -45,14 +45,14 @@ std::size_t node_hash_t::operator()(tchecker::tck_reach::concur19::node_t const 
 
 node_le_t::node_le_t(std::shared_ptr<tchecker::clockbounds::clockbounds_t> const & clockbounds) : _clockbounds(clockbounds)
 {
-  _l = tchecker::clockbounds::allocate_map(_clockbounds->clock_number());
-  _u = tchecker::clockbounds::allocate_map(_clockbounds->clock_number());
+  _l = tchecker::clockbounds::allocate_map(_clockbounds->clocks_number());
+  _u = tchecker::clockbounds::allocate_map(_clockbounds->clocks_number());
 }
 
 node_le_t::node_le_t(tchecker::ta::system_t const & system) : _clockbounds(tchecker::clockbounds::compute_clockbounds(system))
 {
-  _l = tchecker::clockbounds::allocate_map(_clockbounds->clock_number());
-  _u = tchecker::clockbounds::allocate_map(_clockbounds->clock_number());
+  _l = tchecker::clockbounds::allocate_map(_clockbounds->clocks_number());
+  _u = tchecker::clockbounds::allocate_map(_clockbounds->clocks_number());
 }
 
 node_le_t::node_le_t(tchecker::tck_reach::concur19::node_le_t const & node_le) : _clockbounds(node_le._clockbounds)
@@ -138,6 +138,8 @@ void graph_t::attributes(tchecker::tck_reach::concur19::edge_t const & e, std::m
   m["vedge"] = tchecker::to_string(e.vedge(), _refzg->system().as_system_system());
 }
 
+bool graph_t::is_actual_edge(edge_sptr_t const & e) const { return edge_type(e) == tchecker::graph::subsumption::EDGE_ACTUAL; }
+
 /* dot_output */
 
 /*!
@@ -214,11 +216,10 @@ std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::concur19::cex:
 /* run */
 
 std::tuple<tchecker::algorithms::covreach::stats_t, std::shared_ptr<tchecker::tck_reach::concur19::graph_t>>
-run(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl, std::string const & labels,
-    std::string const & search_order, tchecker::algorithms::covreach::covering_t covering, std::size_t block_size,
-    std::size_t table_size)
+run(tchecker::parsing::system_declaration_t const & sysdecl, std::string const & labels, std::string const & search_order,
+    tchecker::algorithms::covreach::covering_t covering, std::size_t block_size, std::size_t table_size)
 {
-  std::shared_ptr<tchecker::ta::system_t const> system{new tchecker::ta::system_t{*sysdecl}};
+  std::shared_ptr<tchecker::ta::system_t const> system{new tchecker::ta::system_t{sysdecl}};
   if (!tchecker::system::every_process_has_initial_location(system->as_system_system()))
     std::cerr << tchecker::log_warning << "system has no initial state" << std::endl;
 

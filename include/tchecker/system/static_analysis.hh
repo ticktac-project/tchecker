@@ -96,6 +96,14 @@ tchecker::system::process_events_map_t weakly_synchronized_events(tchecker::syst
 */
 bool every_process_has_initial_location(tchecker::system::system_t const & system);
 
+/*!
+ \brief Checks if every process is deterministic
+ \param system : a system of processes
+ \return true if every process is deterministic (only one initial location, and every location has
+ at most one outgoing edge of every event), false otherwise
+ */
+bool is_deterministic(tchecker::system::system_t const & system);
+
 } // end of namespace system
 
 } // end of namespace tchecker

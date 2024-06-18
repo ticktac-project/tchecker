@@ -47,7 +47,7 @@ public:
   /*!
    \brief Destructor
    */
-  virtual ~statement_typechecker_t() { delete _typed_stmt; }
+  virtual ~statement_typechecker_t() = default;
 
   /*!
    \brief Assignment operator (DELETED)
@@ -60,15 +60,15 @@ public:
   tchecker::details::statement_typechecker_t & operator=(tchecker::details::statement_typechecker_t &&) = delete;
 
   /*!
-   \brief Accessor
+   \brief Get and clear typed statement
    \return typed statement
-   \note this releases ownership on typed statement
+   \post clear internal typed statement
    */
-  tchecker::typed_statement_t * release()
+  std::shared_ptr<tchecker::typed_statement_t> acquire_typed_statement()
   {
-    auto p = _typed_stmt;
+    auto acquired_typed_stmt = _typed_stmt;
     _typed_stmt = nullptr;
-    return p;
+    return acquired_typed_stmt;
   }
 
   /*!
@@ -78,7 +78,7 @@ public:
    */
   virtual void visit(tchecker::nop_statement_t const & stmt)
   {
-    _typed_stmt = new tchecker::typed_nop_statement_t(tchecker::STMT_TYPE_NOP);
+    _typed_stmt = std::make_shared<tchecker::typed_nop_statement_t>(tchecker::STMT_TYPE_NOP);
   }
 
   /*!
@@ -89,27 +89,28 @@ public:
   virtual void visit(tchecker::assign_statement_t const & stmt)
   {
     // Left and right values
-    tchecker::typed_lvalue_expression_t * typed_lvalue = dynamic_cast<tchecker::typed_lvalue_expression_t *>(
+    auto typed_lvalue = std::dynamic_pointer_cast<tchecker::typed_lvalue_expression_t const>(
         tchecker::typecheck(stmt.lvalue(), _localvars, _intvars, _clocks, _error));
 
-    tchecker::typed_expression_t * typed_rvalue = tchecker::typecheck(stmt.rvalue(), _localvars, _intvars, _clocks, _error);
+    std::shared_ptr<tchecker::typed_expression_t const> typed_rvalue =
+        tchecker::typecheck(stmt.rvalue(), _localvars, _intvars, _clocks, _error);
 
     // Typed statement
     enum tchecker::statement_type_t stmt_type = type_assign(typed_lvalue->type(), typed_rvalue->type());
 
     switch (stmt_type) {
     case STMT_TYPE_CLKASSIGN_INT:
-      _typed_stmt = new tchecker::typed_int_to_clock_assign_statement_t(stmt_type, typed_lvalue, typed_rvalue);
+      _typed_stmt = std::make_shared<tchecker::typed_int_to_clock_assign_statement_t>(stmt_type, typed_lvalue, typed_rvalue);
       break;
     case STMT_TYPE_CLKASSIGN_CLK:
-      _typed_stmt = new tchecker::typed_clock_to_clock_assign_statement_t(
-          stmt_type, typed_lvalue, dynamic_cast<tchecker::typed_lvalue_expression_t *>(typed_rvalue));
+      _typed_stmt = std::make_shared<tchecker::typed_clock_to_clock_assign_statement_t>(
+          stmt_type, typed_lvalue, std::dynamic_pointer_cast<tchecker::typed_lvalue_expression_t const>(typed_rvalue));
       break;
     case STMT_TYPE_CLKASSIGN_SUM:
-      _typed_stmt = new tchecker::typed_sum_to_clock_assign_statement_t(stmt_type, typed_lvalue, typed_rvalue);
+      _typed_stmt = std::make_shared<tchecker::typed_sum_to_clock_assign_statement_t>(stmt_type, typed_lvalue, typed_rvalue);
       break;
     default: // either STMT_TYPE_INTASSIGN or STMT_TYPE_BAD
-      _typed_stmt = new tchecker::typed_assign_statement_t(stmt_type, typed_lvalue, typed_rvalue);
+      _typed_stmt = std::make_shared<tchecker::typed_assign_statement_t>(stmt_type, typed_lvalue, typed_rvalue);
       break;
     }
 
@@ -130,15 +131,15 @@ public:
   {
     // First and second statements
     stmt.first().visit(*this);
-    tchecker::typed_statement_t * typed_first = this->release();
+    std::shared_ptr<tchecker::typed_statement_t const> typed_first{acquire_typed_statement()};
 
     stmt.second().visit(*this);
-    tchecker::typed_statement_t * typed_second = this->release();
+    std::shared_ptr<tchecker::typed_statement_t const> typed_second{acquire_typed_statement()};
 
     // Typed statement
     enum tchecker::statement_type_t stmt_type = type_seq(typed_first->type(), typed_second->type());
 
-    _typed_stmt = new tchecker::typed_sequence_statement_t(stmt_type, typed_first, typed_second);
+    _typed_stmt = std::make_shared<tchecker::typed_sequence_statement_t>(stmt_type, typed_first, typed_second);
 
     // Report bad type
     if (stmt_type != tchecker::STMT_TYPE_BAD)
@@ -156,18 +157,19 @@ public:
    */
   virtual void visit(tchecker::if_statement_t const & stmt)
   {
-    tchecker::typed_expression_t * typed_cond = tchecker::typecheck(stmt.condition(), _localvars, _intvars, _clocks, _error);
+    std::shared_ptr<tchecker::typed_expression_t const> typed_cond{
+        tchecker::typecheck(stmt.condition(), _localvars, _intvars, _clocks, _error)};
 
     stmt.then_stmt().visit(*this);
-    tchecker::typed_statement_t * typed_then = this->release();
+    std::shared_ptr<tchecker::typed_statement_t const> typed_then{acquire_typed_statement()};
 
     stmt.else_stmt().visit(*this);
-    tchecker::typed_statement_t * typed_else = this->release();
+    std::shared_ptr<tchecker::typed_statement_t const> typed_else{acquire_typed_statement()};
 
     // Typed statement
     enum tchecker::statement_type_t stmt_type = type_if(typed_cond->type(), typed_then->type(), typed_else->type());
 
-    _typed_stmt = new tchecker::typed_if_statement_t(stmt_type, typed_cond, typed_then, typed_else);
+    _typed_stmt = std::make_shared<tchecker::typed_if_statement_t>(stmt_type, typed_cond, typed_then, typed_else);
 
     // Report bad type
     if (stmt_type != tchecker::STMT_TYPE_BAD)
@@ -186,18 +188,19 @@ public:
    */
   virtual void visit(tchecker::while_statement_t const & stmt)
   {
-    tchecker::typed_expression_t * typed_cond = tchecker::typecheck(stmt.condition(), _localvars, _intvars, _clocks, _error);
+    std::shared_ptr<tchecker::typed_expression_t const> typed_cond{
+        tchecker::typecheck(stmt.condition(), _localvars, _intvars, _clocks, _error)};
 
     tchecker::integer_variables_t lvars(_localvars);
     stmt.statement().visit(*this);
     _localvars = lvars;
 
-    tchecker::typed_statement_t * typed_stmt = this->release();
+    std::shared_ptr<tchecker::typed_statement_t const> typed_stmt{acquire_typed_statement()};
 
     // Typed statement
     enum tchecker::statement_type_t stmt_type = type_while(typed_cond->type(), typed_stmt->type());
 
-    _typed_stmt = new tchecker::typed_while_statement_t(stmt_type, typed_cond, typed_stmt);
+    _typed_stmt = std::make_shared<tchecker::typed_while_statement_t>(stmt_type, typed_cond, typed_stmt);
     ;
 
     // Report bad type
@@ -233,16 +236,16 @@ public:
       _localvars.declare(name, 1, tchecker::int_minval, tchecker::int_maxval, 0);
     }
 
-    tchecker::typed_var_expression_t const * variable = dynamic_cast<tchecker::typed_var_expression_t const *>(
+    auto variable = std::dynamic_pointer_cast<tchecker::typed_var_expression_t const>(
         tchecker::typecheck(stmt.variable(), _localvars, _intvars, _clocks, _error));
 
-    tchecker::typed_expression_t const * init =
-        tchecker::typecheck(stmt.initial_value(), _localvars, _intvars, _clocks, _error);
+    std::shared_ptr<tchecker::typed_expression_t const> init{
+        tchecker::typecheck(stmt.initial_value(), _localvars, _intvars, _clocks, _error)};
 
     if (!tchecker::integer_valued(init->type()))
       stmt_type = tchecker::STMT_TYPE_BAD;
 
-    _typed_stmt = new tchecker::typed_local_var_statement_t(stmt_type, variable, init);
+    _typed_stmt = std::make_shared<tchecker::typed_local_var_statement_t>(stmt_type, variable, init);
   }
 
   /*!
@@ -255,7 +258,8 @@ public:
     enum tchecker::statement_type_t stmt_type = tchecker::STMT_TYPE_BAD;
 
     std::string name = stmt.variable().name();
-    tchecker::typed_expression_t const * szexpr = tchecker::typecheck(stmt.size(), _localvars, _intvars, _clocks, _error);
+    std::shared_ptr<tchecker::typed_expression_t const> szexpr{
+        tchecker::typecheck(stmt.size(), _localvars, _intvars, _clocks, _error)};
 
     if (!integer_valued(szexpr->type())) {
       _error("array size is not an integer: " + szexpr->to_string());
@@ -270,37 +274,37 @@ public:
       try {
         auto size = tchecker::const_evaluate(stmt.size());
         stmt_type = tchecker::STMT_TYPE_LOCAL_ARRAY;
-        delete szexpr;
-        szexpr = new tchecker::typed_int_expression_t(EXPR_TYPE_INTTERM, size);
+        szexpr = std::make_shared<tchecker::typed_int_expression_t>(EXPR_TYPE_INTTERM, size);
         _localvars.declare(name, size, tchecker::int_minval, tchecker::int_maxval, 0);
       }
       catch (...) {
         _error("can't compute array size:" + stmt.to_string());
       }
     }
-    tchecker::typed_var_expression_t const * variable = dynamic_cast<tchecker::typed_var_expression_t const *>(
+    auto variable = std::dynamic_pointer_cast<tchecker::typed_var_expression_t const>(
         tchecker::typecheck(stmt.variable(), _localvars, _intvars, _clocks, _error));
-    _typed_stmt = new tchecker::typed_local_array_statement_t(stmt_type, variable, szexpr);
+    _typed_stmt = std::make_shared<tchecker::typed_local_array_statement_t>(stmt_type, variable, szexpr);
   }
 
 protected:
-  tchecker::typed_statement_t * _typed_stmt;       /*!< Typed statement */
-  tchecker::integer_variables_t _localvars;        /*!< Integer variables */
-  tchecker::integer_variables_t const & _intvars;  /*!< Integer variables */
-  tchecker::clock_variables_t const & _clocks;     /*!< Clock variables */
-  std::function<void(std::string const &)> _error; /*!< Error logging func */
+  std::shared_ptr<tchecker::typed_statement_t> _typed_stmt; /*!< Typed statement */
+  tchecker::integer_variables_t _localvars;                 /*!< Integer variables */
+  tchecker::integer_variables_t const & _intvars;           /*!< Integer variables */
+  tchecker::clock_variables_t const & _clocks;              /*!< Clock variables */
+  std::function<void(std::string const &)> _error;          /*!< Error logging func */
 };
 
 } // end of namespace details
 
-tchecker::typed_statement_t * typecheck(tchecker::statement_t const & stmt, tchecker::integer_variables_t const & localvars,
-                                        tchecker::integer_variables_t const & intvars,
-                                        tchecker::clock_variables_t const & clocks,
-                                        std::function<void(std::string const &)> error)
+std::shared_ptr<tchecker::typed_statement_t> typecheck(tchecker::statement_t const & stmt,
+                                                       tchecker::integer_variables_t const & localvars,
+                                                       tchecker::integer_variables_t const & intvars,
+                                                       tchecker::clock_variables_t const & clocks,
+                                                       std::function<void(std::string const &)> error)
 {
   tchecker::details::statement_typechecker_t v(localvars, intvars, clocks, error);
   stmt.visit(v);
-  return v.release();
+  return v.acquire_typed_statement();
 }
 
 } // end of namespace tchecker

@@ -14,6 +14,8 @@
 
 #include <boost/container/flat_map.hpp>
 
+#include "tchecker/utils/iterator.hh"
+
 /*!
  \file index.hh
  \brief Indexes
@@ -258,6 +260,65 @@ public:
    \return iterator to key if found, key_map_end() otherwise
    */
   inline const_key_map_iterator_t find_key(KEY const & key) const { return _key_map.find(key); }
+
+  /*!
+   \brief Iterator over keys
+   */
+  class keys_iterator_t {
+  public:
+    /*!
+     \brief Constructor
+     \param key_map_it : key map iterator
+     \post this points to it
+     */
+    keys_iterator_t(const_key_map_iterator_t const & key_map_it) : _key_map_it(key_map_it) {}
+
+    /*!
+     \brief Equality check
+     \param it : keys iterator
+     \return true if this and it point to the same element, false otherwise
+     */
+    bool operator==(keys_iterator_t const & it) const { return _key_map_it == it._key_map_it; }
+
+    /*!
+     \brief Disequality check
+     \param it : keys iterators
+     \return true if this and it point to distinct elements, false otherwise
+     */
+    bool operator!=(keys_iterator_t const & it) const { return !(*this == it); }
+
+    /*!
+     \brief Step forward
+     \pre this is a valid iterator
+     \post this has been moved to next element
+     */
+    keys_iterator_t & operator++()
+    {
+      ++_key_map_it;
+      return *this;
+    }
+
+    /*!
+     \brief Dereference
+     \pre this is a valid iterator
+     \return key pointed by this iterator
+     */
+    KEY const & operator*() const { return (*_key_map_it).first; }
+
+  private:
+    const_key_map_iterator_t _key_map_it; /*!< Iterator over key map */
+  };
+
+  /*!
+   \brief Type of range of keys
+   */
+  using keys_range_t = tchecker::range_t<keys_iterator_t>;
+
+  /*!
+   \brief Accessor
+   \return range of keys in this index
+   */
+  keys_range_t keys() const { return tchecker::make_range(keys_iterator_t{_key_map.begin()}, keys_iterator_t{_key_map.end()}); }
 
 protected:
   key_map_t _key_map;     /*!< KEY -> T map */

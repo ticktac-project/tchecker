@@ -60,14 +60,15 @@ public:
    to a node that satisfies filter_last, where all edges on seq satisfy filter_edge,
    (false, nullptr, seq) if no such path exist where seq is empty
   */
-  std::tuple<bool, node_sptr_t, std::vector<edge_sptr_t>> run(GRAPH const & g, std::function<bool(node_sptr_t)> && filter_first,
-                                                              std::function<bool(node_sptr_t)> && filter_last,
-                                                              std::function<bool(edge_sptr_t)> && filter_edge)
+  std::tuple<bool, node_sptr_t, std::vector<edge_sptr_t>> run(GRAPH const & g,
+                                                              std::function<bool(GRAPH const &, node_sptr_t)> && filter_first,
+                                                              std::function<bool(GRAPH const &, node_sptr_t)> && filter_last,
+                                                              std::function<bool(GRAPH const &, edge_sptr_t)> && filter_edge)
   {
     std::unordered_set<node_sptr_t> visited;
     auto r = g.nodes();
     for (node_sptr_t n : r) {
-      if (!filter_first(n))
+      if (!filter_first(g, n))
         continue;
       auto && [found, seq] = find_sequence(g, n, std::move(filter_last), std::move(filter_edge), visited);
       if (found) {
@@ -144,13 +145,13 @@ private:
    \note nodes in visited are not explored
   */
   std::tuple<bool, std::vector<edge_sptr_t>> find_sequence(GRAPH const & g, node_sptr_t const & n,
-                                                           std::function<bool(node_sptr_t)> && filter_last,
-                                                           std::function<bool(edge_sptr_t)> && filter_edge,
+                                                           std::function<bool(GRAPH const &, node_sptr_t)> && filter_last,
+                                                           std::function<bool(GRAPH const &, edge_sptr_t)> && filter_edge,
                                                            std::unordered_set<node_sptr_t> & visited)
   {
     std::vector<edge_sptr_t> seq;
 
-    if (filter_last(n))
+    if (filter_last(g, n))
       return std::make_tuple(true, seq);
 
     std::stack<dfs_entry_t> waiting;
@@ -168,7 +169,7 @@ private:
       edge_sptr_t e = waiting.top().current_edge();
       waiting.top().next();
 
-      if (!filter_edge(e))
+      if (!filter_edge(g, e))
         continue;
 
       node_sptr_t nextn = g.edge_tgt(e);
@@ -178,7 +179,7 @@ private:
 
       seq.push_back(e);
 
-      if (filter_last(nextn))
+      if (filter_last(g, nextn))
         return std::make_tuple(true, seq);
 
       waiting.push(dfs_entry_t{nextn, g.outgoing_edges(nextn)});

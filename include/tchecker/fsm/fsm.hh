@@ -64,6 +64,7 @@ using initial_value_t = tchecker::ta::initial_value_t;
  \param vloc : tuple of locations
  \param intval : valuation of bounded integer variables
  \param vedge : tuple of edges
+ \param sync_id : synchronization identifier
  \param initial_range : range of initial state valuations
  \pre the size of vloc and vedge is equal to the size of initial_range.
  initial_range has been obtained from system.
@@ -71,16 +72,15 @@ using initial_value_t = tchecker::ta::initial_value_t;
  \post vloc has been initialized to the tuple of initial locations in initial_range,
  intval has been initialized to the initial valuation of bounded integer variables,
  vedge has been initialized to an empty tuple of edges
+ sync_id has been initialized to tchecker::NO_SYNC
  \return tchecker::STATE_OK if initialization succeeded
  tchecker::STATE_INTVARS_SRC_INVARIANT_VIOLATED if the initial value in intval does not
  satisfy the invariant in vloc
  \throw std::runtime_error : if evaluation of invariants, guards or statements throws an exception
  */
-tchecker::state_status_t initial(tchecker::ta::system_t const & system,
-                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                                 tchecker::fsm::initial_value_t const & initial_range);
+tchecker::state_status_t initial(tchecker::ta::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                                 tchecker::intval_sptr_t const & intval, tchecker::vedge_sptr_t const & vedge,
+                                 tchecker::sync_id_t & sync_id, tchecker::fsm::initial_value_t const & initial_range);
 
 /*!
 \brief Compute initial state and transition
@@ -88,7 +88,8 @@ tchecker::state_status_t initial(tchecker::ta::system_t const & system,
 \param s : state
 \param t : transition
 \param v : initial iterator value
-\post s has been initialized from v, and t is an empty transition
+\post s has been initialized from v, and t contains an empty tuple of edges and a sync_id initialized
+to tchecker::NO_SYNC
 \return tchecker::STATE_OK if initialization succeeded
 tchecker::STATE_INTVARS_SRC_INVARIANT_VIOLATED if the initial value of the bounded integer
 variables does not satisfy the invariant in s
@@ -98,7 +99,7 @@ variables does not satisfy the invariant in s
 inline tchecker::state_status_t initial(tchecker::ta::system_t const & system, tchecker::fsm::state_t & s,
                                         tchecker::fsm::transition_t & t, tchecker::fsm::initial_value_t const & v)
 {
-  return tchecker::fsm::initial(system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), v);
+  return tchecker::fsm::initial(system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), t.sync_id(), v);
 }
 
 // Final edges
@@ -137,6 +138,7 @@ using final_value_t = tchecker::ta::final_value_t;
  \param vloc : tuple of locations
  \param intval : valuation of bounded integer variables
  \param vedge : tuple of edges
+ \param sync_id : synchronization identifier
  \param final_value : range of final edges valuations
  \pre the size of vloc and vedge is equal to the size of final edge range in final_value.
  final_value has been obtained from system.
@@ -145,34 +147,34 @@ using final_value_t = tchecker::ta::final_value_t;
  \post vloc has been initialized to the tuple of final locations in final_value,
  intval has been initialized to the final valuation of bounded integer variables,
  vedge has been initialized to an empty tuple of edges.
+ sync_id has been ste to tchecker::NO_SYNC.
  \return tchecker::STATE_OK if computation succeeded
  tchecker::STATE_INTVARS_TGT_INVARIANT_VIOLATED if the invariant in vloc is violated by the
  value of bounded integer variables in intval
  \throw std::runtime_error : if evaluation of invariants, guards or statements throws an exception
  */
-tchecker::state_status_t final(tchecker::ta::system_t const & system,
-                               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                               tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                               tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                               tchecker::fsm::final_value_t const & final_value);
+tchecker::state_status_t final(tchecker::ta::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                               tchecker::intval_sptr_t const & intval, tchecker::vedge_sptr_t const & vedge,
+                               tchecker::sync_id_t & sync_id, tchecker::fsm::final_value_t const & final_value);
 
 /*!
-\brief Compute final state and transition
-\param system : a system
-\param s : state
-\param t : transition
-\param v : final iterator value
-\post s has been initialized from v, and t is an empty transition
-\return tchecker::STATE_OK if computation succeeded
- tchecker::STATE_INTVARS_TGT_INVARIANT_VIOLATED if the invariant in vloc is violated by the
- value of bounded integer variables in intval
-\throw std::invalid_argument : if s and v have incompatible sizes
-\throw std::runtime_error : if evaluation of invariants, guards or statements throws an exception
+ \brief Compute final state and transition
+ \param system : a system
+ \param s : state
+ \param t : transition
+ \param v : final iterator value
+ \post s has been initialized from v, and t contains an empty tuple of edges and a sync_id initialized
+ to tchecker::NO_SYNC
+ \return tchecker::STATE_OK if computation succeeded
+ tchecker::STATE_INTVARS_TGT_INVARIANT_VIOLATED if the invariant in vloc is violated by the value of bounded integer variables
+ in intval
+ \throw std::invalid_argument : if s and v have incompatible sizes
+ \throw std::runtime_error : if evaluation of invariants, guards or statements throws an exception
 */
 inline tchecker::state_status_t final(tchecker::ta::system_t const & system, tchecker::fsm::state_t & s,
                                       tchecker::fsm::transition_t & t, tchecker::fsm::final_value_t const & v)
 {
-  return tchecker::fsm::final(system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), v);
+  return tchecker::fsm::final(system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), t.sync_id(), v);
 }
 
 // Outgoing edges
@@ -193,9 +195,8 @@ using outgoing_edges_range_t = tchecker::ta::outgoing_edges_range_t;
  \param vloc : tuple of locations
  \return range of outgoing synchronized and asynchronous edges from vloc in system
  */
-tchecker::fsm::outgoing_edges_range_t
-outgoing_edges(tchecker::ta::system_t const & system,
-               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc);
+tchecker::fsm::outgoing_edges_range_t outgoing_edges(tchecker::ta::system_t const & system,
+                                                     tchecker::const_vloc_sptr_t const & vloc);
 
 /*!
  \brief Type of outgoing vedge (range of synchronized/asynchronous edges)
@@ -210,44 +211,46 @@ using outgoing_edges_value_t = tchecker::ta::outgoing_edges_value_t;
  \param vloc : tuple of locations
  \param intval : valuation of bounded integer variables
  \param vedge : tuple of edges
- \param edges : tuple of edge from vloc (range of synchronized/asynchronous edges)
- \pre the source location in edges match the locations in vloc.
- No process has more than one edge in edges.
- The pid of every process in edges is less than the size of vloc
+ \param sync_id : synchronization identifier
+ \param sync_edges : tuple of edges from vloc (range of synchronized/asynchronous edges)
+ \pre the source location if the edges in sync_edges match the locations in vloc.
+ No process has more than one edge in sync_edges.
+ The pid of every process involved in sync_edges is less than the size of vloc
  \post the locations in vloc have been updated to target locations of the
- processes involved in edges, and they have been left unchanged for the other processes.
+ processes involved in sync_edges, and they have been left unchanged for the other processes.
  The values of variables in intval have been updated according to the statements in edges.
+ vedge is the tuple of edges in sync_edges.
+ sync_id has been set to the identifier if the synchronization that is instantiated by vedge,
+ or tchecker::NO_SYNC if vedge is asynchronous.
  \return STATE_OK if state computation succeeded,
  STATE_INCOMPATIBLE_EDGE if the source locations in edges do not match vloc,
  STATE_INTVARS_SRC_INVARIANT_VIOLATED if the valuation intval does not satisfy the invariant in vloc,
- STATE_INTVARS_GUARD_VIOLATED if the values in intval do not satisfy the guard of edges,
- STATE_INTVARS_STATEMENT_FAILED if statements in edges cannot be applied to intval
+ STATE_INTVARS_GUARD_VIOLATED if the values in intval do not satisfy the guard of the edges in sync_edges
+ STATE_INTVARS_STATEMENT_FAILED if statements of the edges in sync_edges cannot be applied to intval
  STATE_INTVARS_TGT_INVARIANT_VIOLATED if the updated intval does not satisfy the invariant of updated vloc.
- \throw std::invalid_argument : if a pid in edges is greater or equal to the size of vloc
- \throw std::runtime_error : if the guard in edges generates clock resets, or if the statements in edges generate clock
- constraints, or if the invariant in updated vloc generates clock resets
+ \throw std::invalid_argument : if a pid in sync_edges is greater or equal to the size of vloc
+ \throw std::runtime_error : if the guard of the edges in sync_edges generates clock resets, or if the statements of the edges
+ in sync_edges generate clock constraints, or if the invariant in updated vloc generates clock resets
  \throw std::runtime_error : if evaluation of invariants, guards or statements throws an exception
  */
-tchecker::state_status_t next(tchecker::ta::system_t const & system,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                              tchecker::fsm::outgoing_edges_value_t const & edges);
+tchecker::state_status_t next(tchecker::ta::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                              tchecker::intval_sptr_t const & intval, tchecker::vedge_sptr_t const & vedge,
+                              tchecker::sync_id_t & sync_id, tchecker::fsm::outgoing_edges_value_t const & sync_edges);
 
 /*!
 \brief Compute next state and transition
 \param system : a system
 \param s : state
 \param t : transition
-\param v : outgoing edge value
-\post s have been updated from v, and t is the set of edges in v
+\param sync_edges : tuple of edges from s (range of synchronized/asynchronous edges)
+\post s have been updated from sync_edges, and t is the tuple of edges and synchronization identifier in sync_edges
 \return status of state s after update
 \throw std::invalid_argument : if s and v have incompatible size
 */
 inline tchecker::state_status_t next(tchecker::ta::system_t const & system, tchecker::fsm::state_t & s,
-                                     tchecker::fsm::transition_t & t, tchecker::fsm::outgoing_edges_value_t const & v)
+                                     tchecker::fsm::transition_t & t, tchecker::fsm::outgoing_edges_value_t const & sync_edges)
 {
-  return tchecker::fsm::next(system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), v);
+  return tchecker::fsm::next(system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), t.sync_id(), sync_edges);
 }
 
 // Incoming edges
@@ -271,9 +274,8 @@ using incoming_edges_range_t = tchecker::ta::incoming_edges_range_t;
  \param vloc : tuple of locations
  \return range of incoming synchronized and asynchronous edges to vloc in system
  */
-tchecker::fsm::incoming_edges_range_t
-incoming_edges(tchecker::ta::system_t const & system,
-               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc);
+tchecker::fsm::incoming_edges_range_t incoming_edges(tchecker::ta::system_t const & system,
+                                                     tchecker::const_vloc_sptr_t const & vloc);
 
 /*!
  \brief Dereference type for iterator over incoming edges
@@ -288,13 +290,18 @@ using incoming_edges_value_t = tchecker::ta::incoming_edges_value_t;
  \param vloc : tuple of locations
  \param intval : valuation of bounded integer variables
  \param vedge : tuple of edges
- \param v : value of incoming edge to vloc (range of synchronized/asynchronous edges)
- \pre the target location in edges match the locations in vloc.
+ \param sync_id : synchronization identifier
+ \param v : range of incoming edges to vloc (range of synchronized/asynchronous
+ edges) and integer variables pre-valuations
+ \pre the target location in the edges in v match the locations in vloc.
  No process has more than one edge in v.
  The pid of every process in v is less than the size of vloc
  \post the locations in vloc have been updated to source locations of the
  processes involved in v, and they have been left unchanged for the other processes.
  The values of variables in intval have been updated according to the statements in v.
+ vedge is the tuple of edges in v.
+ sync_id has been set to the identifier if the synchronization that is instantiated by vedge,
+ or tchecker::NO_SYNC if vedge is asynchronous.
  \return tchecker::STATE_OK if state computation succeeded,
  tchecker::STATE_INCOMPATIBLE_EDGE if the target locations in v do not match vloc or if the bounded integer
  valuation in v does not transform into intval going through v,
@@ -307,11 +314,9 @@ using incoming_edges_value_t = tchecker::ta::incoming_edges_value_t;
  constraints, or if the invariant in updated vloc generates clock resets
  \throw std::runtime_error : if evaluation of invariants, guards or statements throws an exception
  */
-tchecker::state_status_t prev(tchecker::ta::system_t const & system,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                              tchecker::fsm::incoming_edges_value_t const & v);
+tchecker::state_status_t prev(tchecker::ta::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                              tchecker::intval_sptr_t const & intval, tchecker::vedge_sptr_t const & vedge,
+                              tchecker::sync_id_t & sync_id, tchecker::fsm::incoming_edges_value_t const & v);
 
 /*!
 \brief Compute previous state and transition
@@ -326,7 +331,7 @@ tchecker::state_status_t prev(tchecker::ta::system_t const & system,
 inline tchecker::state_status_t prev(tchecker::ta::system_t const & system, tchecker::fsm::state_t & s,
                                      tchecker::fsm::transition_t & t, tchecker::fsm::incoming_edges_value_t const & v)
 {
-  return tchecker::fsm::prev(system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), v);
+  return tchecker::fsm::prev(system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), t.sync_id(), v);
 }
 
 // Inspector
@@ -387,6 +392,7 @@ void attributes(tchecker::ta::system_t const & system, tchecker::fsm::transition
  \param vloc : a vector of locations
  \param intval : valuation of bounded integer variables
  \param vedge : a vector of edges
+ \param sync_id : synchronization identifier
  \param attributes : map of attributes
  \pre attributes["vloc"] is defined and follows the syntax required by function
  tchecker::from_string(tchecker::vloc_t &, tchecker::system::system_t const &, std::string const &);
@@ -394,17 +400,16 @@ void attributes(tchecker::ta::system_t const & system, tchecker::fsm::transition
  tchecker::from_string(tchecker::intval_t &, tchecker::system::system_t const &, std::string const &);
  \post vloc has been initialized from attributes["vloc"]
  intval has been initialized from attributes["intval"]
- vedge has been initialized to the empty vector of edges
+ vedge has been initialized to the empty vector of edges.
+ sync_id has been set to tchecker::NO_SYNC
  \return tchecker::STATE_OK if initialization succeeded
  tchecker::STATE_BAD if initialization failed
  tchecker::STATE_INTVARS_SRC_INVARIANT_VIOLATED if attributes["intval"] does not satisfy the invariant in
  attributes["vloc"]
  */
-tchecker::state_status_t initialize(tchecker::ta::system_t const & system,
-                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                                    std::map<std::string, std::string> const & attributes);
+tchecker::state_status_t initialize(tchecker::ta::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                                    tchecker::intval_sptr_t const & intval, tchecker::vedge_sptr_t const & vedge,
+                                    tchecker::sync_id_t & sync_id, std::map<std::string, std::string> const & attributes);
 
 /*!
  \brief Initialization from attributes
@@ -412,7 +417,8 @@ tchecker::state_status_t initialize(tchecker::ta::system_t const & system,
  \param s : state
  \param t : transition
  \param attributes : map of attributes
- \post s and t have been initialized from attributes["vloc"] and attributes["intval"]
+ \post s has been initialized from attributes["vloc"] and attributes["intval"], and t contains
+ an empty tuple of edges and a sync_id initialized to tchecker::NO_SYNC
  \return tchecker::STATE_OK if initialization succeeded
  tchecker::STATE_BAD otherwise
  tchecker::STATE_INTVARS_SRC_INVARIANT_VIOLATED if attributes["intval"] does not satisfy the invariant in
@@ -422,7 +428,7 @@ inline tchecker::state_status_t initialize(tchecker::ta::system_t const & system
                                            tchecker::fsm::transition_t & t,
                                            std::map<std::string, std::string> const & attributes)
 {
-  return tchecker::fsm::initialize(system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), attributes);
+  return tchecker::fsm::initialize(system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), t.sync_id(), attributes);
 }
 
 // fsm_t

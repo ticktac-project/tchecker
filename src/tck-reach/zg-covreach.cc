@@ -72,6 +72,8 @@ graph_t::~graph_t()
                                         tchecker::tck_reach::zg_covreach::node_le_t>::clear();
 }
 
+bool graph_t::is_actual_edge(edge_sptr_t const & e) const { return edge_type(e) == tchecker::graph::subsumption::EDGE_ACTUAL; }
+
 void graph_t::attributes(tchecker::tck_reach::zg_covreach::node_t const & n, std::map<std::string, std::string> & m) const
 {
   _zg->attributes(n.state_ptr(), m);
@@ -167,11 +169,10 @@ std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::zg_covreach::c
 /* run */
 
 std::tuple<tchecker::algorithms::covreach::stats_t, std::shared_ptr<tchecker::tck_reach::zg_covreach::graph_t>>
-run(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl, std::string const & labels,
-    std::string const & search_order, tchecker::algorithms::covreach::covering_t covering, std::size_t block_size,
-    std::size_t table_size)
+run(tchecker::parsing::system_declaration_t const & sysdecl, std::string const & labels, std::string const & search_order,
+    tchecker::algorithms::covreach::covering_t covering, std::size_t block_size, std::size_t table_size)
 {
-  std::shared_ptr<tchecker::ta::system_t const> system{new tchecker::ta::system_t{*sysdecl}};
+  std::shared_ptr<tchecker::ta::system_t const> system{new tchecker::ta::system_t{sysdecl}};
   if (!tchecker::system::every_process_has_initial_location(system->as_system_system()))
     std::cerr << tchecker::log_warning << "system has no initial state" << std::endl;
 

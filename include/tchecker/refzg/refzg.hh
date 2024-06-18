@@ -76,6 +76,7 @@ using initial_value_t = tchecker::ta::initial_value_t;
  \param intval : valuation of bounded integer variables
  \param zone : a DBM zone with reference clocks
  \param vedge : tuple of edges
+ \param sync_id : synchronization identifier
  \param invariant : clock constraint container for initial state invariant
  \param semantics : a zone semantics with reference clocks
  \param spread : spread bound over reference clocks
@@ -87,6 +88,7 @@ using initial_value_t = tchecker::ta::initial_value_t;
  \post vloc has been initialized to the tuple of initial locations in
  initial_range, intval has been initialized to the initial valuation of bounded
  integer variables, vedge has been initialized to an empty tuple of edges.
+ sync_id has been set to tchecker::NO_SYNC.
  clock constraints from initial_range invariant have been added to invariant
  zone has been initialized to the initial set of clock valuations according to
  semantics and spread.
@@ -102,11 +104,9 @@ using initial_value_t = tchecker::ta::initial_value_t;
  \throw std::runtime_error : if evaluation of invariant throws an exception
  \note set spread to tchecker::refdbm::UNBOUNDED_SPREAD for unbounded spread
  */
-tchecker::state_status_t initial(tchecker::ta::system_t const & system,
-                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                                 tchecker::intrusive_shared_ptr_t<tchecker::refzg::shared_zone_t> const & zone,
-                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+tchecker::state_status_t initial(tchecker::ta::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                                 tchecker::intval_sptr_t const & intval, tchecker::refzg::zone_sptr_t const & zone,
+                                 tchecker::vedge_sptr_t const & vedge, tchecker::sync_id_t & sync_id,
                                  tchecker::clock_constraint_container_t & invariant, tchecker::refzg::semantics_t & semantics,
                                  tchecker::integer_t spread, tchecker::refzg::initial_value_t const & initial_range);
 
@@ -118,7 +118,8 @@ tchecker::state_status_t initial(tchecker::ta::system_t const & system,
  \param semantics : a zone semantics
  \param spread : spread bound over reference clocks
  \param v : initial iterator value
- \post s has been initialized from v and spread, and t is an empty transition
+ \post s has been initialized from v and spread, and t stores the invariant in s in its target invariant
+ container (and has empty vedge, no sync identifier, empty guard and empty source invariant)
  \return tchecker::STATE_OK if initialization of s and t succeeded, see
  tchecker::refzg::initial for returned values when initialization fails
  \throw std::invalid_argument : if s and v have incompatible sizes
@@ -128,8 +129,8 @@ inline tchecker::state_status_t initial(tchecker::ta::system_t const & system, t
                                         tchecker::refzg::transition_t & t, tchecker::refzg::semantics_t & semantics,
                                         tchecker::integer_t spread, tchecker::refzg::initial_value_t const & v)
 {
-  return tchecker::refzg::initial(system, s.vloc_ptr(), s.intval_ptr(), s.zone_ptr(), t.vedge_ptr(),
-                                  t.src_invariant_container(), semantics, spread, v);
+  return tchecker::refzg::initial(system, s.vloc_ptr(), s.intval_ptr(), s.zone_ptr(), t.vedge_ptr(), t.sync_id(),
+                                  t.tgt_invariant_container(), semantics, spread, v);
 }
 
 // Final edges
@@ -172,6 +173,7 @@ using final_value_t = tchecker::ta::final_value_t;
  \param intval : valuation of bounded integer variables
  \param zone : a DBM zone with reference clocks
  \param vedge : tuple of edges
+ \param sync_id : synchronization identifier
  \param invariant : clock constraint container for final state invariant
  \param semantics : a zone semantics with reference clocks
  \param spread : spread bound over reference clocks
@@ -185,6 +187,7 @@ using final_value_t = tchecker::ta::final_value_t;
  intval has been initialized to the valuation of bounded integer variables
  in final_range,
  vedge has been initialized to an empty tuple of edges.
+ sync_id has been set to tchecker::NO_SYNC.
  clock constraints from final_range invariant have been added to invariant
  zone has been initialized to the final set of clock valuations according to
  semantics and spread.
@@ -198,11 +201,9 @@ using final_value_t = tchecker::ta::final_value_t;
  \throw std::runtime_error : if evaluation of invariant throws an exception
  \note set spread to tchecker::refdbm::UNBOUNDED_SPREAD for unbounded spread
  */
-tchecker::state_status_t final(tchecker::ta::system_t const & system,
-                               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                               tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                               tchecker::intrusive_shared_ptr_t<tchecker::refzg::shared_zone_t> const & zone,
-                               tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+tchecker::state_status_t final(tchecker::ta::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                               tchecker::intval_sptr_t const & intval, tchecker::refzg::zone_sptr_t const & zone,
+                               tchecker::vedge_sptr_t const & vedge, tchecker::sync_id_t & sync_id,
                                tchecker::clock_constraint_container_t & invariant, tchecker::refzg::semantics_t & semantics,
                                tchecker::integer_t spread, tchecker::refzg::final_value_t const & final_range);
 
@@ -214,7 +215,8 @@ tchecker::state_status_t final(tchecker::ta::system_t const & system,
  \param semantics : a zone semantics
  \param spread : spread bound over reference clocks
  \param v : final iterator value
- \post s has been initialized from v and spread, and t is an empty transition
+ \post s has been initialized from v and spread, and t stores the invariant in in its
+ target invariant container (and has empty vedge, no sync identifier, empty guard and empty source invariant)
  \return tchecker::STATE_OK if computation of s and t succeeded, see
  tchecker::refzg::final for returned values when computation fails
  \throw std::invalid_argument : if s and v have incompatible sizes
@@ -224,8 +226,8 @@ inline tchecker::state_status_t final(tchecker::ta::system_t const & system, tch
                                       tchecker::refzg::transition_t & t, tchecker::refzg::semantics_t & semantics,
                                       tchecker::integer_t spread, tchecker::refzg::final_value_t const & v)
 {
-  return tchecker::refzg::final(system, s.vloc_ptr(), s.intval_ptr(), s.zone_ptr(), t.vedge_ptr(), t.src_invariant_container(),
-                                semantics, spread, v);
+  return tchecker::refzg::final(system, s.vloc_ptr(), s.intval_ptr(), s.zone_ptr(), t.vedge_ptr(), t.sync_id(),
+                                t.tgt_invariant_container(), semantics, spread, v);
 }
 
 // Outgoing edges
@@ -246,9 +248,8 @@ using outgoing_edges_range_t = tchecker::ta::outgoing_edges_range_t;
  \param vloc : tuple of locations
  \return range of outgoing synchronized and asynchronous edges from vloc in system
  */
-inline tchecker::refzg::outgoing_edges_range_t
-outgoing_edges(tchecker::ta::system_t const & system,
-               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc)
+inline tchecker::refzg::outgoing_edges_range_t outgoing_edges(tchecker::ta::system_t const & system,
+                                                              tchecker::const_vloc_sptr_t const & vloc)
 {
   return tchecker::ta::outgoing_edges(system, vloc);
 }
@@ -267,6 +268,7 @@ using outgoing_edges_value_t = tchecker::ta::outgoing_edges_value_t;
  \param intval : valuation of bounded integer variables
  \param zone : a DBM zone with reference clocks
  \param vedge : tuple of edges
+ \param sync_id : synchronization identifier
  \param src_invariant : clock constraint container for invariant of vloc before
  it is updated
  \param guard : clock constraint container for guard of vedge
@@ -275,65 +277,66 @@ using outgoing_edges_value_t = tchecker::ta::outgoing_edges_value_t;
  is updated
  \param semantics : a semantics over zones with reference clocks
  \param spread : spread bound over reference clocks
- \param edges : tuple of edge from vloc (range of synchronized/asynchronous
+ \param sync_edges : tuple of edges from vloc (range of synchronized/asynchronous
  edges)
- \pre the source location in edges match the locations in vloc.
- No process has more than one edge in edges.
- The pid of every process in edges is less than the size of vloc
+ \pre the source location of the edges in sync_edges match the locations in vloc.
+ No process has more than one edge in sync_edges.
+ The pid of every process involved in sync_edges is less than the size of vloc
  \post the locations in vloc have been updated to target locations of the
- processes involved in edges, and they have been left unchanged for the other
+ processes involved in sync_edges, and they have been left unchanged for the other
  processes.
  The values of variables in intval have been updated according to the statements
- in edges.
+ of the edges in sync_edges.
  Clock constraints from the invariants of vloc before it is updated have been
  pushed to src_invariant.
- Clock constraints from the guards in edges have been pushed into guard.
- Clock resets from the statements in edges have been pushed into reset.
+ Clock constraints from the guards of the edges in sync_edges have been pushed into guard.
+ Clock resets from the statements of the edges in sync_edges have been pushed into reset.
  Clock constraints from the invariants in the updated vloc have been pushed
  into tgt_invariant.
  The zone has been updated according to semantics and spread from src_invariant,
  guard, reset, tgt_invariant (and delay)
+ vedge is the tuple of edges in sync_edges.
+ sync_id has been set to the identifier if the synchronization that is instantiated by vedge,
+ or tchecker::NO_SYNC if vedge is asynchronous.
  \return tchecker::STATE_OK if state computation succeeded,
- tchecker::STATE_INCOMPATIBLE_EDGE if the source locations in edges do not match
+ tchecker::STATE_INCOMPATIBLE_EDGE if the source locations of the edges in sync_edges do not match
  vloc,
  tchecker::STATE_INTVARS_SRC_INVARIANT_VIOLATED if the valuation intval does not
  satisfy the invariant in vloc,
  tchecker::STATE_CLOCKS_SRC_INVARIANT_VIOLATED if the zone does not satisfy the
  invariant in vloc
  tchecker::STATE_INTVARS_GUARD_VIOLATED if the values in intval do not satisfy
- the guard of edges,
+ the guard of the edges in sync_edges,
  tchecker::STATE_CLOCKS_GUARD_VIOLATED if the zone updated w.r.t. src_invariant
- does not satisfy the guard of the edges
- tchecker::STATE_INTVARS_STATEMENT_FAILED if statements in edges cannot be
+ does not satisfy the guard of the edges in sync_edges
+ tchecker::STATE_INTVARS_STATEMENT_FAILED if statements of the edges in sync_edges cannot be
  applied to intval
  tchecker::STATE_INTVARS_TGT_INVARIANT_VIOLATED if the updated intval does not
  satisfy the invariant of updated vloc.
  tchecker::STATE_CLOCKS_TGT_INVARIANT_VIOLATED if the updated zone does not
  satisfy the invariant of updated vloc.
  tchecker::STATE_CLOCKS_EMPTY_SYNC if synchronizing the reference clocks of the
- processes involved in vedge yields an empty zone
+ processes involved in sync_edges yields an empty zone
  tchecker::STATE_CLOCKS_EMPTY_SPREAD if the resulting spread-bounded zone is
  empty
  tchecker::STATE_ZONE_EMPTY_SYNC if the resulting zone contains no synchronized
  valuation
- \throw std::invalid_argument : if a pid in edges is greater or equal to the
+ \throw std::invalid_argument : if a pid involved in sync_edges is greater or equal to the
  size of vloc
- \throw std::runtime_error : if the guard in edges generates clock resets, or if
- the statements in edges generate clock constraints, or if the invariant in
+ \throw std::runtime_error : if the guard of an edge in sync_edges generates clock resets, or if
+ the statements of an edge in sync_edges generate clock constraints, or if the invariant in
  updated vloc generates clock resets
  \throw std::runtime_error : if evaluation of invariants, guards or statements
  throws an exception
  \note set spread to tchecker::refdbm::UNBOUNDED_SPREAD for unbounded spread
  */
-tchecker::state_status_t next(tchecker::ta::system_t const & system,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                              tchecker::intrusive_shared_ptr_t<tchecker::refzg::shared_zone_t> const & zone,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+tchecker::state_status_t next(tchecker::ta::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                              tchecker::intval_sptr_t const & intval, tchecker::refzg::zone_sptr_t const & zone,
+                              tchecker::vedge_sptr_t const & vedge, tchecker::sync_id_t & sync_id,
                               tchecker::clock_constraint_container_t & src_invariant,
                               tchecker::clock_constraint_container_t & guard, tchecker::clock_reset_container_t & reset,
                               tchecker::clock_constraint_container_t & tgt_invariant, tchecker::refzg::semantics_t & semantics,
-                              tchecker::integer_t spread, tchecker::refzg::outgoing_edges_value_t const & edges);
+                              tchecker::integer_t spread, tchecker::refzg::outgoing_edges_value_t const & sync_edges);
 
 /*!
  \brief Compute next state and transition
@@ -342,19 +345,21 @@ tchecker::state_status_t next(tchecker::ta::system_t const & system,
  \param t : transition
  \param semantics : a zone semantics
  \param spread : spread bound over reference clocks
- \param v : outgoing edge value
- \post s have been updated from v according to semantics and spread, and t is
- the set of edges in v
+ \param sync_edges : tuple of edges from s (range of synchronized/asynchronous
+ edges)
+ \post s have been updated from sync_edges according to semantics and spread, and t is
+ the tuple of edges and synchronization identifier in sync_edges
  \return status of state s after update (see tchecker::refzg::next)
- \throw std::invalid_argument : if s and v have incompatible size
+ \throw std::invalid_argument : if s and synch_edges have incompatible size
  \note set spread to tchecker::refdbm::UNBOUNDED_SPREAD for unbounded spread
 */
 inline tchecker::state_status_t next(tchecker::ta::system_t const & system, tchecker::refzg::state_t & s,
                                      tchecker::refzg::transition_t & t, tchecker::refzg::semantics_t & semantics,
-                                     tchecker::integer_t spread, tchecker::refzg::outgoing_edges_value_t const & v)
+                                     tchecker::integer_t spread, tchecker::refzg::outgoing_edges_value_t const & sync_edges)
 {
-  return tchecker::refzg::next(system, s.vloc_ptr(), s.intval_ptr(), s.zone_ptr(), t.vedge_ptr(), t.src_invariant_container(),
-                               t.guard_container(), t.reset_container(), t.tgt_invariant_container(), semantics, spread, v);
+  return tchecker::refzg::next(system, s.vloc_ptr(), s.intval_ptr(), s.zone_ptr(), t.vedge_ptr(), t.sync_id(),
+                               t.src_invariant_container(), t.guard_container(), t.reset_container(),
+                               t.tgt_invariant_container(), semantics, spread, sync_edges);
 }
 
 // Incoming edges
@@ -378,9 +383,8 @@ using incoming_edges_range_t = tchecker::ta::incoming_edges_range_t;
  \param vloc : tuple of locations
  \return range of incoming synchronized and asynchronous edges to vloc in system
  */
-inline tchecker::refzg::incoming_edges_range_t
-incoming_edges(tchecker::ta::system_t const & system,
-               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc)
+inline tchecker::refzg::incoming_edges_range_t incoming_edges(tchecker::ta::system_t const & system,
+                                                              tchecker::const_vloc_sptr_t const & vloc)
 {
   return tchecker::ta::incoming_edges(system, vloc);
 }
@@ -399,72 +403,74 @@ using incoming_edges_value_t = tchecker::ta::incoming_edges_value_t;
  \param intval : valuation of bounded integer variables
  \param zone : a DBM zone with reference clocks
  \param vedge : tuple of edges
+ \param sync_id : synchronization identifier
  \param src_invariant : clock constraint container for source invariant (w.r.t. edge)
  \param guard : clock constraint container for guard of vedge
  \param reset : clock resets container for clock resets of vedge
  \param tgt_invariant : clock constaint container for target invariant (w.r.t. edge)
  \param semantics : a semantics over zones with reference clocks
  \param spread : spread bound over reference clocks
- \param edges : range of incoming edges to vloc (range of synchronized/asynchronous
- edges)
- \pre the target locations in edges match the locations in vloc.
- No process has more than one edge in edges.
- The pid of every process in edges is less than the size of vloc
+ \param v : range of incoming edges to vloc (range of synchronized/asynchronous
+ edges) and integer variables pre-valuations
+ \pre the target locations of the edges in v match the locations in vloc.
+ No process has more than one edge in v.
+ The pid of every process with an edge in v is less than the size of vloc
  \post the locations in vloc have been updated to source locations of the
- processes involved in edges, and they have been left unchanged for the other
+ processes involved in the edges in v, and they have been left unchanged for the other
  processes.
  The values of variables in intval have been updated according to the statements
- in edges.
+ of the edges in v.
  Clock constraints from the invariants of vloc before it is updated have been
  pushed to tgt_invariant.
- Clock constraints from the guards in edges have been pushed into guard.
- Clock resets from the statements in edges have been pushed into reset.
+ Clock constraints from the guards of the edges in v have been pushed into guard.
+ Clock resets from the statements of the edges in v have been pushed into reset.
  Clock constraints from the invariants in the updated vloc have been pushed
  into src_invariant.
  The zone has been updated according to semantics and spread from src_invariant,
  guard, reset, tgt_invariant (and delay)
+ vedge is the tuple of edges in v.
+ sync_id has been set to the identifier if the synchronization that is instantiated by vedge,
+ or tchecker::NO_SYNC if vedge is asynchronous.
  \return tchecker::STATE_OK if state computation succeeded,
- tchecker::STATE_INCOMPATIBLE_EDGE if the target locations in edges do not match
- vloc, or if the bounded integer variables valuation in edges does not yield intval
- after following edges
- tchecker::STATE_INTVARS_SRC_INVARIANT_VIOLATED if the valuation in edges does not
+ tchecker::STATE_INCOMPATIBLE_EDGE if the target locations of the edges in v do not match
+ vloc, or if the bounded integer variables valuation in v does not yield intval
+ after following the edges in v
+ tchecker::STATE_INTVARS_SRC_INVARIANT_VIOLATED if the valuation in v does not
  satisfy the invariant in vloc,
  tchecker::STATE_CLOCKS_SRC_INVARIANT_VIOLATED if the zone does not satisfy the
  source invariant
- tchecker::STATE_INTVARS_GUARD_VIOLATED if the bounded integer valuation in edges
- does not satisfy the guard of edges,
+ tchecker::STATE_INTVARS_GUARD_VIOLATED if the bounded integer valuation in v
+ does not satisfy the guard of the edges in v,
  tchecker::STATE_CLOCKS_GUARD_VIOLATED if the zone updated w.r.t. src_invariant
- does not satisfy the guard of the edges
- tchecker::STATE_INTVARS_STATEMENT_FAILED if statements in edges cannot be
+ does not satisfy the guard of the edges in v
+ tchecker::STATE_INTVARS_STATEMENT_FAILED if statements of the edges in v cannot be
  applied to intval
  tchecker::STATE_INTVARS_TGT_INVARIANT_VIOLATED if intval does not
  satisfy the target invariant
  tchecker::STATE_CLOCKS_TGT_INVARIANT_VIOLATED if zone does not
  satisfy the target invariant
  tchecker::STATE_CLOCKS_EMPTY_SYNC if synchronizing the reference clocks of the
- processes involved in vedge yields an empty zone
+ processes involved in the edges in v yields an empty zone
  tchecker::STATE_CLOCKS_EMPTY_SPREAD if the resulting spread-bounded zone is
  empty
  tchecker::STATE_ZONE_EMPTY_SYNC if the resulting zone contains no synchronized
  valuation
- \throw std::invalid_argument : if a pid in edges is greater or equal to the
+ \throw std::invalid_argument : if a pid involved in the edges in v is greater or equal to the
  size of vloc
- \throw std::runtime_error : if the guard in edges generates clock resets, or if
- the statements in edges generate clock constraints, or if the invariants
+ \throw std::runtime_error : if the guard of the edges in v generates clock resets, or if
+ the statements of the edges in v generate clock constraints, or if the invariants
  generate clock resets
  \throw std::runtime_error : if evaluation of invariants, guards or statements
  throws an exception
  \note set spread to tchecker::refdbm::UNBOUNDED_SPREAD for unbounded spread
  */
-tchecker::state_status_t prev(tchecker::ta::system_t const & system,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                              tchecker::intrusive_shared_ptr_t<tchecker::refzg::shared_zone_t> const & zone,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+tchecker::state_status_t prev(tchecker::ta::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                              tchecker::intval_sptr_t const & intval, tchecker::refzg::zone_sptr_t const & zone,
+                              tchecker::vedge_sptr_t const & vedge, tchecker::sync_id_t & sync_id,
                               tchecker::clock_constraint_container_t & src_invariant,
                               tchecker::clock_constraint_container_t & guard, tchecker::clock_reset_container_t & reset,
                               tchecker::clock_constraint_container_t & tgt_invariant, tchecker::refzg::semantics_t & semantics,
-                              tchecker::integer_t spread, tchecker::refzg::incoming_edges_value_t const & edges);
+                              tchecker::integer_t spread, tchecker::refzg::incoming_edges_value_t const & v);
 
 /*!
  \brief Compute previous state and transition
@@ -473,7 +479,8 @@ tchecker::state_status_t prev(tchecker::ta::system_t const & system,
  \param t : transition
  \param semantics : a zone semantics
  \param spread : spread bound over reference clocks
- \param v : value of incoming edge range
+ \param v : range of incoming edges to vloc (range of synchronized/asynchronous
+ edges) and integer variables pre-valuations
  \post s have been updated from v according to semantics and spread, and t is
  the set of edges in v
  \return status of state s after update (see tchecker::refzg::prev)
@@ -484,8 +491,9 @@ inline tchecker::state_status_t prev(tchecker::ta::system_t const & system, tche
                                      tchecker::refzg::transition_t & t, tchecker::refzg::semantics_t & semantics,
                                      tchecker::integer_t spread, tchecker::refzg::incoming_edges_value_t const & v)
 {
-  return tchecker::refzg::prev(system, s.vloc_ptr(), s.intval_ptr(), s.zone_ptr(), t.vedge_ptr(), t.src_invariant_container(),
-                               t.guard_container(), t.reset_container(), t.tgt_invariant_container(), semantics, spread, v);
+  return tchecker::refzg::prev(system, s.vloc_ptr(), s.intval_ptr(), s.zone_ptr(), t.vedge_ptr(), t.sync_id(),
+                               t.src_invariant_container(), t.guard_container(), t.reset_container(),
+                               t.tgt_invariant_container(), semantics, spread, v);
 }
 
 // Inspector
@@ -556,6 +564,7 @@ void attributes(tchecker::ta::system_t const & system, tchecker::refzg::transiti
  \param intval : valuation of bounded integer variables
  \param zone : a DBM zone with reference clocks
  \param vedge : a vector of edges
+ \param sync_id : synchronization identifier
  \param invariant : clock constraint container for state invariant
  \param spread : spread bound over reference clocks
  \param attributes : map of attributes
@@ -571,6 +580,7 @@ void attributes(tchecker::ta::system_t const & system, tchecker::refzg::transiti
  intval has been initialized from attributes["intval"]
  zone has been initialized from attributes["zone"], invariant and spread
  vedge has been initialized to the empty vector of edges
+ sync_id has been initialized to tchecker::NO_SYNC
  and invariant contains the invariant in vloc
  \return tchecker::STATE_OK if initialization succeeded
  tchecker::STATE_BAD if initialization failed
@@ -582,11 +592,9 @@ void attributes(tchecker::ta::system_t const & system, tchecker::refzg::transiti
  vloc, and spread-bounded is empty
  \note set spread to tchecker::refdbm::UNBOUNDED_SPREAD for no spread
  */
-tchecker::state_status_t initialize(tchecker::ta::system_t const & system,
-                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                                    tchecker::intrusive_shared_ptr_t<tchecker::refzg::shared_zone_t> const & zone,
-                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+tchecker::state_status_t initialize(tchecker::ta::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                                    tchecker::intval_sptr_t const & intval, tchecker::refzg::zone_sptr_t const & zone,
+                                    tchecker::vedge_sptr_t const & vedge, tchecker::sync_id_t & sync_id,
                                     tchecker::clock_constraint_container_t & invariant, tchecker::integer_t spread,
                                     std::map<std::string, std::string> const & attributes);
 
@@ -598,8 +606,7 @@ tchecker::state_status_t initialize(tchecker::ta::system_t const & system,
  \param spread : spread bound over reference clocks
  \param attributes : map of attributes
  \post s and t have been initialized from attributes["vloc"], attributes["intval"], attributes["zone"] and
- spread
- the src invariant container in t contains the invariant of state s
+ spread, and the target invariant container in t contains the invariant of state s
  \return tchecker::STATE_OK if initialization succeeded
  tchecker::STATE_BAD otherwise
  tchecker::STATE_INTVARS_SRC_INVARIANT_VIOLATED if attributes["intval"] does not satisfy the invariant in
@@ -613,8 +620,8 @@ inline tchecker::state_status_t initialize(tchecker::ta::system_t const & system
                                            tchecker::refzg::transition_t & t, tchecker::integer_t spread,
                                            std::map<std::string, std::string> const & attributes)
 {
-  return tchecker::refzg::initialize(system, s.vloc_ptr(), s.intval_ptr(), s.zone_ptr(), t.vedge_ptr(),
-                                     t.src_invariant_container(), spread, attributes);
+  return tchecker::refzg::initialize(system, s.vloc_ptr(), s.intval_ptr(), s.zone_ptr(), t.vedge_ptr(), t.sync_id(),
+                                     t.tgt_invariant_container(), spread, attributes);
 }
 
 // refzg_t
@@ -880,7 +887,7 @@ public:
    \post a triple <status, s, t> has been pushed to v (if status matches mask), where the vector of
    locations in s has been initialized from attributes["vloc"], the integer valuation in s has been
    initialized from attributes["intval"], the zone in s has been initialized from attributes["zone"]
-   and the invariant in the vector of locations in s, the vector of edges in t is empty and the source
+   and the invariant in the vector of locations in s, the vector of edges in t is empty and the target
    invariant in t has been initialized to the invariant in vloc
   */
   virtual void build(std::map<std::string, std::string> const & attributes, std::vector<sst_t> & v,

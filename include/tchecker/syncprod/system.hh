@@ -93,12 +93,14 @@ public:
   using tchecker::system::system_t::clock_name;
   using tchecker::system::system_t::clock_variables;
   using tchecker::system::system_t::clocks_count;
+  using tchecker::system::system_t::clocks_identifiers;
   using tchecker::system::system_t::is_clock;
 
   // Edges
   using tchecker::system::system_t::edge;
   using tchecker::system::system_t::edges;
   using tchecker::system::system_t::edges_count;
+  using tchecker::system::system_t::edges_identifiers;
   using tchecker::system::system_t::incoming_edges;
   using tchecker::system::system_t::incoming_edges_maps;
   using tchecker::system::system_t::incoming_event;
@@ -156,6 +158,7 @@ public:
   using tchecker::system::system_t::event_id;
   using tchecker::system::system_t::event_name;
   using tchecker::system::system_t::events_count;
+  using tchecker::system::system_t::events_identifiers;
   using tchecker::system::system_t::is_event;
 
   // Bounded integer variables
@@ -164,6 +167,7 @@ public:
   using tchecker::system::system_t::intvar_id;
   using tchecker::system::system_t::intvar_name;
   using tchecker::system::system_t::intvars_count;
+  using tchecker::system::system_t::intvars_identifiers;
   using tchecker::system::system_t::is_intvar;
 
   // Labels
@@ -171,6 +175,7 @@ public:
   using tchecker::syncprod::labels_t::label_id;
   using tchecker::syncprod::labels_t::label_name;
   using tchecker::syncprod::labels_t::labels_count;
+  using tchecker::syncprod::labels_t::labels_identifiers;
 
   /*!
    \brief Accessor
@@ -195,6 +200,7 @@ public:
   using tchecker::system::system_t::location;
   using tchecker::system::system_t::locations;
   using tchecker::system::system_t::locations_count;
+  using tchecker::system::system_t::locations_identifiers;
 
   /*!
    \brief Accessor
@@ -216,11 +222,13 @@ public:
   using tchecker::system::system_t::process_id;
   using tchecker::system::system_t::process_name;
   using tchecker::system::system_t::processes_count;
+  using tchecker::system::system_t::processes_identifiers;
 
   // Synchronizations
   using tchecker::system::system_t::synchronization;
   using tchecker::system::system_t::synchronizations;
   using tchecker::system::system_t::synchronizations_count;
+  using tchecker::system::system_t::synchronizations_identifiers;
 
   // Cast
 

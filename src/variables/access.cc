@@ -55,6 +55,18 @@ bool variable_access_map_t::has_shared_variable() const
   return false;
 }
 
+bool variable_access_map_t::has_shared_variable(enum tchecker::variable_type_t vtype) const
+{
+  for (auto && v2pid : _v2p_map) {
+    if (v2pid.second.size() <= 1)
+      continue;
+    auto && [id, type, access] = v2pid.first;
+    if (type == vtype)
+      return true;
+  }
+  return false;
+}
+
 tchecker::range_t<tchecker::variable_access_map_t::process_id_iterator_t>
 variable_access_map_t::accessing_processes(tchecker::variable_id_t vid, enum tchecker::variable_type_t vtype,
                                            enum tchecker::variable_access_t vaccess) const
@@ -85,6 +97,17 @@ variable_access_map_t::accessed_variables(tchecker::process_id_t pid, enum tchec
   if (it == _p2v_map.end())
     return {_empty_vid_set.begin(), _empty_vid_set.end()};
   return {(*it).second.begin(), (*it).second.end()};
+}
+
+bool variable_access_map_t::access_variable(tchecker::process_id_t pid, tchecker::variable_id_t vid,
+                                            enum tchecker::variable_type_t vtype,
+                                            enum tchecker::variable_access_t vaccess) const
+{
+  auto accessed_variables_range = accessed_variables(pid, vtype, vaccess);
+  for (tchecker::variable_id_t accessed_vid : accessed_variables_range)
+    if (accessed_vid == vid)
+      return true;
+  return false;
 }
 
 } // end of namespace tchecker

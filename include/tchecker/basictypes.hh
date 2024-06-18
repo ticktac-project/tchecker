@@ -207,6 +207,18 @@ bool valid_edge_id(tchecker::edge_id_t id);
 using sync_id_t = tchecker::id_t;
 
 /*!
+ \brief Synchronization identifier representing absence of synchronization
+ */
+extern tchecker::sync_id_t const NO_SYNC;
+
+/*!
+ \brief Checks if a synchronization identifier is valid
+ \param id : a synchronization identifier
+ \return true if id != NO_SYNC, false otherwise
+ */
+bool valid_sync_id(tchecker::sync_id_t id);
+
+/*!
  \brief Type of node identifiers
  */
 using node_id_t = tchecker::id_t; // should be large enough

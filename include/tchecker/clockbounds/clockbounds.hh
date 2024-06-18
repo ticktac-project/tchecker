@@ -55,7 +55,7 @@ using map_t = tchecker::make_array_t<tchecker::clockbounds::bound_t, sizeof(tche
  \param clock_nb : number of clocks
  \return A clock bound map of domain [0..clock_nb)
  */
-tchecker::clockbounds::map_t * allocate_map(tchecker::clock_id_t clock_nb);
+tchecker::clockbounds::map_t * allocate_map(std::size_t clock_nb);
 
 /*!
  \brief Clone clock bound map
@@ -93,10 +93,20 @@ bool update(tchecker::clockbounds::map_t & map, tchecker::clock_id_t id, tchecke
  \brief Update a clock bound map
  \param map : clock bound map
  \param upd : clock bound map
+ \pre map and upd have same capacity (checked by assertion)
  \post map has been updated to the max of map and upd
  \return true is map has been modified, false otherwise
  */
 bool update(tchecker::clockbounds::map_t & map, tchecker::clockbounds::map_t const & upd);
+
+/*!
+ \brief Copy clock bound map
+ \param dst : clock bound map
+ \param src : clock bound map
+ \pre dst and src have same capacity (checked by assertion)
+ \post src has been copied into dst
+ */
+void copy(tchecker::clockbounds::map_t & dst, tchecker::clockbounds::map_t const & src);
 
 /*!
  \brief Output operator
@@ -396,6 +406,19 @@ private:
 std::ostream & operator<<(std::ostream & os, tchecker::clockbounds::global_lu_map_t const & map);
 
 /*!
+ \brief Fill a global LU map from a local LU map
+ \param global_lu_map : global LU map
+ \param local_lu_map : local LU map
+ \pre global_lu_map and local_lu_map havs same number of clocks
+ \post the bounds in global_lu_map have been set to the maximum bounds over all locations
+ in local_lu_map
+ \throw std::invalid_argument : if global_lu_map and local_lu_map do not have the same number
+ of clocks
+ */
+void fill_global_lu_map(tchecker::clockbounds::global_lu_map_t & global_lu_map,
+                        tchecker::clockbounds::local_lu_map_t const & local_lu_map);
+
+/*!
  \class local_m_map_t
  \brief Map from system locations to M clock bound maps
  */
@@ -524,6 +547,19 @@ private:
 std::ostream & operator<<(std::ostream & os, tchecker::clockbounds::local_m_map_t const & map);
 
 /*!
+ \brief Fill a local M map from a local LU map
+ \param local_m_map : local M map
+ \param local_lu_map : local LU map
+ \pre local_m_map and local_lu_map havs same number of clocks and locations
+ \post the bounds in local_m_map have been set to the maximum of L and U bounds for each clock
+ and location
+ \throw std::invalid_argument : if local_m_map and local_lu_map do not have the same number
+ of clocks or locations
+ */
+void fill_local_m_map(tchecker::clockbounds::local_m_map_t & local_m_map,
+                      tchecker::clockbounds::local_lu_map_t const & local_lu_map);
+
+/*!
  \class global_m_map_t
  \brief Map from system to M clock bound maps
  */
@@ -642,6 +678,19 @@ private:
  \return os after map has been output
  */
 std::ostream & operator<<(std::ostream & os, tchecker::clockbounds::global_m_map_t const & map);
+
+/*!
+ \brief Fill a global M map from a local LU map
+ \param global_m_map : global M map
+ \param local_lu_map : local LU map
+ \pre global_m_map and local_lu_map havs same number of clocks
+ \post the bounds in global_m_map have been set to the maximum of L and U bounds for each clock
+ over all locations
+ \throw std::invalid_argument : if global_m_map and local_lu_map do not have the same number
+ of clocks
+ */
+void fill_global_m_map(tchecker::clockbounds::global_m_map_t & global_m_map,
+                       tchecker::clockbounds::local_lu_map_t const & local_lu_map);
 
 /*!
 \class clockbounds_t
@@ -863,7 +912,13 @@ public:
    \brief Accessor
    \return Number of clocks
   */
-  inline tchecker::clock_id_t clock_number() const { return _global_lu->clock_number(); }
+  inline tchecker::clock_id_t clocks_number() const { return _global_lu->clock_number(); }
+
+  /*!
+   \brief Accessor
+   \return Number of locations
+   */
+  inline tchecker::loc_id_t locations_number() const { return _local_lu->loc_number(); }
 
 private:
   std::shared_ptr<tchecker::clockbounds::global_lu_map_t> _global_lu; /*!< Global LU map */

@@ -35,14 +35,12 @@ void output_tck(std::ostream & os, tchecker::system::system_t const & s)
   os << "system:" << s.name() << s.attributes() << std::endl;
 
   // Events
-  tchecker::event_id_t events_count = s.events_count();
-  for (tchecker::event_id_t id = 0; id < events_count; ++id)
+  for (tchecker::event_id_t const id : s.events_identifiers())
     os << "event:" << s.event_name(id) << s.event_attributes(id) << std::endl;
 
   // Bounded integer variables
   tchecker::integer_variables_t const & integer_variables = s.integer_variables();
-  tchecker::intvar_id_t intvars_count = s.intvars_count(tchecker::VK_DECLARED);
-  for (tchecker::intvar_id_t id = 0; id < intvars_count; ++id) {
+  for (tchecker::intvar_id_t const id : integer_variables.identifiers(tchecker::VK_DECLARED)) {
     tchecker::intvar_info_t const & info = integer_variables.info(id);
     os << "int:" << info.size() << ":" << info.min() << ":" << info.max() << ":";
     os << info.initial_value() << ":";
@@ -51,15 +49,13 @@ void output_tck(std::ostream & os, tchecker::system::system_t const & s)
 
   // Clocks
   tchecker::clock_variables_t const & clock_variables = s.clock_variables();
-  tchecker::clock_id_t clocks_count = s.clocks_count(tchecker::VK_DECLARED);
-  for (tchecker::clock_id_t id = 0; id < clocks_count; ++id) {
+  for (tchecker::clock_id_t const id : clock_variables.identifiers(tchecker::VK_DECLARED)) {
     os << "clock:" << clock_variables.info(id).size() << ":" << clock_variables.name(id);
     os << s.clock_attributes(id) << std::endl;
   }
 
   // Processes
-  tchecker::process_id_t processes_count = s.processes_count();
-  for (tchecker::process_id_t id = 0; id < processes_count; ++id)
+  for (tchecker::process_id_t const id : s.processes_identifiers())
     os << "process:" << s.process_name(id) << s.process_attributes(id) << std::endl;
 
   // Locations
@@ -152,8 +148,7 @@ void output_dot(std::ostream & os, tchecker::system::system_t const & s, std::st
 {
   os << "digraph " << s.name() << " {" << std::endl;
   // Output each process as a cluster
-  tchecker::process_id_t processes_count = s.processes_count();
-  for (tchecker::process_id_t pid = 0; pid < processes_count; ++pid) {
+  for (tchecker::process_id_t const pid : s.processes_identifiers()) {
     os << "  subgraph cluster_" << s.process_name(pid) << " {" << std::endl;
     os << "    label=\"" << s.process_name(pid) << "\";" << std::endl;
     // Locations
@@ -310,10 +305,10 @@ void output_json(std::ostream & os, tchecker::system::system_t const & s, std::s
   std::string const t1 = json_tab;
   os << "{" << std::endl << t1 << "\"name\" : \"" << s.name() << "\"," << std::endl << t1 << "\"processes\" : [" << std::endl;
 
-  tchecker::process_id_t processes_count = s.processes_count();
-  for (tchecker::process_id_t pid = 0; pid < processes_count; ++pid) {
+  tchecker::system::processes_t::processes_identifiers_range_t const processes_identifiers = s.processes_identifiers();
+  for (tchecker::process_id_t pid : processes_identifiers) {
     json_output_process(os, s, delimiter, pid, t1 + json_tab);
-    if (pid + 1 < processes_count)
+    if (pid + 1 < *processes_identifiers.end())
       os << ",";
     os << std::endl;
   }

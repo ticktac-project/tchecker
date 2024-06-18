@@ -469,6 +469,7 @@ enum extrapolation_type_t {
  tchecker::clockbounds::compute_clockbounds)
  \note the returned extrapolation must be deallocated by the caller
  \throw std::invalid_argument : if extrapolation_type is unknown
+ \throw std::runtime_error : if clock bounds cannot be computed for system
  */
 tchecker::zg::extrapolation_t * extrapolation_factory(enum extrapolation_type_t extrapolation_type,
                                                       tchecker::ta::system_t const & system);

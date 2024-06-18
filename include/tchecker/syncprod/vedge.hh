@@ -225,6 +225,13 @@ template <class... ARGS> tchecker::vedge_t * vedge_allocate_and_construct(unsign
 void vedge_destruct_and_deallocate(tchecker::vedge_t * vedge);
 
 /*!
+ \brief Checks if a vector of edges is asynchronous
+ \param vedge : vector of edges
+ \return true if vedge has a single edge, false otherwise
+ */
+bool is_asynchronous(tchecker::vedge_t const & vedge);
+
+/*!
  \brief Output vector of edges
  \param os : output stream
  \param vedge : vector of edges

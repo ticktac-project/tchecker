@@ -30,20 +30,26 @@ class transition_t : public tchecker::ts::transition_t {
 public:
   /*!
    \brief Constructor
+   \param sync_id : synchronization identifier
    \param vedge : tuple of edges
    \pre vedge must not point to nullptr (checked by assertion)
+   \pre if sync_id is tchecker::NO_SYNC then vedge is a single edge (checked by assertion)
+   \pre if sync_id is not tchecker::NO_SYNC, then vedge is an instance of sync_id
    */
-  explicit transition_t(tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge);
+  explicit transition_t(tchecker::sync_id_t sync_id, tchecker::vedge_sptr_t const & vedge);
 
   /*!
    \brief Partial copy constructor
    \param t : a transition
+   \param sync_id : synchronization identifier
    \param vedge : tuple of edges
    \pre vedge must not point to nullptr (checked by assertion)
-   \note the transition is copied from t, except the tuple of edges which is initialized from vedge
+   \pre if sync_id is tchecker::NO_SYNC then vedge is a single edge (checked by assertion)
+   \pre if sync_id is not tchecker::NO_SYNC, then vedge is an instance of sync_id
+   \note the transition is copied from t, except the synchronization identifier which is set from sync_id,
+   and the tuple of edges which is initialized from vedge
    */
-  transition_t(tchecker::syncprod::transition_t const & t,
-               tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge);
+  transition_t(tchecker::syncprod::transition_t const & t, tchecker::sync_id_t sync_id, tchecker::vedge_sptr_t const & vedge);
 
   /*!
    \brief Copy constructor (deleted)
@@ -72,6 +78,18 @@ public:
 
   /*!
    \brief Accessor
+   \return synchronization identifier (tchecker::NO_SYNC if the transition is asynchronous)
+   */
+  constexpr inline tchecker::sync_id_t sync_id() const { return _sync_id; }
+
+  /*!
+   \brief Accessor
+   \return reference to synchronization identifier
+   */
+  inline tchecker::sync_id_t & sync_id() { return _sync_id; }
+
+  /*!
+   \brief Accessor
    \return tuple of edges
    */
   constexpr inline tchecker::vedge_t const & vedge() const { return *_vedge; }
@@ -80,26 +98,24 @@ public:
    \brief Accessor
    \return reference to pointer to tuple of edges
    */
-  inline tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> & vedge_ptr() { return _vedge; }
+  inline tchecker::vedge_sptr_t & vedge_ptr() { return _vedge; }
 
   /*!
    \brief Accessor
    \return pointer to const tuple of edges
    */
-  inline tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t const> vedge_ptr() const
-  {
-    return tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t const>(_vedge.ptr());
-  }
+  inline tchecker::const_vedge_sptr_t vedge_ptr() const { return tchecker::const_vedge_sptr_t(_vedge.ptr()); }
 
 protected:
-  tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> _vedge; /*!< Tuple of edges */
+  tchecker::sync_id_t _sync_id;  /*!< Synchronization identifier */
+  tchecker::vedge_sptr_t _vedge; /*!< Tuple of edges */
 };
 
 /*!
  \brief Equality check
  \param t1 : transition
  \param t2 : transition
- \return true if t1 and t2 have same tuple of edges, false otherwise
+ \return true if t1 and t2 have same synchronization identifier, and the same tuple of edges, false otherwise
  */
 bool operator==(tchecker::syncprod::transition_t const & t1, tchecker::syncprod::transition_t const & t2);
 
@@ -107,7 +123,7 @@ bool operator==(tchecker::syncprod::transition_t const & t1, tchecker::syncprod:
  \brief Disequality check
  \param t1 : transition
  \param t2 : transition
- \return true if t1 and t2 have different tuples of edges, false otherwise
+ \return true if t1 and t2 have different synchronization identifiers, or different tuples of edges, false otherwise
  */
 bool operator!=(tchecker::syncprod::transition_t const & t1, tchecker::syncprod::transition_t const & t2);
 
@@ -115,7 +131,7 @@ bool operator!=(tchecker::syncprod::transition_t const & t1, tchecker::syncprod:
  \brief Equality check for shared transitions
  \param t1 : transition
  \param t2 : transition
- \return true if t1 and t2 have same tuple of edges, false otherwise
+ \return true if t1 and t2 have the same synchronisation identifier, and point to the same tuple of edges, false otherwise
  \note note this should only be used on transitions that have shared internal components: this
  function checks pointer equality (not values equality)
 */

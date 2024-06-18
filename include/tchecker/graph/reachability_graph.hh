@@ -307,6 +307,44 @@ public:
   }
 
   /*!
+   \brief Remove node
+   \param n : a node
+   \pre n is stored in this graph.
+   n is disconnected (checked by assertion)
+   \post n has been removed from this graph
+   \note constant-time complexity
+   \throw std::invalid_argument : if n is not stored in this graph
+   */
+  void remove_node(node_sptr_t const & n)
+  {
+    assert(!has_edge(n));
+    _find_graph.remove_node(n);
+  }
+
+  /*!
+   \brief Remove all the edges of a node
+   \param n : a node
+   \post all incoming edges and outgoing edges of n have been removed from the graph
+   */
+  void remove_edges(node_sptr_t const & n)
+  {
+    _directed_graph.remove_edges(n);
+    assert(!has_edge(n));
+  }
+
+  /*!
+   \brief Check if a node has edges
+   \param n : a node
+   \return true if n has incoming or outgoing edges, false otherwise
+  */
+  bool has_edge(node_sptr_t const & n)
+  {
+    auto in_edges = incoming_edges(n);
+    auto out_edges = outgoing_edges(n);
+    return (in_edges.begin() != in_edges.end() || out_edges.begin() != out_edges.end());
+  }
+
+  /*!
   \brief Type of node iterator
   */
   using const_node_iterator_t =

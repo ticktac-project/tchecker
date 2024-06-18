@@ -215,17 +215,20 @@ bool vloc_edges_iterator_t::at_end() const
   return (_sync_it == tchecker::past_the_end_iterator && _async_it == tchecker::past_the_end_iterator);
 }
 
-tchecker::range_t<tchecker::syncprod::edges_iterator_t> vloc_edges_iterator_t::operator*()
+vloc_edges_iterator_t::sync_edges_t vloc_edges_iterator_t::operator*()
 {
   assert(!at_end());
 
   if (_sync_it != tchecker::past_the_end_iterator) {
-    tchecker::syncprod::edges_iterator_t begin((*_sync_it).begin()), end((*_sync_it).end());
-    return tchecker::make_range(begin, end);
+    tchecker::syncprod::vloc_synchronized_edges_iterator_t::sync_edges_t sync_edges = *_sync_it;
+    tchecker::syncprod::edges_iterator_t begin(sync_edges.edges.begin()), end(sync_edges.edges.end());
+    return tchecker::syncprod::vloc_edges_iterator_t::sync_edges_t{.sync_id = sync_edges.sync_id,
+                                                                   .edges = tchecker::make_range(begin, end)};
   }
 
   tchecker::syncprod::edges_iterator_t begin(*_async_it, false), end(*_async_it, true);
-  return tchecker::make_range(begin, end);
+  return tchecker::syncprod::vloc_edges_iterator_t::sync_edges_t{.sync_id = tchecker::NO_SYNC,
+                                                                 .edges = tchecker::make_range(begin, end)};
 }
 
 tchecker::syncprod::vloc_edges_iterator_t & vloc_edges_iterator_t::operator++()

@@ -74,6 +74,7 @@ using initial_value_t = tchecker::syncprod::initial_value_t;
  \param vloc : tuple of locations
  \param intval : valuation of bounded integer variables
  \param vedge : tuple of edges
+ \param sync_id : synchronization identifier
  \param invariant : clock constraint container for initial state invariant
  \param initial_range : range of initial state valuations
  \pre the size of vloc and vedge is equal to the size of initial_range.
@@ -82,16 +83,15 @@ using initial_value_t = tchecker::syncprod::initial_value_t;
  \post vloc has been initialized to the tuple of initial locations in initial_range,
  intval has been initialized to the initial valuation of bounded integer variables,
  vedge has been initialized to an empty tuple of edges.
+ sync_id has been set to tchecker::NO_SYNC.
  clock constraints from initial_range invariant have been aded to invariant
  \return tchecker::STATE_OK if initialization succeeded
  STATE_SRC_INVARIANT_VIOLATED if the initial valuation of integer variables does not satisfy invariant
  \throw std::runtime_error : if evaluation of invariant throws an exception
  */
-tchecker::state_status_t initial(tchecker::ta::system_t const & system,
-                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                                 tchecker::clock_constraint_container_t & invariant,
+tchecker::state_status_t initial(tchecker::ta::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                                 tchecker::intval_sptr_t const & intval, tchecker::vedge_sptr_t const & vedge,
+                                 tchecker::sync_id_t & sync_id, tchecker::clock_constraint_container_t & invariant,
                                  tchecker::ta::initial_value_t const & initial_range);
 
 /*!
@@ -100,14 +100,16 @@ tchecker::state_status_t initial(tchecker::ta::system_t const & system,
 \param s : state
 \param t : transition
 \param v : initial iterator value
-\post s has been initialized from v, and t is an empty transition
+\post s has been initialized from v, and t stores the invariant in s in its target invariant
+container (and has empty vedge, no sync identifier, empty guard and empty source invariant)
 \return tchecker::STATE_OK
 \throw std::invalid_argument : if s and v have incompatible sizes
 */
 inline tchecker::state_status_t initial(tchecker::ta::system_t const & system, tchecker::ta::state_t & s,
                                         tchecker::ta::transition_t & t, tchecker::ta::initial_value_t const & v)
 {
-  return tchecker::ta::initial(system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), t.tgt_invariant_container(), v);
+  return tchecker::ta::initial(system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), t.sync_id(), t.tgt_invariant_container(),
+                               v);
 }
 
 // Final edges
@@ -147,6 +149,7 @@ using final_value_t = std::tuple<tchecker::syncprod::final_value_t, tchecker::fl
  \param vloc : tuple of locations
  \param intval : valuation of bounded integer variables
  \param vedge : tuple of edges
+ \param sync_id : synchronization identifier
  \param invariant : clock constraint container for final state invariant
  \param final_value : range of final edges valuations
  \pre the size of vloc and vedge is equal to the size of final edge range in final_value.
@@ -156,16 +159,15 @@ using final_value_t = std::tuple<tchecker::syncprod::final_value_t, tchecker::fl
  \post vloc has been initialized to the tuple of final locations in final_value,
  intval has been initialized to the final valuation of bounded integer variables,
  vedge has been initialized to an empty tuple of edges.
+ sync_id has been set to tchecker::NO_SYNC.
  clock constraints from final_range invariant have been aded to invariant
  \return tchecker::STATE_OK if computation succeeded
  STATE_TGT_INVARIANT_VIOLATED if the final valuation of integer variables does not satisfy invariant
  \throw std::runtime_error : if evaluation of invariant throws an exception
  */
-tchecker::state_status_t final(tchecker::ta::system_t const & system,
-                               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                               tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                               tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                               tchecker::clock_constraint_container_t & invariant,
+tchecker::state_status_t final(tchecker::ta::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                               tchecker::intval_sptr_t const & intval, tchecker::vedge_sptr_t const & vedge,
+                               tchecker::sync_id_t & sync_id, tchecker::clock_constraint_container_t & invariant,
                                tchecker::ta::final_value_t const & final_value);
 
 /*!
@@ -174,7 +176,8 @@ tchecker::state_status_t final(tchecker::ta::system_t const & system,
 \param s : state
 \param t : transition
 \param v : final iterator value
-\post s has been initialized from v, and t is an empty transition
+\post s has been initialized from v, and t stores the invariant in in its
+target invariant container (and has empty vedge, no sync identifier, empty guard and empty source invariant)
 \return tchecker::STATE_OK if computation succeeded
  STATE_TGT_INVARIANT_VIOLATED if the final valuation of integer variables does not satisfy invariant
 \throw std::invalid_argument : if s and v have incompatible sizes
@@ -182,7 +185,7 @@ tchecker::state_status_t final(tchecker::ta::system_t const & system,
 inline tchecker::state_status_t final(tchecker::ta::system_t const & system, tchecker::ta::state_t & s,
                                       tchecker::ta::transition_t & t, tchecker::ta::final_value_t const & v)
 {
-  return tchecker::ta::final(system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), t.tgt_invariant_container(), v);
+  return tchecker::ta::final(system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), t.sync_id(), t.tgt_invariant_container(), v);
 }
 
 // Outgoing edges
@@ -203,9 +206,8 @@ using outgoing_edges_range_t = tchecker::syncprod::outgoing_edges_range_t;
  \param vloc : tuple of locations
  \return range of outgoing synchronized and asynchronous edges from vloc in system
  */
-inline tchecker::ta::outgoing_edges_range_t
-outgoing_edges(tchecker::ta::system_t const & system,
-               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc)
+inline tchecker::ta::outgoing_edges_range_t outgoing_edges(tchecker::ta::system_t const & system,
+                                                           tchecker::const_vloc_sptr_t const & vloc)
 {
   return tchecker::syncprod::outgoing_edges(system.as_syncprod_system(), vloc);
 }
@@ -223,56 +225,58 @@ using outgoing_edges_value_t = tchecker::syncprod::outgoing_edges_value_t;
  \param vloc : tuple of locations
  \param intval : valuation of bounded integer variables
  \param vedge : tuple of edges
+ \param sync_id : synchronization identifier
  \param src_invariant : clock constraint container for invariant of vloc before it is updated
  \param guard : clock constraint container for guard of vedge
  \param reset : clock resets container for clock resets of vedge
  \param tgt_invariant : clock constaint container for invariant of vloc after it is updated
- \param edges : tuple of edge from vloc (range of synchronized/asynchronous edges)
- \pre the source location in edges match the locations in vloc.
- No process has more than one edge in edges.
- The pid of every process in edges is less than the size of vloc
+ \param sync_edges : synchronized edges from vloc
+ \pre the source location in the edges in sync_edges match the locations in vloc.
+ No process has more than one edge in sync_edges.
+ The pid of every process in sync_edges is less than the size of vloc
  \post the locations in vloc have been updated to target locations of the
- processes involved in edges, and they have been left unchanged for the other processes.
- The values of variables in intval have been updated according to the statements in edges.
+ processes involved in sync_edges, and they have been left unchanged for the other processes.
+ The values of variables in intval have been updated according to the statements in sync_edges.
+ vedge contains the identifiers of the edges in sync_edges
+ vedge is an instance of synchronization sync_id, unless sync_id is tchecker::NO_SYNC (asynchronous vedge)
  Clock constraints from the invariants of vloc before it is updated have been pushed to src_invariant.
- Clock constraints from the guards in edges have been pushed into guard.
- Clock resets from the statements in edges have been pushed into reset.
+ Clock constraints from the guards of the edges in sync_edges have been pushed into guard.
+ Clock resets from the statements of the edges in sync_edges have been pushed into reset.
  And clock constraints from the invariants in the updated vloc have been pushed into tgt_invariant
  \return STATE_OK if state computation succeeded,
- STATE_INCOMPATIBLE_EDGE if the source locations in edges do not match vloc,
+ STATE_INCOMPATIBLE_EDGE if the source locations of the edges in sync_edges do not match vloc,
  STATE_SRC_INVARIANT_VIOLATED if the valuation intval does not satisfy the invariant in vloc,
- STATE_GUARD_VIOLATED if the values in intval do not satisfy the guard of edges,
- STATE_STATEMENT_FAILED if statements in edges cannot be applied to intval
+ STATE_GUARD_VIOLATED if the values in intval do not satisfy the guard of the edges in sync_edges,
+ STATE_STATEMENT_FAILED if statements of the edges in sync_edges cannot be applied to intval
  STATE_TGT_INVARIANT_VIOLATED if the updated intval does not satisfy the invariant of updated vloc.
- \throw std::invalid_argument : if a pid in edges is greater or equal to the size of vloc
- \throw std::runtime_error : if the guard in edges generates clock resets, or if the statements in edges generate clock
- constraints, or if the invariant in updated vloc generates clock resets
+ \throw std::invalid_argument : if a pid of the processes involved in sync_edges is greater or equal to the size of vloc
+ \throw std::runtime_error : if the guards of the edges in sync_edges generate clock resets, or if the statements of the edges
+ in sync_edges generate clock constraints, or if the invariant in updated vloc generates clock resets
  \throw std::runtime_error : if evaluation of invariants, guards or statements throws an exception
  */
-tchecker::state_status_t next(tchecker::ta::system_t const & system,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                              tchecker::clock_constraint_container_t & src_invariant,
+tchecker::state_status_t next(tchecker::ta::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                              tchecker::intval_sptr_t const & intval, tchecker::vedge_sptr_t const & vedge,
+                              tchecker::sync_id_t & sync_id, tchecker::clock_constraint_container_t & src_invariant,
                               tchecker::clock_constraint_container_t & guard, tchecker::clock_reset_container_t & reset,
                               tchecker::clock_constraint_container_t & tgt_invariant,
-                              tchecker::ta::outgoing_edges_value_t const & edges);
+                              tchecker::ta::outgoing_edges_value_t const & sync_edges);
 
 /*!
-\brief Compute next state and transition
-\param system : a system
-\param s : state
-\param t : transition
-\param v : outgoing edge value
-\post s have been updated from v, and t is the set of edges in v
-\return status of state s after update
-\throw std::invalid_argument : if s and v have incompatible size
+ \brief Compute next state and transition
+ \param system : a system
+ \param s : state
+ \param t : transition
+ \param sync_edges : synchronized edges from s
+ \post s have been updated from sync_edges, and t is the tuple of edges and synchronization identifier in sync_edges and the
+ synchronization identifier in sync_edges
+ \return status of state s after update
+ \throw std::invalid_argument : if s and v have incompatible size
 */
 inline tchecker::state_status_t next(tchecker::ta::system_t const & system, tchecker::ta::state_t & s,
-                                     tchecker::ta::transition_t & t, tchecker::ta::outgoing_edges_value_t const & v)
+                                     tchecker::ta::transition_t & t, tchecker::ta::outgoing_edges_value_t const & sync_edges)
 {
-  return tchecker::ta::next(system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), t.src_invariant_container(),
-                            t.guard_container(), t.reset_container(), t.tgt_invariant_container(), v);
+  return tchecker::ta::next(system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), t.sync_id(), t.src_invariant_container(),
+                            t.guard_container(), t.reset_container(), t.tgt_invariant_container(), sync_edges);
 }
 
 // Incoming edges
@@ -298,9 +302,8 @@ using incoming_edges_range_t = tchecker::range_t<tchecker::ta::incoming_edges_it
  \param vloc : tuple of locations
  \return range of incoming synchronized and asynchronous edges to vloc in system
  */
-tchecker::ta::incoming_edges_range_t
-incoming_edges(tchecker::ta::system_t const & system,
-               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc);
+tchecker::ta::incoming_edges_range_t incoming_edges(tchecker::ta::system_t const & system,
+                                                    tchecker::const_vloc_sptr_t const & vloc);
 
 /*!
  \brief Dereference type for iterator over incoming edges
@@ -316,38 +319,37 @@ using incoming_edges_value_t =
  \param vloc : tuple of locations
  \param intval : valuation of bounded integer variables
  \param vedge : tuple of edges
+ \param sync_id : synchronization identifier
  \param src_invariant : clock constraint container for invariant in source state
  \param guard : clock constraint container for guard of vedge
  \param reset : clock resets container for clock resets of vedge
  \param tgt_invariant : clock constaint container for invariant in target state
- \param v : valeu of incoming edge to vloc (range of synchronized/asynchronous edges)
- \pre the target location in edges match the locations in vloc.
+ \param v : source integer valuation and synchronized edges to vloc
+ \pre the target locations of the edges in v match the locations in vloc.
  No process has more than one edge in v.
- The pid of every process in v is less than the size of vloc
+ The pid of every process involved in v is less than the size of vloc
  \post the locations in vloc have been updated to source locations of the
  processes involved in v, and they have been left unchanged for the other processes.
- The values of variables in intval have been updated according to the statements in v.
+ The values of variables in intval have been updated according to the integer valuation in v.
  Clock constraints from the invariants in source state have been pushed to src_invariant.
- Clock constraints from the guards in v have been pushed into guard.
- Clock resets from the statements in v have been pushed into reset.
+ Clock constraints from the guards of the edges in v have been pushed into guard.
+ Clock resets from the statements of the edges in v have been pushed into reset.
  And clock constraints from the invariants in target have been pushed into tgt_invariant
  \return STATE_OK if state computation succeeded,
- STATE_INCOMPATIBLE_EDGE if the target locations in v do not match vloc or if the bounded integer
- valuation in v does not transform into intval going through v,
+ STATE_INCOMPATIBLE_EDGE if the target locations of the edges in v do not match vloc or if the bounded integer
+ valuation in v does not transform into intval going through the edges in v,
  STATE_SRC_INVARIANT_VIOLATED if the new valuation intval does not satisfy the invariant in the source state
- STATE_GUARD_VIOLATED if the new values in intval do not satisfy the guard of v,
- STATE_STATEMENT_FAILED if statements in v cannot be applied to the new intval
+ STATE_GUARD_VIOLATED if the new values in intval do not satisfy the guard of the edges in v,
+ STATE_STATEMENT_FAILED if statements of the edges in v cannot be applied to the integer valuation in v,
  STATE_TGT_INVARIANT_VIOLATED if the new intval does not satisfy the invariant of target state
- \throw std::invalid_argument : if a pid in v is greater or equal to the size of vloc
- \throw std::runtime_error : if the guard in v generates clock resets, or if the statements in v generate clock
- constraints, or if the invariant in updated vloc generates clock resets
+ \throw std::invalid_argument : if the pid of a process involved in v is greater or equal to the size of vloc
+ \throw std::runtime_error : if the guard of an edge in v generates clock resets, or if the statements of an edge in v generate
+ clock constraints, or if the invariant in updated vloc generates clock resets
  \throw std::runtime_error : if evaluation of invariants, guards or statements throws an exception
  */
-tchecker::state_status_t prev(tchecker::ta::system_t const & system,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                              tchecker::clock_constraint_container_t & src_invariant,
+tchecker::state_status_t prev(tchecker::ta::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                              tchecker::intval_sptr_t const & intval, tchecker::vedge_sptr_t const & vedge,
+                              tchecker::sync_id_t & sync_id, tchecker::clock_constraint_container_t & src_invariant,
                               tchecker::clock_constraint_container_t & guard, tchecker::clock_reset_container_t & reset,
                               tchecker::clock_constraint_container_t & tgt_invariant,
                               tchecker::ta::incoming_edges_value_t const & v);
@@ -358,14 +360,14 @@ tchecker::state_status_t prev(tchecker::ta::system_t const & system,
 \param s : state
 \param t : transition
 \param v : incoming edge value
-\post s have been updated from v, and t is the set of edges in v
+\post s have been updated from v, and t is the set of edges and synchronization identifier in v
 \return status of state s after update
 \throw std::invalid_argument : if s and v have incompatible size
 */
 inline tchecker::state_status_t prev(tchecker::ta::system_t const & system, tchecker::ta::state_t & s,
                                      tchecker::ta::transition_t & t, tchecker::ta::incoming_edges_value_t const & v)
 {
-  return tchecker::ta::prev(system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), t.src_invariant_container(),
+  return tchecker::ta::prev(system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), t.sync_id(), t.src_invariant_container(),
                             t.guard_container(), t.reset_container(), t.tgt_invariant_container(), v);
 }
 
@@ -471,6 +473,7 @@ void attributes(tchecker::ta::system_t const & system, tchecker::ta::transition_
  \param vloc : a vector of locations
  \param intval : valuation of bounded integer variables
  \param vedge : a vector of edges
+ \param sync_id : synchronization identifier
  \param invariant : clock constraint container for state invariant
  \param attributes : map of attributes
  \pre attributes["vloc"] is defined and follows the syntax required by function
@@ -480,17 +483,16 @@ void attributes(tchecker::ta::system_t const & system, tchecker::ta::transition_
  \post vloc has been initialized from attributes["vloc"]
  intval has been initialized from attributes["intval"]
  vedge has been initialized to the empty vector of edges
+ sync_id has been initialized to tchecker::NO_SYNC
  and invariant contains the invariant in vloc
  \return tchecker::STATE_OK if initialization succeeded
  tchecker::STATE_BAD if initialization failed
  tchecker::STATE_INTVARS_SRC_INVARIANT_VIOLATED if attributes["intval"] does not satisfy the invariant in
  attributes["vloc"]
  */
-tchecker::state_status_t initialize(tchecker::ta::system_t const & system,
-                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_intval_t> const & intval,
-                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                                    tchecker::clock_constraint_container_t & invariant,
+tchecker::state_status_t initialize(tchecker::ta::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                                    tchecker::intval_sptr_t const & intval, tchecker::vedge_sptr_t const & vedge,
+                                    tchecker::sync_id_t & sync_id, tchecker::clock_constraint_container_t & invariant,
                                     std::map<std::string, std::string> const & attributes);
 
 /*!
@@ -500,7 +502,7 @@ tchecker::state_status_t initialize(tchecker::ta::system_t const & system,
  \param t : transition
  \param attributes : map of attributes
  \post s and t have been initialized from attributes["vloc"] and attributes["intval"]
- the src invariant container in t contains the invariant of state s
+ the target invariant container in t contains the invariant of state s
  \return tchecker::STATE_OK if initialization succeeded
  tchecker::STATE_BAD otherwise
  tchecker::STATE_INTVARS_SRC_INVARIANT_VIOLATED if attributes["intval"] does not satisfy the invariant in
@@ -510,7 +512,8 @@ inline tchecker::state_status_t initialize(tchecker::ta::system_t const & system
                                            tchecker::ta::transition_t & t,
                                            std::map<std::string, std::string> const & attributes)
 {
-  return tchecker::ta::initialize(system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), t.src_invariant_container(), attributes);
+  return tchecker::ta::initialize(system, s.vloc_ptr(), s.intval_ptr(), t.vedge_ptr(), t.sync_id(), t.tgt_invariant_container(),
+                                  attributes);
 }
 
 // ta_t
@@ -767,7 +770,7 @@ public:
    \pre see tchecker::ta::initialize
    \post a triple <status, s, t> has been pushed to v (if status matches mask), where the vector of
    locations in s has been initialized from attributes["vloc"], the integer valuation in s has been
-   initialized from attributes["intval"], the vector of edges in t is empty and the src invariant
+   initialized from attributes["intval"], the vector of edges in t is empty and the target invariant
    in t has been initialized to the invariant in vloc
   */
   virtual void build(std::map<std::string, std::string> const & attributes, std::vector<sst_t> & v,

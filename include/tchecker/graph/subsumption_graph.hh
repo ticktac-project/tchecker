@@ -355,7 +355,7 @@ public:
    */
   void remove_node(node_sptr_t const & n)
   {
-    assert(!is_connected(n));
+    assert(!has_edge(n));
     _cover_graph.remove_node(n);
   }
 
@@ -367,7 +367,19 @@ public:
   void remove_edges(node_sptr_t const & n)
   {
     _directed_graph.remove_edges(n);
-    assert(!is_connected(n));
+    assert(!has_edge(n));
+  }
+
+  /*!
+   \brief Check if a node has edges
+   \param n : a node
+   \return true if n has incoming or outgoing edges, false otherwise
+  */
+  bool has_edge(node_sptr_t const & n)
+  {
+    auto in_edges = incoming_edges(n);
+    auto out_edges = outgoing_edges(n);
+    return (in_edges.begin() != in_edges.end() || out_edges.begin() != out_edges.end());
   }
 
   /*!
@@ -591,18 +603,6 @@ private:
   private:
     NODE_LE _node_le; /*!< Covering predicate on nodes */
   };
-
-  /*!
-   \brief Check is a node is connected
-   \param n : a node
-   \return true if n has incoming or outgoing edges, false otherwise
-  */
-  bool is_connected(node_sptr_t const & n)
-  {
-    auto in_edges = incoming_edges(n);
-    auto out_edges = outgoing_edges(n);
-    return (in_edges.begin() != in_edges.end() || out_edges.begin() != out_edges.end());
-  }
 
   node_sptr_hash_t _node_sptr_hash; /*!< Hash functor on shared pointers to nodes */
   node_sptr_le_t _node_sptr_le;     /*!< Covering functor on shared pointers to nodes */

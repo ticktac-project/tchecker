@@ -203,6 +203,19 @@ protected:
 
 } // end of namespace details
 
+/* has_const_value */
+
+bool has_const_value(tchecker::expression_t const & expr)
+{
+  try {
+    const_evaluate(expr);
+  }
+  catch (...) {
+    return false;
+  }
+  return true;
+}
+
 /* const_evaluate */
 
 tchecker::integer_t const_evaluate(tchecker::expression_t const & expr)
@@ -593,16 +606,18 @@ public:
     expr.offset().visit(*this);
 
     // add base variables depending on const evaluation of offset
+    tchecker::typed_var_expression_t const & expr_variable = expr.variable();
     tchecker::integer_t offset;
     try {
       offset = tchecker::const_evaluate(expr.offset());
     }
     catch (...) {
-      for (offset = 0; offset < (tchecker::integer_t)expr.variable().size(); ++offset)
-        extract_variable_with_type(expr.variable().id() + offset, expr.variable().type());
+      tchecker::integer_t size = static_cast<tchecker::integer_t>(expr_variable.size());
+      for (offset = 0; offset < size; ++offset)
+        extract_variable_with_type(expr_variable.id() + offset, expr_variable.type());
       return;
     }
-    extract_variable_with_type(expr.variable().id() + offset, expr.variable().type());
+    extract_variable_with_type(expr_variable.id() + offset, expr_variable.type());
   }
 
   /* Other visitors (recursion) */
@@ -663,6 +678,94 @@ void extract_variables(tchecker::typed_expression_t const & expr, std::unordered
 {
   tchecker::details::extract_variables_visitor_t v(clocks, intvars);
   expr.visit(v);
+}
+
+/* has_clock_constraints */
+
+namespace details {
+
+/*!
+ \class clock_constraint_visitor_t
+ \brief Visitor of typed expressions for computing types of contained clock constraints
+ */
+class clock_constraint_visitor_t : public tchecker::typed_expression_visitor_t {
+public:
+  /*!
+   \brief Constructor
+   */
+  clock_constraint_visitor_t() : _has_clock_constraints{.simple = false, .diagonal = false} {}
+
+  /*!
+   \brief Copy constructor
+   */
+  clock_constraint_visitor_t(tchecker::details::clock_constraint_visitor_t &) = default;
+
+  /*!
+   \brief Destructor
+   */
+  virtual ~clock_constraint_visitor_t() = default;
+
+  /*!
+   \brief Assignment operator
+   */
+  tchecker::details::clock_constraint_visitor_t & operator=(tchecker::details::clock_constraint_visitor_t const &) = default;
+
+  /*!
+   \brief Move assignment operator
+   */
+  tchecker::details::clock_constraint_visitor_t & operator=(tchecker::details::clock_constraint_visitor_t &&) = default;
+
+  /*!
+   \brief Accessor
+   \return type of clock constraints in the last visited expression
+   */
+  inline tchecker::has_clock_constraints_t const & has_clock_constraints() const { return _has_clock_constraints; }
+
+  /*!
+   \brief Treat diagonal clock constraint
+   \post flag _contain_diagonal has been set to true
+   */
+  virtual void visit(tchecker::typed_diagonal_clkconstr_expression_t const & expr) { _has_clock_constraints.diagonal = true; }
+
+  /*!
+   \brief Treat simple clock constraint
+   \post flag _contains_simple has been set to true
+   */
+  virtual void visit(tchecker::typed_simple_clkconstr_expression_t const & expr) { _has_clock_constraints.simple = true; }
+
+  /* Other visitors: recursion or do nothing */
+
+  virtual void visit(tchecker::typed_var_expression_t const & expr) {}
+
+  virtual void visit(tchecker::typed_bounded_var_expression_t const & expr) {}
+
+  virtual void visit(tchecker::typed_array_expression_t const & expr) {}
+
+  virtual void visit(tchecker::typed_int_expression_t const &) {}
+
+  virtual void visit(tchecker::typed_par_expression_t const & expr) { expr.expr().visit(*this); }
+
+  virtual void visit(tchecker::typed_binary_expression_t const & expr)
+  {
+    expr.left_operand().visit(*this);
+    expr.right_operand().visit(*this);
+  }
+
+  virtual void visit(tchecker::typed_unary_expression_t const & expr) { expr.operand().visit(*this); }
+
+  virtual void visit(tchecker::typed_ite_expression_t const & expr) {}
+
+private:
+  tchecker::has_clock_constraints_t _has_clock_constraints; /*!< Type of clock constraints found in last visited expression */
+};
+
+} // end of namespace details
+
+tchecker::has_clock_constraints_t has_clock_constraints(tchecker::typed_expression_t const & expr)
+{
+  tchecker::details::clock_constraint_visitor_t v;
+  expr.visit(v);
+  return v.has_clock_constraints();
 }
 
 } // end of namespace tchecker

@@ -101,6 +101,7 @@ public:
   \brief Constructor
   \param system : a system of timed processes
   \note this computes the clock bpunds on system
+  \throw std::runtime_error : if clock bounds cannot be computed for system
   */
   node_le_t(tchecker::ta::system_t const & system);
 
@@ -173,6 +174,7 @@ public:
    \param block_size : number of objects allocated in a block
    \param table_size : size of hash table
    \note this keeps a shared pointer on refzg
+   \throw std::runtime_error : if clock bounds cannot be computed for the underlying system in refzg
   */
   graph_t(std::shared_ptr<tchecker::refzg::refzg_t> const & refzg, std::size_t block_size, std::size_t table_size);
 
@@ -196,6 +198,13 @@ public:
   using tchecker::graph::subsumption::graph_t<tchecker::tck_reach::concur19::node_t, tchecker::tck_reach::concur19::edge_t,
                                               tchecker::tck_reach::concur19::node_hash_t,
                                               tchecker::tck_reach::concur19::node_le_t>::attributes;
+
+  /*!
+   \brief Checks is an edge is an actual edge (not a subsumption edge)
+   \param e : an edge
+   \return true if e is an actual edge, false otherwise (e is a subsumption edge)
+   */
+  bool is_actual_edge(edge_sptr_t const & e) const;
 
 protected:
   /*!
@@ -283,9 +292,10 @@ public:
  \pre labels must appear as node attributes in sysdecl
  search_order must be either "dfs" or "bfs"
  \return statistics on the run and the covering reachability graph
+ \throw std::runtime_error : if clock bounds cannot be computed for the system modeled as sysdecl
  */
 std::tuple<tchecker::algorithms::covreach::stats_t, std::shared_ptr<tchecker::tck_reach::concur19::graph_t>>
-run(std::shared_ptr<tchecker::parsing::system_declaration_t> const & sysdecl, std::string const & labels = "",
+run(tchecker::parsing::system_declaration_t const & sysdecl, std::string const & labels = "",
     std::string const & search_order = "bfs",
     tchecker::algorithms::covreach::covering_t covering = tchecker::algorithms::covreach::COVERING_FULL,
     std::size_t block_size = 10000, std::size_t table_size = 65536);

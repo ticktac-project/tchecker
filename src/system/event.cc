@@ -20,6 +20,11 @@ void events_t::add_event(std::string const & name, tchecker::system::attributes_
   _events_attributes.emplace_back(attributes);
 }
 
+tchecker::system::events_t::events_identifiers_range_t events_t::events_identifiers() const
+{
+  return tchecker::make_integer_range<tchecker::event_id_t>(0, events_count());
+}
+
 tchecker::system::attributes_t const & events_t::event_attributes(tchecker::event_id_t id) const
 {
   if (id >= events_count())

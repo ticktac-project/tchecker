@@ -9,6 +9,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <exception>
+#include <memory>
 #include <sstream>
 
 #include "tchecker/parsing/declaration.hh"
@@ -22,7 +23,7 @@
 #define YY_DECL \
 tchecker::parsing::system::parser_t::symbol_type spyylex \
 (std::string const & filename, \
-tchecker::parsing::system_declaration_t * & system_declaration)
+std::shared_ptr<tchecker::parsing::system_declaration_t> & system_declaration)
 
 // Work around an incompatibility in flex (at least versions
 // 2.5.31 through 2.5.33): it generates code that does
@@ -144,7 +145,7 @@ namespace tchecker {
 
   namespace parsing {
 
-    tchecker::parsing::system_declaration_t * parse_system_declaration(std::string const & filename)
+    std::shared_ptr<tchecker::parsing::system_declaration_t> parse_system_declaration(std::string const & filename)
     {
       if (filename.empty() || (filename == "-"))
         return tchecker::parsing::parse_system_declaration(stdin, "");
@@ -153,7 +154,7 @@ namespace tchecker {
       if (f == nullptr)
         throw std::runtime_error("cannot open " + filename + ": " + strerror(errno));
         
-      tchecker::parsing::system_declaration_t * sysdecl = nullptr;
+      std::shared_ptr<tchecker::parsing::system_declaration_t> sysdecl{nullptr};
       try {
         sysdecl = tchecker::parsing::parse_system_declaration(f, filename);
         std::fclose(f);
@@ -166,7 +167,7 @@ namespace tchecker {
     }
     
     
-    tchecker::parsing::system_declaration_t *
+    std::shared_ptr<tchecker::parsing::system_declaration_t>
     parse_system_declaration(std::FILE * f, std::string const & filename)
 		{
       std::size_t old_error_count = tchecker::log_error_count();
@@ -178,7 +179,7 @@ namespace tchecker {
       BEGIN INITIAL;
       
       // Parse
-      tchecker::parsing::system_declaration_t * sysdecl = nullptr;
+      std::shared_ptr<tchecker::parsing::system_declaration_t>sysdecl{nullptr};
       
       try {
         tchecker::parsing::system::parser_t parser(filename, sysdecl);
@@ -186,15 +187,12 @@ namespace tchecker {
         spyy_flush_buffer(YY_CURRENT_BUFFER);
       }
       catch (...) {
-        delete sysdecl;
         spyy_flush_buffer(YY_CURRENT_BUFFER);
         throw;
       }
       
-      if (tchecker::log_error_count() > old_error_count) {
-        delete sysdecl;
+      if (tchecker::log_error_count() > old_error_count)
         sysdecl = nullptr;
-      }
       
       return sysdecl;
     }

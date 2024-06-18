@@ -155,23 +155,34 @@ public:
       tchecker::cartesian_iterator_t<tchecker::range_t<tchecker::system::edges_collection_const_iterator_t>>::values_iterator_t;
 
   /*!
+   \struct sync_edges_t
+   \brief Pair (id, edge) where id is a synchronization identifier, and edge is a synchronized edges
+   instance of id
+   */
+  struct sync_edges_t {
+    tchecker::sync_id_t sync_id;               /*!< Synchronization identifier */
+    tchecker::range_t<edges_iterator_t> edges; /*!< Range of synchronized edges */
+  };
+
+  /*!
    \brief Accessor
    \pre not at_end()  (checked by assertion)
-   \return current synchronized edge
-   \note the returned range is invalidated by operator++
+   \return pair (current synchronization identifier, current synchronized edge) where current synchronized
+   edge is an instance of current synchronization identifier
+   \note the returned value is invalidated by operator++
    */
-  inline tchecker::range_t<edges_iterator_t> operator*()
+  inline sync_edges_t operator*()
   {
     assert(!at_end());
-    return (_cartesian_it.operator*());
+    return sync_edges_t{.sync_id = _sync_it->id(), .edges = _cartesian_it.operator*()};
   }
 
   /*!
    \brief Increment (next)
    \pre not at_end()  (checked by assertion)
-   \post this points to the next element (if any)
+   \post this points to the next synchronized edge (if any)
    \return this after incrementation
-   \note operator++ invalidates all ranges returned by operator*
+   \note operator++ invalidates all values returned by operator*
    */
   tchecker::syncprod::vloc_synchronized_edges_iterator_t & operator++();
 
@@ -373,12 +384,23 @@ public:
   bool operator!=(tchecker::end_iterator_t const & end) const;
 
   /*!
+   \struct sync_edges_t
+   \brief pair (sync_id, edges) where sync_id is the identifier of a synchronization,
+   and edges is an instance of sync_id, as a range of synchronized edges
+   \note sync_id is tchecker::NO_SYNC if this edge is asynchronous (i.e. edges is a singleton)
+   */
+  struct sync_edges_t {
+    tchecker::sync_id_t sync_id;                                   /*!< Synchronization identifier */
+    tchecker::range_t<tchecker::syncprod::edges_iterator_t> edges; /*!< Range of synchronized edges */
+  };
+
+  /*!
    \brief Accessor
    \pre not at_end() (checked by assertion)
    \return Range of iterator over collection of edges pointed to by this
    \note return range is invalidated by operator++
    */
-  tchecker::range_t<tchecker::syncprod::edges_iterator_t> operator*();
+  sync_edges_t operator*();
 
   /*!
    \brief Move to next
@@ -409,7 +431,7 @@ private:
  */
 template <> struct std::iterator_traits<tchecker::syncprod::edges_iterator_t> {
   using difference_type = nullptr_t;
-  using value_type = std::shared_ptr<tchecker::system::edge_t>;
+  using value_type = tchecker::system::edge_const_shared_ptr_t;
   using pointer = value_type *;
   using reference = value_type &;
   using iterator_category = std::forward_iterator_tag;
@@ -420,7 +442,7 @@ template <> struct std::iterator_traits<tchecker::syncprod::edges_iterator_t> {
  */
 template <> struct std::iterator_traits<tchecker::syncprod::vloc_edges_iterator_t> {
   using difference_type = nullptr_t;
-  using value_type = tchecker::range_t<tchecker::syncprod::edges_iterator_t>;
+  using value_type = tchecker::syncprod::vloc_edges_iterator_t::sync_edges_t;
   using pointer = value_type *;
   using reference = value_type &;
   using iterator_category = std::forward_iterator_tag;

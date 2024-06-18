@@ -69,18 +69,19 @@ using initial_value_t = std::iterator_traits<tchecker::syncprod::initial_iterato
  \param system : a system
  \param vloc : tuple of locations
  \param vedge : tuple of edges
+ \param sync_id : synchronization identifier
  \param initial_range : range of initial locations
  \pre the size of vloc and vedge is equal to the size of initial_range.
  initial_range has been obtained from system.
  initial_range yields the initial locations of all the processes ordered by increasing process identifier
  \post vloc has been initialized to the tuple of initial locations in initial_range.
  vedge has been initialized to an empty tuple of edges
+ sync_id has been set to tchecker::NO_SYNC
  \return tchecker::STATE_OK
  \throw std::invalid_argument : if the size of vloc, vedge and initial_range do not coincide
  */
-tchecker::state_status_t initial(tchecker::syncprod::system_t const & system,
-                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                                 tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+tchecker::state_status_t initial(tchecker::syncprod::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                                 tchecker::vedge_sptr_t const & vedge, tchecker::sync_id_t & sync_id,
                                  tchecker::syncprod::initial_value_t const & initial_range);
 
 /*!
@@ -96,7 +97,7 @@ tchecker::state_status_t initial(tchecker::syncprod::system_t const & system,
 inline tchecker::state_status_t initial(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t & s,
                                         tchecker::syncprod::transition_t & t, tchecker::syncprod::initial_value_t const & v)
 {
-  return tchecker::syncprod::initial(system, s.vloc_ptr(), t.vedge_ptr(), v);
+  return tchecker::syncprod::initial(system, s.vloc_ptr(), t.vedge_ptr(), t.sync_id(), v);
 }
 
 /* Final edges */
@@ -222,18 +223,19 @@ using final_value_t = tchecker::syncprod::final_iterator_t::value_type_t;
  \param system : a system
  \param vloc : tuple of locations
  \param vedge : tuple of edges
+ \param sync_id : synchronization identifier
  \param v : value from final iterator (range of locations)
  \pre the size of vloc and vedge is equal to the size of v
  v has been obtained from system.
  v yields locations of all the processes ordered by increasing process identifier in a final state
  \post vloc has been initialized to the tuple of locations in v.
  vedge has been initialized to an empty tuple of edges
+ sync_id has been set to tchecker::NO_SYNC
  \return tchecker::STATE_OK
  \throw std::invalid_argument : if the size of vloc, vedge and v do not coincide
  */
-tchecker::state_status_t final(tchecker::syncprod::system_t const & system,
-                               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                               tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+tchecker::state_status_t final(tchecker::syncprod::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                               tchecker::vedge_sptr_t const & vedge, tchecker::sync_id_t & sync_id,
                                tchecker::syncprod::final_value_t const & v);
 
 /*!
@@ -249,7 +251,7 @@ tchecker::state_status_t final(tchecker::syncprod::system_t const & system,
 inline tchecker::state_status_t final(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t & s,
                                       tchecker::syncprod::transition_t & t, tchecker::syncprod::initial_value_t const & v)
 {
-  return tchecker::syncprod::final(system, s.vloc_ptr(), t.vedge_ptr(), v);
+  return tchecker::syncprod::final(system, s.vloc_ptr(), t.vedge_ptr(), t.sync_id(), v);
 }
 
 /* Outgoing edges */
@@ -334,12 +336,19 @@ public:
   inline bool operator!=(tchecker::end_iterator_t const & it) const { return !(*this == it); }
 
   /*!
+   \brief Type of synchronized edges, i.e. pairs (synchronization id, range of edges)
+   */
+  using sync_edges_t = tchecker::syncprod::vloc_edges_iterator_t::sync_edges_t;
+
+  /*!
   \brief Dereference operator
   \pre not at_end() (checked by assertion)
-  \return Range of iterator over collection of edges pointed to by this
-  \note return range is invalidated by operator++
+  \return a pair (sync_id, edges) where sync_if is the identifier of the synchronization
+  instantiated by the range edges (sync_id is tchecker::NO_SYNC if edges is
+  asynchronous)
+  \note return synchronized edges is invalidated by operator++
   */
-  tchecker::range_t<tchecker::syncprod::edges_iterator_t> operator*();
+  sync_edges_t operator*();
 
   /*!
    \brief Move to next
@@ -347,7 +356,7 @@ public:
    \post this points to next tuple of edges (if any) that moves a committed
    process if any, or next edge if no committed process
    \return this after increment
-   \note invaldates ranges returned by operator*
+   \note invaldates synchronized edges returned by operator*
    */
   tchecker::syncprod::outgoing_edges_iterator_t & operator++();
 
@@ -385,15 +394,13 @@ using outgoing_edges_range_t = tchecker::range_t<tchecker::syncprod::outgoing_ed
  \param vloc : tuple of locations
  \return range of outgoing synchronized and asynchronous edges from vloc in system
  */
-tchecker::syncprod::outgoing_edges_range_t
-outgoing_edges(tchecker::syncprod::system_t const & system,
-               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc);
+tchecker::syncprod::outgoing_edges_range_t outgoing_edges(tchecker::syncprod::system_t const & system,
+                                                          tchecker::const_vloc_sptr_t const & vloc);
 
 /*!
- \brief Type of outgoing vedge
- \note type dereferenced by outgoing_edges_iterator_t, corresponds to tchecker::vedge_iterator_t
+ \brief Dereference type of outgoing_edges_iterator_t
  */
-using outgoing_edges_value_t = tchecker::range_t<tchecker::syncprod::edges_iterator_t>;
+using outgoing_edges_value_t = tchecker::syncprod::outgoing_edges_iterator_t::sync_edges_t;
 
 /* Next states */
 
@@ -401,36 +408,40 @@ using outgoing_edges_value_t = tchecker::range_t<tchecker::syncprod::edges_itera
  \brief Compute next tuples of locations and edges
  \param vloc : tuple of locations
  \param vedge : tuple of edges
- \param edges : range of edges in a asynchronous/synchronized edge from vloc
- \pre the source locations of edges match the locations in vloc,
- no process has more than one edge in edges,
- and the pid of every process in edges is less than the size of vloc
- \post vloc has been updated according to target locations in edges for involves processes
- vedge contains the identifiers of the edges in edges
+ \param sync_id : synchronization identifier
+ \param sync_edges : synchronized edges from vloc
+ \pre the source locations of the edges in sync_edges match the locations in vloc,
+ no process has more than one edge in sync_edges,
+ and the pid of every process in sync_edges is less than the size of vloc
+ \post vloc has been updated according to target locations of the edges in sync_edges for involves processes,
+ and the others are left unchanged
+ vedge contains the identifiers of the edges in sync_edges
+ vedge is an instance of synchronization sync_id, unless sync_id is tchecker::NO_SYNC (asynchronous vedge)
  \return tchecker::STATE_OK if the source locations in edges match the locations in vloc,
  tchecker::STATE_INCOMPATIBLE_EDGE otherwise
  \throw std::invalid_argument : if the sizes of vloc and vedge do not match, or
- if the pid of an edge in edges is greater or equal to the size of vloc/vedge
+ if the pid of an edge in sync_edges is greater or equal to the size of vloc/vedge
  */
-tchecker::state_status_t next(tchecker::syncprod::system_t const & system,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                              tchecker::syncprod::outgoing_edges_value_t const & edges);
+tchecker::state_status_t next(tchecker::syncprod::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                              tchecker::vedge_sptr_t const & vedge, tchecker::sync_id_t & sync_id,
+                              tchecker::syncprod::outgoing_edges_value_t const & sync_edges);
 
 /*!
 \brief Compute next state and transition
 \param system : a system
 \param s : state
 \param t : transition
-\param v : outgoing edge value
-\post s have been updated from v, and t is the set of edges in v
+\param sync_edges : outgoing synchronized edges
+\post s have been updated from sync_edges, and t is the set of edges in sync_edges
+as well as the synchronization identifier (or tchecker::NO_SYNC if t is asynchronous)
 \return status of state s after update
-\throw std::invalid_argument : if s and v have incompatible size
+\throw std::invalid_argument : if s and sync_edges have incompatible size
 */
 inline tchecker::state_status_t next(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t & s,
-                                     tchecker::syncprod::transition_t & t, tchecker::syncprod::outgoing_edges_value_t const & v)
+                                     tchecker::syncprod::transition_t & t,
+                                     tchecker::syncprod::outgoing_edges_value_t const & sync_edges)
 {
-  return tchecker::syncprod::next(system, s.vloc_ptr(), t.vedge_ptr(), v);
+  return tchecker::syncprod::next(system, s.vloc_ptr(), t.vedge_ptr(), t.sync_id(), sync_edges);
 }
 
 /* Incoming edges */
@@ -522,12 +533,19 @@ public:
   inline bool operator!=(tchecker::end_iterator_t const & it) const { return !(*this == it); }
 
   /*!
+   \brief Type of synchronized edges, i.e. pairs (synchronization id, range of edges)
+   */
+  using sync_edges_t = tchecker::syncprod::vloc_edges_iterator_t::sync_edges_t;
+
+  /*!
   \brief Dereference operator
   \pre not at_end() (checked by assertion)
-  \return Range of iterator over collection of edges pointed to by this
-  \note return range is invalidated by operator++
+  \return a pair (sync_id, edges) where sync_if is the identifier of the synchronization
+  instantiated by the range edges (sync_id is tchecker::NO_SYNC if edges is
+  asynchronous)
+  \note return synchronizd edges is invalidated by operator++
   */
-  tchecker::range_t<tchecker::syncprod::edges_iterator_t> operator*();
+  sync_edges_t operator*();
 
   /*!
    \brief Move to next
@@ -535,7 +553,7 @@ public:
    \post this points to next tuple of edges (if any) that moves a committed
    process if any, or next edge if no committed process
    \return this after increment
-   \note invaldates ranges returned by operator*
+   \note invaldates synchronized edges returned by operator*
    */
   tchecker::syncprod::incoming_edges_iterator_t & operator++();
 
@@ -574,15 +592,14 @@ using incoming_edges_range_t = tchecker::range_t<tchecker::syncprod::incoming_ed
  \param vloc : tuple of locations
  \return range of incoming synchronized and asynchronous edges to vloc in system
  */
-tchecker::syncprod::incoming_edges_range_t
-incoming_edges(tchecker::syncprod::system_t const & system,
-               tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc);
+tchecker::syncprod::incoming_edges_range_t incoming_edges(tchecker::syncprod::system_t const & system,
+                                                          tchecker::const_vloc_sptr_t const & vloc);
 
 /*!
  \brief Type of incoming vedge
  \note type dereferenced by outgoing_edges_iterator_t, corresponds to tchecker::vedge_iterator_t
  */
-using incoming_edges_value_t = tchecker::range_t<tchecker::syncprod::edges_iterator_t>;
+using incoming_edges_value_t = tchecker::syncprod::incoming_edges_iterator_t::sync_edges_t;
 
 static_assert(std::is_same<tchecker::syncprod::outgoing_edges_value_t, tchecker::syncprod::incoming_edges_value_t>::value,
               "Outgoing and incoming edges values should be the same type");
@@ -593,36 +610,38 @@ static_assert(std::is_same<tchecker::syncprod::outgoing_edges_value_t, tchecker:
  \brief Compute previous tuples of locations and edges
  \param vloc : tuple of locations
  \param vedge : tuple of edges
- \param edges : range of edges in a asynchronous/synchronized edge to vloc
- \pre the target locations of edges match the locations in vloc,
- no process has more than one edge in edges,
- and the pid of every process in edges is less than the size of vloc
- \post vloc has been updated according to source locations of edges for processes involved in edges.
- vedge contains the edge identifiers in edges
- \return tchecker::STATE_OK if the target locations in edges match the locations in vloc,
+ \param sync_id : synchronization identifier
+ \param sync_edges : sychronized edges to vloc
+ \pre the target locations of the edges in sync_edges match the locations in vloc,
+ no process has more than one edge in sync_edges,
+ and the pid of every process in sync_edges is less than the size of vloc
+ \post vloc has been updated according to source locations of edges in sync_edges for processes involved in sync_edges.
+ vedge contains the edge identifiers of the edges in sync_edges
+ vedge is an instance of the synchronization sync_id, unless sync_id is tchecker::NO_SYNC (asynchronous vedge)
+ \return tchecker::STATE_OK if the target locations in the edges in sync_edges match the locations in vloc,
  tchecker::STATE_INCOMPATIBLE_EDGE otherwise
  \throw std::invalid_argument : if the sizes of vloc and vedge do not match, or
- if the pid of an edge in edges is greater or equal to the size of vloc/vedge
+ if the pid of an edge in sync_edges is greater or equal to the size of vloc/vedge
  */
-tchecker::state_status_t prev(tchecker::syncprod::system_t const & system,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                              tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
-                              tchecker::syncprod::outgoing_edges_value_t const & edges);
+tchecker::state_status_t prev(tchecker::syncprod::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                              tchecker::vedge_sptr_t const & vedge, tchecker::sync_id_t & sync_id,
+                              tchecker::syncprod::outgoing_edges_value_t const & sync_edges);
 
 /*!
 \brief Compute previous state and transition
 \param system : a system
 \param s : state
 \param t : transition
-\param v : incoming edge value
-\post s have been updated from v, and t is the set of edges in v
+\param sync_edges : incoming synchronized edges
+\post s have been updated from sync_edges, and t is the set of edges in sync_edges
+along with the synchronization identifier in sync_edges
 \return status of state s after update
-\throw std::invalid_argument : if s and v have incompatible size
+\throw std::invalid_argument : if s and sync_edges have incompatible size
 */
 inline tchecker::state_status_t prev(tchecker::syncprod::system_t const & system, tchecker::syncprod::state_t & s,
                                      tchecker::syncprod::transition_t & t, tchecker::syncprod::incoming_edges_value_t const & v)
 {
-  return tchecker::syncprod::prev(system, s.vloc_ptr(), t.vedge_ptr(), v);
+  return tchecker::syncprod::prev(system, s.vloc_ptr(), t.vedge_ptr(), t.sync_id(), v);
 }
 
 /* Labels */
@@ -634,7 +653,7 @@ inline tchecker::state_status_t prev(tchecker::syncprod::system_t const & system
  \return the set of processes from system that are committed in vloc
 */
 boost::dynamic_bitset<> committed_processes(tchecker::syncprod::system_t const & system,
-                                            tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t const> const & vloc);
+                                            tchecker::const_vloc_sptr_t const & vloc);
 
 /*!
  \brief Compute labels in a tuple of locations
@@ -724,17 +743,19 @@ void attributes(tchecker::syncprod::system_t const & system, tchecker::syncprod:
  \brief Initialization from attributes
  \param system : a system
  \param vloc : a vector of locations
- \param vedge : a vectofr of edges
+ \param vedge : a vector of edges
+ \param sync_id : synchronization identifier
  \param attributes : map of attributes
  \pre attributes["vloc"] is defined and follows the syntax required by function
  tchecker::from_string(tchecker::vloc_t &, tchecker::system::system_t const &, std::string const &);
- \post vloc has been initialized from attributes["vloc"] and vedge is the empty vector of edges
+ \post vloc has been initialized from attributes["vloc"]
+ vedge is the empty vector of edges
+ sync_id is tchecker::NO_SYNC
  \return tchecker::STATE_OK if initialization succeeded
  tchecker::STATE_BAD if initialization failed
  */
-tchecker::state_status_t initialize(tchecker::syncprod::system_t const & system,
-                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_vloc_t> const & vloc,
-                                    tchecker::intrusive_shared_ptr_t<tchecker::shared_vedge_t> const & vedge,
+tchecker::state_status_t initialize(tchecker::syncprod::system_t const & system, tchecker::vloc_sptr_t const & vloc,
+                                    tchecker::vedge_sptr_t const & vedge, tchecker::sync_id_t & sync_id,
                                     std::map<std::string, std::string> const & attributes);
 
 /*!
@@ -743,7 +764,8 @@ tchecker::state_status_t initialize(tchecker::syncprod::system_t const & system,
  \param s : state
  \param t : transition
  \param attributes : map of attributes
- \post s and t have been initialized from attributes["vloc"]
+ \post s has been initialized from attributes["vloc"]
+ t is an empty transition
  \return tchecker::STATE_OK if initialization succeeded
  tchecker::STATE_BAD otherwise
 */
@@ -751,7 +773,7 @@ inline tchecker::state_status_t initialize(tchecker::syncprod::system_t const & 
                                            tchecker::syncprod::transition_t & t,
                                            std::map<std::string, std::string> const & attributes)
 {
-  return tchecker::syncprod::initialize(system, s.vloc_ptr(), t.vedge_ptr(), attributes);
+  return tchecker::syncprod::initialize(system, s.vloc_ptr(), t.vedge_ptr(), t.sync_id(), attributes);
 }
 
 /* syncprod_t */

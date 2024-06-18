@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "tchecker/waiting/pqueue.hh"
 #include "tchecker/waiting/queue.hh"
 #include "tchecker/waiting/stack.hh"
 #include "tchecker/waiting/waiting.hh"
@@ -635,5 +636,281 @@ TEST_CASE("fast remove waiting stack", "[waiting]")
     REQUIRE(non_empty_stack.first()->x() == 15);
     non_empty_stack.remove_first();
     REQUIRE(non_empty_stack.empty());
+  }
+}
+
+void check_first_and_remove(tchecker::waiting::priority_queue_t<int,std::less<int>> &q, int v) {
+  REQUIRE_FALSE(q.empty());
+  REQUIRE(q.first() == v);
+  q.remove_first();
+}
+
+TEST_CASE("waiting priority queue", "[waiting]")
+{
+  tchecker::waiting::priority_queue_t<int,std::less<int>> empty_queue, non_empty_queue;
+  non_empty_queue.insert(1);
+  non_empty_queue.insert(99);
+  non_empty_queue.insert(47);
+  non_empty_queue.insert(51);
+
+
+  SECTION("empty")
+  {
+    REQUIRE(empty_queue.empty());
+    REQUIRE_FALSE(non_empty_queue.empty());
+  }
+
+  SECTION("insert in empty priority queue")
+  {
+    empty_queue.insert(2);
+    REQUIRE_FALSE(empty_queue.empty());
+    REQUIRE(empty_queue.first() == 2);
+    empty_queue.remove_first();
+    REQUIRE(empty_queue.empty());
+  }
+
+  SECTION("insert in non empty priority queue")
+  {
+    non_empty_queue.insert(89);
+    REQUIRE_FALSE(non_empty_queue.empty());
+    REQUIRE(non_empty_queue.first() == 1);
+    non_empty_queue.remove_first();
+
+    REQUIRE_FALSE(non_empty_queue.empty());
+    REQUIRE(non_empty_queue.first() == 47);
+    non_empty_queue.remove_first();
+
+    REQUIRE_FALSE(non_empty_queue.empty());
+    REQUIRE(non_empty_queue.first() == 51);
+    non_empty_queue.remove_first();
+
+    REQUIRE_FALSE(non_empty_queue.empty());
+    REQUIRE(non_empty_queue.first() == 89);
+    non_empty_queue.remove_first();
+
+    REQUIRE_FALSE(non_empty_queue.empty());
+    REQUIRE(non_empty_queue.first() == 99);
+    non_empty_queue.remove_first();
+
+    REQUIRE(non_empty_queue.empty());
+  }
+
+  SECTION("clear an empty priority queue")
+  {
+    empty_queue.clear();
+    REQUIRE(empty_queue.empty());
+  }
+
+  SECTION("clear a non-empty priority queue")
+  {
+    non_empty_queue.clear();
+    REQUIRE(non_empty_queue.empty());
+  }
+
+  SECTION("remove first element")
+  {
+    REQUIRE(non_empty_queue.first() == 1);
+    non_empty_queue.remove_first();
+    REQUIRE(non_empty_queue.first() == 47);
+    non_empty_queue.remove_first();
+    REQUIRE(non_empty_queue.first() == 51);
+    non_empty_queue.remove_first();
+    REQUIRE(non_empty_queue.first() == 99);
+    non_empty_queue.remove_first();
+    REQUIRE(non_empty_queue.empty());
+  }
+
+  SECTION("access to first element") { REQUIRE(non_empty_queue.first() == 1); }
+
+  SECTION("remove head")
+  {
+    non_empty_queue.remove(1);
+    check_first_and_remove(non_empty_queue, 47);
+    check_first_and_remove(non_empty_queue, 51);
+    check_first_and_remove(non_empty_queue, 99);
+    REQUIRE(non_empty_queue.empty());
+  }
+
+  SECTION("remove middle")
+  {
+    non_empty_queue.remove(51);
+    check_first_and_remove(non_empty_queue, 1);
+    check_first_and_remove(non_empty_queue, 47);
+    check_first_and_remove(non_empty_queue, 99);
+
+    REQUIRE(non_empty_queue.empty());
+  }
+
+  SECTION("remove last")
+  {
+    non_empty_queue.remove(99);
+    check_first_and_remove(non_empty_queue, 1);
+    check_first_and_remove(non_empty_queue, 47);
+    check_first_and_remove(non_empty_queue, 51);
+  }
+
+  SECTION("remove multiple")
+  {
+    non_empty_queue.insert(51);
+    non_empty_queue.remove(51);
+    check_first_and_remove(non_empty_queue, 1);
+    check_first_and_remove(non_empty_queue, 47);
+    check_first_and_remove(non_empty_queue, 99);
+    REQUIRE(non_empty_queue.empty());
+  }
+
+  SECTION("remove empty priority queue")
+  {
+    empty_queue.remove(2);
+    REQUIRE(empty_queue.empty());
+  }
+
+  SECTION("remove element not in queue")
+  {
+    non_empty_queue.remove(0);
+    check_first_and_remove(non_empty_queue, 1);
+    check_first_and_remove(non_empty_queue, 47);
+    check_first_and_remove(non_empty_queue, 51);
+    check_first_and_remove(non_empty_queue, 99);
+    REQUIRE(non_empty_queue.empty());
+  }
+}
+
+using int_sptr_t = std::shared_ptr<int_element_t>;
+struct int_sptr_lt
+{
+  bool operator()(const int_sptr_t & i1, const int_sptr_t & i2) const { return i1->x() < i2->x(); }
+};
+
+bool check_first_and_remove(tchecker::waiting::fast_remove_priority_queue_t<int_sptr_t, int_sptr_lt> &q, int v) {
+  if (! q.empty() && q.first()->x() == v) {
+    q.remove_first();
+    return true;
+  }
+  return false;
+}
+
+TEST_CASE("fast remove waiting priority queue", "[waiting]")
+{
+  std::vector<int_sptr_t> v;
+  v.emplace_back(new int_element_t{12});
+  v.emplace_back(new int_element_t{3});
+  v.emplace_back(new int_element_t{8923});
+  v.emplace_back(new int_element_t{12});
+  v.emplace_back(new int_element_t{13});
+
+  tchecker::waiting::fast_remove_priority_queue_t<int_sptr_t, int_sptr_lt> empty_queue, non_empty_queue;
+  for (int_sptr_t const & p : v)
+    non_empty_queue.insert(p);
+
+  SECTION("empty")
+  {
+    REQUIRE(empty_queue.empty());
+    REQUIRE_FALSE(non_empty_queue.empty());
+  }
+
+  SECTION("insert in empty priority queue")
+  {
+    int_sptr_t x{new int_element_t{290}};
+    empty_queue.insert(x);
+    REQUIRE(check_first_and_remove(empty_queue, 290));
+    REQUIRE(empty_queue.empty());
+  }
+
+  SECTION("insert in non empty priority queue")
+  {
+    int_sptr_t x{new int_element_t{45}};
+    non_empty_queue.insert(x);
+    REQUIRE(check_first_and_remove(non_empty_queue, 3));
+    REQUIRE(check_first_and_remove(non_empty_queue, 12));
+    REQUIRE(check_first_and_remove(non_empty_queue, 12));
+    REQUIRE(check_first_and_remove(non_empty_queue, 13));
+    REQUIRE(check_first_and_remove(non_empty_queue, 45));
+    REQUIRE(check_first_and_remove(non_empty_queue, 8923));
+    REQUIRE(non_empty_queue.empty());
+  }
+
+  SECTION("clear an empty priority queue")
+  {
+    empty_queue.clear();
+    REQUIRE(empty_queue.empty());
+  }
+
+  SECTION("clear a non-empty queue")
+  {
+    non_empty_queue.clear();
+    REQUIRE(non_empty_queue.empty());
+  }
+
+  SECTION("remove first element")
+  {
+    REQUIRE(check_first_and_remove(non_empty_queue, 3));
+    REQUIRE(check_first_and_remove(non_empty_queue, 12));
+    REQUIRE(check_first_and_remove(non_empty_queue, 12));
+    REQUIRE(check_first_and_remove(non_empty_queue, 13));
+    REQUIRE(check_first_and_remove(non_empty_queue, 8923));
+    REQUIRE(non_empty_queue.empty());
+  }
+
+  SECTION("access to first element") { REQUIRE(non_empty_queue.first()->x() == 3); }
+
+  SECTION("remove head")
+  {
+    non_empty_queue.remove(v[0]);
+    REQUIRE(check_first_and_remove(non_empty_queue, 3));
+    REQUIRE(check_first_and_remove(non_empty_queue, 12));
+    REQUIRE(check_first_and_remove(non_empty_queue, 13));
+    REQUIRE(check_first_and_remove(non_empty_queue, 8923));
+    REQUIRE(non_empty_queue.empty());
+  }
+
+  SECTION("remove middle")
+  {
+    non_empty_queue.remove(v[4]);
+    REQUIRE(check_first_and_remove(non_empty_queue, 3));
+    REQUIRE(check_first_and_remove(non_empty_queue, 12));
+    REQUIRE(check_first_and_remove(non_empty_queue, 12));
+    REQUIRE(check_first_and_remove(non_empty_queue, 8923));
+    REQUIRE(non_empty_queue.empty());
+  }
+
+  SECTION("remove last")
+  {
+    non_empty_queue.remove(v[2]);
+    REQUIRE(check_first_and_remove(non_empty_queue, 3));
+    REQUIRE(check_first_and_remove(non_empty_queue, 12));
+    REQUIRE(check_first_and_remove(non_empty_queue, 12));
+    REQUIRE(check_first_and_remove(non_empty_queue, 13));
+    REQUIRE(non_empty_queue.empty());
+  }
+
+  SECTION("remove multiple")
+  {
+    non_empty_queue.insert(v[2]);
+    non_empty_queue.remove(v[2]);
+    REQUIRE(check_first_and_remove(non_empty_queue, 3));
+    REQUIRE(check_first_and_remove(non_empty_queue, 12));
+    REQUIRE(check_first_and_remove(non_empty_queue, 12));
+    REQUIRE(check_first_and_remove(non_empty_queue, 13));
+    REQUIRE(non_empty_queue.empty());
+  }
+
+  SECTION("remove empty priority queue")
+  {
+    int_sptr_t x{new int_element_t{128}};
+    empty_queue.remove(x);
+    REQUIRE(empty_queue.empty());
+  }
+
+  SECTION("remove element not in priority queue")
+  {
+    int_sptr_t x{new int_element_t{1298}};
+    non_empty_queue.remove(x);
+    REQUIRE(check_first_and_remove(non_empty_queue, 3));
+    REQUIRE(check_first_and_remove(non_empty_queue, 12));
+    REQUIRE(check_first_and_remove(non_empty_queue, 12));
+    REQUIRE(check_first_and_remove(non_empty_queue, 13));
+    REQUIRE(check_first_and_remove(non_empty_queue, 8923));
+    REQUIRE(non_empty_queue.empty());
   }
 }

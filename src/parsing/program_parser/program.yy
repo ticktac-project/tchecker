@@ -23,6 +23,7 @@
   #include <exception>
   #include <iostream>
   #include <limits>
+  #include <memory>
   #include <string>
   #include <tuple>
   
@@ -35,8 +36,8 @@
 
 
 %param { std::string const & program_context }
-%param { tchecker::expression_t * & expr }
-%param { tchecker::statement_t * & stmt }
+%param { std::shared_ptr<tchecker::expression_t> & expr }
+%param { std::shared_ptr<tchecker::statement_t> & stmt }
 
 %locations
 
@@ -45,8 +46,8 @@
   // Declare the lexer for the parser's sake.
   tchecker::parsing::program::parser_t::symbol_type ppyylex
   (std::string const & program_context,
-  tchecker::expression_t * & expr,
-  tchecker::statement_t * & stmt);
+  std::shared_ptr<tchecker::expression_t> & expr,
+  std::shared_ptr<tchecker::statement_t> & stmt);
   
   
   // Global variables
@@ -58,65 +59,37 @@
   class fake_expression_t final : public tchecker::lvalue_expression_t {
   public:
     virtual ~fake_expression_t() = default;
-  private:
-    virtual std::ostream & do_output(std::ostream & os) const
-    {
-      return os;
-    }
-    
-    virtual tchecker::expression_t * do_clone() const
-    {
-      return new fake_expression_t();
-    }
-    
-    virtual void do_visit(tchecker::expression_visitor_t & v) const
-    {}
+    virtual std::ostream & output(std::ostream & os) const override { return os; }
+    virtual fake_expression_t * clone() const override { return new fake_expression_t(); }
+    virtual void visit(tchecker::expression_visitor_t & v) const override {}
   };
-  
+
+  auto fake_expression = std::make_shared<fake_expression_t>();
   
   // Fake variable expression used is case of syntax error to allow parsing of
   // the entire expression
   class fake_var_expression_t final : public tchecker::var_expression_t {
   public:
-    fake_var_expression_t() : tchecker::var_expression_t("fake") {}
-    
+    fake_var_expression_t() : tchecker::var_expression_t("tck__") {}
     virtual ~fake_var_expression_t() = default;
-  private:
-    virtual std::ostream & do_output(std::ostream & os) const
-    {
-      return os;
-    }
-
-    virtual tchecker::expression_t * do_clone() const
-    {
-      return new fake_var_expression_t();
-    }
-    
-    virtual void do_visit(tchecker::expression_visitor_t & v) const
-    {}
+    virtual std::ostream & output(std::ostream & os) const override { return os; }
+    virtual fake_var_expression_t * clone() const override { return new fake_var_expression_t(); }
+    virtual void visit(tchecker::expression_visitor_t & v) const override {}
   };
   
-  
+  auto fake_var_expression = std::make_shared<fake_var_expression_t>();
   
   // Fake statement used in case of syntax error to allow parsing of the
   // entire statement
   class fake_statement_t final : public tchecker::statement_t {
   public:
     virtual ~fake_statement_t() = default;
-  private:
-    virtual std::ostream & do_output(std::ostream & os) const
-    {
-      return os;
-    }
-
-    virtual tchecker::statement_t * do_clone() const
-    {
-      return new fake_statement_t();
-    }
-    
-    virtual void do_visit(tchecker::statement_visitor_t & v) const
-    {}
+    virtual std::ostream & output(std::ostream & os) const override { return os; }
+    virtual fake_statement_t * clone() const override { return new fake_statement_t(); }
+    virtual void visit(tchecker::statement_visitor_t & v) const override {}
   };
+
+  auto fake_statement = std::make_shared<fake_statement_t>();
 }
 
 
@@ -167,29 +140,29 @@
 
 
 
-%type <tchecker::statement_t *>             assignment
-                                            sequence_statement
-                                            statement
-                                            simple_statement
-                                            if_statement
-                                            loop_statement
-                                            local_statement
+%type <std::shared_ptr<tchecker::statement_t>>         assignment
+                                                       sequence_statement
+                                                       statement
+                                                       simple_statement
+                                                       if_statement
+                                                       loop_statement
+                                                       local_statement
 
-%type <tchecker::expression_t *>            atomic_formula
-                                            conjunctive_formula
-                                            non_atomic_conjunctive_formula
-                                            binary_formula
-                                            predicate_formula
-                                            term
-%type <tchecker::lvalue_expression_t *>			lvalue_term
-%type <tchecker::var_expression_t *>        variable_term
-%type <enum tchecker::binary_operator_t>    predicate_operator
-%type <tchecker::integer_t>                 integer
+%type <std::shared_ptr<tchecker::expression_t>>        atomic_formula
+                                                       conjunctive_formula
+                                                       non_atomic_conjunctive_formula
+                                                       binary_formula
+                                                       predicate_formula
+                                                       term
+%type <std::shared_ptr<tchecker::lvalue_expression_t>> lvalue_term
+%type <std::shared_ptr<tchecker::var_expression_t>>    variable_term
+%type <enum tchecker::binary_operator_t>               predicate_operator
+%type <tchecker::integer_t>                            integer
 
 
 
 %printer { yyoutput << $$; }                <*>;
-%printer { yyoutput << * $$; }              assignment
+%printer { $$->output(yyoutput); }          assignment
                                             atomic_formula
                                             conjunctive_formula
                                             non_atomic_conjunctive_formula
@@ -209,19 +182,15 @@
 program:
 sequence_statement
 { expr = nullptr;
-  if (tchecker::log_error_count() > old_error_count) {
+  if (tchecker::log_error_count() > old_error_count)
     stmt = nullptr;
-    delete $1;
-  }
   else
     stmt = $1;
 }
 | conjunctive_formula
 {
-  if (tchecker::log_error_count() > old_error_count) {
+  if (tchecker::log_error_count() > old_error_count)
     expr = nullptr;
-    delete $1;
-  }
   else
     expr = $1;
   stmt = nullptr;
@@ -239,11 +208,11 @@ statement opt_semicolon
 |  statement ";" sequence_statement
 {
   try {
-    $$ = new tchecker::sequence_statement_t($1, $3);
+    $$ = std::make_shared<tchecker::sequence_statement_t>($1, $3);
   }
   catch (std::exception const & e) {
     std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
-    $$ = new fake_statement_t();
+    $$ = fake_statement;
   }
 }
 ;
@@ -259,30 +228,30 @@ statement:
 
 if_statement:
     TOK_IF conjunctive_formula TOK_THEN sequence_statement TOK_END
-    {  $$ = new tchecker::if_statement_t($2, $4, new tchecker::nop_statement_t()); }
+    {  $$ = std::make_shared<tchecker::if_statement_t>($2, $4, std::make_shared<tchecker::nop_statement_t>()); }
 |   TOK_IF conjunctive_formula TOK_THEN sequence_statement TOK_ELSE sequence_statement TOK_END
-    {  $$ = new tchecker::if_statement_t($2, $4, $6); }
+    {  $$ = std::make_shared<tchecker::if_statement_t>($2, $4, $6); }
 ;
 
 loop_statement:
     TOK_WHILE conjunctive_formula TOK_DO sequence_statement TOK_END
-    { $$ = new tchecker::while_statement_t($2, $4); }
+    { $$ = std::make_shared<tchecker::while_statement_t>($2, $4); }
 ;
 
 local_statement:
     TOK_LOCAL variable_term
-    { $$ = new tchecker::local_var_statement_t($2); }
+    { $$ = std::make_shared<tchecker::local_var_statement_t>($2); }
 |   TOK_LOCAL variable_term TOK_ASSIGN term
-    { $$ = new tchecker::local_var_statement_t($2, $4); }
+    { $$ = std::make_shared<tchecker::local_var_statement_t>($2, $4); }
 |   TOK_LOCAL variable_term TOK_LBRACKET term TOK_RBRACKET
-    { $$ = new tchecker::local_array_statement_t($2, $4); }
+    { $$ = std::make_shared<tchecker::local_array_statement_t>($2, $4); }
 ;
 
 simple_statement :
     assignment
     { $$ = $1; }
 |   "nop"
-    { $$ = new tchecker::nop_statement_t(); }
+    { $$ = std::make_shared<tchecker::nop_statement_t>(); }
 |   local_statement
     { $$ = $1; }
 ;
@@ -292,11 +261,11 @@ assignment:
 lvalue_term "=" term
 {
   try {
-    $$ = new tchecker::assign_statement_t($1, $3);
+    $$ = std::make_shared<tchecker::assign_statement_t>($1, $3);
   }
   catch (std::exception const & e) {
     std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
-    $$ = new fake_statement_t();
+    $$ = fake_statement;
   }
 }
 ;
@@ -306,7 +275,7 @@ conjunctive_formula:
 atomic_formula
 { $$ = $1; }
 | non_atomic_conjunctive_formula
-{ $$ =$1; }
+{ $$ = $1; }
 ;
 
 
@@ -314,21 +283,21 @@ non_atomic_conjunctive_formula:
 "(" non_atomic_conjunctive_formula ")"
 {
   try {
-    $$ = new tchecker::par_expression_t($2);
+    $$ = std::make_shared<tchecker::par_expression_t>($2);
   }
   catch (std::exception const & e) {
     std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
-    $$ = new fake_expression_t();
+    $$ = fake_expression;
   }
 }
 | atomic_formula "&&" conjunctive_formula
 {
   try {
-    $$ = new tchecker::binary_expression_t(tchecker::EXPR_OP_LAND, $1, $3);
+    $$ = std::make_shared<tchecker::binary_expression_t>(tchecker::EXPR_OP_LAND, $1, $3);
   }
   catch (std::exception const & e) {
     std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
-    $$ = new fake_expression_t();
+    $$ = fake_expression;
   }
 }
 ;
@@ -342,11 +311,11 @@ term
 | "!" atomic_formula
 {
   try {
-    $$ = new tchecker::unary_expression_t(tchecker::EXPR_OP_LNOT, $2);
+    $$ = std::make_shared<tchecker::unary_expression_t>(tchecker::EXPR_OP_LNOT, $2);
   }
   catch (std::exception const & e) {
     std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
-    $$ = new fake_expression_t();
+    $$ = fake_expression;
   }
 }
 ;
@@ -356,31 +325,30 @@ predicate_formula:
 "(" predicate_formula ")"
 {
   try {
-    $$ = new tchecker::par_expression_t($2);
+    $$ = std::make_shared<tchecker::par_expression_t>($2);
   }
   catch (std::exception const & e) {
     std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
-    $$ = new fake_expression_t();
+    $$ = fake_expression;
   }
 }
 | binary_formula predicate_operator term
 {
   try {
-    tchecker::binary_expression_t * left = dynamic_cast<tchecker::binary_expression_t *>($1);
+    auto left = std::dynamic_pointer_cast<tchecker::binary_expression_t>($1);
     if (! tchecker::is_less(left->binary_operator()) || ! tchecker::is_less($2)) {
       tchecker::parsing::program::parser_t::error(@$, "Only < and <= are allowed in combined expressions");
-      delete $1;
-      delete $3;
-      $$ = new fake_expression_t();
+      $$ = fake_expression;
     }
     else {
-      tchecker::binary_expression_t * right = new tchecker::binary_expression_t{$2, left->right_operand().clone(), $3};
-      $$ = new tchecker::binary_expression_t(tchecker::EXPR_OP_LAND, left, right);
+      std::shared_ptr<tchecker::expression_t> middle_clone{left->right_operand().clone()};
+      auto right = std::make_shared<tchecker::binary_expression_t>($2, middle_clone, $3);
+      $$ = std::make_shared<tchecker::binary_expression_t>(tchecker::EXPR_OP_LAND, left, right);
     }
   } 
   catch (std::exception const & e) {
     std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
-    $$ = new fake_expression_t();
+    $$ = fake_expression;
   }
 }
 | binary_formula
@@ -392,11 +360,11 @@ binary_formula:
 term predicate_operator term
 {
   try {
-    $$ = new tchecker::binary_expression_t($2, $1, $3);
+    $$ = std::make_shared<tchecker::binary_expression_t>($2, $1, $3);
   }
   catch (std::exception const & e) {
     std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
-    $$ = new fake_expression_t();
+    $$ = fake_expression;
   }
 }
 ;
@@ -416,11 +384,11 @@ term:
 integer
 {
   try {
-    $$ = new tchecker::int_expression_t($1);
+    $$ = std::make_shared<tchecker::int_expression_t>($1);
   }
   catch (std::exception const & e) {
     std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
-    $$ = new fake_expression_t();
+    $$ = fake_expression;
   }
 }
 | lvalue_term
@@ -428,81 +396,81 @@ integer
 | "(" term ")"
 {
   try {
-    $$ = new tchecker::par_expression_t($2);
+    $$ = std::make_shared<tchecker::par_expression_t>($2);
   }
   catch (std::exception const & e) {
     std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
-    $$ = new fake_expression_t();
+    $$ = fake_expression;
   }
 }
 | "-" term        %prec UMINUS
 {
   try {
-    $$ = new tchecker::unary_expression_t(tchecker::EXPR_OP_NEG, $2);
+    $$ = std::make_shared<tchecker::unary_expression_t>(tchecker::EXPR_OP_NEG, $2);
   }
   catch (std::exception const & e) {
     std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
-    $$ = new fake_expression_t();
+    $$ = fake_expression;
   }
 }
 | term "+" term
 {
   try {
-    $$ = new tchecker::binary_expression_t(tchecker::EXPR_OP_PLUS, $1, $3);
+    $$ = std::make_shared<tchecker::binary_expression_t>(tchecker::EXPR_OP_PLUS, $1, $3);
   }
   catch (std::exception const & e) {
     std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
-    $$ = new fake_expression_t();
+    $$ = fake_expression;
   }
 }
 | term "-" term
 {
   try {
-    $$ = new tchecker::binary_expression_t(tchecker::EXPR_OP_MINUS, $1, $3);
+    $$ = std::make_shared<tchecker::binary_expression_t>(tchecker::EXPR_OP_MINUS, $1, $3);
   }
   catch (std::exception const & e) {
     std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
-    $$ = new fake_expression_t();
+    $$ = fake_expression;
   }
 }
 | term "*" term
 {
   try {
-    $$ = new tchecker::binary_expression_t(tchecker::EXPR_OP_TIMES, $1, $3);
+    $$ = std::make_shared<tchecker::binary_expression_t>(tchecker::EXPR_OP_TIMES, $1, $3);
   }
   catch (std::exception const & e) {
     std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
-    $$ = new fake_expression_t();
+    $$ = fake_expression;
   }
 }
 | term "/" term
 {
   try {
-    $$ = new tchecker::binary_expression_t(tchecker::EXPR_OP_DIV, $1, $3);
+    $$ = std::make_shared<tchecker::binary_expression_t>(tchecker::EXPR_OP_DIV, $1, $3);
   }
   catch (std::exception const & e) {
     std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
-    $$ = new fake_expression_t();
+    $$ = fake_expression;
   }
 }
 | term "%" term
 {
   try {
-    $$ = new tchecker::binary_expression_t(tchecker::EXPR_OP_MOD, $1, $3);
+    $$ = std::make_shared<tchecker::binary_expression_t>(tchecker::EXPR_OP_MOD, $1, $3);
   }
   catch (std::exception const & e) {
     std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
-    $$ = new fake_expression_t();
+    $$ = fake_expression;
   }
 }
 | TOK_LPAR TOK_IF conjunctive_formula TOK_THEN term TOK_ELSE term TOK_RPAR
 {
   try {
-    $$ = new tchecker::ite_expression_t($3, $5, $7);
+    $$ = std::make_shared<tchecker::ite_expression_t>($3, $5, $7);
   }
   catch (std::exception const & e) {
     std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
-    $$ = new fake_expression_t();
+    $$ = fake_expression;
   }
 }
 ;
@@ -514,11 +482,11 @@ variable_term
 | variable_term "[" term "]"
 {
   try {
-    $$ = new tchecker::array_expression_t($1, $3);
+    $$ = std::make_shared<tchecker::array_expression_t>($1, $3);
   }
   catch (std::exception const & e) {
     std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
-    $$ = new fake_expression_t();
+    $$ = fake_expression;
   }
 }
 ;
@@ -528,11 +496,11 @@ variable_term:
 TOK_ID
 {
   try {
-    $$ = new tchecker::var_expression_t($1);
+    $$ = std::make_shared<tchecker::var_expression_t>($1);
   }
   catch (std::exception const & e) {
     std::cerr << tchecker::log_error << @$ << " " << e.what() << std::endl;
-    $$ = new fake_var_expression_t();
+    $$ = fake_var_expression;
   }
 }
 ;

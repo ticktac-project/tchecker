@@ -343,8 +343,20 @@ public:
   /*!
    \brief Accessor
    \return number of edges
+   \note all integers in 0..edges_count()-1 are valid edge identifiers
    */
   inline std::size_t edges_count() const { return _edges.size(); }
+
+  /*!
+   \brief Type of range of edges identifiers
+   */
+  using edges_identifiers_range_t = tchecker::integer_range_t<tchecker::edge_id_t>;
+
+  /*!
+   \brief Accessor
+   \return range of event identifiers 0..edges_count()-1
+   */
+  edges_identifiers_range_t edges_identifiers() const;
 
   /*!
    \brief Accessor

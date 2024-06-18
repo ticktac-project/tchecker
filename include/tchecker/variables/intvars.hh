@@ -97,7 +97,7 @@ private:
 /*!
  \brief Type of range over values of a bounded integer variable
 */
-using intvar_values_range_t = tchecker::range_t<tchecker::integer_iterator_t>;
+using intvar_values_range_t = tchecker::range_t<tchecker::integer_iterator_t<tchecker::integer_t>>;
 
 /*!
  \brief Compute range of values of a bounded integer variable

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "tchecker/algorithms/path/finite_path_extraction.hh"
+#include "tchecker/graph/subsumption_graph.hh"
 #include "tchecker/refzg/path.hh"
 #include "tchecker/refzg/refzg.hh"
 #include "tchecker/syncprod/vedge.hh"
@@ -34,7 +35,7 @@ namespace tck_reach {
  \param n : a node
  \return true if n is an initial node, false otherwise
 */
-template <class GRAPH> bool initial_node(typename GRAPH::node_sptr_t const & n) { return n->initial(); }
+template <class GRAPH> bool initial_node(GRAPH const &, typename GRAPH::node_sptr_t const & n) { return n->initial(); }
 
 /*!
  \brief Check is a node is final
@@ -42,15 +43,16 @@ template <class GRAPH> bool initial_node(typename GRAPH::node_sptr_t const & n) 
  \param n : a node
  \return true if n is a final node, false otherwise
 */
-template <class GRAPH> bool final_node(typename GRAPH::node_sptr_t const & n) { return n->final(); }
+template <class GRAPH> bool final_node(GRAPH const &, typename GRAPH::node_sptr_t const & n) { return n->final(); }
 
 /*!
- \brief True predicate over edges
+ \brief Check if an edge is an actual edge
  \tparam GRAPH : type of graph
+ \param g : a graph
  \param e : an edge
- \return true
-*/
-template <class GRAPH> bool true_edge(typename GRAPH::edge_sptr_t const & e) { return true; }
+ \return true if e is an actual edge in g, false otherwise
+ */
+template <class GRAPH> bool actual_edge(GRAPH const & g, typename GRAPH::edge_sptr_t const & e) { return g.is_actual_edge(e); }
 
 /*!
  \brief Compute a symbolic counter example of a zone graph
@@ -67,7 +69,7 @@ template <class GRAPH> tchecker::zg::path::symbolic::finite_path_t * symbolic_co
   tchecker::algorithms::finite_path_extraction_algorithm_t<GRAPH> algorithm;
 
   auto && [found, root, seq] = algorithm.run(g, &tchecker::tck_reach::initial_node<GRAPH>,
-                                             &tchecker::tck_reach::final_node<GRAPH>, &tchecker::tck_reach::true_edge<GRAPH>);
+                                             &tchecker::tck_reach::final_node<GRAPH>, &tchecker::tck_reach::actual_edge<GRAPH>);
 
   if (!found)
     return new tchecker::zg::path::symbolic::finite_path_t{zg};
@@ -117,7 +119,7 @@ template <class GRAPH, class CEX> CEX * symbolic_counter_example_refzg(GRAPH con
   tchecker::algorithms::finite_path_extraction_algorithm_t<GRAPH> algorithm;
 
   auto && [found, root, seq] = algorithm.run(g, &tchecker::tck_reach::initial_node<GRAPH>,
-                                             &tchecker::tck_reach::final_node<GRAPH>, &tchecker::tck_reach::true_edge<GRAPH>);
+                                             &tchecker::tck_reach::final_node<GRAPH>, &tchecker::tck_reach::actual_edge<GRAPH>);
 
   if (!found)
     return new CEX{refzg};

@@ -15,6 +15,7 @@
 
 #include "tchecker/basictypes.hh"
 #include "tchecker/system/attribute.hh"
+#include "tchecker/utils/iterator.hh"
 #include "tchecker/variables/intvars.hh"
 
 /*!
@@ -55,8 +56,23 @@ public:
    \param kind : kind of declared variable
    \return number of declared bounded integer variables if kind = tchecker::VK_DECLARED,
    number of flattened bounded integer variables if kind = tchecker::VK_FLATTENED
+   \note all integers in 0..intvars_count(tchecker::VK_FLATTENED)-1 are valid flattened integer variable indetifiers
+   \note 0..intvars_count(tchecker::VK_DECLARED)-1 is NOT the range of declared integer variable identifiers: use
+   intvars_identifiers(tchecker::VK_DECLARED) for that purpose
    */
   inline std::size_t intvars_count(enum tchecker::variable_kind_t kind) const { return _integer_variables.size(kind); }
+
+  /*!
+   \brief Accessor
+   \param kind : kind of declared variable
+   \return the range of declared bounded integer variables identifiers if kind = tchecker::VK_DECLARED,
+   the range of flattened bounded integer variables identifiers if kind = tchecker::VK_FLATTENED
+   \note if kind = tchecker::VK_FLATTENED, then the returned range is 0..intvars_count(tchecker::VK_FLATTENED)-1
+   */
+  inline tchecker::integer_variables_t::identifiers_range_t intvars_identifiers(enum tchecker::variable_kind_t kind) const
+  {
+    return _integer_variables.identifiers(kind);
+  }
 
   /*!
    \brief Accessor

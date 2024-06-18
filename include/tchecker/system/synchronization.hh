@@ -121,6 +121,7 @@ public:
    \param id : synchronization identifier
    \param v : synchronization constraints
    \param attributes : synchronization attributes
+   \throw std::invalid_argument : if is is not a valid synchronization identifier
    */
   synchronization_t(tchecker::sync_id_t id, std::vector<tchecker::system::sync_constraint_t> const & v,
                     tchecker::system::attributes_t const & attributes = tchecker::system::attributes_t());
@@ -214,6 +215,7 @@ public:
    \param attr : synchronization attributes
    \post a synchronization built from v has been added with attributes attr
    \throw std::invalid_argument : if v already exists
+   \throw std::invalid_argument : if too many synchronizations
    */
   void add_synchronization(std::vector<tchecker::system::sync_constraint_t> const & v,
                            tchecker::system::attributes_t const & attr = tchecker::system::attributes_t());
@@ -221,8 +223,20 @@ public:
   /*!
    \brief Accessor
    \return number of synchronizations
+   \note all integers in 0..synchronizations_count()-1 are valid synchronization identifiers
    */
   inline std::size_t synchronizations_count() const { return _syncs.size(); }
+
+  /*!
+   \brief Type of range of synchronizations identifiers
+   */
+  using synchronizations_identifiers_range_t = tchecker::integer_range_t<tchecker::sync_id_t>;
+
+  /*!
+   \brief Accessor
+   \return range of synchronizations identifiers 0..synchronizations_count()-1
+   */
+  synchronizations_identifiers_range_t synchronizations_identifiers() const;
 
   /*!
    \brief Accessor

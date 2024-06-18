@@ -74,9 +74,18 @@ public:
 
   /*!
    \brief Accessor
-   \return true if there is a shared variable in the map (i.e. a variable accessed by at least 2 processes), false otherwise
+   \return true if there is a shared variable of any type in the map (i.e. a variable accessed by at least 2 processes),
+   false otherwise
    */
   bool has_shared_variable() const;
+
+  /*!
+   \brief Accessor
+   \param vtype : type of variable
+   \return true if there is a shared variable of type vtype in the map,
+   false otherwise
+   */
+  bool has_shared_variable(enum tchecker::variable_type_t vtype) const;
 
   /*!
    \brief Type of iterator over process identifiers
@@ -116,11 +125,23 @@ public:
    \param pid : process identifier
    \param vtype : type of variable
    \param vaccess : variable access
-   \retyrn the range of identifiers of the variables of type `vtype` that are accessed by process `pid`, with an access of type
+   \return the range of identifiers of the variables of type `vtype` that are accessed by process `pid`, with an access of type
    `vaccess`
    */
   tchecker::range_t<variable_id_iterator_t> accessed_variables(tchecker::process_id_t pid, enum tchecker::variable_type_t vtype,
                                                                enum tchecker::variable_access_t vaccess) const;
+
+  /*!
+   \brief Accessor
+   \param pid : process identifier
+   \param vid : variable identifier
+   \param vtype : type of variable
+   \param vaccess : variable access
+   \return true if process pid access variable vid of type vtype with access type vaccess,
+   false otherwise
+   */
+  bool access_variable(tchecker::process_id_t pid, tchecker::variable_id_t vid, enum tchecker::variable_type_t vtype,
+                       enum tchecker::variable_access_t vaccess = tchecker::VACCESS_ANY) const;
 
 private:
   v2p_map_t _v2p_map;       /*!< Map : variable ID -> accessing process IDs */

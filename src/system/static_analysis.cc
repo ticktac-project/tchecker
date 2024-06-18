@@ -5,8 +5,10 @@
  *
  */
 
-#include "tchecker/system/static_analysis.hh"
+#include <boost/dynamic_bitset/dynamic_bitset.hpp>
+
 #include "tchecker/basictypes.hh"
+#include "tchecker/system/static_analysis.hh"
 #include "tchecker/system/synchronization.hh"
 
 namespace tchecker {
@@ -45,10 +47,31 @@ tchecker::system::process_events_map_t weakly_synchronized_events(tchecker::syst
 
 bool every_process_has_initial_location(tchecker::system::system_t const & system)
 {
-  tchecker::process_id_t procs_count = system.processes_count();
-  for (tchecker::process_id_t pid = 0; pid < procs_count; ++pid)
+  for (tchecker::process_id_t const pid : system.processes_identifiers())
     if (system.initial_locations(pid).empty())
       return false;
+  return true;
+}
+
+bool is_deterministic(tchecker::system::system_t const & system)
+{
+  // Check that each process has only one initial location
+  for (tchecker::process_id_t const pid : system.processes_identifiers()) {
+    auto initial_locations = system.initial_locations(pid);
+    if (std::distance(initial_locations.begin(), initial_locations.end()) > 1)
+      return false;
+  }
+
+  // Check that every location has at most one outgoing edge for each event
+  boost::dynamic_bitset<> outevents(system.events_count(), 0);
+  for (tchecker::system::loc_const_shared_ptr_t l : system.locations()) {
+    outevents.reset();
+    for (tchecker::system::edge_const_shared_ptr_t e : system.outgoing_edges(l->id())) {
+      if (outevents[e->event_id()])
+        return false;
+      outevents[e->event_id()] = 1;
+    }
+  }
   return true;
 }
 
