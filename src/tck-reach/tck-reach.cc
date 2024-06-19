@@ -333,8 +333,8 @@ void alu_covreach(std::shared_ptr<tchecker::parsing::system_declaration_t> const
   std::shared_ptr<tchecker::tck_reach::zg_alu_covreach::graph_t> graph;
 
   tchecker::algorithms::covreach::covering_t covering =
-      (certificate == CERTIFICATE_GRAPH ? tchecker::algorithms::covreach::COVERING_FULL
-                                        : tchecker::algorithms::covreach::COVERING_LEAF_NODES);
+      (is_certificate_path(certificate) ? tchecker::algorithms::covreach::COVERING_LEAF_NODES
+                                        : tchecker::algorithms::covreach::COVERING_FULL);
 
   std::tie(stats, graph) =
       tchecker::tck_reach::zg_alu_covreach::run(sysdecl, labels, search_order, covering, block_size, table_size);
