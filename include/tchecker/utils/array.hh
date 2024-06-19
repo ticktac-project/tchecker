@@ -471,7 +471,7 @@ bool operator==(tchecker::make_array_t<T, T_ALLOCSIZE, BASE> const & a1,
   for (; it1 != end1 && it2 != end2; ++it1, ++it2)
     if (*it1 != *it2)
       return false;
-  return true;
+  return (it1 == end1) && (it2 == end2);
 }
 
 /*!
