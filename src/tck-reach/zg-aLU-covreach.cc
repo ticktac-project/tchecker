@@ -44,8 +44,8 @@ std::size_t node_hash_t::operator()(tchecker::tck_reach::zg_alu_covreach::node_t
 
 /* node_le_t */
 
-node_le_t::node_le_t(std::shared_ptr<tchecker::clockbounds::local_lu_map_t> const & local_lu)
-    : _cached_local_lu(local_lu, std::move(const_vloc_sptr_hash_t{}), std::move(const_vloc_sptr_equal_t{}))
+node_le_t::node_le_t(std::shared_ptr<tchecker::clockbounds::local_lu_map_t> const & local_lu, std::size_t table_size)
+    : _cached_local_lu(local_lu, table_size, std::move(const_vloc_sptr_hash_t{}), std::move(const_vloc_sptr_equal_t{}))
 {
 }
 
@@ -69,7 +69,7 @@ graph_t::graph_t(std::shared_ptr<tchecker::zg::zg_t> const & zg,
           tchecker::tck_reach::zg_alu_covreach::node_t, tchecker::tck_reach::zg_alu_covreach::edge_t,
           tchecker::tck_reach::zg_alu_covreach::node_hash_t, tchecker::tck_reach::zg_alu_covreach::node_le_t>(
           block_size, table_size, tchecker::tck_reach::zg_alu_covreach::node_hash_t(),
-          tchecker::tck_reach::zg_alu_covreach::node_le_t(local_lu)),
+          tchecker::tck_reach::zg_alu_covreach::node_le_t(local_lu, table_size)),
       _zg(zg)
 {
 }

@@ -87,10 +87,11 @@ public:
   /*!
    \brief Constructor
    \param local_lu : local LU clock bounds
+   \param table_size : size of clock bounds cache
    \post this keeps a shared pointer to local_lu
    \throw std::invalid_argument : if local_lu points to nullptr
    */
-  node_le_t(std::shared_ptr<tchecker::clockbounds::local_lu_map_t> const & local_lu);
+  node_le_t(std::shared_ptr<tchecker::clockbounds::local_lu_map_t> const & local_lu, std::size_t table_size);
 
   /*!
   \brief Covering predicate for nodes
@@ -106,7 +107,7 @@ private:
   using const_vloc_sptr_hash_t = tchecker::intrusive_shared_ptr_hash_t;
   using const_vloc_sptr_equal_t = std::equal_to<tchecker::const_vloc_sptr_t>;
 
-  mutable tchecker::clockbounds::cache_local_lu_map_t<const_vloc_sptr_hash_t, const_vloc_sptr_equal_t>
+  mutable tchecker::clockbounds::bounded_cache_local_lu_map_t<const_vloc_sptr_hash_t, const_vloc_sptr_equal_t>
       _cached_local_lu; /*!< Cached local LU clock bounds*/
 };
 
