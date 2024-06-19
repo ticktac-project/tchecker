@@ -92,6 +92,8 @@ void graph_t::attributes(tchecker::tck_reach::zg_alu_covreach::edge_t const & e,
   m["vedge"] = tchecker::to_string(e.vedge(), _zg->system().as_system_system());
 }
 
+bool graph_t::is_actual_edge(edge_sptr_t const & e) const { return edge_type(e) == tchecker::graph::subsumption::EDGE_ACTUAL; }
+
 /* dot_output */
 
 /*!

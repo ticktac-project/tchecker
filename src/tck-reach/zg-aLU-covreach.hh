@@ -106,7 +106,7 @@ private:
   using const_vloc_sptr_hash_t = tchecker::intrusive_shared_ptr_hash_t;
   using const_vloc_sptr_equal_t = std::equal_to<tchecker::const_vloc_sptr_t>;
 
-  mutable tchecker::clockbounds::cached_local_lu_map_t<const_vloc_sptr_hash_t, const_vloc_sptr_equal_t>
+  mutable tchecker::clockbounds::cache_local_lu_map_t<const_vloc_sptr_hash_t, const_vloc_sptr_equal_t>
       _cached_local_lu; /*!< Cached local LU clock bounds*/
 };
 
@@ -163,6 +163,13 @@ public:
   using tchecker::graph::subsumption::graph_t<
       tchecker::tck_reach::zg_alu_covreach::node_t, tchecker::tck_reach::zg_alu_covreach::edge_t,
       tchecker::tck_reach::zg_alu_covreach::node_hash_t, tchecker::tck_reach::zg_alu_covreach::node_le_t>::attributes;
+
+  /*!
+   \brief Checks if an edge is an actual edge (not a subsumption edge)
+   \param e : an edge
+   \return true if e is an actual edge, false otherwise (e is a subsumption edge)
+   */
+  bool is_actual_edge(edge_sptr_t const & e) const;
 
 protected:
   /*!

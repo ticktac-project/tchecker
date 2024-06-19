@@ -144,7 +144,7 @@ public:
       tchecker::tck_reach::zg_covreach::node_hash_t, tchecker::tck_reach::zg_covreach::node_le_t>::attributes;
 
   /*!
-   \brief Checks is an edge is an actual edge (not a subsumption edge)
+   \brief Checks if an edge is an actual edge (not a subsumption edge)
    \param e : an edge
    \return true if e is an actual edge, false otherwise (e is a subsumption edge)
    */
