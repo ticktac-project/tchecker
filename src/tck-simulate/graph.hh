@@ -23,6 +23,7 @@
 #include "tchecker/graph/node.hh"
 #include "tchecker/graph/reachability_graph.hh"
 #include "tchecker/syncprod/vedge.hh"
+#include "tchecker/ts/state_space.hh"
 #include "tchecker/utils/shared_objects.hh"
 #include "tchecker/zg/zg.hh"
 
@@ -81,13 +82,12 @@ public:
    \param zg : zone graph
    \param block_size : number of objects allocated in a block
    \note this keeps a pointer on zg
+   \note this graph keeps pointers to (part of) states and (part of) transitions allocated by zg. Hence, the graph
+   must be destroyed *before* zg is destroyed, since all states and transitions allocated by zg are detroyed
+   when zg is destroyed. See state_space_t below to store both fzg and this graph and destroy them in the expected
+   order.
   */
   graph_t(std::shared_ptr<tchecker::zg::zg_t> const & zg, std::size_t block_size);
-
-  /*!
-   \brief Destructor
-  */
-  virtual ~graph_t();
 
   using tchecker::graph::reachability::multigraph_t<tchecker::tck_simulate::node_t, tchecker::tck_simulate::edge_t>::attributes;
 
@@ -120,6 +120,36 @@ private:
  \post graph g with name has been output to os
 */
 std::ostream & dot_output(std::ostream & os, tchecker::tck_simulate::graph_t const & g, std::string const & name);
+
+/*!
+ \class state_space_t
+ \brief State-space representation consisting of a zone graph and a reachability multi-graph
+ */
+class state_space_t {
+public:
+  /*!
+   \brief Constructor
+   \param zg : zone graph
+   \param block_size : number of objects allocated in a block
+   \note this keeps a pointer on zg
+   */
+  state_space_t(std::shared_ptr<tchecker::zg::zg_t> const & zg, std::size_t block_size);
+
+  /*!
+   \brief Accessor
+   \return The zone graph
+   */
+  tchecker::zg::zg_t & zg();
+
+  /*!
+   \brief Accessor
+   \return The reachability graph representing the state-space
+   */
+  tchecker::tck_simulate::graph_t & graph();
+
+private:
+  tchecker::ts::state_space_t<tchecker::zg::zg_t, tchecker::tck_simulate::graph_t> _ss; /*!< State-space representation */
+};
 
 } // namespace tck_simulate
 

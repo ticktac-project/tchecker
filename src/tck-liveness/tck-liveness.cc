@@ -185,7 +185,7 @@ std::shared_ptr<tchecker::parsing::system_declaration_t> load_system_declaration
 */
 void ndfs(tchecker::parsing::system_declaration_t const & sysdecl)
 {
-  auto && [stats, graph] = tchecker::tck_liveness::zg_ndfs::run(sysdecl, labels, block_size, table_size);
+  auto && [stats, state_space] = tchecker::tck_liveness::zg_ndfs::run(sysdecl, labels, block_size, table_size);
 
   // stats
   std::map<std::string, std::string> m;
@@ -195,10 +195,10 @@ void ndfs(tchecker::parsing::system_declaration_t const & sysdecl)
 
   // certificate
   if (certificate == CERTIFICATE_GRAPH)
-    tchecker::tck_liveness::zg_ndfs::dot_output(*os, *graph, sysdecl.name());
+    tchecker::tck_liveness::zg_ndfs::dot_output(*os, state_space->graph(), sysdecl.name());
   else if ((certificate == CERTIFICATE_SYMBOLIC) && stats.cycle()) {
     std::unique_ptr<tchecker::tck_liveness::zg_ndfs::cex::symbolic_cex_t> cex{
-        tchecker::tck_liveness::zg_ndfs::cex::symbolic_counter_example(*graph)};
+        tchecker::tck_liveness::zg_ndfs::cex::symbolic_counter_example(state_space->graph())};
     if (cex->empty())
       throw std::runtime_error("*** tck_liveness: unable to compute a symbolic counter example for ndfs algorithm");
     tchecker::tck_liveness::zg_ndfs::cex::dot_output(*os, *cex, sysdecl.name());
@@ -220,7 +220,7 @@ void couvscc(tchecker::parsing::system_declaration_t const & sysdecl)
     throw std::runtime_error(
         "*** tck_liveness: cannot compute symbolic counter example with more than 1 label (use graph instead)");
 
-  auto && [stats, graph] = tchecker::tck_liveness::zg_couvscc::run(sysdecl, labels, block_size, table_size);
+  auto && [stats, state_space] = tchecker::tck_liveness::zg_couvscc::run(sysdecl, labels, block_size, table_size);
 
   // stats
   std::map<std::string, std::string> m;
@@ -230,10 +230,10 @@ void couvscc(tchecker::parsing::system_declaration_t const & sysdecl)
 
   // certificate
   if (certificate == CERTIFICATE_GRAPH)
-    tchecker::tck_liveness::zg_couvscc::dot_output(*os, *graph, sysdecl.name());
+    tchecker::tck_liveness::zg_couvscc::dot_output(*os, state_space->graph(), sysdecl.name());
   else if ((certificate == CERTIFICATE_SYMBOLIC) && stats.cycle()) {
     std::unique_ptr<tchecker::tck_liveness::zg_couvscc::cex::symbolic_cex_t> cex{
-        tchecker::tck_liveness::zg_couvscc::cex::symbolic_counter_example(*graph)};
+        tchecker::tck_liveness::zg_couvscc::cex::symbolic_counter_example(state_space->graph())};
     if (cex->empty())
       throw std::runtime_error("*** tck_liveness: unable to compute a symbolic counter example for couvscc algorithm");
     tchecker::tck_liveness::zg_couvscc::cex::dot_output(*os, *cex, sysdecl.name());

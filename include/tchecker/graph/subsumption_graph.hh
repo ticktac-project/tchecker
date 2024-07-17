@@ -14,6 +14,7 @@
 */
 
 #include <map>
+#include <memory>
 #include <set>
 #include <string>
 
@@ -257,8 +258,8 @@ public:
   \param node_le : covering predicate on nodes
   */
   graph_t(std::size_t block_size, std::size_t table_size, NODE_HASH const & node_hash, NODE_LE const & node_le)
-      : _node_sptr_hash(node_hash), _node_sptr_le(node_le), _cover_graph(table_size, _node_sptr_hash, _node_sptr_le),
-        _node_pool(block_size), _edge_pool(block_size)
+      : _cover_graph(table_size, node_sptr_hash_t{node_hash}, node_sptr_le_t{node_le}), _node_pool(block_size),
+        _edge_pool(block_size)
   {
   }
 
@@ -270,8 +271,9 @@ public:
   \param node_le : covering predicate on nodes
   */
   graph_t(std::size_t block_size, std::size_t table_size, NODE_HASH && node_hash, NODE_LE && node_le)
-      : _node_sptr_hash(std::move(node_hash)), _node_sptr_le(std::move(node_le)),
-        _cover_graph(table_size, _node_sptr_hash, _node_sptr_le), _node_pool(block_size), _edge_pool(block_size)
+      : _cover_graph(table_size, std::move(node_sptr_hash_t{std::move(node_hash)}),
+                     std::move(node_sptr_le_t{std::move(node_le)})),
+        _node_pool(block_size), _edge_pool(block_size)
   {
   }
 
@@ -604,8 +606,6 @@ private:
     NODE_LE _node_le; /*!< Covering predicate on nodes */
   };
 
-  node_sptr_hash_t _node_sptr_hash; /*!< Hash functor on shared pointers to nodes */
-  node_sptr_le_t _node_sptr_le;     /*!< Covering functor on shared pointers to nodes */
   tchecker::graph::cover::graph_t<node_sptr_t, node_sptr_hash_t, node_sptr_le_t> _cover_graph; /*!< Node store with covering */
   tchecker::graph::directed::graph_t<node_sptr_t, edge_sptr_t> _directed_graph;                /*!< Edge store */
   tchecker::graph::node_pool_allocator_t<shared_node_t> _node_pool;                            /*!< Node pool allocator */

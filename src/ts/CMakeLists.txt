@@ -10,5 +10,6 @@ ${TCHECKER_INCLUDE_DIR}/tchecker/ts/transition.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/ts/fwd.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/ts/bwd.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/ts/sharing.hh
+${TCHECKER_INCLUDE_DIR}/tchecker/ts/state_space.hh
 ${TCHECKER_INCLUDE_DIR}/tchecker/ts/inspector.hh
 PARENT_SCOPE)

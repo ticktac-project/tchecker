@@ -65,13 +65,6 @@ graph_t::graph_t(std::shared_ptr<tchecker::zg::zg_t> const & zg, std::size_t blo
 {
 }
 
-graph_t::~graph_t()
-{
-  tchecker::graph::subsumption::graph_t<tchecker::tck_reach::zg_covreach::node_t, tchecker::tck_reach::zg_covreach::edge_t,
-                                        tchecker::tck_reach::zg_covreach::node_hash_t,
-                                        tchecker::tck_reach::zg_covreach::node_le_t>::clear();
-}
-
 bool graph_t::is_actual_edge(edge_sptr_t const & e) const { return edge_type(e) == tchecker::graph::subsumption::EDGE_ACTUAL; }
 
 void graph_t::attributes(tchecker::tck_reach::zg_covreach::node_t const & n, std::map<std::string, std::string> & m) const
@@ -137,6 +130,17 @@ std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::zg_covreach::g
                                                   tchecker::tck_reach::zg_covreach::edge_lexical_less_t>(os, g, name);
 }
 
+/* state_space_t */
+
+state_space_t::state_space_t(std::shared_ptr<tchecker::zg::zg_t> const & zg, std::size_t block_size, std::size_t table_size)
+    : _ss(zg, zg, block_size, table_size)
+{
+}
+
+tchecker::zg::zg_t & state_space_t::zg() { return _ss.ts(); }
+
+tchecker::tck_reach::zg_covreach::graph_t & state_space_t::graph() { return _ss.state_space(); }
+
 /* counter example */
 namespace cex {
 
@@ -168,7 +172,7 @@ std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::zg_covreach::c
 
 /* run */
 
-std::tuple<tchecker::algorithms::covreach::stats_t, std::shared_ptr<tchecker::tck_reach::zg_covreach::graph_t>>
+std::tuple<tchecker::algorithms::covreach::stats_t, std::shared_ptr<tchecker::tck_reach::zg_covreach::state_space_t>>
 run(tchecker::parsing::system_declaration_t const & sysdecl, std::string const & labels, std::string const & search_order,
     tchecker::algorithms::covreach::covering_t covering, std::size_t block_size, std::size_t table_size)
 {
@@ -179,8 +183,8 @@ run(tchecker::parsing::system_declaration_t const & sysdecl, std::string const &
   std::shared_ptr<tchecker::zg::zg_t> zg{tchecker::zg::factory(system, tchecker::ts::SHARING, tchecker::zg::ELAPSED_SEMANTICS,
                                                                tchecker::zg::EXTRA_LU_PLUS_LOCAL, block_size, table_size)};
 
-  std::shared_ptr<tchecker::tck_reach::zg_covreach::graph_t> graph{
-      new tchecker::tck_reach::zg_covreach::graph_t{zg, block_size, table_size}};
+  std::shared_ptr<tchecker::tck_reach::zg_covreach::state_space_t> state_space =
+      std::make_shared<tchecker::tck_reach::zg_covreach::state_space_t>(zg, block_size, table_size);
 
   boost::dynamic_bitset<> accepting_labels = system->as_syncprod_system().labels(labels);
 
@@ -190,13 +194,15 @@ run(tchecker::parsing::system_declaration_t const & sysdecl, std::string const &
   tchecker::tck_reach::zg_covreach::algorithm_t algorithm;
 
   if (covering == tchecker::algorithms::covreach::COVERING_FULL)
-    stats = algorithm.run<tchecker::algorithms::covreach::COVERING_FULL>(*zg, *graph, accepting_labels, policy);
+    stats = algorithm.run<tchecker::algorithms::covreach::COVERING_FULL>(state_space->zg(), state_space->graph(),
+                                                                         accepting_labels, policy);
   else if (covering == tchecker::algorithms::covreach::COVERING_LEAF_NODES)
-    stats = algorithm.run<tchecker::algorithms::covreach::COVERING_LEAF_NODES>(*zg, *graph, accepting_labels, policy);
+    stats = algorithm.run<tchecker::algorithms::covreach::COVERING_LEAF_NODES>(state_space->zg(), state_space->graph(),
+                                                                               accepting_labels, policy);
   else
     throw std::invalid_argument("Unknown covering policy for covreach algorithm");
 
-  return std::make_tuple(stats, graph);
+  return std::make_tuple(stats, state_space);
 }
 
 } // namespace zg_covreach

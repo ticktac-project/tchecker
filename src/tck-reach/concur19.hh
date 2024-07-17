@@ -13,6 +13,7 @@
 
 #include "tchecker/algorithms/covreach/algorithm.hh"
 #include "tchecker/algorithms/covreach/stats.hh"
+#include "tchecker/clockbounds/cache.hh"
 #include "tchecker/clockbounds/clockbounds.hh"
 #include "tchecker/clockbounds/solver.hh"
 #include "tchecker/graph/edge.hh"
@@ -24,6 +25,7 @@
 #include "tchecker/refzg/state.hh"
 #include "tchecker/refzg/transition.hh"
 #include "tchecker/ta/system.hh"
+#include "tchecker/ts/state_space.hh"
 #include "tchecker/waiting/waiting.hh"
 
 /*!
@@ -92,43 +94,12 @@ class node_le_t {
 public:
   /*!
   \brief Constructor
-  \param clockbounds : clockbounds
-  \note this keeps a shared pointer on clockbounds
+  \param local_lu : local LU clock bounds
+  \param table_size : size of clock bounds cache
+  \post this keeps a shared pointer to local_lu
+  \throw std::invalid_argument : if local_lu points to nullptr
   */
-  node_le_t(std::shared_ptr<tchecker::clockbounds::clockbounds_t> const & clockbounds);
-
-  /*!
-  \brief Constructor
-  \param system : a system of timed processes
-  \note this computes the clock bpunds on system
-  \throw std::runtime_error : if clock bounds cannot be computed for system
-  */
-  node_le_t(tchecker::ta::system_t const & system);
-
-  /*!
-  \brief Copy constructor
-  */
-  node_le_t(tchecker::tck_reach::concur19::node_le_t const & node_le);
-
-  /*!
-  \brief Move constructor
-  */
-  node_le_t(tchecker::tck_reach::concur19::node_le_t && node_le);
-
-  /*!
-   \brief Destructor
-  */
-  ~node_le_t();
-
-  /*!
-   \brief Assignment operator
-  */
-  tchecker::tck_reach::concur19::node_le_t & operator=(tchecker::tck_reach::concur19::node_le_t const & node_le);
-
-  /*!
-   \brief Move-assignment operator
-  */
-  tchecker::tck_reach::concur19::node_le_t & operator=(tchecker::tck_reach::concur19::node_le_t && node_le);
+  node_le_t(std::shared_ptr<tchecker::clockbounds::local_lu_map_t> const & local_lu, std::size_t table_size);
 
   /*!
   \brief Covering predicate for nodes
@@ -140,9 +111,11 @@ public:
   bool operator()(tchecker::tck_reach::concur19::node_t const & n1, tchecker::tck_reach::concur19::node_t const & n2) const;
 
 private:
-  std::shared_ptr<tchecker::clockbounds::clockbounds_t> _clockbounds; /*!< Clock bounds */
-  tchecker::clockbounds::map_t * _l;                                  /*!< Clock lower bounds */
-  tchecker::clockbounds::map_t * _u;                                  /*!< Clock upper bounds */
+  using const_vloc_sptr_hash_t = tchecker::intrusive_shared_ptr_hash_t;
+  using const_vloc_sptr_equal_t = std::equal_to<tchecker::const_vloc_sptr_t>;
+
+  mutable tchecker::clockbounds::bounded_cache_local_lu_map_t<const_vloc_sptr_hash_t, const_vloc_sptr_equal_t>
+      _cached_local_lu; /*!< Cached local LU clock bounds*/
 };
 
 /*!
@@ -171,17 +144,18 @@ public:
   /*!
    \brief Constructor
    \param refzg : zone graph with reference clocks
+   \param local_lu : local LU bounds map for aLU covering
    \param block_size : number of objects allocated in a block
    \param table_size : size of hash table
-   \note this keeps a shared pointer on refzg
-   \throw std::runtime_error : if clock bounds cannot be computed for the underlying system in refzg
+   \note this keeps a shared pointer on refzg and on local_lu
+   \note this graph keeps pointers to (part of) states and (part of) transitions allocated by refzg. Hence, the graph
+   must be destroyed *before* refzg is destroyed, since all states and transitions allocated by refzg are detroyed
+   when refzg is destroyed. See state_space_t below to store both refzg and this graph and destroy them in the expected
+   order.
   */
-  graph_t(std::shared_ptr<tchecker::refzg::refzg_t> const & refzg, std::size_t block_size, std::size_t table_size);
-
-  /*!
-   \brief Destructor
-  */
-  virtual ~graph_t();
+  graph_t(std::shared_ptr<tchecker::refzg::refzg_t> const & refzg,
+          std::shared_ptr<tchecker::clockbounds::local_lu_map_t> const & local_lu, std::size_t block_size,
+          std::size_t table_size);
 
   /*!
    \brief Accessor
@@ -235,6 +209,41 @@ private:
  \post graph g with name has been output to os
 */
 std::ostream & dot_output(std::ostream & os, tchecker::tck_reach::concur19::graph_t const & g, std::string const & name);
+
+/*!
+ \class state_space_t
+ \brief State-space representation consisting of a zone graph with reference clocks and a subsumption graph
+ */
+class state_space_t {
+public:
+  /*!
+   \brief Constructor
+   \param refzg : zone graph with reference clocks
+   \param local_lu : local LU bounds map for aLU covering
+   \param block_size : number of objects allocated in a block
+   \param table_size : size of hash table
+   \note this keeps a pointer on zg
+   */
+  state_space_t(std::shared_ptr<tchecker::refzg::refzg_t> const & refzg,
+                std::shared_ptr<tchecker::clockbounds::local_lu_map_t> const & local_lu, std::size_t block_size,
+                std::size_t table_size);
+
+  /*!
+   \brief Accessor
+   \return The zone graph with reference clocks
+   */
+  tchecker::refzg::refzg_t & refzg();
+
+  /*!
+   \brief Accessor
+   \return The subsumption graph representing the state-space
+   */
+  tchecker::tck_reach::concur19::graph_t & graph();
+
+private:
+  tchecker::ts::state_space_t<tchecker::refzg::refzg_t, tchecker::tck_reach::concur19::graph_t>
+      _ss; /*!< State-space representation */
+};
 
 namespace cex {
 
@@ -291,10 +300,10 @@ public:
  \param table_size : size of hash tables
  \pre labels must appear as node attributes in sysdecl
  search_order must be either "dfs" or "bfs"
- \return statistics on the run and the covering reachability graph
+ \return statistics on the run and a representation of the state-space as a subsumption graph
  \throw std::runtime_error : if clock bounds cannot be computed for the system modeled as sysdecl
  */
-std::tuple<tchecker::algorithms::covreach::stats_t, std::shared_ptr<tchecker::tck_reach::concur19::graph_t>>
+std::tuple<tchecker::algorithms::covreach::stats_t, std::shared_ptr<tchecker::tck_reach::concur19::state_space_t>>
 run(tchecker::parsing::system_declaration_t const & sysdecl, std::string const & labels = "",
     std::string const & search_order = "bfs",
     tchecker::algorithms::covreach::covering_t covering = tchecker::algorithms::covreach::COVERING_FULL,

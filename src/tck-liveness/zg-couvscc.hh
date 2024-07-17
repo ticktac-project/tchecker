@@ -21,6 +21,7 @@
 #include "tchecker/graph/reachability_graph.hh"
 #include "tchecker/parsing/declaration.hh"
 #include "tchecker/syncprod/vedge.hh"
+#include "tchecker/ts/state_space.hh"
 #include "tchecker/utils/shared_objects.hh"
 #include "tchecker/zg/path.hh"
 #include "tchecker/zg/state.hh"
@@ -112,13 +113,12 @@ public:
    \param block_size : number of objects allocated in a block
    \param table_size : size of hash table
    \note this keeps a pointer on zg
+   \note this graph keeps pointers to (part of) states and (part of) transitions allocated by zg. Hence, the graph
+   must be destroyed *before* zg is destroyed, since all states and transitions allocated by zg are detroyed
+   when zg is destroyed. See state_space_t below to store both fzg and this graph and destroy them in the expected
+   order.
   */
   graph_t(std::shared_ptr<tchecker::zg::zg_t> const & zg, std::size_t block_size, std::size_t table_size);
-
-  /*!
-   \brief Destructor
-  */
-  virtual ~graph_t();
 
   using tchecker::graph::reachability::graph_t<
       tchecker::tck_liveness::zg_couvscc::node_t, tchecker::tck_liveness::zg_couvscc::edge_t,
@@ -171,6 +171,38 @@ private:
  \post graph g with name has been output to os
 */
 std::ostream & dot_output(std::ostream & os, tchecker::tck_liveness::zg_couvscc::graph_t const & g, std::string const & name);
+
+/*!
+ \class state_space_t
+ \brief State-space representation consisting of a zone graph and a reachability graph
+ */
+class state_space_t {
+public:
+  /*!
+   \brief Constructor
+   \param zg : zone graph
+   \param block_size : number of objects allocated in a block
+   \param table_size : size of hash table
+   \note this keeps a pointer on zg
+   */
+  state_space_t(std::shared_ptr<tchecker::zg::zg_t> const & zg, std::size_t block_size, std::size_t table_size);
+
+  /*!
+   \brief Accessor
+   \return The zone graph
+   */
+  tchecker::zg::zg_t & zg();
+
+  /*!
+   \brief Accessor
+   \return The reachability graph representing the state-space
+   */
+  tchecker::tck_liveness::zg_couvscc::graph_t & graph();
+
+private:
+  tchecker::ts::state_space_t<tchecker::zg::zg_t, tchecker::tck_liveness::zg_couvscc::graph_t>
+      _ss; /*!< State-space representation */
+};
 
 namespace cex {
 
@@ -236,7 +268,7 @@ public:
  \return statistics on the run and the liveness graph
  \throw std::runtime_error : if clock bounds cannot be computed for the system modeled by sysdecl
  */
-std::tuple<tchecker::algorithms::couvscc::stats_t, std::shared_ptr<tchecker::tck_liveness::zg_couvscc::graph_t>>
+std::tuple<tchecker::algorithms::couvscc::stats_t, std::shared_ptr<tchecker::tck_liveness::zg_couvscc::state_space_t>>
 run(tchecker::parsing::system_declaration_t const & sysdecl, std::string const & labels = "", std::size_t block_size = 10000,
     std::size_t table_size = 65536);
 

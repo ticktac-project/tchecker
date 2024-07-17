@@ -242,18 +242,20 @@ int main(int argc, char * argv[])
     if (starting_state_json != "")
       starting_state_attributes = parse_state_json(starting_state_json);
 #endif
-    std::shared_ptr<tchecker::tck_simulate::graph_t> g{nullptr};
+    std::shared_ptr<tchecker::tck_simulate::state_space_t> state_space{nullptr};
     if (simulation_type == INTERACTIVE_SIMULATION)
-      g = tchecker::tck_simulate::interactive_simulation(*sysdecl, display_type, starting_state_attributes);
+      state_space = tchecker::tck_simulate::interactive_simulation(*sysdecl, display_type, starting_state_attributes);
     else if (simulation_type == RANDOMIZED_SIMULATION)
-      g = tchecker::tck_simulate::randomized_simulation(*sysdecl, nsteps, starting_state_attributes);
+      state_space = tchecker::tck_simulate::randomized_simulation(*sysdecl, nsteps, starting_state_attributes);
     else if (simulation_type == ONESTEP_SIMULATION)
       tchecker::tck_simulate::onestep_simulation(*sysdecl, display_type, starting_state_attributes);
     else
       throw std::runtime_error("Select one of interactive, one-step or randomized simulation");
 
-    if (output_trace)
-      tchecker::tck_simulate::dot_output(*os, *g, sysdecl->name());
+    if (output_trace) {
+      assert(state_space.get() != nullptr);
+      tchecker::tck_simulate::dot_output(*os, state_space->graph(), sysdecl->name());
+    }
 
     if (os != &std::cout)
       delete os;

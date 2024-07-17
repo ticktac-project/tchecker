@@ -87,7 +87,7 @@ public:
   /*!
    \brief Destructor
    */
-  ~graph_t() = default;
+  virtual ~graph_t() = default;
 
   /*!
    \brief Assignment operator (deleted)

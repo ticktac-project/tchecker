@@ -36,11 +36,6 @@ graph_t::graph_t(std::shared_ptr<tchecker::zg::zg_t> const & zg, std::size_t blo
 {
 }
 
-graph_t::~graph_t()
-{
-  tchecker::graph::reachability::multigraph_t<tchecker::tck_simulate::node_t, tchecker::tck_simulate::edge_t>::clear();
-}
-
 void graph_t::attributes(tchecker::tck_simulate::node_t const & n, std::map<std::string, std::string> & m) const
 {
   _zg->attributes(n.state_ptr(), m);
@@ -102,6 +97,16 @@ std::ostream & dot_output(std::ostream & os, tchecker::tck_simulate::graph_t con
   return tchecker::graph::reachability::dot_output<tchecker::tck_simulate::graph_t, tchecker::tck_simulate::node_lexical_less_t,
                                                    tchecker::tck_simulate::edge_lexical_less_t>(os, g, name);
 }
+
+/* state_space_t */
+
+state_space_t::state_space_t(std::shared_ptr<tchecker::zg::zg_t> const & zg, std::size_t block_size) : _ss(zg, zg, block_size)
+{
+}
+
+tchecker::zg::zg_t & state_space_t::zg() { return _ss.ts(); }
+
+tchecker::tck_simulate::graph_t & state_space_t::graph() { return _ss.state_space(); }
 
 } // namespace tck_simulate
 
