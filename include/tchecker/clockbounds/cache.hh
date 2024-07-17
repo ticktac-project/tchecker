@@ -266,7 +266,6 @@ public:
     auto end = _table.end();
     for (auto it = _table.begin(); it != end; ++it)
       clear_entry(*it);
-    _table.clear();
   }
 
   /*!
