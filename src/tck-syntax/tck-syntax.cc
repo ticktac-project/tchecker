@@ -37,6 +37,7 @@
 static struct option long_options[] = {{"asynchronous-events", no_argument, 0, 0},
                                        {"check", no_argument, 0, 'c'},
                                        {"product", no_argument, 0, 'p'},
+                                       {"only-processes", no_argument, 0, 0},
                                        {"output", required_argument, 0, 'o'},
                                        {"delimiter", required_argument, 0, 'd'},
                                        {"process-name", required_argument, 0, 'n'},
@@ -58,6 +59,7 @@ void usage(char * progname)
   std::cerr << "   -o file                output file" << std::endl;
   std::cerr << "   -d delim               delimiter string (default: _)" << std::endl;
   std::cerr << "   -n name                name of synchronized process (default: P)" << std::endl;
+  std::cerr << "   --only-processes       only output processes in dot graphviz format(combined with -t)" << std::endl;
   std::cerr << "   -h                     help" << std::endl;
   std::cerr << "reads from standard input if file is not provided" << std::endl;
 }
@@ -67,6 +69,7 @@ static bool check_syntax = false;
 static bool synchronized_product = false;
 static bool transform = false;
 static bool json = false;
+static bool only_processes = false;
 static bool help = false;
 static std::string delimiter = "_";
 static std::string process_name = "P";
@@ -121,6 +124,8 @@ int parse_command_line(int argc, char * argv[])
     else {
       if (strcmp(long_options[long_option_index].name, "asynchronous-events") == 0)
         report_asynchronous_events = true;
+      else if (strcmp(long_options[long_option_index].name, "only-processes") == 0)
+        only_processes = true;
       else
         throw std::runtime_error("This also should never be executed");
     }
@@ -245,7 +250,9 @@ void do_synchronized_product(tchecker::parsing::system_declaration_t const & sys
 void do_output_dot(tchecker::parsing::system_declaration_t const & sysdecl, std::string const & delimiter, std::ostream & os)
 {
   std::shared_ptr<tchecker::system::system_t> system(new tchecker::system::system_t(sysdecl));
-  tchecker::system::output_dot(os, *system, delimiter);
+  tchecker::system::graphviz_output_t output_type =
+      (only_processes ? tchecker::system::GRAPHVIZ_ONLY_PROCESSES : tchecker::system::GRAPHVIZ_FULL);
+  tchecker::system::output_dot(os, *system, delimiter, output_type);
   os << std::endl;
 }
 

@@ -144,7 +144,8 @@ static void output_dot(std::ostream & os, tchecker::system::synchronization_t co
   os << ">";
 }
 
-void output_dot(std::ostream & os, tchecker::system::system_t const & s, std::string const & delimiter)
+void output_dot(std::ostream & os, tchecker::system::system_t const & s, std::string const & delimiter,
+                tchecker::system::graphviz_output_t output_type)
 {
   os << "digraph " << s.name() << " {" << std::endl;
   // Output each process as a cluster
@@ -170,17 +171,19 @@ void output_dot(std::ostream & os, tchecker::system::system_t const & s, std::st
     os << "  }" << std::endl;
   }
   // Output synchronizations as a cluster
-  os << "  subgraph cluster_synchronizations {" << std::endl;
-  os << "    label=\"Synchronizations\";" << std::endl;
-  os << "    node[shape=\"none\"];" << std::endl;
-  os << "    \"" << std::endl;
-  for (tchecker::system::synchronization_t const & sync : s.synchronizations()) {
-    os << "    ";
-    output_dot(os, sync, s);
-    os << std::endl;
+  if (output_type == tchecker::system::GRAPHVIZ_FULL) {
+    os << "  subgraph cluster_synchronizations {" << std::endl;
+    os << "    label=\"Synchronizations\";" << std::endl;
+    os << "    node[shape=\"none\"];" << std::endl;
+    os << "    \"" << std::endl;
+    for (tchecker::system::synchronization_t const & sync : s.synchronizations()) {
+      os << "    ";
+      output_dot(os, sync, s);
+      os << std::endl;
+    }
+    os << "    \";" << std::endl;
+    os << "  }" << std::endl;
   }
-  os << "    \";" << std::endl;
-  os << "  }" << std::endl;
   os << "}" << std::endl;
 }
 
