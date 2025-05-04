@@ -247,7 +247,7 @@ public:
       _equal = m._equal;
       _capacity = m._capacity;
       _table.resize(_capacity);
-      insert(m._cache);
+      insert(m._table);
     }
     return *this;
   }
