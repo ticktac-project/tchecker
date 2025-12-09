@@ -19,7 +19,5 @@ set(UTILS_SRC
     ${TCHECKER_INCLUDE_DIR}/tchecker/utils/ordering.hh
     ${TCHECKER_INCLUDE_DIR}/tchecker/utils/pool.hh
     ${TCHECKER_INCLUDE_DIR}/tchecker/utils/shared_objects.hh
-    ${TCHECKER_INCLUDE_DIR}/tchecker/utils/singleton_pool.hh
-    ${TCHECKER_INCLUDE_DIR}/tchecker/utils/spinlock.hh
     ${TCHECKER_INCLUDE_DIR}/tchecker/utils/string.hh
     PARENT_SCOPE)

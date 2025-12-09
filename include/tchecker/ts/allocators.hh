@@ -13,7 +13,6 @@
 #include "tchecker/utils/allocation_size.hh"
 #include "tchecker/utils/pool.hh"
 #include "tchecker/utils/shared_objects.hh"
-#include "tchecker/utils/singleton_pool.hh"
 
 /*!
  \file allocators.hh
