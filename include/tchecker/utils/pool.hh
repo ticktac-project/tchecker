@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 
+#include "tchecker/utils/log.hh"
 #include "tchecker/utils/shared_objects.hh"
 
 /*!
@@ -108,6 +109,9 @@ public:
   {
     if (_alloc_nb < 1)
       throw std::invalid_argument("allocation number should be >= 1");
+#ifdef POOL_CHECK_ALLOCATED
+    _allocated_count = 0;
+#endif
   }
 
   /*!
@@ -127,6 +131,14 @@ public:
    */
   ~pool_t()
   {
+#ifdef POOL_CHECK_ALLOCATED
+    collect();
+    if (_allocated_count > 0) {
+      std::cerr << tchecker::log_error << "** ERROR: pool " << this << " destroyed while " << _allocated_count
+                << " chuncks are still allocated" << std::endl;
+      std::terminate();
+    }
+#endif
     _collectables.clear();
     destruct_all();
   }
@@ -160,6 +172,9 @@ public:
       this->release(t);
       throw;
     }
+#ifdef POOL_CHECK_ALLOCATED
+    _allocated_count += 1;
+#endif
     return tchecker::intrusive_shared_ptr_t<T>(reinterpret_cast<T *>(p));
   }
 
@@ -187,6 +202,9 @@ public:
 
     typename T::refcount_t * chunk = reinterpret_cast<typename T::refcount_t *>(t) - 1;
     release(chunk);
+#ifdef CHECK_POOL_ALLOCATED
+    _allocated_count -= 1;
+#endif
 
     p = nullptr;
 
@@ -236,6 +254,10 @@ public:
     // release the collected chunks
     if (collected > 0)
       this->release(collected_begin, collected_end);
+
+#ifdef POOL_CHECK_ALLOCATED
+    _allocated_count -= collected;
+#endif
 
     return collected;
   }
@@ -298,6 +320,9 @@ public:
     _block_head = nullptr;
     _raw_head = nullptr;
     _raw_end = nullptr;
+#ifdef POOL_CHECK_ALLOCATED
+    _allocated_count = 0;
+#endif
   }
 
   /*!
@@ -498,6 +523,9 @@ protected:
   char * _raw_head;                                                    /*!< pointer to raw block */
   char * _raw_end;                                                     /*!< pointer to past-the-end raw block */
   std::vector<std::shared_ptr<tchecker::collectable_t>> _collectables; /*!< collectable data structures for memory collection */
+#ifdef POOL_CHECK_ALLOCATED
+  std::size_t _allocated_count; /*!< number of chunks which are currently allocated */
+#endif
 };
 
 } // end of namespace tchecker
