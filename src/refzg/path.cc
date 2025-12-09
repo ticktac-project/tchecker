@@ -66,7 +66,7 @@ tchecker::refzg::path::edge_t & edge_t::operator=(tchecker::refzg::path::edge_t 
 
 int lexical_cmp(tchecker::refzg::path::edge_t const & e1, tchecker::refzg::path::edge_t const & e2)
 {
-  return tchecker::refzg::lexical_cmp(e1.transition(), e2.transition()) < 0;
+  return tchecker::refzg::lexical_cmp(e1.transition(), e2.transition());
 }
 
 /* finite_path_t */

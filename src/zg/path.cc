@@ -35,13 +35,22 @@ node_t::node_t(tchecker::zg::const_state_sptr_t const & s, bool initial, bool fi
 
 int lexical_cmp(tchecker::zg::path::symbolic::node_t const & n1, tchecker::zg::path::symbolic::node_t const & n2)
 {
-  int state_cmp = tchecker::ta::lexical_cmp(static_cast<tchecker::ta::state_t const &>(n1.state()),
-                                            static_cast<tchecker::ta::state_t const &>(n2.state()));
+  int state_cmp = tchecker::zg::lexical_cmp(static_cast<tchecker::zg::state_t const &>(n1.state()),
+                                            static_cast<tchecker::zg::state_t const &>(n2.state()));
   if (state_cmp != 0)
     return state_cmp;
-  if (n1.initial() != n2.initial())
-    return n1.initial() < n2.initial();
-  return n1.final() < n2.final();
+
+  if (n1.initial() < n2.initial())
+    return -1;
+  if (n1.initial() > n2.initial())
+    return 1;
+
+  if (n1.final() < n2.final())
+    return -1;
+  if (n1.final() > n2.final())
+    return 1;
+
+  return 0;
 }
 
 /* edge_t */
@@ -72,7 +81,7 @@ tchecker::zg::path::symbolic::edge_t & edge_t::operator=(tchecker::zg::path::sym
 
 int lexical_cmp(tchecker::zg::path::symbolic::edge_t const & e1, tchecker::zg::path::symbolic::edge_t const & e2)
 {
-  return tchecker::zg::lexical_cmp(e1.transition(), e2.transition()) < 0;
+  return tchecker::zg::lexical_cmp(e1.transition(), e2.transition());
 }
 
 /* finite_path_t */
@@ -633,6 +642,12 @@ public:
    \return dimension
   */
   inline tchecker::clock_id_t dim() const { return _dim; }
+
+  /*!
+   \brief Accessor
+   \return denominator
+   */
+  inline tchecker::integer_t denominator() const { return _denominator; }
 
 private:
   /*!

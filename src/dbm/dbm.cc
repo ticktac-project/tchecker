@@ -21,9 +21,9 @@ namespace tchecker {
 
 namespace dbm {
 
-#define DBM(i, j)  dbm[(i)*dim + (j)]
-#define DBM1(i, j) dbm1[(i)*dim + (j)]
-#define DBM2(i, j) dbm2[(i)*dim + (j)]
+#define DBM(i, j)  dbm[(i) * dim + (j)]
+#define DBM1(i, j) dbm1[(i) * dim + (j)]
+#define DBM2(i, j) dbm2[(i) * dim + (j)]
 #define M(i)       (i == 0 ? 0 : m[i - 1])
 #define L(i)       (i == 0 ? 0 : l[i - 1])
 #define U(i)       (i == 0 ? 0 : u[i - 1])
@@ -1087,8 +1087,8 @@ tchecker::integer_t constrain_to_single_valuation(tchecker::dbm::db_t * dbm, tch
     if (!tchecker::dbm::admits_integer_value(dbm, dim, x)) {
       if (factor > std::numeric_limits<tchecker::integer_t>::max() / SCALE_FACTOR)
         throw std::overflow_error("tchecker::dbm::constrain_to_single_valuation: scale factor overflow");
+      tchecker::dbm::scale_up(dbm, dim, SCALE_FACTOR);
       factor *= SCALE_FACTOR;
-      tchecker::dbm::scale_up(dbm, dim, factor);
     }
 
     // then, choose integer value for selected clock
