@@ -7,9 +7,9 @@
 
 #include "tchecker/dbm/dbm.hh"
 
-#define DBM(i, j)  dbm[(i)*dim + (j)]
-#define DBM1(i, j) dbm1[(i)*dim + (j)]
-#define DBM2(i, j) dbm2[(i)*dim + (j)]
+#define DBM(i, j)  dbm[(i) * dim + (j)]
+#define DBM1(i, j) dbm1[(i) * dim + (j)]
+#define DBM2(i, j) dbm2[(i) * dim + (j)]
 
 #define CB_M(i) (i == 0 ? 0 : m[i - 1])
 #define CB_L(i) (i == 0 ? 0 : l[i - 1])
@@ -2383,6 +2383,46 @@ TEST_CASE("constrain_to_single_valuation", "[dbm]")
     REQUIRE(tchecker::dbm::value(DBM(y, 0)) == 58);
     REQUIRE(tchecker::dbm::value(DBM(z, 0)) == 0);
   }
+}
+
+TEST_CASE("constrain_to_single_valuation_issue67", "[dbm]")
+{
+  // Test case inspired by Issue #67
+  tchecker::clock_id_t const dim = 3;
+  tchecker::dbm::db_t dbm[dim * dim];
+
+  tchecker::clock_id_t const x = 1;
+  tchecker::clock_id_t const y = 2;
+
+  // (0 < x < 1) && (0 < y < 1) && (0 < x - y < 1)
+  tchecker::dbm::universal_positive(dbm, dim);
+  DBM(0, x) = tchecker::dbm::db(tchecker::LT, 0);
+  DBM(0, y) = tchecker::dbm::db(tchecker::LT, 0);
+  DBM(x, 0) = tchecker::dbm::db(tchecker::LT, 1);
+  DBM(x, y) = tchecker::dbm::db(tchecker::LT, 1);
+  DBM(y, 0) = tchecker::dbm::db(tchecker::LT, 1);
+  DBM(y, x) = tchecker::dbm::db(tchecker::LT, 0);
+  tchecker::dbm::tighten(dbm, dim);
+
+  tchecker::integer_t factor = 1;
+  REQUIRE_NOTHROW(factor = tchecker::dbm::constrain_to_single_valuation(dbm, dim));
+  REQUIRE(factor == 4);
+  REQUIRE(tchecker::dbm::is_single_valuation(dbm, dim));
+
+  // Check that scaled-up DBM is in (0 < x < 4) && (0 < y < 4) && (0 < x - y < 4)
+  tchecker::dbm::db_t dbm2[dim * dim];
+  tchecker::dbm::universal_positive(dbm2, dim);
+  DBM2(0, x) = tchecker::dbm::db(tchecker::LT, 0);
+  DBM2(0, y) = tchecker::dbm::db(tchecker::LT, 0);
+  DBM2(x, 0) = tchecker::dbm::db(tchecker::LT, 1);
+  DBM2(x, y) = tchecker::dbm::db(tchecker::LT, 1);
+  DBM2(y, 0) = tchecker::dbm::db(tchecker::LT, 1);
+  DBM2(y, x) = tchecker::dbm::db(tchecker::LT, 0);
+  tchecker::dbm::tighten(dbm2, dim);
+
+  tchecker::dbm::scale_up(dbm2, dim, factor);
+
+  REQUIRE(tchecker::dbm::is_le(dbm, dbm2, dim));
 }
 
 TEST_CASE("satisfying_integer_valuation", "[dbm]")
